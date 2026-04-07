@@ -15,7 +15,9 @@ How the maintainer (or any solo contributor) follows the same process as externa
 
 ## Tracking System: GitHub Issues (Not Projects)
 
-GitHub Issues is the tracker. Not GitHub Projects, not Notion, not a spreadsheet. One issue per sub-feature or enhancement. The issue IS the scope lock.
+GitHub Issues is the recommended tracker for coordination. Not GitHub Projects, not Notion, not a spreadsheet. One issue per sub-feature or enhancement. The issue forces you to write the scope lock before coding.
+
+For solo work, opening an issue is optional — you can fill the Scope Lock in the PR body instead. For team work, the issue prevents duplicated effort.
 
 ### Why Issues, Not Projects?
 
@@ -81,6 +83,20 @@ gh issue list --label P0
 ```
 
 This is simpler than a Projects board and gives you the same information.
+
+---
+
+## Known Gaps
+
+### Rolling back an already-merged sub-feature
+
+If a merged sub-feature introduces a critical bug and you need to revert it:
+
+1. **Revert the PR** — use `git revert` on the merge commit. This creates a new commit that undoes the changes without losing history.
+2. **Create a follow-up migration** — even though you've reverted the code, the database migration is "live." Write a new migration file (with the next `{NNN}` sequence number) that undoes the schema changes if necessary. For data-only bugfixes, you may not need a migration.
+3. **Update the manifests** — set the sub-feature status back to `BUILDING` or `PLANNED` (depending on severity), and log the revert in the feature's worklog or an ADR.
+
+This is a known gap: we don't yet have a streamlined process for partial rollbacks or hotfixes. For now, revert + follow-up migration is the safest approach.
 
 ---
 
@@ -239,7 +255,7 @@ Contains:
 - 01_scope.md
 - 02_design.md
 - 05_api_contract.yaml
-- Migration SQL in 09_sql_migrations/02_in_progress/
+- Migration SQL in 05_sub_features/{nn}_{sub}/09_sql_migrations/02_in_progress/
 - sub_feature.manifest.yaml (status: DESIGNED)
 ```
 
@@ -266,11 +282,11 @@ Contains:
 Track progress via `sub_feature.manifest.yaml` status:
 
 ```text
-DRAFT     ->  You've claimed it, directory created
-SCOPED    ->  01_scope.md written and reviewed
-DESIGNED  ->  02_design.md + 05_api_contract.yaml written
-BUILDING  ->  Implementation in progress
-DONE      ->  PR merged, feature complete
+PLANNED   ->  Listed in feature.manifest.yaml, no work started
+SCOPED    ->  GitHub issue open with Scope Lock + 01_scope.md written
+DESIGNED  ->  02_design.md + 05_api_contract.yaml + migration written and verified
+BUILDING  ->  Implementation in progress (backend + frontend + tests)
+DONE      ->  PR merged, sub-feature complete
 ```
 
 Update the manifest at each transition. This is how you (and future contributors) know the state of every sub-feature at a glance.

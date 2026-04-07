@@ -516,7 +516,7 @@ CREATE POLICY rls_{table}_tenant ON {table}
 
 `{NNN}` is a **global** three-digit sequence number across all modules. It determines application order. Two files with the same NNN is a hard error.
 
-Files live in `docs/features/{feature}/09_sql_migrations/02_in_progress/` until applied.
+Files live in `03_docs/features/{nn}_{feature}/05_sub_features/{nn}_{sub_feature}/09_sql_migrations/02_in_progress/` until applied, then move to the matching `01_migrated/` directory inside the same sub-feature. The schema-creation migration for a feature lives in its `00_bootstrap/` sub-feature, which sorts first and runs before any other sub-feature's migrations. The runner walks `03_docs/features/*/05_sub_features/*/09_sql_migrations/02_in_progress/*.sql` and applies them in `{NNN}` order — there is no special-casing for bootstrap.
 
 ---
 

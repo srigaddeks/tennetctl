@@ -2,7 +2,9 @@
 
 How to build a clean, well-structured tennetctl module from the very first line. This document walks through the entire lifecycle — from empty directory to merged PR — using a real example.
 
-This is the workflow you follow every time. Whether it's your first module or your eighth.
+This is the workflow you follow every time. Whether it's your first feature or your eighth.
+
+> **The migration runner does not exist yet.** This walkthrough invokes `uv run python -m scripts.migrate up` several times. There is no `scripts/migrate.py` in the repo today — the runner is itself one of the very first sub-features that needs to be built. Until then, apply migrations by hand: `docker compose exec postgres psql -U tennetctl -d tennetctl -f /path/to/migration.sql` for the UP, then extract and run the DOWN section the same way to verify the round-trip. The "GATE: round-trips cleanly" checks below are manual verification for now.
 
 ---
 
@@ -82,8 +84,11 @@ Then open one issue per sub-feature using the "Sub-Feature Build" template.
 ### 1.1 Create the Documentation Scaffold
 
 ```bash
-# Feature docs
-mkdir -p 03_docs/features/07_vault/{04_architecture,05_sub_features,09_sql_migrations/{01_migrated,02_in_progress}}
+# Feature docs (note: 09_sql_migrations lives inside each sub-feature, not here)
+mkdir -p 03_docs/features/07_vault/{04_architecture,05_sub_features}
+
+# The bootstrap sub-feature — owns the schema-creation migration
+mkdir -p 03_docs/features/07_vault/05_sub_features/00_bootstrap/09_sql_migrations/{01_migrated,02_in_progress}
 ```
 
 ### 1.2 Write the Feature Manifest
@@ -92,45 +97,37 @@ Create `03_docs/features/07_vault/feature.manifest.yaml`:
 
 ```yaml
 title: "Vault — Secrets Management"
-module: "07_vault"
-schema: "07_vault"
-status: BUILDING
-priority: high
+feature: "07_vault"
+status: ACTIVE
+owner: "your-github-username"
 created_at: "2026-04-06"
 
 sub_features:
-  - number: 01
+sub_features:
+  - number: 1
     name: project
     status: PLANNED
     description: Vault projects — containers that group secrets by application or service.
-
-  - number: 02
+  - number: 2
     name: environment
     status: PLANNED
     description: Environment configs per project (dev, staging, prod).
-
-  - number: 03
+  - number: 3
     name: secret
     status: PLANNED
     description: Encrypted secret storage with AES-256-GCM envelope encryption.
-
-  - number: 04
+  - number: 4
     name: version
     status: PLANNED
     description: Secret versioning — every update creates a new version.
-
-  - number: 05
+  - number: 5
     name: rotation
     status: PLANNED
     description: Automated rotation policies with pluggable backends.
-
-  - number: 06
+  - number: 6
     name: access
     status: PLANNED
     description: Access policies — who can read/write which secrets.
-
-migrations: []
-frontend_pages: []
 ```
 
 ### 1.3 Write the Feature Overview
@@ -185,7 +182,7 @@ Document:
 
 This is the first migration for the module. It creates the schema and the shared dim/dtl tables that all sub-features will use.
 
-Create `03_docs/features/07_vault/09_sql_migrations/02_in_progress/YYYYMMDD_NNN_vault_bootstrap.sql`:
+Create `03_docs/features/07_vault/05_sub_features/00_bootstrap/09_sql_migrations/02_in_progress/YYYYMMDD_NNN_vault_bootstrap.sql`:
 
 ```sql
 -- =============================================================================
@@ -510,7 +507,7 @@ Create `02_design.md`:
 
 #### Step 4: Write the Migration
 
-Create `YYYYMMDD_NNN_vault_projects.sql` in `09_sql_migrations/02_in_progress/`.
+Create `YYYYMMDD_NNN_vault_projects.sql` in `03_docs/features/07_vault/05_sub_features/01_project/09_sql_migrations/02_in_progress/`.
 
 Follow the exact templates from [03_database_structure.md](03_database_structure.md).
 
@@ -733,7 +730,7 @@ status: DONE
 
 ### 4.3 Move Migrations
 
-Move all migration files from `09_sql_migrations/02_in_progress/` to `01_migrated/`.
+For every sub-feature in this feature (including `00_bootstrap/`), move every file from `05_sub_features/{nn}_{sub}/09_sql_migrations/02_in_progress/` into the matching `01_migrated/` directory.
 
 ### 4.4 Final Self-Review
 
@@ -805,22 +802,30 @@ RIGHT:
 ## Quick Reference: File Checklist for a New Module
 
 ```text
-03_docs/features/{nn}_{module}/
-├── 00_overview.md                          ✓ Phase 1
-├── feature.manifest.yaml                   ✓ Phase 1
+03_docs/features/{nn}_{feature}/
+├── 00_overview.md                              ✓ Phase 1
+├── 01_sub_features.md                          ✓ Phase 1
+├── feature.manifest.yaml                       ✓ Phase 1
 ├── 04_architecture/
-│   └── 01_architecture.md                  ✓ Phase 1
-├── 05_sub_features/
-│   └── {nn}_{sub}/
-│       ├── 01_scope.md                     ✓ Phase 2 (per sub-feature)
-│       ├── 02_design.md                    ✓ Phase 2
-│       ├── 05_api_contract.yaml            ✓ Phase 2
-│       ├── 08_worklog.md                   ✓ Phase 2 (enhancements)
-│       └── sub_feature.manifest.yaml       ✓ Phase 2
-└── 09_sql_migrations/
-    ├── 01_migrated/                        ✓ Phase 4
-    └── 02_in_progress/
-        └── YYYYMMDD_NNN_description.sql    ✓ Phase 1 + 2
+│   └── 01_architecture.md                      ✓ Phase 1
+└── 05_sub_features/
+    ├── 00_bootstrap/                           ✓ Phase 1 (schema only)
+    │   ├── 01_scope.md
+    │   ├── sub_feature.manifest.yaml
+    │   └── 09_sql_migrations/
+    │       ├── 01_migrated/                    ✓ Phase 4
+    │       └── 02_in_progress/
+    │           └── YYYYMMDD_NNN_bootstrap.sql  ✓ Phase 1
+    └── {nn}_{sub}/
+        ├── 01_scope.md                         ✓ Phase 2 (per sub-feature)
+        ├── 02_design.md                        ✓ Phase 2
+        ├── 05_api_contract.yaml                ✓ Phase 2
+        ├── 08_worklog.md                       ✓ Phase 2 (enhancements)
+        ├── sub_feature.manifest.yaml           ✓ Phase 2
+        └── 09_sql_migrations/
+            ├── 01_migrated/                    ✓ Phase 4
+            └── 02_in_progress/
+                └── YYYYMMDD_NNN_description.sql ✓ Phase 2
 
 backend/02_features/{module}/{sub_feature}/
 ├── __init__.py                             ✓ Phase 2
