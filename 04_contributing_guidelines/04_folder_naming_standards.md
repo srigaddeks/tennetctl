@@ -63,6 +63,14 @@ Every feature follows the same directory layout:
 │   ├── 01_architecture.md
 │   └── 02_workflows.md
 ├── 05_sub_features/            # One folder per sub-feature
+│   ├── 00_bootstrap/           # Special: schema + shared dim/dtl tables
+│   │   ├── 01_scope.md
+│   │   ├── 02_design.md
+│   │   ├── sub_feature.manifest.yaml
+│   │   └── 09_sql_migrations/
+│   │       ├── 01_migrated/
+│   │       └── 02_in_progress/
+│   │           └── YYYYMMDD_NNN_{feature}_bootstrap.sql
 │   ├── {nn}_{sub_feature}/
 │   │   ├── 01_scope.md
 │   │   ├── 02_design.md
@@ -72,13 +80,76 @@ Every feature follows the same directory layout:
 │   │   ├── 06_user_flows.md
 │   │   ├── 07_decisions.md
 │   │   ├── 08_worklog.md
-│   │   └── sub_feature.manifest.yaml
+│   │   ├── sub_feature.manifest.yaml
+│   │   └── 09_sql_migrations/
+│   │       ├── 01_migrated/    # Applied migrations
+│   │       └── 02_in_progress/ # Pending migrations
 │   └── ...
-├── 09_sql_migrations/
-│   ├── 01_migrated/            # Applied migrations
-│   └── 02_in_progress/         # Pending migrations
 └── feature.manifest.yaml
 ```
+
+Migration files live inside the **sub-feature** that owns them, never at the feature level. The migration runner walks `03_docs/features/*/05_sub_features/*/09_sql_migrations/02_in_progress/` and applies files in global `{NNN}` sequence order. The `00_bootstrap/` sub-feature exists in every feature and owns the schema-creation migration — it sorts first naturally because of its `00_` prefix, so no special-casing in the runner.
+
+### Bootstrap sub-feature minimum file set
+
+The `00_bootstrap/` sub-feature is special — it only needs three files:
+
+- `sub_feature.manifest.yaml` — status is always `DONE`
+- `01_scope.md` — describes the schema and shared tables being created
+- `09_sql_migrations/02_in_progress/YYYYMMDD_{NNN}_{feature}_bootstrap.sql` — the schema creation
+
+It does **not** need `02_design.md`, `05_api_contract.yaml`, `06_user_flows.md`, `07_decisions.md`, or `08_worklog.md`. The bootstrap migration is infrastructure, not a feature.
+
+---
+
+## Manifest Schema
+
+Two manifests exist in every feature, both in YAML:
+
+### `feature.manifest.yaml` (at feature root)
+
+```yaml
+title: "IAM"
+feature: "02_iam"
+status: "ACTIVE"        # PLANNED | ACTIVE | FROZEN | ARCHIVED
+owner: "your-github-username"
+created_at: "2026-04-01"
+description: |
+  Organisations, users, groups, roles, and access control.
+sub_features:
+  - number: 0
+    name: bootstrap
+    status: DONE
+    completed_at: "2026-04-07"
+  - number: 1
+    name: org
+    status: DONE
+    completed_at: "2026-04-08"
+  - number: 2
+    name: user
+    status: BUILDING
+  - number: 3
+    name: workspace
+    status: PLANNED
+```
+
+### `sub_feature.manifest.yaml` (inside each sub-feature folder)
+
+```yaml
+title: "Organisations"
+sub_feature: "01_org"
+feature: "02_iam"
+status: "DONE"          # PLANNED | SCOPED | DESIGNED | BUILDING | DONE
+owner: "your-github-username"
+created_at: "2026-04-07"
+completed_at: "2026-04-08"
+issue: 42               # GitHub issue number
+description: |
+  Top-level tenants in tennetctl. CRUD only — membership, roles, and
+  resources are separate sub-features.
+```
+
+Both manifests use the same `{nn}_{name}` format in doc folders. Do not use underscores in the YAML `name:` field — keep it lowercase alphanumeric only.
 
 ---
 

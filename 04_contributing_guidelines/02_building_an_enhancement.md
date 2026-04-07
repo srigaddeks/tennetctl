@@ -1,8 +1,15 @@
 # Building an Enhancement
 
-Guide for enhancing an existing feature or sub-feature. Enhancements modify existing behavior — they do not create new sub-features from scratch.
+Guide for enhancing an already-merged sub-feature. Enhancements modify existing behaviour — they do not create new sub-features from scratch and they do not stand up new top-level features.
 
-If you are building something entirely new, use [01_building_a_feature.md](01_building_a_feature.md) instead.
+> **Vocabulary**
+> - **Feature** — a top-level domain (IAM, Vault, …). Adding a new one: [01_building_a_feature.md](01_building_a_feature.md).
+> - **Sub-feature** — a unit of work inside a feature (e.g. `02_iam/08_auth`). Building a new one: [01a_building_a_sub_feature.md](01a_building_a_sub_feature.md).
+> - **Enhancement** — a change to a sub-feature that's already been merged. **You're here.**
+
+If you're building something entirely new, use [01a_building_a_sub_feature.md](01a_building_a_sub_feature.md) instead.
+
+> **The migration runner does not exist yet.** Step 4 below runs `uv run python -m scripts.migrate up`. There is no `scripts/migrate.py` in the repo today. Until the runner lands, apply migrations by hand: `docker compose exec postgres psql -U tennetctl -d tennetctl -f /path/to/migration.sql`, then run the DOWN section the same way to verify the round-trip manually.
 
 ---
 
@@ -13,7 +20,7 @@ If you are building something entirely new, use [01_building_a_feature.md](01_bu
 | Adding MFA to the auth sub-feature | Enhancement |
 | Adding a new filter to an existing list endpoint | Enhancement |
 | Adding a new EAV attribute to an existing entity | Enhancement |
-| Building an entirely new sub-feature (e.g., API Keys) | Feature -> use [01_building_a_feature.md](01_building_a_feature.md) |
+| Building an entirely new sub-feature (e.g., API Keys) | Feature -> use [01a_building_a_sub_feature.md](01a_building_a_sub_feature.md) |
 
 ---
 
