@@ -8,6 +8,7 @@ _repo = importlib.import_module("04_backend.02_features.iam.orgs.repository")
 _id_mod = importlib.import_module("scripts.00_core._id")
 _errors_mod = importlib.import_module("04_backend.01_core.errors")
 _audit = importlib.import_module("04_backend.02_features.audit.service")
+_groups_svc = importlib.import_module("04_backend.02_features.iam.groups.service")
 
 AppError = _errors_mod.AppError
 
@@ -65,6 +66,14 @@ async def create_org(
             workspace_id=workspace_id_audit,
             target_id=org_id,
             target_type="iam_org",
+        )
+        # Auto-create the "everyone" system group for this org
+        await _groups_svc.create_everyone_group(
+            conn,
+            org_id,
+            actor_id=actor_id,
+            session_id=session_id,
+            workspace_id_audit=workspace_id_audit,
         )
 
     return await _repo.get_org(conn, org_id)

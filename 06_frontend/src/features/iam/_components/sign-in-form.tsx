@@ -19,7 +19,7 @@ export function SignInForm() {
 
   if (auth.status === "authenticated") {
     return (
-      <Card className="w-full max-w-sm">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Signed in</CardTitle>
         </CardHeader>
@@ -75,7 +75,7 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Sign in</CardTitle>
       </CardHeader>
