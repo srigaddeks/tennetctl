@@ -4,6 +4,8 @@ about: "Build a new sub-feature end-to-end (use this for every new sub-feature, 
 labels: "feature, sub-feature"
 ---
 
+**How to use this template:** see [04_contributing_guidelines/01a_building_a_sub_feature.md](../../04_contributing_guidelines/01a_building_a_sub_feature.md) for the full workflow. Fill in the Scope Lock first, before any code.
+
 ## Sub-Feature: {module} / {nn}_{name}
 
 **Module:** `{nn}_{module}` (e.g. `02_iam`)
