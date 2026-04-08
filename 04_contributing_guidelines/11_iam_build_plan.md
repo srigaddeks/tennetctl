@@ -2,6 +2,10 @@
 
 This is the exact, step-by-step plan for building IAM from where it stands today. No code — just the workflow you follow. Review this, then execute it one sub-feature at a time.
 
+> **Vocabulary**: in this doc "IAM" is a **feature** in tennetctl terminology — see [00_README.md](00_README.md#vocabulary-read-this-first). Inside IAM are sub-features (`00_bootstrap`, `01_org`, `02_user`, `08_auth`, etc.). The word "module" appears below where it refers to backend Python packages or GitHub labels (`module:iam`); module and feature mean the same thing in this project.
+>
+> **The migration runner does not exist yet.** Several phases below run `uv run python -m scripts.migrate up`. There is no `scripts/migrate.py` in the repo today — building it is one of the very first sub-features (likely inside `01_foundation` or as a tool sub-feature inside IAM itself). Until it lands, apply migrations by hand with `docker compose exec postgres psql -U tennetctl -d tennetctl -f /path/to/migration.sql` and verify the round-trip manually.
+
 ---
 
 ## Current State
@@ -33,7 +37,19 @@ This is the exact, step-by-step plan for building IAM from where it stands today
 
 IAM has dependencies between sub-features. You must build them in this order — each sub-feature depends on the ones above it.
 
-### Tier 1: Core Identity (build first — everything depends on these)
+### Tier 0: Bootstrap (must land before any other IAM sub-feature)
+
+```text
+Step 0:  00_bootstrap    — CREATE SCHEMA "02_iam" + shared dim_entity_types,
+                           dim_attr_defs, dtl_attrs tables. Schema-only, no
+                           backend or frontend code. The migration in this
+                           sub-feature runs before any Tier 1 migration
+                           because 00_ sorts first.
+```
+
+The bootstrap sub-feature exists in every feature. It owns the schema-creation migration that all other sub-features extend. See [01_building_a_feature.md §Phase 2](01_building_a_feature.md#phase-2-bootstrap-sub-feature-and-migration) for the template.
+
+### Tier 1: Core Identity (build after bootstrap — everything below depends on these)
 
 ```text
 Step 1:  01_org          — organisations (tenants)
@@ -444,6 +460,7 @@ Before implementing any sub-feature, verify these docs exist:
 
 | Sub-Feature | scope | design | contract | migration | manifest |
 | ----------- | ----- | ------ | -------- | --------- | -------- |
+| 00_bootstrap | ✅ | ✅ | n/a | ✅ (1 file) | ✅ |
 | 01_org | ✅ | ✅ | check | ✅ (4 files) | ✅ |
 | 02_user | ✅ | ✅ | check | ✅ | ✅ |
 | 03_workspace | ✅ | ✅ | ✅ | ✅ | ✅ |
