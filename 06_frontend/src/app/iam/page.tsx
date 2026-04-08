@@ -10,7 +10,7 @@ export default function IamOverviewPage() {
         title="Identity & Access"
         description="Sign in, manage users, and inspect sessions."
       />
-      <PageBody className="grid gap-6 lg:grid-cols-2">
+      <PageBody className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <SignInForm />
         <Card>
           <CardHeader>

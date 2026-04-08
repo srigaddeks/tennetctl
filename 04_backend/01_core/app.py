@@ -93,6 +93,7 @@ _orgs_routes = importlib.import_module("04_backend.02_features.iam.orgs.routes")
 _workspaces_routes = importlib.import_module("04_backend.02_features.iam.workspaces.routes")
 _memberships_routes = importlib.import_module("04_backend.02_features.iam.memberships.routes")
 _audit_routes = importlib.import_module("04_backend.02_features.audit.routes")
+_groups_routes = importlib.import_module("04_backend.02_features.iam.groups.routes")
 
 
 @asynccontextmanager
@@ -162,6 +163,7 @@ def create_app() -> FastAPI:
     fastapi_app.include_router(_workspaces_routes.router)
     fastapi_app.include_router(_memberships_routes.router)
     fastapi_app.include_router(_audit_routes.router)
+    fastapi_app.include_router(_groups_routes.router)
 
     return fastapi_app
 

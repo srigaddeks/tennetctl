@@ -77,6 +77,31 @@ export interface UserListData {
 }
 
 // ---------------------------------------------------------------------------
+// Groups
+// ---------------------------------------------------------------------------
+
+export interface GroupData {
+  id: string;
+  org_id: string;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  is_system: boolean;
+  is_active: boolean;
+  is_deleted: boolean;
+  member_count: number;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GroupListData {
+  items: GroupData[];
+  total: number;
+}
+
+// ---------------------------------------------------------------------------
 // Audit
 // ---------------------------------------------------------------------------
 

@@ -12,7 +12,7 @@ import pytest
 import httpx
 
 
-BASE = "http://localhost:8000"
+BASE = "http://localhost:58000"
 
 
 @pytest.mark.integration
