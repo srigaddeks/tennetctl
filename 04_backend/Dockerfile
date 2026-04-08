@@ -35,6 +35,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy source as the runtime user (read-only at runtime via compose).
 COPY --chown=app:app 01_core ./01_core
 COPY --chown=app:app 02_features ./02_features
+# Copy scripts module needed by app imports (e.g. scripts.00_core._id)
+COPY --chown=app:app ../scripts ./scripts
+
+# Create the 04_backend namespace package directory structure so that
+# importlib.import_module("04_backend.01_core.config") resolves correctly.
+# The app code uses the full path prefix for local dev; in Docker we bridge
+# the gap via symlinks.  /app is added to sys.path by the .pth file.
+RUN mkdir -p /app/04_backend && \
+    ln -s /app/01_core /app/04_backend/01_core && \
+    ln -s /app/02_features /app/04_backend/02_features && \
+    echo /app > /app/.venv/lib/python3.13/site-packages/tennetctl_app.pth
 
 ENV PATH="/app/.venv/bin:$PATH"
 

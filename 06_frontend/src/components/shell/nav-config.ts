@@ -28,6 +28,7 @@ import {
   ClipboardList,
   BarChart3,
   Filter,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -74,6 +75,7 @@ export const NAV_MODULES: NavModule[] = [
           { label: "Users",          href: "/iam/users",          icon: Users },
           { label: "Active Users",   href: "/iam/users/active",   icon: UserCheck },
           { label: "Suspended",      href: "/iam/users/suspended",icon: UserX },
+          { label: "Groups",         href: "/iam/groups",         icon: UsersRound },
         ],
       },
       {

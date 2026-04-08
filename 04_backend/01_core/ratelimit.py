@@ -58,7 +58,7 @@ async def check_login_rate_limit(*, username: str, ip_address: str | None) -> No
         return  # fail-open
 
     window_seconds = 60
-    max_attempts = 10
+    max_attempts = int(os.environ.get("LOGIN_RATE_LIMIT_MAX", "10"))
     # Hash the username component so a username containing ':' cannot
     # collide with other rate-limit keys.
     uname_hash = hashlib.sha256(username.encode("utf-8")).hexdigest()[:16]
