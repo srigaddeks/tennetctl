@@ -98,6 +98,7 @@ _catalog_routes = importlib.import_module("04_backend.02_features.iam.catalog.ro
 _products_routes = importlib.import_module("04_backend.02_features.iam.products.routes")
 _feature_registry_routes = importlib.import_module("04_backend.02_features.iam.feature_registry.routes")
 _feature_flags_routes = importlib.import_module("04_backend.02_features.iam.feature_flags.routes")
+_rbac_routes = importlib.import_module("04_backend.02_features.iam.rbac.routes")
 
 
 @asynccontextmanager
@@ -172,6 +173,7 @@ def create_app() -> FastAPI:
     fastapi_app.include_router(_products_routes.router)
     fastapi_app.include_router(_feature_registry_routes.router)
     fastapi_app.include_router(_feature_flags_routes.router)
+    fastapi_app.include_router(_rbac_routes.router)
 
     return fastapi_app
 

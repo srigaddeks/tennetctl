@@ -32,6 +32,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
         "pydantic-settings>=2.6.0" \
         "argon2-cffi>=23.1.0" \
         "redis>=5.2.0" \
+        "cryptography>=43.0.0" \
     && chown -R app:app /app/.venv
 
 # Copy source as the runtime user (read-only at runtime via compose).

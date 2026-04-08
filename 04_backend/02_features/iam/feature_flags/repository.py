@@ -7,7 +7,6 @@ No business logic here — one function per query.
 from __future__ import annotations
 
 import importlib
-import json
 
 _iam_ids = importlib.import_module("04_backend.02_features.iam._iam_attr_ids")
 _id_mod = importlib.import_module("scripts.00_core._id")
@@ -195,7 +194,7 @@ async def insert_flag(
         category_id,
         flag_type,
         status,
-        json.dumps(default_value) if default_value is not None else None,
+        default_value,
         actor_id,
     )
 
@@ -224,7 +223,7 @@ async def update_flag_meta(
         params.append(flag_type)
         sets.append(f"flag_type = ${len(params)}")
     if default_value is not None:
-        params.append(json.dumps(default_value))
+        params.append(default_value)
         sets.append(f"default_value = ${len(params)}")
     if is_active is not None:
         params.append(is_active)
@@ -355,7 +354,7 @@ async def upsert_flag_environment(
     enabled: bool,
     value: object | None,
 ) -> dict:
-    row = await conn.fetchrow(  # type: ignore[union-attr]
+    await conn.execute(  # type: ignore[union-attr]
         """
         INSERT INTO "03_iam"."40_lnk_flag_environments"
             (id, flag_id, environment_id, enabled, value, created_at)
@@ -363,13 +362,24 @@ async def upsert_flag_environment(
         ON CONFLICT (flag_id, environment_id)
         DO UPDATE SET enabled = EXCLUDED.enabled,
                       value   = EXCLUDED.value
-        RETURNING id, flag_id, environment_id, enabled, value, created_at
         """,
         id,
         flag_id,
         environment_id,
         enabled,
-        json.dumps(value) if value is not None else None,
+        value,
+    )
+    row = await conn.fetchrow(  # type: ignore[union-attr]
+        """
+        SELECT lfe.id, lfe.flag_id, lfe.environment_id,
+               de.code AS environment_code, de.label AS environment_label,
+               lfe.enabled, lfe.value, lfe.created_at
+          FROM "03_iam"."40_lnk_flag_environments" lfe
+          JOIN "03_iam"."06_dim_environments" de ON de.id = lfe.environment_id
+         WHERE lfe.flag_id = $1 AND lfe.environment_id = $2
+        """,
+        flag_id,
+        environment_id,
     )
     return dict(row)  # type: ignore[arg-type]
 
@@ -429,7 +439,7 @@ async def insert_platform_target(
         """,
         id,
         flag_id,
-        json.dumps(value) if value is not None else None,
+        value,
     )
     return dict(row)  # type: ignore[arg-type]
 
@@ -454,7 +464,7 @@ async def insert_org_target(
         id,
         flag_id,
         org_id,
-        json.dumps(value) if value is not None else None,
+        value,
     )
     return dict(row)  # type: ignore[arg-type]
 
@@ -479,7 +489,7 @@ async def insert_workspace_target(
         id,
         flag_id,
         workspace_id,
-        json.dumps(value) if value is not None else None,
+        value,
     )
     return dict(row)  # type: ignore[arg-type]
 
