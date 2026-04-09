@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flag, X } from "lucide-react";
-import { listFeatures } from "@/lib/api";
+import { listFeatures, listCategories, type CategoryData } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader, PageBody } from "@/components/shell/page-header";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,36 +27,43 @@ import type { FeatureData, FeatureFilters } from "@/types/api";
 
 interface FilterBarProps {
   filters: FeatureFilters;
+  categories: CategoryData[];
   onChange: (f: FeatureFilters) => void;
 }
 
-function FilterBar({ filters, onChange }: FilterBarProps) {
-  const scopes = ["", "global", "org", "workspace"];
-  const categories = ["", "core", "billing", "monitoring", "llmops", "addon"];
+// Scopes are a fixed dim table: 1=platform, 2=org, 3=workspace
+const SCOPES: { id: number; label: string }[] = [
+  { id: 1, label: "platform" },
+  { id: 2, label: "org" },
+  { id: 3, label: "workspace" },
+];
 
-  const hasFilters = Boolean(filters.scope || filters.category);
+function FilterBar({ filters, categories, onChange }: FilterBarProps) {
+  const hasFilters = filters.scope_id != null || filters.category_id != null;
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
       <span className="text-xs font-medium text-foreground-muted">Filter:</span>
 
       <select
-        value={filters.scope ?? ""}
-        onChange={(e) => onChange({ ...filters, scope: e.target.value || undefined })}
+        value={filters.scope_id ?? ""}
+        onChange={(e) => onChange({ ...filters, scope_id: e.target.value ? Number(e.target.value) : undefined })}
         className="h-7 rounded-sm border border-border bg-surface px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        {scopes.map((s) => (
-          <option key={s} value={s}>{s === "" ? "All scopes" : s}</option>
+        <option value="">All scopes</option>
+        {SCOPES.map((s) => (
+          <option key={s.id} value={s.id}>{s.label}</option>
         ))}
       </select>
 
       <select
-        value={filters.category ?? ""}
-        onChange={(e) => onChange({ ...filters, category: e.target.value || undefined })}
+        value={filters.category_id ?? ""}
+        onChange={(e) => onChange({ ...filters, category_id: e.target.value ? Number(e.target.value) : undefined })}
         className="h-7 rounded-sm border border-border bg-surface px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
       >
+        <option value="">All categories</option>
         {categories.map((c) => (
-          <option key={c} value={c}>{c === "" ? "All categories" : c}</option>
+          <option key={c.id} value={c.id}>{c.label}</option>
         ))}
       </select>
 
@@ -86,6 +93,7 @@ export default function IamFeaturesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FeatureFilters>({});
+  const [categories, setCategories] = useState<CategoryData[]>([]);
 
   useEffect(() => {
     if (auth.status === "loading") return;
@@ -95,6 +103,9 @@ export default function IamFeaturesPage() {
       return;
     }
     fetchFeatures(filters);
+    listCategories(auth.accessToken, "feature").then((res) => {
+      if (res.ok) setCategories(res.data.items);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.status, filters]);
 
@@ -140,7 +151,7 @@ export default function IamFeaturesPage() {
           </CardHeader>
 
           {isAuthenticated && (
-            <FilterBar filters={filters} onChange={handleFilterChange} />
+            <FilterBar filters={filters} categories={categories} onChange={handleFilterChange} />
           )}
 
           {(loading || auth.status === "loading") && (
@@ -205,18 +216,18 @@ export default function IamFeaturesPage() {
                     <TableCell className="font-medium">{f.name}</TableCell>
                     <TableCell>
                       <Badge variant={
-                        f.scope === "global" ? "info"
-                        : f.scope === "org" ? "warning"
+                        f.scope_code === "platform" ? "info"
+                        : f.scope_code === "org" ? "warning"
                         : "outline"
                       }>
-                        {f.scope}
+                        {f.scope_label ?? f.scope_code ?? "—"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{f.category}</Badge>
+                      <Badge variant="outline">{f.category_label ?? f.category_code ?? "—"}</Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-foreground-muted">
-                      {f.product_code ?? <span className="text-foreground-subtle">—</span>}
+                    <TableCell className="font-mono text-[11px] text-foreground-muted">
+                      {f.product_id ? f.product_id.slice(0, 8) : <span className="text-foreground-subtle">—</span>}
                     </TableCell>
                     <TableCell>
                       {f.is_active ? (

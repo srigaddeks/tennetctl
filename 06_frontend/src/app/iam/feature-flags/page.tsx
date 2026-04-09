@@ -14,6 +14,8 @@ import {
   removeFlagTarget,
   evalFeatureFlag,
   listProducts,
+  listCategories,
+  type CategoryData,
 } from "@/lib/api";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeader, PageBody } from "@/components/shell/page-header";
@@ -93,12 +95,13 @@ function FlagTypeBadge({ flag_type }: { flag_type: string }) {
 
 interface CreateFlagModalProps {
   products: ProductData[];
+  flagCategories: CategoryData[];
   onSubmit: (body: {
     code: string;
     name: string;
-    product_id?: string;
-    scope: string;
-    category: string;
+    product_id: string;
+    scope_id: number;
+    category_id: number;
     flag_type: string;
     default_value?: unknown;
     status: string;
@@ -111,6 +114,7 @@ interface CreateFlagModalProps {
 
 function CreateFlagModal({
   products,
+  flagCategories,
   onSubmit,
   onClose,
   error,
@@ -118,9 +122,9 @@ function CreateFlagModal({
 }: CreateFlagModalProps) {
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
-  const [productId, setProductId] = useState("");
-  const [scope, setScope] = useState("platform");
-  const [category, setCategory] = useState("general");
+  const [productId, setProductId] = useState(products[0]?.id ?? "");
+  const [scopeId, setScopeId] = useState(1);
+  const [categoryId, setCategoryId] = useState<number | "">(flagCategories[0]?.id ?? "");
   const [flagType, setFlagType] = useState("boolean");
   const [defaultValue, setDefaultValue] = useState("false");
   const [status, setStatus] = useState("draft");
@@ -135,6 +139,14 @@ function CreateFlagModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setValueError(null);
+    if (!productId) {
+      setValueError("Product is required.");
+      return;
+    }
+    if (categoryId === "") {
+      setValueError("Category is required.");
+      return;
+    }
     let parsed: unknown = defaultValue;
     try {
       parsed = JSON.parse(defaultValue);
@@ -145,9 +157,9 @@ function CreateFlagModal({
     await onSubmit({
       code,
       name,
-      product_id: productId || undefined,
-      scope,
-      category,
+      product_id: productId,
+      scope_id: scopeId,
+      category_id: categoryId as number,
       flag_type: flagType,
       default_value: parsed,
       status,
@@ -204,16 +216,15 @@ function CreateFlagModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="ff-product">
-              Product <span className="text-foreground-subtle">(optional)</span>
-            </Label>
+            <Label htmlFor="ff-product">Product</Label>
             <select
               id="ff-product"
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
               className="w-full rounded-md border border-border bg-surface-2 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+              required
             >
-              <option value="">— no product —</option>
+              <option value="">— select product —</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>{p.name} ({p.code})</option>
               ))}
@@ -225,28 +236,28 @@ function CreateFlagModal({
               <Label htmlFor="ff-scope">Scope</Label>
               <select
                 id="ff-scope"
-                value={scope}
-                onChange={(e) => setScope(e.target.value)}
+                value={scopeId}
+                onChange={(e) => setScopeId(Number(e.target.value))}
                 className="w-full rounded-md border border-border bg-surface-2 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                <option value="platform">platform</option>
-                <option value="org">org</option>
-                <option value="workspace">workspace</option>
+                <option value={1}>platform</option>
+                <option value={2}>org</option>
+                <option value={3}>workspace</option>
               </select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ff-category">Category</Label>
               <select
                 id="ff-category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : "")}
                 className="w-full rounded-md border border-border bg-surface-2 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                required
               >
-                <option value="general">general</option>
-                <option value="ui">ui</option>
-                <option value="infra">infra</option>
-                <option value="security">security</option>
-                <option value="billing">billing</option>
+                <option value="">— select —</option>
+                {flagCategories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-1.5">
@@ -260,7 +271,8 @@ function CreateFlagModal({
                 <option value="boolean">boolean</option>
                 <option value="kill_switch">kill_switch</option>
                 <option value="experiment">experiment</option>
-                <option value="rollout">rollout</option>
+                <option value="percentage">percentage</option>
+                <option value="variant">variant</option>
               </select>
             </div>
           </div>
@@ -464,7 +476,7 @@ function FlagDetail({ flag, accessToken, onClose }: FlagDetailProps) {
               <span className="font-mono text-xs text-foreground-muted">{flag.code}</span>
             </div>
             <div className="flex items-center gap-2">
-              <ScopeBadge scope={flag.scope} />
+              <ScopeBadge scope={flag.scope_code ?? ""} />
               <FlagTypeBadge flag_type={flag.flag_type} />
               <StatusBadge status={flag.status} />
             </div>
@@ -494,18 +506,12 @@ function FlagDetail({ flag, accessToken, onClose }: FlagDetailProps) {
                   </div>
                   <div>
                     <span className="text-foreground-muted">Category: </span>
-                    {flag.category}
+                    {flag.category_label ?? flag.category_code ?? "—"}
                   </div>
                   {flag.product_name && (
                     <div>
                       <span className="text-foreground-muted">Product: </span>
                       {flag.product_name}
-                    </div>
-                  )}
-                  {flag.description && (
-                    <div className="col-span-2">
-                      <span className="text-foreground-muted">Description: </span>
-                      {flag.description}
                     </div>
                   )}
                 </div>
@@ -550,10 +556,10 @@ function FlagDetail({ flag, accessToken, onClose }: FlagDetailProps) {
               </div>
 
               {/* Targets */}
-              {(flag.scope === "org" || flag.scope === "workspace") && (
+              {(flag.scope_code === "org" || flag.scope_code === "workspace") && (
                 <div>
                   <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-foreground-muted">
-                    {flag.scope === "org" ? "Org Targets" : "Workspace Targets"}
+                    {flag.scope_code === "org" ? "Org Targets" : "Workspace Targets"}
                   </p>
                   <form onSubmit={handleAddTarget} className="mb-3 flex gap-2">
                     <select
@@ -646,20 +652,14 @@ function FlagDetail({ flag, accessToken, onClose }: FlagDetailProps) {
                 )}
 
                 {evalResult && (
-                  <div className={`mt-3 rounded-md border px-4 py-3 ${
-                    evalResult.enabled
-                      ? "border-[color:var(--success)]/30 bg-[color:var(--success-bg)]"
-                      : "border-border bg-surface-2"
-                  }`}>
+                  <div className="mt-3 rounded-md border border-[color:var(--success)]/30 bg-[color:var(--success-bg)] px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{evalResult.enabled ? "✅" : "⬜"}</span>
-                      <span className="text-sm font-semibold">
-                        {evalResult.enabled ? "Enabled" : "Disabled"}
-                      </span>
+                      <span className="text-sm">✅</span>
+                      <span className="text-sm font-semibold">Evaluated</span>
                     </div>
                     <div className="mt-1.5 space-y-0.5 text-xs text-foreground-muted">
                       <div>Value: <code className="font-mono">{JSON.stringify(evalResult.value)}</code></div>
-                      <div>Source: <span className="font-medium">{evalResult.source}</span></div>
+                      <div>Reason: <span className="font-medium">{evalResult.reason}</span></div>
                     </div>
                   </div>
                 )}
@@ -689,13 +689,14 @@ export default function FeatureFlagsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [filterScope, setFilterScope] = useState("");
+  const [filterScopeId, setFilterScopeId] = useState<number | "">("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterFlagType, setFilterFlagType] = useState("");
   const [filterProductId, setFilterProductId] = useState("");
 
   // Products (for filter/create)
   const [products, setProducts] = useState<ProductData[]>([]);
+  const [flagCategories, setFlagCategories] = useState<CategoryData[]>([]);
 
   // Create modal
   const [showCreate, setShowCreate] = useState(false);
@@ -723,7 +724,7 @@ export default function FeatureFlagsPage() {
   useEffect(() => {
     if (auth.status !== "authenticated") return;
     fetchFlags({
-      scope: filterScope || undefined,
+      scope_id: typeof filterScopeId === "number" ? filterScopeId : undefined,
       status: filterStatus || undefined,
       flag_type: filterFlagType || undefined,
       product_id: filterProductId || undefined,
@@ -732,8 +733,12 @@ export default function FeatureFlagsPage() {
     listProducts(token, { limit: 100 })
       .then((res) => { if (res.ok) setProducts(res.data.items); })
       .catch(() => {});
+    // Load flag categories
+    listCategories(token, "flag")
+      .then((res) => { if (res.ok) setFlagCategories(res.data.items); })
+      .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.status, filterScope, filterStatus, filterFlagType, filterProductId]);
+  }, [auth.status, filterScopeId, filterStatus, filterFlagType, filterProductId]);
 
   async function handleToggleActive(flag: FeatureFlagData) {
     try {
@@ -797,14 +802,14 @@ export default function FeatureFlagsPage() {
         {/* Filters */}
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <select
-            value={filterScope}
-            onChange={(e) => setFilterScope(e.target.value)}
+            value={filterScopeId}
+            onChange={(e) => setFilterScopeId(e.target.value ? Number(e.target.value) : "")}
             className="rounded-md border border-border bg-surface-2 px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
           >
             <option value="">All Scopes</option>
-            <option value="platform">platform</option>
-            <option value="org">org</option>
-            <option value="workspace">workspace</option>
+            <option value={1}>platform</option>
+            <option value={2}>org</option>
+            <option value={3}>workspace</option>
           </select>
           <select
             value={filterStatus}
@@ -826,7 +831,8 @@ export default function FeatureFlagsPage() {
             <option value="boolean">boolean</option>
             <option value="kill_switch">kill_switch</option>
             <option value="experiment">experiment</option>
-            <option value="rollout">rollout</option>
+            <option value="percentage">percentage</option>
+            <option value="variant">variant</option>
           </select>
           <select
             value={filterProductId}
@@ -838,12 +844,12 @@ export default function FeatureFlagsPage() {
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
-          {(filterScope || filterStatus || filterFlagType || filterProductId) && (
+          {(filterScopeId !== "" || filterStatus || filterFlagType || filterProductId) && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => {
-                setFilterScope("");
+                setFilterScopeId("");
                 setFilterStatus("");
                 setFilterFlagType("");
                 setFilterProductId("");
@@ -916,7 +922,7 @@ export default function FeatureFlagsPage() {
                       {f.product_name ?? "—"}
                     </TableCell>
                     <TableCell>
-                      <ScopeBadge scope={f.scope} />
+                      <ScopeBadge scope={f.scope_code ?? ""} />
                     </TableCell>
                     <TableCell>
                       <FlagTypeBadge flag_type={f.flag_type} />
@@ -964,6 +970,7 @@ export default function FeatureFlagsPage() {
       {showCreate && (
         <CreateFlagModal
           products={products}
+          flagCategories={flagCategories}
           error={createError}
           submitting={createSubmitting}
           onClose={() => { setShowCreate(false); setCreateError(null); }}

@@ -125,11 +125,17 @@ export interface ProductData {
   id: string;
   name: string;
   code: string;
-  category: string;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
   is_sellable: boolean;
   is_active: boolean;
   is_deleted: boolean;
   description: string | null;
+  slug: string | null;
+  status: string | null;
+  pricing_tier: string | null;
+  owner_user_id: string | null;
   created_by: string;
   updated_by: string;
   created_at: string;
@@ -149,14 +155,21 @@ export interface FeatureData {
   id: string;
   code: string;
   name: string;
-  scope: string;
-  category: string;
+  scope_id: number | null;
+  scope_code: string | null;
+  scope_label: string | null;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
   product_id: string | null;
-  product_code: string | null;
-  product_name: string | null;
+  parent_id: string | null;
   is_active: boolean;
   is_deleted: boolean;
   description: string | null;
+  status: string | null;
+  doc_url: string | null;
+  owner_user_id: string | null;
+  version_introduced: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -168,8 +181,9 @@ export interface FeatureListData {
 
 export interface FeatureFilters {
   product_id?: string;
-  scope?: string;
-  category?: string;
+  scope_id?: number;
+  category_id?: number;
+  parent_id?: string;
   limit?: number;
   offset?: number;
 }
@@ -182,14 +196,14 @@ export interface PlatformRoleData {
   id: string;
   name: string;
   code: string;
-  category: string;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
   is_system: boolean;
   is_active: boolean;
-  is_deleted: boolean;
-  description: string | null;
-  permission_count: number;
-  created_by: string;
-  updated_by: string;
+  deleted_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -204,14 +218,14 @@ export interface OrgRoleData {
   org_id: string;
   name: string;
   code: string;
-  category: string;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
   is_system: boolean;
   is_active: boolean;
-  is_deleted: boolean;
-  description: string | null;
-  permission_count: number;
-  created_by: string;
-  updated_by: string;
+  deleted_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -224,16 +238,17 @@ export interface OrgRoleListData {
 export interface WorkspaceRoleData {
   id: string;
   workspace_id: string;
+  org_id: string;
   name: string;
   code: string;
-  category: string;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
   is_system: boolean;
   is_active: boolean;
-  is_deleted: boolean;
-  description: string | null;
-  permission_count: number;
-  created_by: string;
-  updated_by: string;
+  deleted_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -247,9 +262,10 @@ export interface PermissionData {
   id: string;
   resource: string;
   action: string;
-  code: string;
   description: string | null;
   is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PermissionListData {
@@ -263,7 +279,6 @@ export interface RolePermissionData {
   permission_id: string;
   resource: string;
   action: string;
-  code: string;
 }
 
 export interface RolePermissionListData {
@@ -294,13 +309,22 @@ export interface UserOrgRoleData {
 
 export interface RbacCheckResult {
   allowed: boolean;
-  permission: string;
-  reason: string | null;
+  user_id: string;
+  resource: string;
+  action: string;
+  reason?: string | null;
+}
+
+export interface EffectivePermissionEntry {
+  resource: string;
+  action: string;
+  tier: string;
 }
 
 export interface EffectivePermissionsData {
   user_id: string;
-  permissions: string[];
+  permissions: EffectivePermissionEntry[];
+  total: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -314,14 +338,19 @@ export interface FeatureFlagData {
   product_id: string | null;
   product_code: string | null;
   product_name: string | null;
-  scope: "platform" | "org" | "workspace";
-  category: string;
-  flag_type: "boolean" | "kill_switch" | "experiment" | "rollout";
+  feature_id: string | null;
+  scope_id: number | null;
+  scope_code: string | null;
+  scope_label: string | null;
+  category_id: number | null;
+  category_code: string | null;
+  category_label: string | null;
+  flag_type: string;
   default_value: unknown;
-  status: "draft" | "active" | "deprecated" | "archived";
+  status: string;
   is_active: boolean;
+  is_test: boolean;
   is_deleted: boolean;
-  description: string | null;
   created_by: string;
   updated_by: string;
   created_at: string;
@@ -365,9 +394,8 @@ export interface FlagTargetListData {
 
 export interface FlagEvalResult {
   flag_code: string;
-  enabled: boolean;
   value: unknown;
-  source: string;
+  reason: string;
 }
 
 export interface FlagBootstrapData {
@@ -376,7 +404,8 @@ export interface FlagBootstrapData {
 
 export interface FeatureFlagFilters {
   product_id?: string;
-  scope?: string;
+  scope_id?: number;
+  category_id?: number;
   status?: string;
   flag_type?: string;
   limit?: number;

@@ -264,7 +264,9 @@ export default function RbacCheckPage() {
                     {checkResult.allowed ? "Allowed" : "Denied"}
                   </span>
                 </div>
-                <p className="mt-1.5 font-mono text-xs text-foreground-muted">{checkResult.permission}</p>
+                <p className="mt-1.5 font-mono text-xs text-foreground-muted">
+                  {checkResult.resource}:{checkResult.action}
+                </p>
                 {checkResult.reason && (
                   <p className="mt-1 text-xs text-foreground-muted">{checkResult.reason}</p>
                 )}
@@ -314,9 +316,9 @@ export default function RbacCheckPage() {
                   <p className="text-xs text-foreground-muted">No permissions assigned.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
-                    {effective.permissions.sort().map((perm) => (
-                      <Badge key={perm} variant="outline" className="font-mono text-[10px]">
-                        {perm}
+                    {effective.permissions.map((perm, i) => (
+                      <Badge key={`${perm.resource}:${perm.action}:${perm.tier}:${i}`} variant="outline" className="font-mono text-[10px]">
+                        {perm.resource}:{perm.action}<span className="ml-1 text-[9px] opacity-60">({perm.tier})</span>
                       </Badge>
                     ))}
                   </div>

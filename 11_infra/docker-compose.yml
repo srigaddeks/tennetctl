@@ -116,6 +116,7 @@ services:
     environment:
       DATABASE_URL: postgresql://tennetctl_write:tennetctl_write_dev@postgres:5432/tennetctl
       TENNETCTL_ENV: dev
+      ALLOWED_ORIGINS: "http://localhost:53000,http://127.0.0.1:53000,http://localhost:3000,http://127.0.0.1:3000"
     ports:
       - "58000:8000"
     healthcheck:

@@ -24,7 +24,7 @@ class Settings(BaseSettings):
         description="Deployment environment. Used only for first-install seeding.",
     )
     allowed_origins: str = Field(
-        default="http://localhost:53000,http://127.0.0.1:53000",
+        default="http://localhost:53000,http://127.0.0.1:53000,http://localhost:3000,http://127.0.0.1:3000",
         alias="ALLOWED_ORIGINS",
         description="Comma-separated list of origins allowed by CORS.",
     )

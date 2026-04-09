@@ -159,7 +159,7 @@ export default function IamProductsPage() {
                       {p.code}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{p.category}</Badge>
+                      <Badge variant="outline">{p.category_label ?? p.category_code ?? "—"}</Badge>
                     </TableCell>
                     <TableCell>
                       {p.is_sellable ? (

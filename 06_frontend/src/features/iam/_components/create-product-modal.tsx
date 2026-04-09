@@ -1,21 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { X } from "lucide-react";
-import { createProduct } from "@/lib/api";
+import { createProduct, listCategories, type CategoryData } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { ProductData } from "@/types/api";
-
-const CATEGORIES = [
-  "platform",
-  "module",
-  "addon",
-  "professional_services",
-  "support",
-  "other",
-];
 
 interface CreateProductModalProps {
   accessToken: string;
@@ -26,8 +17,18 @@ interface CreateProductModalProps {
 export function CreateProductModal({ accessToken, onCreated, onClose }: CreateProductModalProps) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [category, setCategory] = useState("module");
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [categoryId, setCategoryId] = useState<number | null>(null);
   const [isSellable, setIsSellable] = useState(true);
+
+  useEffect(() => {
+    listCategories(accessToken, "product").then((res) => {
+      if (res.ok) {
+        setCategories(res.data.items);
+        if (res.data.items.length > 0) setCategoryId(res.data.items[0].id);
+      }
+    });
+  }, [accessToken]);
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,10 +41,14 @@ export function CreateProductModal({ accessToken, onCreated, onClose }: CreatePr
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (categoryId == null) {
+      setError("Select a category.");
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await createProduct(
-        { name, code, category, is_sellable: isSellable, description: description || undefined },
+        { name, code, category_id: categoryId, is_sellable: isSellable, description: description || undefined },
         accessToken
       );
       if (!res.ok) {
@@ -107,12 +112,12 @@ export function CreateProductModal({ accessToken, onCreated, onClose }: CreatePr
             <Label htmlFor="product-category">Category</Label>
             <select
               id="product-category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={categoryId ?? ""}
+              onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : null)}
               className="flex h-9 w-full rounded-md border border-border bg-surface px-3 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:border-border-strong focus-visible:ring-1 focus-visible:ring-ring"
             >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.label}</option>
               ))}
             </select>
           </div>

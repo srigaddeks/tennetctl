@@ -57,8 +57,7 @@ interface CreateRoleModalProps {
   onSubmit: (body: {
     name: string;
     code: string;
-    category: string;
-    description?: string;
+    category_code: string;
   }) => Promise<void>;
   onClose: () => void;
   error: string | null;
@@ -74,8 +73,7 @@ function CreateRoleModal({
 }: CreateRoleModalProps) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [category, setCategory] = useState("custom");
-  const [description, setDescription] = useState("");
+  const [categoryCode, setCategoryCode] = useState("custom");
   const backdropRef = { current: null as HTMLDivElement | null };
 
   function deriveCode(v: string) {
@@ -84,7 +82,7 @@ function CreateRoleModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await onSubmit({ name, code, category, description: description || undefined });
+    await onSubmit({ name, code, category_code: categoryCode });
   }
 
   return (
@@ -136,27 +134,17 @@ function CreateRoleModal({
             <Label htmlFor="role-category">Category</Label>
             <select
               id="role-category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={categoryCode}
+              onChange={(e) => setCategoryCode(e.target.value)}
               className="w-full rounded-md border border-border bg-surface-2 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="custom">custom</option>
-              <option value="admin">admin</option>
-              <option value="viewer">viewer</option>
-              <option value="editor">editor</option>
-              <option value="operator">operator</option>
+              <option value="system">system</option>
+              <option value="ops">ops</option>
+              <option value="support">support</option>
+              <option value="developer">developer</option>
+              <option value="finance">finance</option>
             </select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="role-desc">
-              Description <span className="text-foreground-subtle">(optional)</span>
-            </Label>
-            <Input
-              id="role-desc"
-              value={description}
-              placeholder="Short description"
-              onChange={(e) => setDescription(e.target.value)}
-            />
           </div>
           {error && (
             <p className="rounded-md border border-[color:var(--danger)]/30 bg-[color:var(--danger-bg)] px-3 py-2 text-xs text-[color:var(--danger)]">
@@ -235,7 +223,6 @@ function PermissionsPanel({
               permission_id: perm.id,
               resource: perm.resource,
               action: perm.action,
-              code: perm.code,
             },
           ]);
         }
@@ -396,7 +383,6 @@ function RoleTable({
           <TableHead>Code</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead>Perms</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="w-24" />
         </TableRow>
@@ -408,7 +394,7 @@ function RoleTable({
             <TableCell className="font-mono text-[11px] text-foreground-muted">
               {r.code}
             </TableCell>
-            <TableCell className="text-xs text-foreground-muted">{r.category}</TableCell>
+            <TableCell className="text-xs text-foreground-muted">{r.category_label ?? r.category_code ?? "—"}</TableCell>
             <TableCell>
               {r.is_system ? (
                 <Badge variant="info">system</Badge>
@@ -416,7 +402,6 @@ function RoleTable({
                 <Badge variant="outline">custom</Badge>
               )}
             </TableCell>
-            <TableCell className="text-xs">{r.permission_count}</TableCell>
             <TableCell>
               {r.is_active ? (
                 <Badge variant="success">active</Badge>
@@ -849,7 +834,12 @@ export default function IamRolesPage() {
             setWsCreateError(null);
             setWsCreateSubmitting(true);
             try {
-              const res = await createWorkspaceRole(selectedWsId, body, token);
+              const ws = workspaces.find((w) => w.id === selectedWsId);
+              if (!ws) {
+                setWsCreateError("No workspace selected.");
+                return;
+              }
+              const res = await createWorkspaceRole(selectedWsId, { ...body, org_id: ws.org_id }, token);
               if (!res.ok) {
                 setWsCreateError(res.error.message);
                 return;
