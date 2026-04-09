@@ -1,0 +1,23 @@
+[
+  {
+    "tier": "org",
+    "code": "k_protect.admin",
+    "name": "K-Protect Admin",
+    "category_code": "security",
+    "description": "Full administrative access to kprotect: manage policies, policy sets, view all decisions, install library policies, manage API keys."
+  },
+  {
+    "tier": "org",
+    "code": "k_protect.analyst",
+    "name": "K-Protect Analyst",
+    "category_code": "ops",
+    "description": "View and test policies, view decisions and analytics. Cannot create or modify policies."
+  },
+  {
+    "tier": "org",
+    "code": "k_protect.viewer",
+    "name": "K-Protect Viewer",
+    "category_code": "support",
+    "description": "Read-only access to kprotect decisions and policy configurations."
+  }
+]

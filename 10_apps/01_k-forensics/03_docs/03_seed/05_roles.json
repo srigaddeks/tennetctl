@@ -1,0 +1,23 @@
+[
+  {
+    "tier": "org",
+    "code": "k_forensics.admin",
+    "name": "K-Forensics Admin",
+    "category_code": "security",
+    "description": "Full administrative access within k-forensics for an org."
+  },
+  {
+    "tier": "org",
+    "code": "k_forensics.investigator",
+    "name": "K-Forensics Investigator",
+    "category_code": "ops",
+    "description": "Create and manage cases and evidence."
+  },
+  {
+    "tier": "org",
+    "code": "k_forensics.viewer",
+    "name": "K-Forensics Viewer",
+    "category_code": "support",
+    "description": "Read-only access to cases and reports."
+  }
+]

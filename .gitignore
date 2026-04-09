@@ -214,3 +214,5 @@ temp/
 06_frontend/node_modules/
 06_frontend/.next/
 .venv/
+node_modules/
+.next/

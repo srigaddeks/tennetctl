@@ -1,0 +1,12 @@
+{
+  "code": "k-forensics",
+  "name": "K-Forensics",
+  "category_code": "saas_web",
+  "description": "Digital forensics and case management platform for security teams.",
+  "slug": "k-forensics",
+  "icon_url": "https://cdn.kreesalis.io/k-forensics/icon.png",
+  "redirect_uris": [
+    "http://localhost:3100/auth/callback",
+    "https://k-forensics.kreesalis.io/auth/callback"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@kprotect/sdk-web",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/kprotect.min.js",
+  "module": "./dist/kprotect.esm.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/kprotect.esm.js",
+      "require": "./dist/kprotect.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:dev && npm run build:prod",
+    "build:dev": "BUILD_MODE=development rollup -c rollup.config.mjs",
+    "build:prod": "BUILD_MODE=production rollup -c rollup.config.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts"
+  },
+  "devDependencies": {
+    "@rollup/plugin-replace": "^6.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/jsdom": "^28.0.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0",
+    "jsdom": "^29.0.2",
+    "rollup": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.0.0"
+  }
+}
