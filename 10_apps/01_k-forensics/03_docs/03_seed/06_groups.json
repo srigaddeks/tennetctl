@@ -1,0 +1,12 @@
+[
+  {
+    "code": "k_forensics_admins",
+    "name": "K-Forensics Admins",
+    "description": "Default admin group for k-forensics. Members have full administrative access."
+  },
+  {
+    "code": "k_forensics_investigators",
+    "name": "K-Forensics Investigators",
+    "description": "Default investigator group for k-forensics. Members can manage cases and evidence."
+  }
+]

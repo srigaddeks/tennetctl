@@ -1,0 +1,169 @@
+import typescript from '@rollup/plugin-typescript';
+import replace from '@rollup/plugin-replace';
+import terser from '@rollup/plugin-terser';
+import { readFileSync } from 'fs';
+
+// ─── Worker inline plugin ────────────────────────────────────────────────────
+// Reads the compiled worker bundle and injects it as a string constant
+// so the main bundle can spawn the worker via `new Worker(blobURL)`.
+
+function workerInlinePlugin(workerPath: string) {
+  return {
+    name: 'worker-inline',
+    resolveId(source) {
+      if (source === '\0worker-source') return source;
+      return null;
+    },
+    load(id) {
+      if (id === '\0worker-source') {
+        try {
+          const src = readFileSync(workerPath, 'utf-8');
+          return `export default ${JSON.stringify(src)};`;
+        } catch {
+          // Worker not built yet — fallback to empty (MainThreadFallback kicks in)
+          return 'export default "";';
+        }
+      }
+      return null;
+    },
+    transform(code) {
+      // Replace __WORKER_SOURCE__ with the import
+      if (code.includes('__WORKER_SOURCE__')) {
+        return code
+          .replace(
+            "declare const __WORKER_SOURCE__: string;",
+            "import __WORKER_SOURCE__ from '\\0worker-source';",
+          )
+          .replace(
+            /typeof __WORKER_SOURCE__ !== 'undefined' \? __WORKER_SOURCE__ : ''/,
+            '__WORKER_SOURCE__',
+          );
+      }
+      return null;
+    },
+  };
+}
+
+// ─── Shared TypeScript plugin config ─────────────────────────────────────────
+
+const tsPlugin = (tsconfig) =>
+  typescript({
+    tsconfig,
+    declaration: false,
+    declarationMap: false,
+  });
+
+// ─── Build mode detection ────────────────────────────────────────────────────
+
+const isProd = process.env.BUILD_MODE === 'production';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// STEP 1: Worker bundle (built first, then inlined into main bundle)
+// ═════════════════════════════════════════════════════════════════════════════
+
+const workerBundle = {
+  input: 'src/runtime/worker-entry.ts',
+  output: {
+    file: 'dist/kprotect.worker.js',
+    format: 'iife',
+    name: 'KProtectWorker',
+    sourcemap: !isProd,
+    compact: true,
+  },
+  plugins: [
+    tsPlugin('./tsconfig.worker.json'),
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+      },
+    }),
+    ...(isProd
+      ? [
+          terser({
+            compress: {
+              drop_console: true,
+              drop_debugger: true,
+              passes: 2,
+              pure_getters: true,
+            },
+            mangle: {
+              properties: {
+                // Only mangle private properties (prefixed with _)
+                regex: /^_/,
+              },
+            },
+            format: { comments: false },
+          }),
+        ]
+      : []),
+  ],
+  external: [],
+};
+
+// ═════════════════════════════════════════════════════════════════════════════
+// STEP 2: Main bundle (IIFE for <script> tag, worker source inlined)
+// ═════════════════════════════════════════════════════════════════════════════
+
+const mainBundle = {
+  input: 'src/index.ts',
+  output: {
+    file: isProd ? 'dist/kprotect.min.js' : 'dist/kprotect.dev.js',
+    format: 'iife',
+    name: 'KProtectModule',
+    sourcemap: !isProd,
+    compact: isProd,
+    // Expose KProtect on window
+    footer: 'window.KProtect = KProtectModule.KProtect;',
+  },
+  plugins: [
+    workerInlinePlugin('dist/kprotect.worker.js'),
+    tsPlugin('./tsconfig.json'),
+    replace({
+      preventAssignment: true,
+      values: {
+        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+      },
+    }),
+    ...(isProd
+      ? [
+          terser({
+            compress: {
+              drop_console: true,
+              drop_debugger: true,
+              passes: 3,
+              pure_getters: true,
+              unsafe_math: true,
+            },
+            mangle: {
+              properties: {
+                regex: /^_/,
+              },
+            },
+            format: { comments: false },
+          }),
+        ]
+      : []),
+  ],
+  external: [],
+};
+
+// ═════════════════════════════════════════════════════════════════════════════
+// STEP 3: ESM bundle (for `import { KProtect } from '@kprotect/sdk-web'`)
+// ═════════════════════════════════════════════════════════════════════════════
+
+const esmBundle = {
+  input: 'src/index.ts',
+  output: {
+    file: 'dist/kprotect.esm.js',
+    format: 'es',
+    sourcemap: true,
+  },
+  plugins: [
+    workerInlinePlugin('dist/kprotect.worker.js'),
+    tsPlugin('./tsconfig.json'),
+  ],
+  external: [],
+};
+
+export default [workerBundle, mainBundle, esmBundle];

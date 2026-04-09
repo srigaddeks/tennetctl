@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "WebWorker"]
+  },
+  "include": [
+    "src/runtime/worker-entry.ts",
+    "src/session/*.ts",
+    "src/collectors/*.ts",
+    "src/features/*.ts",
+    "src/transport/*.ts",
+    "src/signals/*.ts",
+    "src/config/*.ts",
+    "src/runtime/wire-protocol.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
