@@ -1,0 +1,101 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnrm87um_3",
+    "session_id": "9d22f116-3a2c-b6ea-832a-68b5144f726b",
+    "user_hash": "anonymous",
+    "device_uuid": "demo-device-MacIntel",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775747525566,
+    "pulse_number": 3
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        3,
+        2,
+        2,
+        4,
+        3,
+        3,
+        3,
+        1,
+        2,
+        2
+      ],
+      "zone_dwell_means": [
+        115.33694072135549,
+        139.57387122316814,
+        89.23695743084775,
+        99.31838202800355,
+        95.63727737502717,
+        108.8753062133736,
+        91.41773245007109,
+        121.58868418093533,
+        111.18143094411444,
+        98.99924165949054
+      ],
+      "zone_dwell_stdevs": [
+        10.499630341123826,
+        12.233847672575651,
+        22.25924383701974,
+        22.0621612486811,
+        12.555303277732037,
+        12.38303519492688,
+        12.646866179175039,
+        17.087378321680582,
+        22.599161634648834,
+        10.386410380486414
+      ],
+      "zone_flight_means": [
+        155.6470457335101,
+        168.4914606087552,
+        171.60886095189267,
+        120.9185406927582,
+        171.75425499862942,
+        178.13542281674182,
+        171.81713292772292,
+        174.79547516679486,
+        139.4531206262564,
+        142.07986860532316
+      ]
+    }
+  ],
+  "pointer_windows": [
+    {
+      "event_count": 2,
+      "movement": {
+        "velocity_mean": 418.0616502408993,
+        "velocity_stdev": 127.05672913426316,
+        "acceleration_mean": 289.02030203224166,
+        "curvature_mean": 0.11210308672391728,
+        "path_efficiency": 0.6633366712458526,
+        "total_distance": 1158.1261657970508,
+        "direction_changes": 5
+      },
+      "clicks": {
+        "count": 2,
+        "hold_stdev": 23.2891992510474,
+        "overshoot_rate": 0.22667775404624102
+      },
+      "idle": {
+        "count": 1,
+        "mean_duration_ms": 518.1749772990252
+      }
+    }
+  ],
+  "touch_windows": [],
+  "sensor_windows": [],
+  "scroll_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T15:12:05.585Z"
+  }
+}

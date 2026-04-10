@@ -1,23 +1,55 @@
 """IAM users routes.
 
-GET   /v1/users       — list users
-GET   /v1/users/{id}  — get user by ID
-PATCH /v1/users/{id}  — update email or is_active
+POST  /v1/users        — self-registration (public)
+GET   /v1/users        — list users
+GET   /v1/users/{id}   — get user by ID
+PATCH /v1/users/{id}   — update email or is_active
 """
 
 from __future__ import annotations
 
 import importlib
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 
 _db = importlib.import_module("04_backend.01_core.db")
 _service = importlib.import_module("04_backend.02_features.iam.users.service")
+_signup = importlib.import_module("04_backend.02_features.iam.users.signup_service")
 _resp = importlib.import_module("04_backend.01_core.response")
 _auth = importlib.import_module("04_backend.01_core.auth")
 _schemas = importlib.import_module("04_backend.02_features.iam.users.schemas")
 
 router = APIRouter(prefix="/v1/users", tags=["users"])
+
+
+class SignupRequest(_schemas.BaseModel):  # type: ignore[name-defined]
+    username: str
+    password: str
+    email: str | None = None
+    display_name: str | None = None
+    account_type: str = "personal"
+    org_name: str | None = None
+    default_workspace_name: str = "kbio"
+
+
+@router.post("", status_code=201)
+async def signup_user(body: SignupRequest, request: Request) -> dict:
+    """Public self-registration — creates user, org, workspace, and returns tokens."""
+    pool = _db.get_pool()
+    async with pool.acquire() as conn:
+        result = await _signup.signup(
+            conn,
+            username=body.username,
+            password=body.password,
+            email=body.email,
+            display_name=body.display_name,
+            account_type=body.account_type,
+            org_name=body.org_name,
+            default_workspace_name=body.default_workspace_name,
+            ip_address=request.client.host if request.client else None,
+            user_agent=request.headers.get("user-agent"),
+        )
+    return _resp.ok(result)
 
 
 @router.get("")

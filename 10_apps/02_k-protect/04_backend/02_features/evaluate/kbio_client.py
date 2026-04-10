@@ -37,20 +37,36 @@ async def close_client() -> None:
         _client = None
 
 
-async def ingest_batch(batch: dict[str, Any]) -> dict[str, Any]:
+async def ingest_batch(
+    batch: dict[str, Any],
+    *,
+    required_signals: list[str] | None = None,
+    required_threats: list[str] | None = None,
+    signal_configs: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Forward a behavioral batch to kbio and return scores.
 
     Calls POST /v1/internal/ingest with the service token.
+    Optionally includes required_signals, required_threats, and
+    signal_configs so kbio knows which signals/threats to compute.
     Returns the score data from kbio, or a degraded response on failure.
     """
     settings = _config.get_settings()
     client = _get_client()
     start = time.perf_counter()
 
+    payload: dict[str, Any] = dict(batch)
+    if required_signals is not None:
+        payload["required_signals"] = required_signals
+    if required_threats is not None:
+        payload["required_threats"] = required_threats
+    if signal_configs is not None:
+        payload["signal_configs"] = signal_configs
+
     try:
         resp = await client.post(
             "/v1/internal/ingest",
-            json=batch,
+            json=payload,
             headers={"X-Internal-Service-Token": settings.kbio_service_token},
         )
         latency = round((time.perf_counter() - start) * 1000, 2)

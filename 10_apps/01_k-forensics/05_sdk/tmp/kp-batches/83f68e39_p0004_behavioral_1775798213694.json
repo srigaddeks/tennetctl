@@ -1,0 +1,101 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnsgen1k_4",
+    "session_id": "83f68e39-1ee3-4b53-934d-eef761115e2a",
+    "user_hash": "anonymous",
+    "device_uuid": "e946ad92-8693-4ee6-b62c-298b55441564",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775798213672,
+    "pulse_number": 4
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        1,
+        1,
+        3,
+        2,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "zone_dwell_means": [
+        165,
+        164.3000000002794,
+        120.43333333327125,
+        111.85000000009313,
+        103.3000000002794,
+        0,
+        92.39999999990687,
+        0,
+        0,
+        0
+      ],
+      "zone_dwell_stdevs": [
+        0,
+        0,
+        22.981925265041653,
+        36.4499999997206,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_flight_means": [
+        178.89999999990687,
+        0,
+        34.900000000062086,
+        155.94999999995343,
+        59.60000000009313,
+        0,
+        30.100000000093132,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "pointer_windows": [
+    {
+      "event_count": 48,
+      "movement": {
+        "velocity_mean": 0.5502075312518678,
+        "velocity_stdev": 0.7367079867426619,
+        "acceleration_mean": 0.008622489946757217,
+        "curvature_mean": 0,
+        "path_efficiency": 0.8507500319586112,
+        "total_distance": 456.0135151105366,
+        "direction_changes": 8
+      },
+      "clicks": {
+        "count": 3,
+        "hold_stdev": 0,
+        "overshoot_rate": 0
+      },
+      "idle": {
+        "count": 2,
+        "mean_duration_ms": 710.25
+      }
+    }
+  ],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-10T05:16:53.695Z"
+  }
+}

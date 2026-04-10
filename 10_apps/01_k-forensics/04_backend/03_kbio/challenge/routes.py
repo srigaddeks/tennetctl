@@ -13,24 +13,12 @@ from fastapi.responses import JSONResponse
 _db = importlib.import_module("01_core.db")
 _resp = importlib.import_module("01_core.response")
 _errors = importlib.import_module("01_core.errors")
-_config = importlib.import_module("01_core.config")
+_auth = importlib.import_module("01_core.api_key_auth")
 
 from .schemas import ChallengeGenerateRequest, ChallengeVerifyRequest
 from .service import generate_challenge, verify_challenge
 
 router = APIRouter(prefix="/v1/internal", tags=["kbio-challenge"])
-
-
-def _validate_service_token(request: Request) -> None:
-    """Raise 401 AppError if X-Internal-Service-Token is missing or wrong."""
-    settings = _config.get_settings()
-    token = request.headers.get("X-Internal-Service-Token", "")
-    if not token or token != settings.kbio_internal_service_token:
-        raise _errors.AppError(
-            "UNAUTHORIZED",
-            "Missing or invalid X-Internal-Service-Token.",
-            401,
-        )
 
 
 @router.post(
@@ -61,7 +49,7 @@ async def generate_challenge_endpoint(
         401: missing/invalid token
         500: unexpected failure
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:
@@ -111,7 +99,7 @@ async def verify_challenge_endpoint(
         410: challenge expired
         422: anti-bot check failed / validation error
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:

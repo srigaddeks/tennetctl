@@ -125,8 +125,8 @@ reset_logs() {
 }
 
 ensure_infra() {
-  log "ensuring docker compose infra is up (postgres, valkey, minio, nats)"
-  ( cd "${INFRA_DIR}" && docker compose up -d postgres valkey minio nats >/dev/null )
+  log "ensuring docker compose infra is up (postgres, valkey, minio, nats, qdrant)"
+  ( cd "${INFRA_DIR}" && docker compose up -d postgres valkey minio nats qdrant >/dev/null )
   log "waiting for postgres health"
   for i in $(seq 1 30); do
     if docker exec tennetctl-postgres pg_isready -U tennetctl_admin -d tennetctl >/dev/null 2>&1; then
@@ -154,11 +154,26 @@ ensure_frontend_deps() {
   fi
 }
 
+kill_port() {
+  local port="$1"
+  local pids
+  pids="$(lsof -ti :"${port}" 2>/dev/null || true)"
+  if [[ -n "${pids}" ]]; then
+    log "port ${port} in use by pid(s) ${pids} — killing"
+    echo "${pids}" | xargs kill -TERM 2>/dev/null || true
+    sleep 1
+    # SIGKILL stragglers
+    pids="$(lsof -ti :"${port}" 2>/dev/null || true)"
+    [[ -n "${pids}" ]] && echo "${pids}" | xargs kill -KILL 2>/dev/null || true
+  fi
+}
+
 start_backend() {
   if is_running "${BACKEND_PID}"; then
     log "backend already running (pid $(cat "${BACKEND_PID}"))"
     return 0
   fi
+  kill_port "${BACKEND_PORT}"
   ensure_backend_deps
   resolve_database_url
   log "starting backend on http://127.0.0.1:${BACKEND_PORT}"
@@ -191,6 +206,7 @@ start_frontend() {
     log "frontend already running (pid $(cat "${FRONTEND_PID}"))"
     return 0
   fi
+  kill_port "${FRONTEND_PORT}"
   ensure_frontend_deps
   log "starting frontend on http://127.0.0.1:${FRONTEND_PORT}"
   (

@@ -39,7 +39,7 @@ SELECT
     MAX(CASE WHEN ad.code = 'max_drift_score'     THEN a.key_text  END)            AS max_drift_score,
     MAX(CASE WHEN ad.code = 'current_drift_score' THEN a.key_text  END)            AS current_drift_score,
     MAX(CASE WHEN ad.code = 'end_reason'          THEN a.key_text  END)            AS end_reason,
-    MAX(CASE WHEN ad.code = 'critical_actions'    THEN a.key_jsonb END)            AS critical_actions,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'critical_actions' AND a.key_jsonb IS NOT NULL))[1] AS critical_actions,
     s.created_by,
     s.updated_by,
     s.created_at,
@@ -83,8 +83,8 @@ SELECT
     MAX(CASE WHEN ad.code = 'first_seen_at'     THEN a.key_text  END)             AS first_seen_at,
     MAX(CASE WHEN ad.code = 'last_seen_at'      THEN a.key_text  END)             AS last_seen_at,
     MAX(CASE WHEN ad.code = 'platform'          THEN a.key_text  END)             AS platform,
-    MAX(CASE WHEN ad.code = 'screen_profile'    THEN a.key_jsonb END)             AS screen_profile,
-    MAX(CASE WHEN ad.code = 'gpu_profile'       THEN a.key_jsonb END)             AS gpu_profile,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'screen_profile' AND a.key_jsonb IS NOT NULL))[1] AS screen_profile,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'gpu_profile' AND a.key_jsonb IS NOT NULL))[1]   AS gpu_profile,
     MAX(CASE WHEN ad.code = 'automation_risk'   THEN a.key_text  END)             AS automation_risk,
     d.created_by,
     d.updated_by,
@@ -122,9 +122,9 @@ SELECT
     up.is_active,
     (up.deleted_at IS NOT NULL)                                                    AS is_deleted,
     -- EAV pivots (entity_type_id = 3 = kbio_user_profile)
-    MAX(CASE WHEN ad.code = 'centroids'               THEN a.key_jsonb END)        AS centroids,
-    MAX(CASE WHEN ad.code = 'zone_transition_matrix'  THEN a.key_jsonb END)        AS zone_transition_matrix,
-    MAX(CASE WHEN ad.code = 'credential_profiles'     THEN a.key_jsonb END)        AS credential_profiles,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'centroids' AND a.key_jsonb IS NOT NULL))[1]               AS centroids,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'zone_transition_matrix' AND a.key_jsonb IS NOT NULL))[1] AS zone_transition_matrix,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'credential_profiles' AND a.key_jsonb IS NOT NULL))[1]    AS credential_profiles,
     MAX(CASE WHEN ad.code = 'profile_maturity'        THEN a.key_text  END)        AS profile_maturity,
     MAX(CASE WHEN ad.code = 'total_sessions'          THEN a.key_text  END)        AS total_sessions,
     MAX(CASE WHEN ad.code = 'last_genuine_session_at' THEN a.key_text  END)        AS last_genuine_session_at,
@@ -163,7 +163,7 @@ CREATE OR REPLACE VIEW "10_kbio".v_trusted_entities AS
 SELECT
     te.id,
     te.user_hash,
-    te.trusted_entity_type_id,
+    te.entity_type_id          AS trusted_entity_type_id,
     tet.code                                                                       AS entity_type,
     te.is_active,
     (te.deleted_at IS NOT NULL)                                                    AS is_deleted,
@@ -177,14 +177,14 @@ SELECT
     te.created_at,
     te.updated_at
 FROM "10_kbio"."13_fct_trusted_entities" te
-LEFT JOIN "10_kbio"."09_dim_trusted_entity_types" tet ON tet.id = te.trusted_entity_type_id
+LEFT JOIN "10_kbio"."09_dim_trusted_entity_types" tet ON tet.id = te.entity_type_id
 LEFT JOIN "10_kbio"."20_dtl_attrs" a
        ON a.entity_type_id = (SELECT id FROM "10_kbio"."06_dim_entity_types" WHERE code = 'kbio_trusted_entity')
       AND a.entity_id = te.id
 LEFT JOIN "10_kbio"."07_dim_attr_defs" ad ON ad.id = a.attr_def_id
 GROUP BY
     te.id, te.user_hash,
-    te.trusted_entity_type_id, tet.code,
+    te.entity_type_id, tet.code,
     te.is_active, te.deleted_at,
     te.created_by, te.updated_by, te.created_at, te.updated_at;
 
@@ -202,7 +202,7 @@ GRANT SELECT ON "10_kbio".v_trusted_entities TO tennetctl_write;
 CREATE OR REPLACE VIEW "10_kbio".v_challenges AS
 SELECT
     c.id,
-    c.session_id,
+    c.sdk_session_id,
     c.user_hash,
     c.is_active,
     (c.deleted_at IS NOT NULL)                                                     AS is_deleted,
@@ -210,9 +210,9 @@ SELECT
     MAX(CASE WHEN ad.code = 'purpose'                  THEN a.key_text  END)       AS purpose,
     MAX(CASE WHEN ad.code = 'phrase'                   THEN a.key_text  END)       AS phrase,
     MAX(CASE WHEN ad.code = 'phrase_hash'              THEN a.key_text  END)       AS phrase_hash,
-    MAX(CASE WHEN ad.code = 'expected_zone_sequence'   THEN a.key_jsonb END)       AS expected_zone_sequence,
-    MAX(CASE WHEN ad.code = 'discriminative_pairs'     THEN a.key_jsonb END)       AS discriminative_pairs,
-    MAX(CASE WHEN ad.code = 'pair_weights'             THEN a.key_jsonb END)       AS pair_weights,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'expected_zone_sequence' AND a.key_jsonb IS NOT NULL))[1] AS expected_zone_sequence,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'discriminative_pairs' AND a.key_jsonb IS NOT NULL))[1]   AS discriminative_pairs,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'pair_weights' AND a.key_jsonb IS NOT NULL))[1]           AS pair_weights,
     MAX(CASE WHEN ad.code = 'expires_at'               THEN a.key_text  END)       AS expires_at,
     MAX(CASE WHEN ad.code = 'used'                     THEN a.key_text  END)       AS used,
     MAX(CASE WHEN ad.code = 'result_passed'            THEN a.key_text  END)       AS result_passed,
@@ -227,7 +227,7 @@ LEFT JOIN "10_kbio"."20_dtl_attrs" a
       AND a.entity_id = c.id
 LEFT JOIN "10_kbio"."07_dim_attr_defs" ad ON ad.id = a.attr_def_id
 GROUP BY
-    c.id, c.session_id, c.user_hash,
+    c.id, c.sdk_session_id, c.user_hash,
     c.is_active, c.deleted_at,
     c.created_by, c.updated_by, c.created_at, c.updated_at;
 
@@ -249,9 +249,9 @@ GRANT SELECT ON "10_kbio".v_challenges TO tennetctl_write;
 CREATE OR REPLACE VIEW "10_kbio".v_predefined_policies AS
 SELECT
     pp.id,
-    pp.policy_category_id,
+    pp.category_id,
     pc.code                                                                        AS category,
-    pp.default_action_id,
+    pp.action_id,
     da.code                                                                        AS default_action,
     pp.is_active,
     (pp.deleted_at IS NOT NULL)                                                    AS is_deleted,
@@ -259,8 +259,8 @@ SELECT
     MAX(CASE WHEN ad.code = 'code'            THEN a.key_text  END)                AS code,
     MAX(CASE WHEN ad.code = 'name'            THEN a.key_text  END)                AS name,
     MAX(CASE WHEN ad.code = 'description'     THEN a.key_text  END)                AS description,
-    MAX(CASE WHEN ad.code = 'conditions'      THEN a.key_jsonb END)                AS conditions,
-    MAX(CASE WHEN ad.code = 'default_config'  THEN a.key_jsonb END)                AS default_config,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'conditions' AND a.key_jsonb IS NOT NULL))[1]     AS conditions,
+    (array_agg(a.key_jsonb) FILTER (WHERE ad.code = 'default_config' AND a.key_jsonb IS NOT NULL))[1] AS default_config,
     MAX(CASE WHEN ad.code = 'tags'            THEN a.key_text  END)                AS tags,
     MAX(CASE WHEN ad.code = 'version'         THEN a.key_text  END)                AS version,
     pp.created_by,
@@ -268,16 +268,16 @@ SELECT
     pp.created_at,
     pp.updated_at
 FROM "10_kbio"."15_fct_predefined_policies" pp
-LEFT JOIN "10_kbio"."06_dim_policy_categories" pc ON pc.id = pp.policy_category_id
-LEFT JOIN "10_kbio"."04_dim_drift_actions"     da ON da.id = pp.default_action_id
+LEFT JOIN "10_kbio"."06_dim_policy_categories" pc ON pc.id = pp.category_id
+LEFT JOIN "10_kbio"."04_dim_drift_actions"     da ON da.id = pp.action_id
 LEFT JOIN "10_kbio"."20_dtl_attrs" a
        ON a.entity_type_id = (SELECT id FROM "10_kbio"."06_dim_entity_types" WHERE code = 'kbio_predefined_policy')
       AND a.entity_id = pp.id
 LEFT JOIN "10_kbio"."07_dim_attr_defs" ad ON ad.id = a.attr_def_id
 GROUP BY
     pp.id,
-    pp.policy_category_id, pc.code,
-    pp.default_action_id, da.code,
+    pp.category_id, pc.code,
+    pp.action_id, da.code,
     pp.is_active, pp.deleted_at,
     pp.created_by, pp.updated_by, pp.created_at, pp.updated_at;
 
@@ -326,13 +326,13 @@ SELECT
     e.id,
     e.session_id,
     e.user_hash,
-    e.alert_severity_id,
+    e.severity_id                AS alert_severity_id,
     sev.code                                                                       AS severity,
     e.metadata,
     e.created_by,
     e.created_at
 FROM "10_kbio"."61_evt_anomaly_events" e
-LEFT JOIN "10_kbio"."08_dim_alert_severities" sev ON sev.id = e.alert_severity_id;
+LEFT JOIN "10_kbio"."08_dim_alert_severities" sev ON sev.id = e.severity_id;
 
 COMMENT ON VIEW "10_kbio".v_anomaly_events IS
     'Anomaly detection events with severity dim code resolved. '
@@ -371,7 +371,7 @@ SELECT
     e.id,
     e.session_id,
     e.user_hash,
-    e.device_uuid,
+    e.device_id,
     e.metadata,
     e.created_by,
     e.created_at

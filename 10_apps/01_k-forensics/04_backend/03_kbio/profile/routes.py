@@ -14,7 +14,7 @@ from pydantic import BaseModel
 _db = importlib.import_module("01_core.db")
 _resp = importlib.import_module("01_core.response")
 _errors = importlib.import_module("01_core.errors")
-_config = importlib.import_module("01_core.config")
+_auth = importlib.import_module("01_core.api_key_auth")
 
 from .service import (
     get_profile_summary,
@@ -23,18 +23,6 @@ from .service import (
 )
 
 router = APIRouter(prefix="/v1/internal", tags=["kbio-profile"])
-
-
-def _validate_service_token(request: Request) -> None:
-    """Raise 401 AppError if X-Internal-Service-Token is missing or wrong."""
-    settings = _config.get_settings()
-    token = request.headers.get("X-Internal-Service-Token", "")
-    if not token or token != settings.kbio_internal_service_token:
-        raise _errors.AppError(
-            "UNAUTHORIZED",
-            "Missing or invalid X-Internal-Service-Token.",
-            401,
-        )
 
 
 class CreateProfileRequest(BaseModel):
@@ -67,7 +55,7 @@ async def get_profile_endpoint(
         401: missing/invalid token
         404: profile not found
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:
@@ -107,7 +95,7 @@ async def create_profile_endpoint(
         401: missing/invalid token
         500: unexpected DB failure
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     # user_hash passed as a query param to keep POST body minimal.
     user_hash = request.query_params.get("user_hash", "")
@@ -156,7 +144,7 @@ async def update_profile_features(
         401: missing/invalid token
         422: drift_score >= 0.3 or empty features
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     if body.drift_score >= 0.3:
         return JSONResponse(

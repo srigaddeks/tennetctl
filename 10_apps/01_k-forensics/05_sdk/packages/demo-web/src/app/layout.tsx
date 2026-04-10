@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SdkProvider } from '@/components/sdk-provider'
-import { Nav } from '@/components/nav'
+import { AuthProvider } from '@/components/auth-provider'
+import { RouteGuard } from '@/components/route-guard'
 
 export const metadata: Metadata = {
-  title: 'kbio Demo - Behavioral Biometrics',
-  description: 'Live demonstration of K-Protect behavioral biometrics SDK',
+  title: 'kbio Demo — Behavioral Biometrics SDK',
+  description: 'Live demonstration of kbio behavioral biometrics scoring engine',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -13,19 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <SdkProvider>
-          <Nav />
-          <main style={{ maxWidth: 1120, margin: '0 auto', padding: '28px 24px 64px' }}>
-            {children}
-          </main>
-          <footer style={{
-            borderTop: '1px solid var(--border)',
-            padding: '20px 32px',
-            textAlign: 'center',
-            color: 'var(--text-muted)',
-            fontSize: 11,
-          }}>
-            kbio Behavioral Biometrics SDK Demo &mdash; K-Protect by Kreesalis
-          </footer>
+          <AuthProvider>
+            <RouteGuard>{children}</RouteGuard>
+          </AuthProvider>
         </SdkProvider>
       </body>
     </html>

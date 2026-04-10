@@ -34,6 +34,9 @@ class IngestRequest(BaseModel):
     sensor_windows: list[dict[str, Any]] = Field(default_factory=list)
     scroll_windows: list[dict[str, Any]] = Field(default_factory=list)
     credential_fields: list[dict[str, Any]] = Field(default_factory=list)
+    required_signals: list[str] | None = None
+    required_threats: list[str] | None = None
+    signal_configs: dict[str, dict[str, Any]] | None = None
 
 
 class DriftScoreData(BaseModel):
@@ -55,6 +58,23 @@ class DriftScoreData(BaseModel):
     auth_state: dict[str, Any] = Field(default_factory=dict)
     drift_trend: dict[str, Any] = Field(default_factory=dict)
     alerts: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ScoringResponseV2(BaseModel):
+    """V2 22-score response from scoring pipeline."""
+    identity: dict[str, Any] = Field(default_factory=dict)
+    anomaly: dict[str, Any] = Field(default_factory=dict)
+    humanness: dict[str, Any] = Field(default_factory=dict)
+    threat: dict[str, Any] = Field(default_factory=dict)
+    trust: dict[str, Any] = Field(default_factory=dict)
+    session: dict[str, Any] = Field(default_factory=dict)
+    meta: dict[str, Any] = Field(default_factory=dict)
+    verdict: dict[str, Any] = Field(default_factory=dict)
+    factors: list[dict[str, Any]] = Field(default_factory=list)
+    alerts: list[dict[str, Any]] = Field(default_factory=list)
+    signals: dict[str, Any] | None = None
+    threats_detected: list[dict[str, Any]] | None = None
+    processing_ms: float = 0.0
 
 
 class ScoreRequest(BaseModel):

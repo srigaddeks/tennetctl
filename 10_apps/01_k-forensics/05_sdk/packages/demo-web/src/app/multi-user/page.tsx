@@ -1,134 +1,97 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useSdk } from '@/components/sdk-provider'
-import { MockKProtect } from '@/lib/mock-sdk'
 import { ScoreGauge } from '@/components/score-gauge'
 import { scoreColor, trustColor, scoreLabel } from '@/lib/score-colors'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 type UserProfile = {
   name: string
   color: string
-  switches: Array<{ time: number; drift: number }>
 }
 
 const USERS: UserProfile[] = [
-  { name: 'Alice', color: '#6366f1', switches: [] },
-  { name: 'Bob', color: '#f97316', switches: [] },
-  { name: 'Charlie', color: '#22c55e', switches: [] },
-  { name: 'Diana', color: '#ec4899', switches: [] },
-  { name: 'Eve', color: '#eab308', switches: [] },
+  { name: 'Alice', color: '#555555' },
+  { name: 'Bob', color: '#888888' },
+  { name: 'Charlie', color: '#22c55e' },
+  { name: 'Diana', color: '#ef4444' },
+  { name: 'Eve', color: '#eab308' },
 ]
-
-const USER_COLORS: Record<string, string> = {
-  Alice: '#6366f1',
-  Bob: '#f97316',
-  Charlie: '#22c55e',
-  Diana: '#ec4899',
-  Eve: '#eab308',
-}
 
 type SwitchEvent = {
   id: number
   from: string
   to: string
-  driftBefore: number
-  driftAfter: number
+  driftBefore: number | null
+  driftAfter: number | 'pending'
   timestamp: number
 }
 
 export default function MultiUserPage() {
-  const { scores } = useSdk()
+  const { scores, setUser, logout } = useSdk()
   const [activeUser, setActiveUser] = useState<string | null>(null)
   const [switchEvents, setSwitchEvents] = useState<SwitchEvent[]>([])
-  const [comparisonData, setComparisonData] = useState<Array<Record<string, unknown>>>([])
   const counter = useRef(0)
 
-  const switchUser = useCallback((userName: string) => {
+  useEffect(() => {
+    if (scores?.drift === undefined) return
+    setSwitchEvents(prev => {
+      const lastPendingIdx = [...prev].map((e, i) => ({ e, i })).reverse().find(({ e }) => e.driftAfter === 'pending')
+      if (lastPendingIdx === undefined) return prev
+      return prev.map((e, i): SwitchEvent =>
+        i === lastPendingIdx.i ? { ...e, driftAfter: scores.drift } : e
+      )
+    })
+  }, [scores?.drift])
+
+  const switchUserTo = useCallback((userName: string) => {
     const prevUser = activeUser
-    const prevDrift = scores.drift >= 0 ? scores.drift : 0
+    const prevDrift = scores?.drift ?? null
 
-    // Trigger SDK logout + re-login
-    MockKProtect.logout()
-    MockKProtect.setUser(userName)
-    MockKProtect._simulateUserSwitch(userName)
-
-    const newDrift = MockKProtect.getLatestDrift()?.drift || 0.5
+    logout()
+    setUser(userName)
 
     if (prevUser && prevUser !== userName) {
       counter.current++
-      const event: SwitchEvent = {
+      setSwitchEvents(prev => [...prev, {
         id: counter.current,
         from: prevUser,
         to: userName,
         driftBefore: prevDrift,
-        driftAfter: newDrift,
+        driftAfter: 'pending',
         timestamp: Date.now(),
-      }
-      setSwitchEvents(prev => [...prev, event])
+      }])
     }
 
-    // Update comparison chart data
-    setComparisonData(prev => {
-      const point: Record<string, unknown> = {
-        idx: prev.length,
-        time: new Date().toLocaleTimeString([], { minute: '2-digit', second: '2-digit' }),
-      }
-      point[userName] = +(newDrift * 100).toFixed(1)
-      // Carry forward last known value for other users
-      if (prev.length > 0) {
-        const last = prev[prev.length - 1]
-        for (const u of USERS) {
-          if (u.name !== userName && last[u.name] !== undefined) {
-            point[u.name] = last[u.name]
-          }
-        }
-      }
-      return [...prev, point]
-    })
-
     setActiveUser(userName)
-  }, [activeUser, scores.drift])
+  }, [activeUser, scores?.drift, setUser, logout])
 
   return (
     <div>
       <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title">Multi-User Detection</h1>
-        <p className="page-subtitle">
+        <h1 style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--foreground)' }}>
+          Multi-User Detection
+        </h1>
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--foreground-muted)' }}>
           Switch between users to see how drift scores change when a different person uses the session
         </p>
       </div>
 
       {/* User selector */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 14 }}>
-          Select Active User
-        </div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: 24, marginBottom: 24 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)', marginBottom: 14 }}>Select Active User</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {USERS.map(user => (
-            <button
-              key={user.name}
-              onClick={() => switchUser(user.name)}
-              style={{
-                padding: '10px 24px',
-                borderRadius: 10,
-                border: activeUser === user.name ? `2px solid ${user.color}` : '2px solid var(--border)',
-                background: activeUser === user.name ? `${user.color}15` : 'var(--surface)',
-                color: activeUser === user.name ? user.color : 'var(--text-secondary)',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
+            <button key={user.name} onClick={() => switchUserTo(user.name)} style={{
+              padding: '10px 24px', borderRadius: 6,
+              border: activeUser === user.name ? '2px solid var(--foreground)' : '2px solid var(--border)',
+              background: activeUser === user.name ? 'var(--surface-3)' : 'var(--surface)',
+              color: activeUser === user.name ? 'var(--foreground)' : 'var(--foreground-muted)',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease',
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
               <span style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
+                width: 10, height: 10, borderRadius: '50%',
                 background: user.color,
                 opacity: activeUser === user.name ? 1 : 0.4,
               }} />
@@ -137,163 +100,101 @@ export default function MultiUserPage() {
           ))}
         </div>
         {activeUser && (
-          <div style={{
-            marginTop: 12,
-            fontSize: 12,
-            color: 'var(--text-muted)',
-            fontFamily: 'monospace',
-          }}>
-            Active: {activeUser} &middot; Drift: {scoreLabel(scores.drift)} &middot; Trust: {scoreLabel(scores.trust)}
+          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--foreground-subtle)', fontFamily: 'var(--font-mono)' }}>
+            Active: {activeUser}
+            {scores ? ` \u00B7 Drift: ${scoreLabel(scores.drift)} \u00B7 Trust: ${scoreLabel(scores.trust)}` : ' \u00B7 Waiting for scores...'}
           </div>
         )}
       </div>
 
       {/* Current scores */}
-      <div className="grid-4" style={{ marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'Drift Score', score: scores.drift, colorFn: scoreColor },
-          { label: 'Anomaly Score', score: scores.anomaly, colorFn: scoreColor },
-          { label: 'Trust Score', score: scores.trust, colorFn: trustColor },
-          { label: 'Bot Score', score: scores.bot, colorFn: scoreColor },
+          { label: 'Drift Score', score: scores?.drift ?? -1, colorFn: scoreColor },
+          { label: 'Anomaly Score', score: scores?.anomaly ?? -1, colorFn: scoreColor },
+          { label: 'Trust Score', score: scores?.trust ?? -1, colorFn: trustColor },
+          { label: 'Bot Score', score: scores?.bot ?? -1, colorFn: scoreColor },
         ].map(g => (
-          <div key={g.label} className="card" style={{ display: 'flex', justifyContent: 'center', padding: '20px 12px' }}>
+          <div key={g.label} style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 6, display: 'flex', justifyContent: 'center', padding: '20px 12px',
+          }}>
             <ScoreGauge label={g.label} score={g.score} colorFn={g.colorFn} size={120} />
           </div>
         ))}
       </div>
 
-      {/* Chart + Events */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20 }}>
-        {/* Drift comparison chart */}
-        <div className="card">
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>
-            Drift Comparison by User
+      {/* Switch Events */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 16 }}>
+        {/* Instructions */}
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: 24 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)', marginBottom: 12 }}>How to Test</div>
+          <div style={{ fontSize: 12, color: 'var(--foreground-muted)', lineHeight: 1.7 }}>
+            <p style={{ margin: '0 0 12px' }}>
+              <strong>1.</strong> Select a user (e.g. Alice) and type naturally for 15-30 seconds. This builds a behavioral baseline for that user.
+            </p>
+            <p style={{ margin: '0 0 12px' }}>
+              <strong>2.</strong> Switch to a different user (e.g. Bob). The backend will detect the behavioral shift because your typing rhythm changes relative to Alice&apos;s baseline.
+            </p>
+            <p style={{ margin: '0 0 12px' }}>
+              <strong>3.</strong> Watch the drift score spike after the switch. The scoring engine compares live behavior against the stored profile.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>Real-world use:</strong> This detects account sharing, credential theft, and session hijacking — all without passwords or MFA.
+            </p>
           </div>
-          {comparisonData.length > 1 ? (
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={comparisonData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis
-                  dataKey="time"
-                  tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
-                  interval="preserveStartEnd"
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
-                  tickFormatter={v => `${v}%`}
-                  width={44}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                {USERS.map(user => (
-                  <Line
-                    key={user.name}
-                    type="monotone"
-                    dataKey={user.name}
-                    stroke={user.color}
-                    strokeWidth={2}
-                    dot={{ r: 3, fill: user.color }}
-                    connectNulls
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={{
-              height: 280,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-muted)',
-              fontSize: 13,
-              flexDirection: 'column',
-              gap: 8,
-            }}>
-              <div style={{ fontSize: 32, opacity: 0.2 }}>&#128101;</div>
-              Switch between users to see drift comparison
+
+          {/* Typing area */}
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--foreground-subtle)', marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>
+              Type here to generate behavioral data
             </div>
-          )}
+            <textarea
+              placeholder="Type anything here... The SDK captures your keystroke timing, not your content."
+              style={{
+                width: '100%', height: 100, padding: '10px 14px', borderRadius: 6,
+                border: '1px solid var(--border)', background: 'var(--surface-2)',
+                color: 'var(--foreground)', fontSize: 13, outline: 'none',
+                boxSizing: 'border-box', resize: 'none', fontFamily: 'inherit',
+              }}
+            />
+          </div>
         </div>
 
-        {/* Switch events log */}
-        <div className="card">
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 14 }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: 24 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)', marginBottom: 14 }}>
             Switch Events ({switchEvents.length})
           </div>
           {switchEvents.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', fontSize: 12 }}>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--foreground-subtle)', fontSize: 12 }}>
               Switch between users to generate events
             </div>
           ) : (
             <div style={{ maxHeight: 360, overflow: 'auto' }}>
               {[...switchEvents].reverse().map(e => (
-                <div key={e.id} style={{
-                  padding: '10px 0',
-                  borderBottom: '1px solid var(--border)',
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    marginBottom: 6,
-                  }}>
-                    <span style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: USER_COLORS[e.from] || 'var(--text-secondary)',
-                    }}>{e.from}</span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>&rarr;</span>
-                    <span style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: USER_COLORS[e.to] || 'var(--text-secondary)',
-                    }}>{e.to}</span>
+                <div key={e.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: USERS.find(u => u.name === e.from)?.color ?? 'var(--foreground-muted)' }}>{e.from}</span>
+                    <span style={{ fontSize: 10, color: 'var(--foreground-subtle)' }}>&rarr;</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: USERS.find(u => u.name === e.to)?.color ?? 'var(--foreground-muted)' }}>{e.to}</span>
                   </div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                      before: <span style={{ color: scoreColor(e.driftBefore), fontWeight: 600 }}>
-                        {scoreLabel(e.driftBefore)}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ fontSize: 10, color: 'var(--foreground-subtle)' }}>
+                      drift before: <span style={{ color: e.driftBefore != null ? scoreColor(e.driftBefore) : 'var(--foreground-subtle)', fontWeight: 600 }}>
+                        {e.driftBefore != null ? scoreLabel(e.driftBefore) : '--'}
                       </span>
                     </span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                      after: <span style={{ color: scoreColor(e.driftAfter), fontWeight: 600 }}>
-                        {scoreLabel(e.driftAfter)}
-                      </span>
-                    </span>
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                      delta: <span style={{
-                        color: e.driftAfter > e.driftBefore ? 'var(--danger)' : 'var(--success)',
-                        fontWeight: 600,
-                      }}>
-                        {e.driftAfter > e.driftBefore ? '+' : ''}{((e.driftAfter - e.driftBefore) * 100).toFixed(1)}%
-                      </span>
+                    <span style={{ fontSize: 10, color: 'var(--foreground-subtle)' }}>
+                      drift after: {e.driftAfter === 'pending'
+                        ? <span style={{ color: 'var(--foreground-subtle)', fontWeight: 600, fontStyle: 'italic' }}>pending</span>
+                        : <span style={{ color: scoreColor(e.driftAfter), fontWeight: 600 }}>{scoreLabel(e.driftAfter)}</span>
+                      }
                     </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="card" style={{ marginTop: 24 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>
-          How Multi-User Detection Works
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-          The kbio SDK builds a behavioral baseline for each user. When a different person starts using the same
-          session, their typing rhythm, pointer movement patterns, and interaction habits differ from the baseline.
-          This triggers a drift spike. The system can detect account sharing, credential theft, and session
-          hijacking &mdash; all without passwords or MFA.
         </div>
       </div>
     </div>

@@ -17,78 +17,38 @@ export function ScoreGauge({ label, score, colorFn, size = 140, subtitle }: Scor
   const displayValue = score < 0 ? '--' : (score * 100).toFixed(1)
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: 8,
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
       <div style={{ position: 'relative', width: size, height: size }}>
         <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-          {/* Background track */}
           <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="var(--border)"
-            strokeWidth={8}
+            cx={size / 2} cy={size / 2} r={radius}
+            fill="none" stroke="var(--border)" strokeWidth={8}
           />
-          {/* Score arc */}
           <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth={8}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
+            cx={size / 2} cy={size / 2} r={radius}
+            fill="none" stroke={color} strokeWidth={8}
+            strokeDasharray={circumference} strokeDashoffset={offset}
             strokeLinecap="round"
-            style={{
-              transition: 'stroke-dashoffset 0.6s ease, stroke 0.3s ease',
-              filter: `drop-shadow(0 0 6px ${color}40)`,
-            }}
+            style={{ transition: 'stroke-dashoffset 0.6s ease, stroke 0.3s ease' }}
           />
         </svg>
         <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: 'absolute', inset: 0,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         }}>
           <span style={{
-            fontSize: size * 0.22,
-            fontWeight: 700,
-            color,
-            fontFamily: 'monospace',
-            letterSpacing: -1,
-          }}>
-            {displayValue}
-          </span>
+            fontSize: size * 0.22, fontWeight: 700, color,
+            fontFamily: 'var(--font-mono)', letterSpacing: -1,
+          }}>{displayValue}</span>
           {score >= 0 && (
-            <span style={{
-              fontSize: size * 0.1,
-              color: 'var(--text-muted)',
-              fontWeight: 500,
-            }}>%</span>
+            <span style={{ fontSize: size * 0.1, color: 'var(--foreground-subtle)', fontWeight: 500 }}>%</span>
           )}
         </div>
       </div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: 'var(--text-primary)',
-        }}>{label}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)' }}>{label}</div>
         {subtitle && (
-          <div style={{
-            fontSize: 11,
-            color: 'var(--text-muted)',
-            marginTop: 2,
-          }}>{subtitle}</div>
+          <div style={{ fontSize: 11, color: 'var(--foreground-subtle)', marginTop: 2 }}>{subtitle}</div>
         )}
       </div>
     </div>
@@ -107,30 +67,18 @@ export function MiniGauge({ score, colorFn, label }: MiniGaugeProps) {
 
   return (
     <div style={{ marginBottom: 10 }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-      }}>
-        <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</span>
-        <span style={{ fontSize: 11, fontFamily: 'monospace', color, fontWeight: 600 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+        <span style={{ fontSize: 11, color: 'var(--foreground-muted)', fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color, fontWeight: 600 }}>
           {score < 0 ? '--' : `${pct.toFixed(1)}%`}
         </span>
       </div>
       <div style={{
-        height: 4,
-        background: 'var(--border)',
-        borderRadius: 2,
-        overflow: 'hidden',
+        height: 4, background: 'var(--surface-3)', borderRadius: 2, overflow: 'hidden',
       }}>
         <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: color,
-          borderRadius: 2,
+          height: '100%', width: `${pct}%`, background: color, borderRadius: 2,
           transition: 'width 0.5s ease, background 0.3s ease',
-          boxShadow: `0 0 4px ${color}40`,
         }} />
       </div>
     </div>

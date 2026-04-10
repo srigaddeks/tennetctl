@@ -1,0 +1,28 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnsfyseu_12",
+    "session_id": "88898bce-b6df-4759-abcf-75c23ecbc32a",
+    "user_hash": "anonymous",
+    "device_uuid": "311a80a2-f09d-4c12-8408-3cb4287a8718",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775797474134,
+    "pulse_number": 12
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15",
+    "hardware_concurrency": 8
+  },
+  "signals": {},
+  "keystroke_windows": [],
+  "pointer_windows": [],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-10T05:04:34.156Z"
+  }
+}

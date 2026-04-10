@@ -1,228 +1,368 @@
 'use client'
 
 import { useSdk } from '@/components/sdk-provider'
-import { MiniGauge } from '@/components/score-gauge'
-import { scoreColor, trustColor } from '@/lib/score-colors'
-import { useState } from 'react'
+import Link from 'next/link'
 
-const TRANSACTIONS = [
-  { date: 'Apr 9, 2026', desc: 'Whole Foods Market #10234', cat: 'Groceries', amount: '-$127.43', color: 'var(--text-primary)' },
-  { date: 'Apr 8, 2026', desc: 'Direct Deposit — Kreesalis Inc', cat: 'Income', amount: '+$4,250.00', color: 'var(--success)' },
-  { date: 'Apr 8, 2026', desc: 'Netflix Subscription', cat: 'Entertainment', amount: '-$15.99', color: 'var(--text-primary)' },
-  { date: 'Apr 7, 2026', desc: 'Shell Gas Station', cat: 'Auto & Transport', amount: '-$58.20', color: 'var(--text-primary)' },
-  { date: 'Apr 7, 2026', desc: 'Wire Transfer to J. Smith', cat: 'Transfer', amount: '-$2,500.00', color: 'var(--danger)' },
-  { date: 'Apr 6, 2026', desc: 'Amazon.com', cat: 'Shopping', amount: '-$89.97', color: 'var(--text-primary)' },
-  { date: 'Apr 5, 2026', desc: 'Starbucks #4521', cat: 'Dining', amount: '-$6.45', color: 'var(--text-primary)' },
-  { date: 'Apr 4, 2026', desc: 'Rent Payment — Apt 12B', cat: 'Housing', amount: '-$2,100.00', color: 'var(--danger)' },
+function scoreColor(score: number): string {
+  if (score <= 0.3) return 'var(--success)'
+  if (score <= 0.6) return 'var(--warning)'
+  return 'var(--danger)'
+}
+
+function trustColor(score: number): string {
+  if (score >= 0.75) return 'var(--success)'
+  if (score >= 0.50) return 'var(--warning)'
+  return 'var(--danger)'
+}
+
+const DEMOS = [
+  {
+    href: '/login',
+    title: 'Behavioral Login',
+    description: 'Keystroke timing analysis during authentication. The SDK captures typing rhythm to build per-user behavioral baselines.',
+    tag: 'Identity',
+  },
+  {
+    href: '/scores',
+    title: 'Live Scores Dashboard',
+    description: 'Real-time composite scores: drift, anomaly, trust, and bot detection. Includes per-modality breakdown.',
+    tag: 'Scoring',
+  },
+  {
+    href: '/v2-scores',
+    title: 'AI Scoring Engine',
+    description: 'Full 22-score analysis: identity, anomaly, humanness, threat, trust, and verdict. The complete behavioral scoring pipeline.',
+    tag: 'AI Engine',
+  },
+  {
+    href: '/challenge',
+    title: 'KP-Challenge (Behavioral TOTP)',
+    description: 'Type a challenge phrase to verify identity. Even with the correct phrase, only the real user\'s typing rhythm matches.',
+    tag: 'Challenge',
+  },
+  {
+    href: '/bot-sim',
+    title: 'Bot Detection',
+    description: 'Real-time bot detection scores from your actual browser behavior across 4 detection layers.',
+    tag: 'Bot Detection',
+  },
+  {
+    href: '/multi-user',
+    title: 'Multi-User Detection',
+    description: 'Switch between users mid-session to see drift spikes. Detects account sharing, credential theft, and session hijacking.',
+    tag: 'Drift',
+  },
 ]
 
 export default function DashboardPage() {
-  const { scores, session, alerts, initialized } = useSdk()
-  const [panelOpen, setPanelOpen] = useState(true)
+  const { scores, session, alerts, initialized, v2Scores, isEnrolling, isLearning } = useSdk()
+  const batchesProcessed = v2Scores?.session?.batches_processed ?? 0
+  const profileMaturity = v2Scores?.meta?.profile_maturity ?? 0
+  const confidence = v2Scores?.meta?.confidence ?? 0
 
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title">Good morning, welcome back</h1>
-        <p className="page-subtitle">Here is your financial overview for today</p>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{
+          margin: '0 0 4px',
+          fontSize: 24,
+          fontWeight: 700,
+          letterSpacing: '-0.025em',
+          color: 'var(--foreground)',
+        }}>kbio SDK Showcase</h1>
+        <p style={{
+          margin: 0,
+          fontSize: 13,
+          color: 'var(--foreground-muted)',
+        }}>
+          Explore behavioral biometrics capabilities &mdash; invisible identity, real-time scoring, bot detection
+        </p>
       </div>
 
-      {/* Account Cards */}
-      <div className="grid-3" style={{ marginBottom: 28 }}>
-        {[
-          { label: 'Checking Account', balance: '$24,832.50', acct: '****4832', status: 'Active' },
-          { label: 'Savings Account', balance: '$156,420.00', acct: '****9071', status: 'Active' },
-          { label: 'Credit Card', balance: '-$3,215.80', acct: '****7623', status: 'Payment due Jun 15', negative: true },
-        ].map((a, i) => (
-          <div key={i} className="card">
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{a.label}</p>
-            <p style={{ margin: '8px 0 4px', fontSize: 30, fontWeight: 700, color: a.negative ? 'var(--danger)' : 'var(--text-primary)' }}>{a.balance}</p>
-            <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>{a.acct} &middot; {a.status}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Transactions */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <h2 style={{ margin: '0 0 20px', fontSize: 17, fontWeight: 600, color: 'var(--text-primary)' }}>Recent Transactions</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid var(--border)' }}>
-              {['Date', 'Description', 'Category', 'Amount'].map((h, i) => (
-                <th key={h} style={{
-                  textAlign: i === 3 ? 'right' : 'left',
-                  padding: '10px 0',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: 0.5,
-                }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TRANSACTIONS.map((tx, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '12px 0', fontSize: 13, color: 'var(--text-muted)' }}>{tx.date}</td>
-                <td style={{ padding: '12px 0', fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>{tx.desc}</td>
-                <td style={{ padding: '12px 0' }}>
-                  <span style={{
-                    fontSize: 11,
-                    color: 'var(--text-secondary)',
-                    background: 'var(--surface-alt)',
-                    padding: '3px 10px',
-                    borderRadius: 12,
-                    fontWeight: 500,
-                  }}>{tx.cat}</span>
-                </td>
-                <td style={{ padding: '12px 0', fontSize: 14, fontWeight: 600, color: tx.color, textAlign: 'right' }}>{tx.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid-2">
-        <a href="/payment" style={{ textDecoration: 'none' }}>
-          <div className="card" style={{ cursor: 'pointer', transition: 'border-color 0.2s' }}>
-            <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Make a Payment</p>
-            <p style={{ margin: '6px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>Pay bills, credit cards, or vendors</p>
-          </div>
-        </a>
-        <a href="/transfer" style={{ textDecoration: 'none' }}>
-          <div className="card" style={{ cursor: 'pointer', transition: 'border-color 0.2s' }}>
-            <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Send a Wire Transfer</p>
-            <p style={{ margin: '6px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>Domestic and international wires</p>
-          </div>
-        </a>
-      </div>
-
-      {/* Floating Score Panel */}
+      {/* Live score summary cards */}
       {initialized && (
         <div style={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
-          width: panelOpen ? 280 : 48,
-          transition: 'width 0.3s ease',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 16,
+          marginBottom: 32,
         }}>
-          {/* Toggle button */}
-          <button
-            onClick={() => setPanelOpen(!panelOpen)}
-            style={{
-              position: 'absolute',
-              top: -12,
-              left: panelOpen ? -12 : 'auto',
-              right: panelOpen ? 'auto' : -4,
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: 'var(--accent)',
-              color: '#fff',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 12,
-              fontWeight: 700,
-              zIndex: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
-            }}
-          >
-            {panelOpen ? '\u2715' : '\u25C0'}
-          </button>
-
-          {panelOpen && (
-            <div style={{
+          {[
+            { label: 'Drift', score: scores?.drift, colorFn: scoreColor, desc: 'Behavioral deviation' },
+            { label: 'Anomaly', score: scores?.anomaly, colorFn: scoreColor, desc: 'Statistical outlier' },
+            { label: 'Trust', score: scores?.trust, colorFn: trustColor, desc: 'Session confidence' },
+            { label: 'Bot', score: scores?.bot, colorFn: scoreColor, desc: 'Automation likelihood' },
+          ].map(s => (
+            <div key={s.label} style={{
               background: 'var(--surface)',
-              borderRadius: 12,
-              padding: 18,
-              boxShadow: 'var(--card-shadow-lg)',
               border: '1px solid var(--border)',
+              borderRadius: 6,
+              padding: '16px 20px',
             }}>
-              {/* Header */}
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 14,
-                paddingBottom: 10,
-                borderBottom: '1px solid var(--border)',
+                fontSize: 10,
+                fontWeight: 600,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.05em',
+                color: 'var(--foreground-subtle)',
+                marginBottom: 8,
+              }}>{s.label}</div>
+              <div style={{
+                fontSize: 28,
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                color: s.score != null ? s.colorFn(s.score) : 'var(--foreground-subtle)',
+                letterSpacing: '-0.02em',
               }}>
-                <span style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: 'var(--success)',
-                  boxShadow: '0 0 6px var(--success)',
-                }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>kbio Live Scores</span>
+                {s.score != null && s.score >= 0 ? `${(s.score * 100).toFixed(1)}%` : '--'}
               </div>
+              <div style={{ fontSize: 11, color: 'var(--foreground-subtle)', marginTop: 2 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
-              {/* Score bars */}
-              <MiniGauge label="Drift" score={scores.drift} colorFn={scoreColor} />
-              <MiniGauge label="Anomaly" score={scores.anomaly} colorFn={scoreColor} />
-              <MiniGauge label="Trust" score={scores.trust} colorFn={trustColor} />
-              <MiniGauge label="Bot" score={scores.bot} colorFn={scoreColor} />
-
-              {/* Modality signals */}
-              {session && (
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: 0.5 }}>
-                    Modalities
-                  </div>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {session.modalities.map(m => (
-                      <span key={m.modality} style={{
-                        fontSize: 10,
-                        padding: '2px 8px',
-                        borderRadius: 10,
-                        background: m.active ? 'var(--accent-bg)' : 'var(--surface-alt)',
-                        color: m.active ? 'var(--accent)' : 'var(--text-muted)',
-                        fontWeight: 500,
-                      }}>
-                        {m.modality}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Session info */}
-              {session && (
-                <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 10, fontFamily: 'monospace', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                    <div>sid: {session.session_id.slice(0, 8)}...</div>
-                    <div>pulses: {session.pulse_count}</div>
-                    <div>uptime: {Math.floor((Date.now() - session.started_at) / 1000)}s</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Recent alerts */}
-              {alerts.length > 0 && (
-                <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                  <div style={{
-                    fontSize: 10,
-                    padding: '6px 8px',
-                    borderRadius: 6,
-                    background: alerts[alerts.length - 1].severity === 'critical' ? '#ef444420' : '#eab30820',
-                    color: alerts[alerts.length - 1].severity === 'critical' ? 'var(--danger)' : 'var(--warning)',
-                    fontWeight: 500,
-                  }}>
-                    {alerts[alerts.length - 1].message}
-                  </div>
-                </div>
-              )}
+      {/* SDK Status Banner */}
+      {initialized && session && (
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '14px 20px',
+          marginBottom: 32,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: v2Scores ? 'var(--success)' : 'var(--warning)',
+              boxShadow: v2Scores ? '0 0 6px var(--success)' : '0 0 6px var(--warning)',
+            }} />
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--foreground)' }}>
+              {v2Scores ? 'SDK Active' : 'Capturing...'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 16, fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--foreground-subtle)' }}>
+            <span>sid: {session.session_id.slice(0, 8)}</span>
+            <span>pulses: {session.pulse_count}</span>
+            <span>uptime: {Math.floor((Date.now() - session.started_at) / 1000)}s</span>
+            <span>keys: {session.event_counts.keystroke} ptr: {session.event_counts.pointer}</span>
+          </div>
+          {alerts.length > 0 && (
+            <div style={{
+              marginLeft: 'auto',
+              fontSize: 10,
+              padding: '3px 10px',
+              borderRadius: 4,
+              background: 'var(--danger-bg)',
+              color: 'var(--danger)',
+              fontWeight: 500,
+            }}>
+              {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
             </div>
           )}
         </div>
       )}
+
+      {/* Enrollment / Training Status */}
+      {initialized && (
+        <div style={{
+          background: 'var(--surface)',
+          border: `1px solid ${isEnrolling ? 'var(--warning)' : isLearning ? 'var(--warning)' : 'var(--border)'}`,
+          borderRadius: 6,
+          padding: '16px 20px',
+          marginBottom: 32,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: v2Scores ? 12 : 0 }}>
+            <div style={{
+              padding: '3px 10px', borderRadius: 4, fontSize: 10, fontWeight: 700,
+              fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
+              background: isEnrolling ? 'var(--warning-bg)' : isLearning ? 'var(--warning-bg)' : 'var(--success-bg)',
+              color: isEnrolling ? 'var(--warning)' : isLearning ? 'var(--warning)' : 'var(--success)',
+            }}>
+              {!v2Scores ? 'WAITING' : isEnrolling ? 'ENROLLING' : isLearning ? 'LEARNING' : 'ACTIVE'}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--foreground-muted)' }}>
+              {!v2Scores
+                ? 'Type or move your mouse to generate behavioral data'
+                : isEnrolling
+                  ? 'Collecting behavioral data to build your profile'
+                  : isLearning
+                    ? 'Profile forming \u2014 scoring accuracy improving with more data'
+                    : 'Profile active \u2014 full behavioral scoring enabled'}
+            </div>
+          </div>
+
+          {v2Scores && (
+            <div style={{ display: 'flex', gap: 24, fontSize: 11 }}>
+              <div>
+                <span style={{ color: 'var(--foreground-subtle)' }}>Batches: </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--foreground)' }}>{batchesProcessed}</span>
+                <span style={{ color: 'var(--foreground-subtle)' }}> / 3 min</span>
+              </div>
+              <div>
+                <span style={{ color: 'var(--foreground-subtle)' }}>Profile maturity: </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--foreground)' }}>{(profileMaturity * 100).toFixed(0)}%</span>
+              </div>
+              <div>
+                <span style={{ color: 'var(--foreground-subtle)' }}>Confidence: </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--foreground)' }}>{(confidence * 100).toFixed(0)}%</span>
+              </div>
+              {/* Progress bar */}
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, height: 4, background: 'var(--surface-3)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 2,
+                    width: `${Math.min(100, profileMaturity * 100)}%`,
+                    background: profileMaturity >= 0.5 ? 'var(--success)' : 'var(--warning)',
+                    transition: 'width 0.5s ease',
+                  }} />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Demo cards grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: 16,
+      }}>
+        {DEMOS.map(demo => (
+          <Link key={demo.href} href={demo.href} style={{ textDecoration: 'none' }}>
+            <div style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 6,
+              padding: '20px 24px',
+              transition: 'background 0.15s',
+              cursor: 'pointer',
+              height: '100%',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface)')}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.06em',
+                  color: 'var(--foreground-subtle)',
+                  background: 'var(--surface-2)',
+                  padding: '2px 8px',
+                  borderRadius: 3,
+                  border: '1px solid var(--border)',
+                }}>{demo.tag}</span>
+              </div>
+              <div style={{
+                fontSize: 15,
+                fontWeight: 600,
+                color: 'var(--foreground)',
+                marginBottom: 6,
+              }}>{demo.title}</div>
+              <div style={{
+                fontSize: 12,
+                color: 'var(--foreground-muted)',
+                lineHeight: 1.5,
+              }}>{demo.description}</div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* How it works + Profile Training */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 32 }}>
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '24px 28px',
+        }}>
+          <div style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: 'var(--foreground)',
+            marginBottom: 16,
+          }}>How kbio Works</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {[
+              { step: '1', title: 'Capture', desc: 'The SDK passively captures keystroke timing, pointer movement, and touch patterns. No content is recorded.' },
+              { step: '2', title: 'Extract', desc: 'Feature extraction produces zone-based timing vectors every 5 seconds and sends them to the scoring backend.' },
+              { step: '3', title: 'Score', desc: 'The AI engine compares live features against stored baselines using drift, anomaly, and bot detection models.' },
+              { step: '4', title: 'Decide', desc: 'A fusion layer combines 22 scores into a single verdict: allow, monitor, challenge, step-up, or block.' },
+            ].map(s => (
+              <div key={s.step}>
+                <div style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: 'var(--surface-3)',
+                  color: 'var(--foreground)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  marginBottom: 10,
+                }}>{s.step}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)', marginBottom: 4 }}>{s.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--foreground-muted)', lineHeight: 1.5 }}>{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '24px 28px',
+        }}>
+          <div style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: 'var(--foreground)',
+            marginBottom: 16,
+          }}>Profile Training</div>
+          <div style={{ fontSize: 12, color: 'var(--foreground-muted)', lineHeight: 1.7 }}>
+            <p style={{ margin: '0 0 12px' }}>
+              kbio builds a behavioral profile by collecting data over multiple batches. Each batch (sent every 5 seconds) contains keystroke timing, pointer movement, and other behavioral signals.
+            </p>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 12,
+            }}>
+              {[
+                { phase: 'Enrolling', batches: '0\u20133', desc: 'Buffering behavioral data. Drift scores not yet computed. Verdict: always monitor.', color: 'var(--warning)' },
+                { phase: 'Forming', batches: '3+', desc: 'Initial clustering runs. Profile created with baseline quality "forming". Drift scoring begins.', color: 'var(--warning)' },
+                { phase: 'Active', batches: '10+', desc: 'Full scoring active. Baseline updates via EMA from genuine sessions (low drift, high trust).', color: 'var(--success)' },
+              ].map(p => (
+                <div key={p.phase} style={{
+                  padding: '8px 12px', background: 'var(--surface-2)', borderRadius: 4,
+                  borderLeft: `3px solid ${p.color}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: p.color }}>{p.phase}</span>
+                    <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--foreground-subtle)' }}>{p.batches} batches</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--foreground-muted)', marginTop: 2 }}>{p.desc}</div>
+                </div>
+              ))}
+            </div>
+            <p style={{ margin: 0, fontSize: 11, color: 'var(--foreground-subtle)' }}>
+              The more you interact, the stronger the profile. After enrollment, the system detects drift (someone else using your account), anomalies, and bots in real-time.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

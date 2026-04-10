@@ -20,7 +20,9 @@ async def list_selections(
     rows = await conn.fetch(  # type: ignore[union-attr]
         """
         SELECT id, org_id, predefined_policy_code, policy_category, policy_name,
-               priority, config_overrides, notes, is_active, created_at, updated_at
+               priority, config_overrides, notes,
+               threat_type_code, signal_overrides, action_override,
+               is_active, created_at, updated_at
           FROM "11_kprotect".v_policy_selections
          WHERE org_id = $1
            AND deleted_at IS NULL
@@ -51,7 +53,9 @@ async def get_selection(conn: object, selection_id: str) -> dict | None:
     row = await conn.fetchrow(  # type: ignore[union-attr]
         """
         SELECT id, org_id, predefined_policy_code, policy_category, policy_name,
-               priority, config_overrides, notes, is_active, created_at, updated_at
+               priority, config_overrides, notes,
+               threat_type_code, signal_overrides, action_override,
+               is_active, created_at, updated_at
           FROM "11_kprotect".v_policy_selections
          WHERE id = $1
            AND deleted_at IS NULL

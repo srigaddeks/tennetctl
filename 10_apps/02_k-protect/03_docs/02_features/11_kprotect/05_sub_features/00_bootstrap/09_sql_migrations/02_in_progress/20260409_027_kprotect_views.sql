@@ -23,14 +23,19 @@ SELECT
     ps.id,
     ps.org_id,
     ps.predefined_policy_code,
-    -- Category stored as EAV attr (copied from kbio when policy is selected)
-    MAX(CASE WHEN ad.code = 'policy_category'  THEN a.key_text  END) AS policy_category,
-    MAX(CASE WHEN ad.code = 'policy_name'      THEN a.key_text  END) AS policy_name,
+    MAX(CASE WHEN ad.code = 'policy_category' THEN a.key_text END)  AS policy_category,
+    MAX(CASE WHEN ad.code = 'policy_name'     THEN a.key_text END)  AS policy_name,
     ps.priority,
     ps.is_active,
     (ps.deleted_at IS NOT NULL)                                      AS is_deleted,
-    MAX(CASE WHEN ad.code = 'config_overrides'  THEN a.key_jsonb END) AS config_overrides,
-    MAX(CASE WHEN ad.code = 'notes'             THEN a.key_text  END) AS notes,
+    (SELECT a2.key_jsonb
+     FROM "11_kprotect"."20_dtl_attrs" a2
+     JOIN "11_kprotect"."05_dim_attr_defs" ad2 ON ad2.id = a2.attr_def_id
+     WHERE a2.entity_id = ps.id
+       AND a2.entity_type_id = (SELECT id FROM "11_kprotect"."04_dim_entity_types" WHERE code = 'kp_policy_selection')
+       AND ad2.code = 'config_overrides'
+     LIMIT 1)                                                        AS config_overrides,
+    MAX(CASE WHEN ad.code = 'notes'           THEN a.key_text END)  AS notes,
     ps.created_by,
     ps.updated_by,
     ps.created_at,

@@ -11,7 +11,11 @@ Bot score: 0.0 (human) to 1.0 (definitely bot).
 
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
+
+from ._math import sigmoid
 
 
 def detect(
@@ -296,9 +300,7 @@ def detect_v2(
         weight = _ENSEMBLE_WEIGHTS.get(feat_name, 0.0)
         logit += weight * feat_val
 
-    import math
-    logit = max(-10.0, min(10.0, logit))
-    ml_score = 1.0 / (1.0 + math.exp(-logit))
+    ml_score = sigmoid(logit)
 
     # Blend V1 and V2 (V1 short-circuits on high-confidence automation)
     v1_score = v1_result["bot_score"]
@@ -367,7 +369,7 @@ def _compute_timing_entropy(batch: dict[str, Any]) -> float:
             p = count / total
             entropy -= p * _math.log2(p)
 
-    # Normalize to 0-1 (max entropy for 10 bins is log2(10) ≈ 3.32)
+    # Normalize to 0-1 (max entropy for 10 bins is log2(10) ~ 3.32)
     return min(1.0, entropy / 3.32)
 
 
@@ -387,7 +389,7 @@ def _compute_event_regularity(batch: dict[str, Any]) -> float:
 
     mean_stdev = sum(stdevs) / len(stdevs)
     # Low stdev in timing = high regularity = bot-like
-    # Map: stdev=0 → regularity=1.0, stdev=50+ → regularity=0.0
+    # Map: stdev=0 -> regularity=1.0, stdev=50+ -> regularity=0.0
     regularity = max(0.0, 1.0 - mean_stdev / 50.0)
     return min(1.0, regularity)
 
@@ -422,5 +424,163 @@ def _compute_velocity_variance(batch: dict[str, Any]) -> float:
     mean = sum(velocities) / len(velocities)
     variance = sum((v - mean) ** 2 for v in velocities) / len(velocities)
 
-    # Normalize: variance of 1000+ → 1.0
+    # Normalize: variance of 1000+ -> 1.0
     return min(1.0, variance / 1000.0)
+
+
+# ---------------------------------------------------------------------------
+# V2 additions: Replay detection and population anomaly
+# ---------------------------------------------------------------------------
+
+
+def compute_batch_hash(batch: dict[str, Any]) -> str:
+    """Create a deterministic hash from keystroke timing statistics.
+
+    Extracts zone_dwell_means, zone_dwell_stdevs, and zone_flight_means
+    from all keystroke windows, sorts them, and hashes the resulting
+    canonical JSON representation.
+
+    Returns a hex digest string (SHA-256, truncated to 32 chars).
+    """
+    timing_features: list[list[float]] = []
+
+    for window in batch.get("keystroke_windows", []):
+        dwell_means = [
+            round(d, 2) for d in window.get("zone_dwell_means", [])
+            if d is not None and d >= 0
+        ]
+        dwell_stdevs = [
+            round(s, 2) for s in window.get("zone_dwell_stdevs", [])
+            if s is not None and s >= 0
+        ]
+        flight_means = [
+            round(f, 2) for f in window.get("zone_flight_means", [])
+            if f is not None and f >= 0
+        ]
+        timing_features.append(dwell_means + dwell_stdevs + flight_means)
+
+    # Sort for determinism (window order should not matter)
+    timing_features.sort()
+
+    canonical = json.dumps(timing_features, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:32]
+
+
+def compute_replay_score(
+    batch: dict[str, Any],
+    session_hashes: list[str],
+) -> dict[str, Any]:
+    """Detect replayed behavioral sessions.
+
+    Signals:
+    1. Sequence fingerprint: hash of keystroke timing statistics.
+       If hash matches any in session_hashes -> score = 1.0
+    2. Feature vector similarity: exact same values across batches
+       is a statistical impossibility for genuine sessions.
+
+    Args:
+        batch: Current behavioral batch.
+        session_hashes: List of previously observed batch hashes
+            from other sessions for this user/device.
+
+    Returns:
+        {"replay_score": float, "matched_hash": str | None}
+    """
+    current_hash = compute_batch_hash(batch)
+
+    # Signal 1: Exact hash match against known session fingerprints
+    if current_hash in session_hashes:
+        return {
+            "replay_score": round(1.0, 4),
+            "matched_hash": current_hash,
+        }
+
+    # Signal 2: Check for suspiciously identical feature vectors
+    # within the batch itself (multiple windows with identical timing)
+    keystroke_windows = batch.get("keystroke_windows", [])
+    if len(keystroke_windows) >= 2:
+        window_sigs: list[str] = []
+        for window in keystroke_windows:
+            dwell_means = [
+                round(d, 2) for d in window.get("zone_dwell_means", [])
+                if d is not None and d >= 0
+            ]
+            sig = json.dumps(dwell_means, separators=(",", ":"))
+            window_sigs.append(sig)
+
+        # Count duplicates
+        unique_sigs = set(window_sigs)
+        if len(window_sigs) > 0 and len(unique_sigs) == 1 and len(window_sigs) >= 3:
+            # All windows have identical timing -- strong replay signal
+            return {
+                "replay_score": round(0.9, 4),
+                "matched_hash": None,
+            }
+
+        duplicate_ratio = 1.0 - (len(unique_sigs) / len(window_sigs))
+        if duplicate_ratio > 0.5:
+            return {
+                "replay_score": round(min(0.8, duplicate_ratio), 4),
+                "matched_hash": None,
+            }
+
+    return {
+        "replay_score": round(0.0, 4),
+        "matched_hash": None,
+    }
+
+
+def compute_population_anomaly(
+    feature_vecs: dict[str, list[float]],
+    population_stats: dict[str, dict[str, Any]] | None = None,
+) -> float:
+    """How unusual is this session vs ALL users?
+
+    Uses z-scores against global population statistics.
+    Works on day one -- no user profile needed.
+
+    For each modality, compute z-scores of key feature dimensions
+    against population means/stdevs.
+
+    population_anomaly = mean(sigmoid(z - 2.0) for z in all_z_scores)
+
+    z > 2 = outer 5% of all users. z > 3 = outer 0.3%.
+
+    Args:
+        feature_vecs: {modality_name: [feature_values...]} for each modality.
+        population_stats: {modality_name: {"means": [...], "stdevs": [...]}}
+            Global population statistics. If None, returns neutral 0.5.
+
+    Returns:
+        0.0-1.0 anomaly score. 0.0 = perfectly normal, 1.0 = extreme outlier.
+    """
+    if not population_stats or not feature_vecs:
+        return round(0.5, 4)
+
+    all_z_sigmoid_scores: list[float] = []
+
+    for modality, values in feature_vecs.items():
+        stats = population_stats.get(modality)
+        if not stats:
+            continue
+
+        means = stats.get("means", [])
+        stdevs = stats.get("stdevs", [])
+        if not isinstance(means, list) or not isinstance(stdevs, list):
+            continue
+
+        # Compare each dimension
+        n = min(len(values), len(means), len(stdevs))
+        for i in range(n):
+            stdev = stdevs[i]
+            if stdev <= 0.0:
+                continue
+            z = abs(values[i] - means[i]) / stdev
+            # sigmoid(z - 2.0): z=2 -> 0.5, z=3 -> 0.73, z=0 -> 0.12
+            all_z_sigmoid_scores.append(sigmoid(z - 2.0))
+
+    if not all_z_sigmoid_scores:
+        return round(0.5, 4)
+
+    anomaly = sum(all_z_sigmoid_scores) / len(all_z_sigmoid_scores)
+    return round(min(1.0, max(0.0, anomaly)), 4)

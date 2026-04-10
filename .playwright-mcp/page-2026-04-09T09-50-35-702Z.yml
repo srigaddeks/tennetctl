@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: k-forensics
+    - generic [ref=e42]:
+      - heading "Create your profile" [level=1] [ref=e43]
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: Display name(optional)
+          - textbox "Display name(optional)" [ref=e47]:
+            - /placeholder: Jane Smith
+        - generic [ref=e48]:
+          - generic [ref=e49]: Username
+          - textbox "Username" [ref=e50]:
+            - /placeholder: jane.smith
+        - generic [ref=e51]:
+          - generic [ref=e52]: Email(optional)
+          - textbox "Email(optional)" [ref=e53]:
+            - /placeholder: jane@example.com
+        - generic [ref=e54]:
+          - generic [ref=e55]: Password
+          - textbox "Password" [ref=e56]:
+            - /placeholder: Min. 8 characters
+        - generic [ref=e57]:
+          - generic [ref=e58]: Confirm password
+          - textbox "Confirm password" [ref=e59]:
+            - /placeholder: Repeat password
+        - generic [ref=e60]:
+          - button "Back" [ref=e61]
+          - button "Continue" [ref=e62]
+  - region "Notifications alt+T"
+  - status [ref=e31]:
+    - generic [ref=e32]:
+      - img [ref=e34]
+      - generic [ref=e36]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+  - alert [ref=e30]

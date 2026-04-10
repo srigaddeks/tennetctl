@@ -150,6 +150,9 @@ def _resolve_field(ctx: dict[str, Any], path: str) -> Any:
             current = current.get(part)
         else:
             return None
+    # Auto-unwrap SignalResult to its value
+    if isinstance(current, dict) and "value" in current and "confidence" in current:
+        return current["value"]
     return current
 
 

@@ -17,6 +17,9 @@ class PolicySelectionData(BaseModel):
     priority: int
     config_overrides: dict[str, Any] | None
     notes: str | None
+    threat_type_code: str | None = None
+    signal_overrides: dict[str, Any] | None = None
+    action_override: str | None = None
     is_active: bool
     created_at: datetime
     updated_at: datetime
@@ -31,13 +34,16 @@ class PolicySelectionListData(BaseModel):
 
 class CreatePolicySelectionRequest(BaseModel):
     org_id: str
-    predefined_policy_code: str
+    predefined_policy_code: str | None = None
     # policy_category and policy_name are copied from kbio by the caller
-    policy_category: str
-    policy_name: str
+    policy_category: str | None = None
+    policy_name: str | None = None
     priority: int = 100
     config_overrides: dict[str, Any] | None = None
     notes: str | None = None
+    threat_type_code: str | None = None
+    signal_overrides: dict[str, Any] | None = None
+    action_override: str | None = None
 
 
 class PatchPolicySelectionRequest(BaseModel):
@@ -45,3 +51,6 @@ class PatchPolicySelectionRequest(BaseModel):
     config_overrides: dict[str, Any] | None = None
     notes: str | None = None
     is_active: bool | None = None
+    threat_type_code: str | None = None
+    signal_overrides: dict[str, Any] | None = None
+    action_override: str | None = None

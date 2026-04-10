@@ -15,39 +15,8 @@ import { cn } from "@/lib/cn";
 import {
   scoreColor, trustColor, formatScore, scoreBg, baselineQualityVariant,
 } from "@/lib/kbio-utils";
+import { getKbioSession } from "@/lib/api";
 import type { KbioSessionData } from "@/types/api";
-
-type ModalityBreakdown = {
-  modality: string;
-  drift_score: number;
-  events: number;
-  fusion_weight: number;
-};
-
-const MOCK_SESSION: KbioSessionData = {
-  id: "sess-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  sdk_session_id: "sdk-001",
-  user_hash: "usr_h4sh_001_abc",
-  device_uuid: "dev-uuid-001-abcdef",
-  status: "active",
-  trust_level: "high",
-  drift_score: 0.12,
-  anomaly_score: 0.08,
-  trust_score: 0.91,
-  bot_score: 0.02,
-  baseline_quality: "strong",
-  pulse_count: 342,
-  created_at: "2026-04-09T08:00:00Z",
-  last_active_at: "2026-04-09T14:32:00Z",
-};
-
-const MOCK_MODALITIES: ModalityBreakdown[] = [
-  { modality: "keystroke", drift_score: 0.10, events: 1842, fusion_weight: 0.35 },
-  { modality: "mouse", drift_score: 0.14, events: 3205, fusion_weight: 0.25 },
-  { modality: "touch", drift_score: 0.08, events: 612, fusion_weight: 0.20 },
-  { modality: "scroll", drift_score: 0.18, events: 445, fusion_weight: 0.10 },
-  { modality: "accelerometer", drift_score: 0.06, events: 289, fusion_weight: 0.10 },
-];
 
 type ScoreCardProps = {
   icon: React.ReactNode;
@@ -80,14 +49,17 @@ export default function SessionDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
-
-  const session = { ...MOCK_SESSION, id: params.id ?? MOCK_SESSION.id };
-  const modalities = MOCK_MODALITIES;
+  const [session, setSession] = React.useState<KbioSessionData | null>(null);
 
   React.useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 300);
-    return () => clearTimeout(t);
-  }, []);
+    if (!params.id) return;
+    getKbioSession(params.id)
+      .then((res) => {
+        if (res.ok && res.data) setSession(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [params.id]);
 
   if (loading) {
     return (
@@ -100,6 +72,21 @@ export default function SessionDetailPage() {
             <Skeleton key={i} className="h-20 rounded-md" />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="px-8 py-8 max-w-[1100px]">
+        <Button variant="ghost" size="sm" className="mb-4 -ml-2" onClick={() => router.push("/kbio/sessions")}>
+          <ArrowLeft size={14} /> Back to Sessions
+        </Button>
+        <EmptyState
+          icon={<AlertTriangle />}
+          title="Session not found"
+          description={`Session ${params.id} was not found. It may not have been created yet.`}
+        />
       </div>
     );
   }
@@ -122,7 +109,6 @@ export default function SessionDetailPage() {
         </p>
       </div>
 
-      {/* Score cards */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3.5 mb-8">
         <ScoreCard
           icon={<Zap size={18} className={scoreColor(session.drift_score)} />}
@@ -150,7 +136,6 @@ export default function SessionDetailPage() {
         />
       </div>
 
-      {/* Session metadata */}
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Session Metadata</CardTitle>
@@ -188,54 +173,6 @@ export default function SessionDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Drift trend placeholder */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Drift Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-32 rounded-md border border-dashed border-border bg-surface-2 text-foreground-muted text-xs">
-            Chart: Drift over time — will be added when charting library is integrated
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Modality breakdown */}
-      <Card className="mb-8 overflow-hidden">
-        <CardHeader>
-          <CardTitle>Per-Modality Breakdown</CardTitle>
-        </CardHeader>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Modality</TableHead>
-              <TableHead>Drift Score</TableHead>
-              <TableHead>Events</TableHead>
-              <TableHead>Fusion Weight</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {modalities.map((m) => (
-              <TableRow key={m.modality}>
-                <TableCell className="font-medium capitalize">{m.modality}</TableCell>
-                <TableCell>
-                  <span className={cn("font-mono text-xs font-semibold", scoreColor(m.drift_score))}>
-                    {formatScore(m.drift_score)}
-                  </span>
-                </TableCell>
-                <TableCell className="text-xs text-foreground-muted">
-                  {m.events.toLocaleString()}
-                </TableCell>
-                <TableCell className="text-xs text-foreground-muted">
-                  {(m.fusion_weight * 100).toFixed(0)}%
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
-
-      {/* Alerts section */}
       <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Alerts</CardTitle>
