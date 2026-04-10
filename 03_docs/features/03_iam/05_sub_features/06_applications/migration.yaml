@@ -1,8 +1,0 @@
-feature: "03_iam"
-sub_feature: "06_applications"
-migrations:
-  - file: "20260409_013_iam_applications.sql"
-    sequence: 13
-    description: "Application registry — API keys, OAuth clients, service accounts"
-    depends_on: [12]
-    reversible: true
