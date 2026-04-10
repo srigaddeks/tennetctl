@@ -13,23 +13,11 @@ from fastapi.responses import JSONResponse
 _db = importlib.import_module("01_core.db")
 _resp = importlib.import_module("01_core.response")
 _errors = importlib.import_module("01_core.errors")
-_config = importlib.import_module("01_core.config")
+_auth = importlib.import_module("01_core.api_key_auth")
 
 from .service import get_drift_state, get_drift_trend
 
 router = APIRouter(prefix="/v1/internal", tags=["kbio-drift"])
-
-
-def _validate_service_token(request: Request) -> None:
-    """Raise 401 AppError if X-Internal-Service-Token is missing or wrong."""
-    settings = _config.get_settings()
-    token = request.headers.get("X-Internal-Service-Token", "")
-    if not token or token != settings.kbio_internal_service_token:
-        raise _errors.AppError(
-            "UNAUTHORIZED",
-            "Missing or invalid X-Internal-Service-Token.",
-            401,
-        )
 
 
 @router.get(
@@ -52,7 +40,7 @@ async def get_drift(
         401: missing/invalid token
         404: session not found
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:
@@ -88,7 +76,7 @@ async def get_drift_trend_endpoint(
         401: missing/invalid token
         404: session not found
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:

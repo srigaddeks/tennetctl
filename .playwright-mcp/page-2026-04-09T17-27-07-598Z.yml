@@ -1,0 +1,110 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]: kb
+          - generic [ref=e8]:
+            - generic [ref=e9]: kbio Demo
+            - generic [ref=e10]: Behavioral Biometrics SDK
+        - generic [ref=e106]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: SDK Active
+            - generic [ref=e110]:
+              - generic [ref=e111]: D:--
+              - generic [ref=e112]: T:50%
+          - generic [ref=e113]: p:7
+        - navigation [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: Overview
+            - list [ref=e14]:
+              - listitem [ref=e15]:
+                - link "Dashboard" [ref=e16] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e18]
+                  - generic [ref=e23]: Dashboard
+          - generic [ref=e24]:
+            - generic [ref=e25]: SDK Demos
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Behavioral Login" [ref=e28] [cursor=pointer]:
+                  - /url: /login
+                  - img [ref=e30]
+                  - generic [ref=e33]: Behavioral Login
+              - listitem [ref=e35]:
+                - link "Live Scores" [ref=e36] [cursor=pointer]:
+                  - /url: /scores
+                  - img [ref=e38]
+                  - generic [ref=e40]: Live Scores
+              - listitem [ref=e41]:
+                - link "V2 AI Engine" [ref=e42] [cursor=pointer]:
+                  - /url: /v2-scores
+                  - img [ref=e44]
+                  - generic [ref=e47]: V2 AI Engine
+              - listitem [ref=e48]:
+                - link "KP-Challenge" [ref=e49] [cursor=pointer]:
+                  - /url: /challenge
+                  - img [ref=e51]
+                  - generic [ref=e53]: KP-Challenge
+              - listitem [ref=e54]:
+                - link "Bot Detection" [ref=e55] [cursor=pointer]:
+                  - /url: /bot-sim
+                  - img [ref=e57]
+                  - generic [ref=e59]: Bot Detection
+              - listitem [ref=e60]:
+                - link "Multi-User" [ref=e61] [cursor=pointer]:
+                  - /url: /multi-user
+                  - img [ref=e63]
+                  - generic [ref=e68]: Multi-User
+        - generic [ref=e69]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: "sid: e1b5f27f..."
+            - generic [ref=e116]: "uptime: 30s"
+          - generic [ref=e70]:
+            - generic [ref=e71]: kbio SDK Demo
+            - button "☾ Dark" [ref=e72] [cursor=pointer]:
+              - text: ☾
+              - generic [ref=e73]: Dark
+    - generic [ref=e74]:
+      - main [ref=e75]:
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - heading "Behavioral Login" [level=1] [ref=e78]
+            - paragraph [ref=e79]: Type your credentials naturally. The SDK captures keystroke timing patterns to build a behavioral baseline.
+          - generic [ref=e80]:
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e85]
+                - heading "Sign In" [level=2] [ref=e88]
+                - paragraph [ref=e89]: Try logging in multiple times to build a baseline
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - generic [ref=e92]: Username
+                  - textbox "alice, bob, or charlie" [ref=e93]: alice
+                - generic [ref=e94]:
+                  - generic [ref=e95]: Password
+                  - textbox "Type any password" [active] [ref=e96]
+                - button "Sign In" [ref=e97] [cursor=pointer]
+            - generic [ref=e98]:
+              - generic [ref=e117]:
+                - generic [ref=e118]: Live Identity Scores
+                - generic [ref=e119]:
+                  - generic [ref=e120]:
+                    - generic [ref=e121]: Behavioral Drift
+                    - generic [ref=e122]: "--"
+                  - generic [ref=e123]:
+                    - generic [ref=e124]: Identity Confidence
+                    - generic [ref=e125]: 0.0%
+                  - generic [ref=e126]:
+                    - generic [ref=e127]: Familiarity
+                    - generic [ref=e128]: "--"
+                  - generic [ref=e129]:
+                    - generic [ref=e130]: Session Trust
+                    - generic [ref=e131]: 50.0%
+              - generic [ref=e102]:
+                - generic [ref=e103]: No login attempts yet
+                - generic [ref=e104]: Try logging in to see behavioral analysis
+      - contentinfo [ref=e105]: kbio Behavioral Biometrics SDK Demo — K-Protect by Kreesalis
+  - button "Open Next.js Dev Tools" [ref=e137] [cursor=pointer]:
+    - img [ref=e138]
+  - alert [ref=e141]

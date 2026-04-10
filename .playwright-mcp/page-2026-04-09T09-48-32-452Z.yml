@@ -1,0 +1,60 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e70]:
+    - banner [ref=e71]:
+      - link "k-forensics" [ref=e72] [cursor=pointer]:
+        - /url: /orgs
+      - generic [ref=e73]:
+        - generic [ref=e74]: testuser
+        - button "Switch to light mode" [ref=e75]:
+          - img [ref=e76]
+        - link [ref=e82] [cursor=pointer]:
+          - /url: /settings
+          - button "Settings" [ref=e83]:
+            - img [ref=e84]
+        - button "Sign out" [ref=e87]:
+          - img [ref=e88]
+          - text: Sign out
+    - generic [ref=e91]:
+      - navigation [ref=e92]:
+        - generic [ref=e93]: Settings
+        - button "Profile" [ref=e94]:
+          - img [ref=e95]
+          - text: Profile
+        - button "Organizations" [ref=e98]:
+          - img [ref=e99]
+          - text: Organizations
+        - button "Workspaces" [ref=e103]:
+          - img [ref=e104]
+          - text: Workspaces
+        - button "Members" [ref=e108]:
+          - img [ref=e109]
+          - text: Members
+        - button "Password" [ref=e114]:
+          - img [ref=e115]
+          - text: Password
+      - generic [ref=e120]:
+        - heading "Profile" [level=2] [ref=e121]
+        - paragraph [ref=e122]: Manage your account information.
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: T
+            - generic [ref=e127]:
+              - generic [ref=e128]: testuser
+              - generic [ref=e129]: 019d71a4-0289-7000-a276-0bb973a22ef5
+          - generic [ref=e130]:
+            - generic [ref=e131]:
+              - generic [ref=e132]: Username
+              - textbox [disabled] [ref=e133]: testuser
+            - generic [ref=e134]:
+              - generic [ref=e135]: Email
+              - textbox "you@example.com" [ref=e136]
+            - button "Save changes" [ref=e138]
+  - region "Notifications alt+T"
+  - status [ref=e18]:
+    - generic [ref=e19]:
+      - img [ref=e21]
+      - generic [ref=e23]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+  - alert [ref=e17]

@@ -1,0 +1,101 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnsez6n1_5",
+    "session_id": "f6d3f8b6-f747-4999-b43a-ccb3042d68f9",
+    "user_hash": "sha256:dGVzdDEyM0BnbWFpbC5jb20:demo",
+    "device_uuid": "311a80a2-f09d-4c12-8408-3cb4287a8718",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775795812958,
+    "pulse_number": 5
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15",
+    "hardware_concurrency": 8
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        0,
+        0,
+        0,
+        0,
+        2,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "zone_dwell_means": [
+        0,
+        0,
+        0,
+        0,
+        105.5,
+        90,
+        0,
+        0,
+        0,
+        289.99999999999636
+      ],
+      "zone_dwell_stdevs": [
+        0,
+        0,
+        0,
+        0,
+        0.5,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_flight_means": [
+        0,
+        0,
+        0,
+        0,
+        180,
+        61,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "pointer_windows": [
+    {
+      "event_count": 130,
+      "movement": {
+        "velocity_mean": 0.6654684493702849,
+        "velocity_stdev": 1.4985728203189874,
+        "acceleration_mean": 0.019650817338814942,
+        "curvature_mean": 0,
+        "path_efficiency": 0.7709790390361214,
+        "total_distance": 1817.8627813249348,
+        "direction_changes": 54
+      },
+      "clicks": {
+        "count": 2,
+        "hold_stdev": 0,
+        "overshoot_rate": 0
+      },
+      "idle": {
+        "count": 1,
+        "mean_duration_ms": 588
+      }
+    }
+  ],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-10T04:36:52.969Z"
+  }
+}

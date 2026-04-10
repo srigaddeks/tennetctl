@@ -1,0 +1,101 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnsg0b3s_14",
+    "session_id": "cd9d1a2a-e62a-4029-a33d-b5917575b4ec",
+    "user_hash": "anonymous",
+    "device_uuid": "311a80a2-f09d-4c12-8408-3cb4287a8718",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775797545016,
+    "pulse_number": 14
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15",
+    "hardware_concurrency": 8
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        2,
+        0,
+        2,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "zone_dwell_means": [
+        159,
+        0,
+        164,
+        164.00000000000728,
+        0,
+        0,
+        89.00000000001455,
+        104,
+        0,
+        0
+      ],
+      "zone_dwell_stdevs": [
+        5.000000000007276,
+        0,
+        14,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_flight_means": [
+        203.49999999999636,
+        0,
+        230.5,
+        282,
+        0,
+        0,
+        662.9999999999927,
+        31,
+        0,
+        0
+      ]
+    }
+  ],
+  "pointer_windows": [
+    {
+      "event_count": 38,
+      "movement": {
+        "velocity_mean": 0.25157970854470924,
+        "velocity_stdev": 0.753752464451992,
+        "acceleration_mean": 0.014078342643560365,
+        "curvature_mean": 0,
+        "path_efficiency": 0.4714682646280038,
+        "total_distance": 169.4864551818679,
+        "direction_changes": 19
+      },
+      "clicks": {
+        "count": 3,
+        "hold_stdev": 0,
+        "overshoot_rate": 0
+      },
+      "idle": {
+        "count": 1,
+        "mean_duration_ms": 1073
+      }
+    }
+  ],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-10T05:05:45.040Z"
+  }
+}

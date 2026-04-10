@@ -1,0 +1,754 @@
+- generic:
+  - generic:
+    - banner:
+      - generic:
+        - link:
+          - /url: /
+          - generic:
+            - generic: T
+          - generic: tennetctl
+          - generic: S-Control
+        - navigation:
+          - link:
+            - /url: /iam
+            - img
+            - generic: IAM
+            - generic: "03"
+          - link:
+            - /url: /vault
+            - img
+            - generic: Vault
+            - generic: "02"
+          - link:
+            - /url: /audit
+            - img
+            - generic: Audit
+            - generic: "04"
+        - generic:
+          - generic:
+            - generic: Search
+            - generic: ⌘
+            - generic: K
+          - button:
+            - img
+          - button [expanded]:
+            - generic:
+              - img
+            - generic: admin
+            - img
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - generic:
+              - img
+            - generic:
+              - generic:
+                - generic: IAM
+                - generic: "03"
+              - paragraph: Identity, users & access
+          - navigation:
+            - generic:
+              - generic: Overview
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam
+                    - img
+                    - generic: Dashboard
+            - generic:
+              - generic: Identity
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam/users
+                    - img
+                    - generic: Users
+                - listitem:
+                  - link:
+                    - /url: /iam/users/active
+                    - img
+                    - generic: Active Users
+                - listitem:
+                  - link:
+                    - /url: /iam/users/suspended
+                    - img
+                    - generic: Suspended
+                - listitem:
+                  - link:
+                    - /url: /iam/groups
+                    - img
+                    - generic: Groups
+            - generic:
+              - generic: Tenancy
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam/organizations
+                    - img
+                    - generic: Organizations
+                - listitem:
+                  - link:
+                    - /url: /iam/workspaces
+                    - img
+                    - generic: Workspaces
+                - listitem:
+                  - link:
+                    - /url: /iam/memberships
+                    - img
+                    - generic: Memberships
+            - generic:
+              - generic: Access
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam/sessions
+                    - img
+                    - generic: Sessions
+                - listitem:
+                  - link:
+                    - /url: /iam/permissions
+                    - img
+                    - generic: Permissions
+                - listitem:
+                  - link:
+                    - /url: /iam/roles
+                    - img
+                    - generic: Roles
+                - listitem:
+                  - link:
+                    - /url: /iam/rbac-check
+                    - img
+                    - generic: RBAC Check
+                - listitem:
+                  - link:
+                    - /url: /iam/feature-flags
+                    - img
+                    - generic: Feature Flags
+            - generic:
+              - generic: Catalogue
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam/products
+                    - img
+                    - generic: Products
+                - listitem:
+                  - link:
+                    - /url: /iam/features
+                    - img
+                    - generic: Features
+            - generic:
+              - generic: Config
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /iam/settings
+                    - img
+                    - generic: Settings
+                - listitem:
+                  - link:
+                    - /url: /iam/domains
+                    - img
+                    - generic: Domains
+          - generic:
+            - paragraph: Active Scope
+            - generic:
+              - generic:
+                - generic: Org
+                - generic: tennetctl
+              - generic:
+                - generic: Workspace
+                - generic: default
+      - main:
+        - generic:
+          - generic:
+            - generic:
+              - navigation:
+                - generic: IAM
+                - generic: /
+                - generic: Products
+              - heading [level=1]: Products
+              - paragraph: Catalogue of sellable and internal platform products.
+            - generic:
+              - button:
+                - img
+                - text: New Product
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=3]:
+                - text: All Products
+                - generic: (160)
+            - generic:
+              - table:
+                - rowgroup:
+                  - row:
+                    - columnheader: Name
+                    - columnheader: Code
+                    - columnheader: Category
+                    - columnheader: Sellable
+                    - columnheader: Status
+                    - columnheader: Description
+                    - columnheader: Created
+                - rowgroup:
+                  - row:
+                    - cell: Feature Test Product
+                    - cell: test-feat-prod-ca10a021
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Empty Product For Flags
+                    - cell: empty-ff-prod-d16b7e1d
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Flag Test Product
+                    - cell: test-ff-prod-126a0621
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-a63830e1
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-fe50aca9
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-7679a35b
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-76501586
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-959f1ffa
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Updated Name
+                    - cell: test-prod-a4b1232d
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: Updated desc
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-8755148d
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-7bc033c6
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Prod 1
+                    - cell: test-prod-b1447406
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: My Test Product
+                    - cell: test-prod-d35e7645
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: A test product
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Test Product
+                    - cell: test-feat-prod-6a1fb4d2
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-26c79ef1
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-182031b3
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-66bbbfd9
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-e11eba32
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-06092c99
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Updated Name
+                    - cell: test-prod-3a677beb
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: Updated desc
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-b773fe05
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-a614abc0
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Prod 1
+                    - cell: test-prod-8304f11e
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: My Test Product
+                    - cell: test-prod-e6d0d05e
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: A test product
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Empty Product For Flags
+                    - cell: empty-ff-prod-0fd53ab2
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Flag Test Product
+                    - cell: test-ff-prod-263f87c5
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-f7fa8fd0
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-5670e823
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-8b2264a8
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-f5330c2e
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-f0e2909b
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Updated Name
+                    - cell: test-prod-75b296a9
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: Updated desc
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-74345bfe
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-15980414
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Prod 1
+                    - cell: test-prod-eced1a99
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: My Test Product
+                    - cell: test-prod-8a822ae4
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: A test product
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Test Product
+                    - cell: test-feat-prod-99afc1c3
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Empty Product For Flags
+                    - cell: empty-ff-prod-38277580
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Flag Test Product
+                    - cell: test-ff-prod-2c60e59a
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-05e1220c
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-b5cdd94c
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-34eda4f4
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-4d59bed1
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-ffc70f13
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Updated Name
+                    - cell: test-prod-93bcf9fb
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: Updated desc
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-ca506ded
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Test Product
+                    - cell: test-prod-df23f4a1
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Prod 1
+                    - cell: test-prod-8cafe925
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: My Test Product
+                    - cell: test-prod-57f743fa
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "yes"
+                    - cell:
+                      - generic: active
+                    - cell: A test product
+                    - cell: 08/04/2026
+                  - row:
+                    - cell: Feature Test Product
+                    - cell: test-feat-prod-bb1f5cce
+                    - cell:
+                      - generic: Core Platform
+                    - cell:
+                      - generic: "no"
+                    - cell:
+                      - generic: active
+                    - cell: —
+                    - cell: 08/04/2026
+  - alert
+  - menu "admin" [active] [ref=e806]:
+    - generic [ref=e808]:
+      - generic [ref=e809]: admin
+      - generic [ref=e810]: admin@example.com
+      - generic [ref=e811]: session 019d7026…
+    - separator [ref=e812]
+    - menuitem "Sign out" [ref=e813]:
+      - img [ref=e814]
+      - text: Sign out

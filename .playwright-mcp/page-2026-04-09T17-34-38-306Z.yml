@@ -1,0 +1,107 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]: kb
+          - generic [ref=e8]:
+            - generic [ref=e9]: kbio Demo
+            - generic [ref=e10]: Behavioral Biometrics SDK
+        - generic [ref=e106]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: SDK Active
+            - generic [ref=e110]:
+              - generic [ref=e111]: D:--
+              - generic [ref=e112]: T:50%
+          - generic [ref=e113]: p:2
+        - navigation [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: Overview
+            - list [ref=e14]:
+              - listitem [ref=e15]:
+                - link "Dashboard" [ref=e16] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e18]
+                  - generic [ref=e23]: Dashboard
+          - generic [ref=e24]:
+            - generic [ref=e25]: SDK Demos
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Behavioral Login" [ref=e28] [cursor=pointer]:
+                  - /url: /login
+                  - img [ref=e30]
+                  - generic [ref=e33]: Behavioral Login
+              - listitem [ref=e34]:
+                - link "Live Scores" [ref=e35] [cursor=pointer]:
+                  - /url: /scores
+                  - img [ref=e37]
+                  - generic [ref=e39]: Live Scores
+              - listitem [ref=e40]:
+                - link "V2 AI Engine" [ref=e41] [cursor=pointer]:
+                  - /url: /v2-scores
+                  - img [ref=e43]
+                  - generic [ref=e46]: V2 AI Engine
+              - listitem [ref=e47]:
+                - link "KP-Challenge" [ref=e48] [cursor=pointer]:
+                  - /url: /challenge
+                  - img [ref=e50]
+                  - generic [ref=e52]: KP-Challenge
+              - listitem [ref=e54]:
+                - link "Bot Detection" [ref=e55] [cursor=pointer]:
+                  - /url: /bot-sim
+                  - img [ref=e57]
+                  - generic [ref=e59]: Bot Detection
+              - listitem [ref=e60]:
+                - link "Multi-User" [ref=e61] [cursor=pointer]:
+                  - /url: /multi-user
+                  - img [ref=e63]
+                  - generic [ref=e68]: Multi-User
+        - generic [ref=e69]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: "sid: f7e8f651..."
+            - generic [ref=e116]: "uptime: 5s"
+          - generic [ref=e70]:
+            - generic [ref=e71]: kbio SDK Demo
+            - button "☾ Dark" [ref=e72] [cursor=pointer]:
+              - text: ☾
+              - generic [ref=e73]: Dark
+    - generic [ref=e74]:
+      - main [ref=e75]:
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - heading "Behavioral Challenge (KP-TOTP)" [level=1] [ref=e78]
+            - paragraph [ref=e79]: Generate a challenge phrase, type it naturally, and verify your behavioral identity
+          - generic [ref=e127]: "Failed to create challenge: column \"created_by\" of relation \"20_dtl_attrs\" does not exist"
+          - generic [ref=e80]:
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - generic [ref=e84]: "1"
+                - generic [ref=e85]: Generate Challenge
+              - button "Generate Challenge" [ref=e86] [cursor=pointer]
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]: Verification History
+                - generic [ref=e90]:
+                  - generic [ref=e91]: No verifications yet
+                  - generic [ref=e92]: Generate a challenge to begin
+              - generic [ref=e93]:
+                - generic [ref=e94]: How KP-Challenge Works
+                - generic [ref=e95]:
+                  - paragraph [ref=e96]:
+                    - strong [ref=e97]: "1. Generate:"
+                    - text: The server creates a unique challenge phrase tied to a cryptographic token.
+                  - paragraph [ref=e98]:
+                    - strong [ref=e99]: "2. Type:"
+                    - text: As you type, the SDK captures your keystroke timing pattern — dwell times, flight times, and rhythm.
+                  - paragraph [ref=e100]:
+                    - strong [ref=e101]: "3. Verify:"
+                    - text: The server compares the typing pattern against your baseline. Even with the phrase, others cannot replicate your typing rhythm.
+                  - paragraph [ref=e102]:
+                    - strong [ref=e103]: "Result:"
+                    - text: Behavioral TOTP — a one-time password that only
+                    - emphasis [ref=e104]: you
+                    - text: can type correctly.
+      - contentinfo [ref=e105]: kbio Behavioral Biometrics SDK Demo — K-Protect by Kreesalis
+  - button "Open Next.js Dev Tools" [ref=e122] [cursor=pointer]:
+    - img [ref=e123]
+  - alert [ref=e126]

@@ -1,0 +1,50 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnrm949a_24",
+    "session_id": "9d22f116-3a2c-b6ea-832a-68b5144f726b",
+    "user_hash": "anonymous",
+    "device_uuid": "demo-device-MacIntel",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775747567566,
+    "pulse_number": 24
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [],
+  "pointer_windows": [
+    {
+      "event_count": 38,
+      "movement": {
+        "velocity_mean": 212.739927252493,
+        "velocity_stdev": 138.41803697594366,
+        "acceleration_mean": 267.10321962676005,
+        "curvature_mean": 0.3130751793997055,
+        "path_efficiency": 0.6062310254360369,
+        "total_distance": 628.4297893295874,
+        "direction_changes": 14
+      },
+      "clicks": {
+        "count": 0,
+        "hold_stdev": 16.57604754448718,
+        "overshoot_rate": 0.0341914651141898
+      },
+      "idle": {
+        "count": 0,
+        "mean_duration_ms": 1376.7020818029719
+      }
+    }
+  ],
+  "touch_windows": [],
+  "sensor_windows": [],
+  "scroll_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T15:12:47.579Z"
+  }
+}

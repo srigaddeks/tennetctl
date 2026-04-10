@@ -1,0 +1,36 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - img [ref=e9]
+        - heading "Create account" [level=1] [ref=e12]
+        - paragraph [ref=e13]: kbio SDK demo — behavioral biometrics
+      - generic [ref=e14]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: "1"
+          - generic [ref=e18]: Credentials
+        - generic [ref=e21]:
+          - generic [ref=e22]: "2"
+          - generic [ref=e23]: Mobile & MPIN
+        - generic [ref=e26]:
+          - generic [ref=e27]: "3"
+          - generic [ref=e28]: Security Questions
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: Username*
+          - textbox "e.g. alice" [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]: Email*
+          - textbox "alice@example.com" [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]: Password*
+          - textbox "At least 6 characters" [ref=e38]
+        - generic [ref=e39]:
+          - generic [ref=e40]: Confirm password*
+          - textbox "Repeat password" [ref=e41]
+        - button "Next" [ref=e43] [cursor=pointer]
+      - paragraph [ref=e44]:
+        - text: Already have an account?
+        - link "Sign in" [ref=e45] [cursor=pointer]:
+          - /url: /login
+  - alert [ref=e46]

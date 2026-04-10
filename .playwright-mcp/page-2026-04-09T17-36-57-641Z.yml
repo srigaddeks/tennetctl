@@ -1,0 +1,166 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]: kb
+          - generic [ref=e8]:
+            - generic [ref=e9]: kbio Demo
+            - generic [ref=e10]: Behavioral Biometrics SDK
+        - generic [ref=e106]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: SDK Active
+            - generic [ref=e110]:
+              - generic [ref=e111]: D:--
+              - generic [ref=e112]: T:50%
+          - generic [ref=e113]: p:9
+        - navigation [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: Overview
+            - list [ref=e14]:
+              - listitem [ref=e15]:
+                - link "Dashboard" [ref=e16] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e18]
+                  - generic [ref=e23]: Dashboard
+          - generic [ref=e24]:
+            - generic [ref=e25]: SDK Demos
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Behavioral Login" [ref=e28] [cursor=pointer]:
+                  - /url: /login
+                  - img [ref=e30]
+                  - generic [ref=e33]: Behavioral Login
+              - listitem [ref=e34]:
+                - link "Live Scores" [ref=e35] [cursor=pointer]:
+                  - /url: /scores
+                  - img [ref=e37]
+                  - generic [ref=e39]: Live Scores
+              - listitem [ref=e40]:
+                - link "V2 AI Engine" [ref=e41] [cursor=pointer]:
+                  - /url: /v2-scores
+                  - img [ref=e43]
+                  - generic [ref=e46]: V2 AI Engine
+              - listitem [ref=e47]:
+                - link "KP-Challenge" [ref=e48] [cursor=pointer]:
+                  - /url: /challenge
+                  - img [ref=e50]
+                  - generic [ref=e52]: KP-Challenge
+              - listitem [ref=e54]:
+                - link "Bot Detection" [active] [ref=e55] [cursor=pointer]:
+                  - /url: /bot-sim
+                  - img [ref=e57]
+                  - generic [ref=e59]: Bot Detection
+              - listitem [ref=e60]:
+                - link "Multi-User" [ref=e61] [cursor=pointer]:
+                  - /url: /multi-user
+                  - img [ref=e63]
+                  - generic [ref=e68]: Multi-User
+        - generic [ref=e69]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: "sid: 50c78bde..."
+            - generic [ref=e116]: "uptime: 42s"
+          - generic [ref=e70]:
+            - generic [ref=e71]: kbio SDK Demo
+            - button "☾ Dark" [ref=e72] [cursor=pointer]:
+              - text: ☾
+              - generic [ref=e73]: Dark
+    - generic [ref=e74]:
+      - main [ref=e75]:
+        - generic [ref=e187]:
+          - generic [ref=e188]:
+            - heading "Bot Detection" [level=1] [ref=e189]
+            - paragraph [ref=e190]: Real-time bot detection from your actual browser behavior across 4 detection layers
+          - generic [ref=e191]:
+            - generic [ref=e193]:
+              - generic [ref=e194]:
+                - img [ref=e195]
+                - generic [ref=e198]:
+                  - generic [ref=e199]: "0.0"
+                  - generic [ref=e200]: "%"
+              - generic [ref=e201]:
+                - generic [ref=e202]: Bot Score
+                - generic [ref=e203]: Primary detection
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - img [ref=e207]
+                - generic [ref=e211]: "--"
+              - generic [ref=e212]:
+                - generic [ref=e213]: Drift Score
+                - generic [ref=e214]: Pattern deviation
+            - generic [ref=e216]:
+              - generic [ref=e217]:
+                - img [ref=e218]
+                - generic [ref=e222]: "--"
+              - generic [ref=e223]:
+                - generic [ref=e224]: Anomaly Score
+                - generic [ref=e225]: Statistical outlier
+            - generic [ref=e227]:
+              - generic [ref=e228]:
+                - img [ref=e229]
+                - generic [ref=e232]:
+                  - generic [ref=e233]: "50.0"
+                  - generic [ref=e234]: "%"
+              - generic [ref=e235]:
+                - generic [ref=e236]: Trust Score
+                - generic [ref=e237]: Session trust
+          - generic [ref=e238]:
+            - generic [ref=e239]:
+              - generic [ref=e240]: Humanness Analysis
+              - generic [ref=e241]: HUMAN VERIFIED
+            - generic [ref=e242]:
+              - generic [ref=e243]:
+                - generic [ref=e244]: 0.0%
+                - generic [ref=e245]: Bot Score
+              - generic [ref=e246]:
+                - generic [ref=e247]: 0.0%
+                - generic [ref=e248]: Replay Score
+              - generic [ref=e249]:
+                - generic [ref=e250]: 0.0%
+                - generic [ref=e251]: Automation
+              - generic [ref=e252]:
+                - generic [ref=e253]: 50.0%
+                - generic [ref=e254]: Population Anomaly
+          - heading "Detection Layers" [level=2] [ref=e255]
+          - generic [ref=e256]:
+            - generic [ref=e257]:
+              - generic [ref=e258]:
+                - generic [ref=e259]: Timing Analysis
+                - generic [ref=e260]: Keystroke dwell/flight variance and rhythm patterns
+              - generic [ref=e261]:
+                - generic [ref=e262]: Dwell time coefficient of variation
+                - generic [ref=e263]: Flight time consistency
+                - generic [ref=e264]: Bigram timing variance
+                - generic [ref=e265]: Hold duration distribution
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - generic [ref=e268]: Movement Analysis
+                - generic [ref=e269]: Pointer trajectory curvature and acceleration
+              - generic [ref=e270]:
+                - generic [ref=e271]: Curvature (organic vs. linear)
+                - generic [ref=e272]: Acceleration variability
+                - generic [ref=e273]: Jitter presence
+                - generic [ref=e274]: Overshoot patterns
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e277]: Behavioral Entropy
+                - generic [ref=e278]: Input pattern randomness and timing regularity
+              - generic [ref=e279]:
+                - generic [ref=e280]: Shannon entropy of input
+                - generic [ref=e281]: Sequence pattern detection
+                - generic [ref=e282]: Timing regularity score
+                - generic [ref=e283]: Pause distribution shape
+            - generic [ref=e284]:
+              - generic [ref=e285]:
+                - generic [ref=e286]: Session Fingerprint
+                - generic [ref=e287]: Device + environment consistency checks
+              - generic [ref=e288]:
+                - generic [ref=e289]: WebGL hash stability
+                - generic [ref=e290]: Canvas fingerprint
+                - generic [ref=e291]: Audio context presence
+                - generic [ref=e292]: Screen resolution check
+          - generic [ref=e293]: Interact with this page naturally. The scoring engine analyzes your real behavior in real-time. All scores above are from the live backend — no simulated data.
+      - contentinfo [ref=e105]: kbio Behavioral Biometrics SDK Demo — K-Protect by Kreesalis
+  - button "Open Next.js Dev Tools" [ref=e122] [cursor=pointer]:
+    - img [ref=e123]
+  - alert [ref=e126]

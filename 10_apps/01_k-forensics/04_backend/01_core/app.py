@@ -44,6 +44,10 @@ _challenge_routes = importlib.import_module("03_kbio.challenge.routes")
 _devices_routes = importlib.import_module("03_kbio.devices.routes")
 _trust_routes = importlib.import_module("03_kbio.trust.routes")
 _policies_routes = importlib.import_module("03_kbio.policies.routes")
+_api_keys_routes = importlib.import_module("03_kbio.api_keys.routes")
+_signals_routes = importlib.import_module("03_kbio.signals.routes")
+_threat_types_routes = importlib.import_module("03_kbio.threat_types.routes")
+_demo_auth_routes = importlib.import_module("03_kbio.demo_auth.routes")
 get_settings = _config.get_settings
 mount_proxy = _proxy.mount_proxy
 
@@ -118,6 +122,10 @@ def create_app() -> FastAPI:
     fastapi_app.include_router(_devices_routes.router)
     fastapi_app.include_router(_trust_routes.router)
     fastapi_app.include_router(_policies_routes.router)
+    fastapi_app.include_router(_api_keys_routes.router)
+    fastapi_app.include_router(_signals_routes.router)
+    fastapi_app.include_router(_threat_types_routes.router)
+    fastapi_app.include_router(_demo_auth_routes.router)
 
     # Catch-all proxy to tennetctl — must be mounted LAST
     mount_proxy(fastapi_app)

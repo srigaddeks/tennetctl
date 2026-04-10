@@ -1,12 +1,9 @@
 /**
  * Local batch ingestion endpoint.
  *
- * Instead of sending to api.kprotect.io, the demo SDK sends to this
- * Next.js API route which saves each batch as a JSON file:
- *
- *   /tmp/kp-batches/{session_id}_{pulse}.json
- *
- * This lets Sri review the raw behavioral data locally.
+ * Forwards batches to the real scoring backend at localhost:8100.
+ * Returns error if backend is unavailable — no mock fallback.
+ * Always saves batches to disk for debugging.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,6 +11,9 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 const BATCH_DIR = join(process.cwd(), '..', '..', 'tmp', 'kp-batches');
+const KBIO_BACKEND_URL = process.env.KBIO_BACKEND_URL ?? 'http://localhost:8100';
+const KBIO_URL = `${KBIO_BACKEND_URL}/v1/internal/ingest`;
+const API_KEY = process.env.KBIO_API_KEY ?? 'kbio_demo_site_dev_key_2026';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -22,7 +22,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     let bodyText: string;
 
     if (contentEncoding === 'gzip') {
-      // Decompress gzip body
       const body = await request.arrayBuffer();
       const ds = new DecompressionStream('gzip');
       const writer = ds.writable.getWriter();
@@ -44,112 +43,60 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const batch = JSON.parse(bodyText);
 
-    // Extract security headers
+    // Extract security headers for logging
     const keyId = request.headers.get('x-kp-key-id');
     const authToken = request.headers.get('x-kp-auth-token');
-    const authTimestamp = request.headers.get('x-kp-auth-timestamp');
-    const nonce = request.headers.get('x-kp-nonce');
-    const signature = request.headers.get('x-kp-signature');
     const unsigned = request.headers.get('x-kp-unsigned');
-    const checksum = request.headers.get('x-kp-checksum');
-    const originHash = request.headers.get('x-kp-origin-hash');
-
-    // Log security context
     const authMethod = authToken ? 'hmac' : (unsigned ? 'unsigned' : 'legacy');
-    console.log(`[KP] Auth: method=${authMethod} key_id=${keyId ?? 'none'} nonce=${nonce ?? 'none'}`);
-    if (checksum) console.log(`[KP] Checksum: ${checksum.slice(0, 16)}...`);
-    if (originHash) console.log(`[KP] Origin-Hash: ${originHash.slice(0, 16)}...`);
-    if (signature) console.log(`[KP] Signature: ${signature.slice(0, 16)}...`);
+    console.log(`[KP] Auth: method=${authMethod} key_id=${keyId ?? 'none'}`);
 
-    // Validate HMAC auth (soft — warn on failure, don't reject in demo mode)
-    if (authToken && keyId && authTimestamp && nonce) {
-      try {
-        const apiKey = 'kp_test_demo'; // Known demo key
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-          'raw',
-          encoder.encode(apiKey),
-          { name: 'HMAC', hash: 'SHA-256' },
-          false,
-          ['verify', 'sign'],
-        );
-        const expectedMessage = `${authTimestamp}.${nonce}`;
-        const expectedSig = await crypto.subtle.sign('HMAC', key, encoder.encode(expectedMessage));
-        const expectedHex = Array.from(new Uint8Array(expectedSig))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-
-        if (expectedHex === authToken) {
-          console.log(`[KP] ✓ HMAC auth verified for key_id=${keyId}`);
-        } else {
-          console.warn(`[KP] ✗ HMAC auth FAILED for key_id=${keyId}`);
-        }
-      } catch (err) {
-        console.warn(`[KP] HMAC verification error:`, err);
-      }
-    } else if (unsigned) {
-      console.warn(`[KP] ⚠ Unsigned batch received`);
-    }
-
-    // Log sendBeacon auth (can't set custom headers, key is in body)
-    if (batch.api_key_id) {
-      console.log(`[KP] sendBeacon auth: key_id=${batch.api_key_id}`);
-    }
-
-    // Build filename: {session_id}_{pulse}_{type}.json
-    const sessionId = (batch.session_id ?? 'unknown').slice(0, 8);
-    const pulse = batch.pulse ?? 0;
+    // Save batch to disk for debugging (fire-and-forget)
+    const sessionId = (batch.session_id ?? batch.header?.session_id ?? 'unknown').slice(0, 8);
+    const pulse = batch.pulse ?? batch.header?.pulse_number ?? 0;
     const batchType = batch.type ?? 'unknown';
     const timestamp = Date.now();
     const filename = `${sessionId}_p${String(pulse).padStart(4, '0')}_${batchType}_${timestamp}.json`;
 
-    // Ensure directory exists
-    await mkdir(BATCH_DIR, { recursive: true });
+    mkdir(BATCH_DIR, { recursive: true })
+      .then(() => writeFile(
+        join(BATCH_DIR, filename),
+        JSON.stringify({ ...batch, _demo_meta: { auth_method: authMethod, received_at: new Date().toISOString() } }, null, 2),
+        'utf-8',
+      ))
+      .then(() => console.log(`[KP] Saved batch: ${filename}`))
+      .catch(err => console.warn(`[KP] Failed to save batch: ${err}`));
 
-    // Write pretty-printed JSON
-    const filePath = join(BATCH_DIR, filename);
-    const batchWithMeta = {
-      ...batch,
-      _demo_meta: {
-        auth_method: authToken ? 'hmac' : (unsigned ? 'unsigned' : 'legacy'),
-        key_id: keyId,
-        nonce,
-        signature: signature ?? null,
-        checksum: checksum ?? null,
-        origin_hash: originHash ?? null,
-        received_at: new Date().toISOString(),
-      },
-    };
-    await writeFile(filePath, JSON.stringify(batchWithMeta, null, 2), 'utf-8');
-
-    // Log to console for dev visibility
-    console.log(`[KP] Saved batch: ${filename} (${batchType}, pulse=${pulse})`);
-
-    // Return a fake DriftScoreResponse
-    const response = {
-      ok: true,
-      data: {
-        batch_id: batch.batch_id ?? 'unknown',
-        processed_at: Date.now(),
-        drift_score: Math.random() * 0.3, // low drift for testing
-        confidence: Math.min(0.5 + pulse * 0.02, 0.95),
-        signal_scores: {
-          keystroke: Math.random() * 0.2,
-          pointer: Math.random() * 0.15,
-          credential: Math.random() * 0.1,
+    // Forward to real V2 scoring backend
+    try {
+      const backendRes = await fetch(KBIO_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': API_KEY,
         },
-        action: 'allow' as const,
-        auth_state: {
-          session_trust: 'trusted' as const,
-          device_known: true,
-          baseline_age_days: 0,
-          baseline_quality: 'forming' as const,
-        },
-        alerts: [],
-      },
-    };
+        body: bodyText,
+        signal: AbortSignal.timeout(5000),
+      });
 
-    return NextResponse.json(response);
+      if (!backendRes.ok) {
+        const errText = await backendRes.text().catch(() => 'unknown');
+        console.warn(`[KP] Backend returned ${backendRes.status}: ${errText.slice(0, 200)}`);
+        return NextResponse.json(
+          { ok: false, error: { code: 'BACKEND_ERROR', message: `Backend returned ${backendRes.status}` } },
+          { status: backendRes.status },
+        );
+      }
+
+      const v2Data = await backendRes.json();
+      console.log(`[KP] V2 scores received: action=${v2Data.data?.verdict?.action ?? 'unknown'} processing=${v2Data.data?.processing_ms?.toFixed(0) ?? '?'}ms`);
+      return NextResponse.json(v2Data);
+    } catch (backendErr) {
+      console.warn(`[KP] Backend unavailable: ${backendErr}`);
+      return NextResponse.json(
+        { ok: false, error: { code: 'BACKEND_UNAVAILABLE', message: 'Scoring backend is not running' } },
+        { status: 503 },
+      );
+    }
   } catch (err) {
     console.error('[KP] Ingest error:', err);
     return NextResponse.json(
@@ -158,3 +105,4 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 }
+

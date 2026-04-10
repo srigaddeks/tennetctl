@@ -1,0 +1,79 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnrr1t61_7",
+    "session_id": "e1b5f27f-f146-4aea-9758-ceb46e3e7704",
+    "user_hash": "anonymous",
+    "device_uuid": "a8d4a644-646b-4094-a83f-5e671eac87c8",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775755624681,
+    "pulse_number": 7
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "zone_dwell_means": [
+        2.800000000745058,
+        0,
+        1.8999999994412065,
+        0,
+        0,
+        0,
+        1.800000000745058,
+        2,
+        0,
+        0
+      ],
+      "zone_dwell_stdevs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_flight_means": [
+        0,
+        0,
+        0.35000000055879354,
+        0,
+        0,
+        0,
+        0.19999999925494194,
+        0.5,
+        0,
+        0
+      ]
+    }
+  ],
+  "pointer_windows": [],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T17:27:04.699Z"
+  }
+}

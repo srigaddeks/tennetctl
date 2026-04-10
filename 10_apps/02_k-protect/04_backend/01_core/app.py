@@ -94,6 +94,9 @@ def create_app() -> FastAPI:
     _policy_selections = importlib.import_module("02_features.policy_selections.routes")
     fastapi_app.include_router(_policy_selections.router)
 
+    _signal_selections = importlib.import_module("02_features.signal_selections.routes")
+    fastapi_app.include_router(_signal_selections.router)
+
     _policy_sets_mod = importlib.import_module("02_features.policy_sets.routes")
     fastapi_app.include_router(_policy_sets_mod.router)
 

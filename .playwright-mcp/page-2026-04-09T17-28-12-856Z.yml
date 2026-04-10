@@ -1,0 +1,65 @@
+- generic [ref=e2]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: kb
+        - generic [ref=e8]:
+          - generic [ref=e9]: kbio Demo
+          - generic [ref=e10]: Behavioral Biometrics SDK
+      - navigation [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: Overview
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Dashboard" [ref=e16] [cursor=pointer]:
+                - /url: /
+                - img [ref=e18]
+                - generic [ref=e23]: Dashboard
+        - generic [ref=e24]:
+          - generic [ref=e25]: SDK Demos
+          - list [ref=e26]:
+            - listitem [ref=e27]:
+              - link "Behavioral Login" [ref=e28] [cursor=pointer]:
+                - /url: /login
+                - img [ref=e30]
+                - generic [ref=e33]: Behavioral Login
+            - listitem [ref=e34]:
+              - link "Live Scores" [ref=e35] [cursor=pointer]:
+                - /url: /scores
+                - img [ref=e37]
+                - generic [ref=e39]: Live Scores
+            - listitem [ref=e40]:
+              - link "V2 AI Engine" [ref=e41] [cursor=pointer]:
+                - /url: /v2-scores
+                - img [ref=e43]
+                - generic [ref=e46]: V2 AI Engine
+            - listitem [ref=e48]:
+              - link "KP-Challenge" [ref=e49] [cursor=pointer]:
+                - /url: /challenge
+                - img [ref=e51]
+                - generic [ref=e53]: KP-Challenge
+            - listitem [ref=e54]:
+              - link "Bot Detection" [ref=e55] [cursor=pointer]:
+                - /url: /bot-sim
+                - img [ref=e57]
+                - generic [ref=e59]: Bot Detection
+            - listitem [ref=e60]:
+              - link "Multi-User" [ref=e61] [cursor=pointer]:
+                - /url: /multi-user
+                - img [ref=e63]
+                - generic [ref=e68]: Multi-User
+      - generic [ref=e70]:
+        - generic [ref=e71]: kbio SDK Demo
+        - button "☾ Dark" [ref=e72] [cursor=pointer]:
+          - text: ☾
+          - generic [ref=e73]: Dark
+  - generic [ref=e74]:
+    - main [ref=e75]:
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - heading "V2 AI Scoring Engine" [level=1] [ref=e78]
+          - paragraph [ref=e79]: Full 22-score behavioral biometrics analysis
+        - generic [ref=e80]:
+          - generic [ref=e82]: Waiting for V2 scores...
+          - generic [ref=e83]: The mock SDK is posting behavioral batches to the scoring engine. Scores will appear once the first response arrives.
+    - contentinfo [ref=e84]: kbio Behavioral Biometrics SDK Demo — K-Protect by Kreesalis

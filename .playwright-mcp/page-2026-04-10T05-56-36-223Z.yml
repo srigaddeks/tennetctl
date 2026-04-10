@@ -1,0 +1,30 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: KP
+        - heading "Create Account" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Your own policy workspace, ready in seconds
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: Username
+            - textbox "min 3 characters" [ref=e14]: kptest01
+          - generic [ref=e15]:
+            - generic [ref=e16]: Email
+            - textbox "you@example.com" [ref=e17]: kptest01@example.com
+          - generic [ref=e18]:
+            - generic [ref=e19]: Password
+            - textbox "at least 6 characters" [ref=e20]: password123
+          - generic [ref=e21]:
+            - generic [ref=e22]: Confirm password
+            - textbox "repeat password" [ref=e23]: password123
+          - generic [ref=e39]: Registration failed
+          - button "Create Account" [ref=e24] [cursor=pointer]
+        - generic [ref=e25]:
+          - text: Already have an account?
+          - link "Sign in" [ref=e26] [cursor=pointer]:
+            - /url: /login
+  - button "Open Next.js Dev Tools" [ref=e33] [cursor=pointer]:
+    - img [ref=e34]
+  - alert [ref=e27]

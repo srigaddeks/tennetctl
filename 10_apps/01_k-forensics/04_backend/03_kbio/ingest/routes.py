@@ -1,9 +1,9 @@
 """kbio ingest routes.
 
-POST /v1/internal/ingest — Receive behavioral batch (called by kprotect)
+POST /v1/internal/ingest — Receive behavioral batch (called by SDK/kprotect)
 POST /v1/internal/score  — On-demand composite score (called by kprotect)
 
-Both require X-Internal-Service-Token header for service-to-service auth.
+Both require X-API-Key or X-Internal-Service-Token header.
 """
 
 from __future__ import annotations
@@ -15,25 +15,17 @@ from fastapi import APIRouter, Request
 
 _service = importlib.import_module("03_kbio.ingest.service")
 _schemas = importlib.import_module("03_kbio.ingest.schemas")
+_auth = importlib.import_module("01_core.api_key_auth")
 _errors = importlib.import_module("01_core.errors")
-_config = importlib.import_module("01_core.config")
 _resp = importlib.import_module("01_core.response")
 
 router = APIRouter(prefix="/v1/internal", tags=["kbio-ingest"])
 
 
-def _validate_service_token(request: Request) -> None:
-    """Validate internal service-to-service auth token."""
-    settings = _config.get_settings()
-    token = request.headers.get("X-Internal-Service-Token", "")
-    if token != settings.kbio_internal_service_token:
-        raise _errors.AppError("UNAUTHORIZED", "Invalid service token.", 401)
-
-
 @router.post("/ingest")
 async def ingest_batch(request: Request) -> dict:
     """Receive a behavioral batch and return drift scores."""
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     # Handle gzip-compressed bodies
     body = await request.body()
@@ -56,7 +48,7 @@ async def ingest_batch(request: Request) -> dict:
 @router.post("/score")
 async def on_demand_score(request: Request) -> dict:
     """Return a composite risk score for a session (called by kprotect)."""
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     body = await request.json()
     score_req = _schemas.ScoreRequest(**body)

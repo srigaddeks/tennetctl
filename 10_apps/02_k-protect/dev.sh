@@ -26,6 +26,8 @@ cd "$SCRIPT_DIR/04_backend"
 export KP_TENNETCTL_API_URL="http://localhost:58000"
 export KP_KBIO_API_URL="http://localhost:8100"
 export ALLOWED_ORIGINS="http://localhost:3200,http://127.0.0.1:3200"
+# k-protect imports 03_kbio._signals._registry from k-forensics backend
+export PYTHONPATH="${SCRIPT_DIR}/../01_k-forensics/04_backend"
 
 if [ ! -d ".venv" ]; then
     echo "Creating Python venv..."

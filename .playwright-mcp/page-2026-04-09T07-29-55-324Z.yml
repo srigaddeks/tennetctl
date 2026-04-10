@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: k-forensics
+    - generic [ref=e35]:
+      - heading "Set up your team" [level=1] [ref=e36]
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - text: Display name
+            - generic [ref=e40]: (optional)
+          - textbox "Display name (optional)" [ref=e41]:
+            - /placeholder: Jane Smith
+        - generic [ref=e42]:
+          - generic [ref=e43]: Username
+          - textbox "Username" [ref=e44]:
+            - /placeholder: jane.smith
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - text: Email
+            - generic [ref=e47]: (optional)
+          - textbox "Email (optional)" [ref=e48]:
+            - /placeholder: jane@example.com
+        - generic [ref=e49]:
+          - generic [ref=e50]: Password
+          - textbox "Password" [ref=e51]:
+            - /placeholder: Min. 8 characters
+        - generic [ref=e52]:
+          - generic [ref=e53]: Confirm password
+          - textbox "Confirm password" [ref=e54]:
+            - /placeholder: Repeat password
+        - generic [ref=e55]:
+          - generic [ref=e56]: Organisation name
+          - textbox "Organisation name" [ref=e57]:
+            - /placeholder: Acme Forensics Ltd.
+        - generic [ref=e58]:
+          - button "Back" [ref=e59] [cursor=pointer]
+          - button "Continue" [ref=e60] [cursor=pointer]
+  - status [ref=e25]:
+    - generic [ref=e26]:
+      - img [ref=e28]
+      - generic [ref=e30]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e31] [cursor=pointer]:
+          - img [ref=e32]
+  - alert [ref=e24]

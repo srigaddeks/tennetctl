@@ -1,0 +1,65 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e7]: KF
+          - generic [ref=e8]:
+            - text: k-forensics
+            - paragraph [ref=e9]: Digital forensics platform
+        - navigation "Main navigation" [ref=e10]:
+          - generic [ref=e11]:
+            - generic [ref=e12]: Overview
+            - list [ref=e13]:
+              - listitem [ref=e14]:
+                - link "Dashboard" [ref=e15] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e16]
+                  - generic [ref=e21]: Dashboard
+          - generic [ref=e22]:
+            - generic [ref=e23]: Behavioral Intelligence
+            - list [ref=e24]:
+              - listitem [ref=e25]:
+                - link "kbio Overview" [ref=e26] [cursor=pointer]:
+                  - /url: /kbio
+                  - img [ref=e27]
+                  - generic [ref=e29]: kbio Overview
+              - listitem [ref=e30]:
+                - link "Sessions" [ref=e31] [cursor=pointer]:
+                  - /url: /kbio/sessions
+                  - img [ref=e32]
+                  - generic [ref=e35]: Sessions
+              - listitem [ref=e36]:
+                - link "User Profiles" [ref=e37] [cursor=pointer]:
+                  - /url: /kbio/users
+                  - img [ref=e38]
+                  - generic [ref=e47]: User Profiles
+              - listitem [ref=e48]:
+                - link "Devices" [ref=e49] [cursor=pointer]:
+                  - /url: /kbio/devices
+                  - img [ref=e50]
+                  - generic [ref=e52]: Devices
+              - listitem [ref=e53]:
+                - link "Policies" [ref=e54] [cursor=pointer]:
+                  - /url: /kbio/policies
+                  - img [ref=e55]
+                  - generic [ref=e58]: Policies
+          - generic [ref=e59]:
+            - generic [ref=e60]: Administration
+            - list [ref=e61]:
+              - listitem [ref=e62]:
+                - link "Team" [ref=e63] [cursor=pointer]:
+                  - /url: /settings/members
+                  - img [ref=e64]
+                  - generic [ref=e69]: Team
+              - listitem [ref=e70]:
+                - link "Settings" [ref=e71] [cursor=pointer]:
+                  - /url: /settings
+                  - img [ref=e72]
+                  - generic [ref=e75]: Settings
+    - main [ref=e77]:
+      - generic [ref=e79]:
+        - heading "404" [level=1] [ref=e80]
+        - heading "This page could not be found." [level=2] [ref=e82]
+  - region "Notifications alt+T"
+  - alert [ref=e83]

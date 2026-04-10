@@ -13,16 +13,9 @@ export async function POST(req: Request) {
     const data = await res.json()
     return Response.json(data)
   } catch {
-    // If kbio backend is not running, return a mock response
-    return Response.json({
-      ok: true,
-      data: {
-        batch_id: 'mock',
-        processed_at: Date.now(),
-        drift_score: Math.random() * 0.3,
-        confidence: 0.6,
-        action: 'allow',
-      },
-    })
+    return Response.json(
+      { ok: false, error: { code: 'KBIO_UNAVAILABLE', message: 'kbio backend is not running' } },
+      { status: 503 },
+    )
   }
 }

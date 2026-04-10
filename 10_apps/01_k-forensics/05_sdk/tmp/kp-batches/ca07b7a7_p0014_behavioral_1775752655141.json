@@ -1,0 +1,79 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnrpa5ug_14",
+    "session_id": "ca07b7a7-67cc-1523-7424-2872d87c6350",
+    "user_hash": "anonymous",
+    "device_uuid": "demo-device-MacIntel",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775752655128,
+    "pulse_number": 14
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        0,
+        4,
+        1,
+        0,
+        2,
+        2,
+        4,
+        3,
+        1,
+        3
+      ],
+      "zone_dwell_means": [
+        81.47959595785854,
+        123.10381872376192,
+        137.99085585016985,
+        130.82979305113338,
+        117.55152739333185,
+        129.5873352309861,
+        117.72043057534029,
+        89.71428614332069,
+        129.14914598347775,
+        112.88144093167774
+      ],
+      "zone_dwell_stdevs": [
+        11.300334577053892,
+        24.141795473916872,
+        21.139478438717674,
+        14.792558133411264,
+        10.832382699409695,
+        29.891181427668748,
+        16.754356869388438,
+        21.8873077706325,
+        17.721471480401835,
+        22.56905948011386
+      ],
+      "zone_flight_means": [
+        152.88088642358323,
+        127.48428282835775,
+        162.62423598345535,
+        141.86693152573588,
+        138.9678693146931,
+        133.85896243614653,
+        153.7883304235093,
+        142.53423065554148,
+        153.73193084381882,
+        166.22357545729727
+      ]
+    }
+  ],
+  "pointer_windows": [],
+  "touch_windows": [],
+  "sensor_windows": [],
+  "scroll_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T16:37:35.142Z"
+  }
+}

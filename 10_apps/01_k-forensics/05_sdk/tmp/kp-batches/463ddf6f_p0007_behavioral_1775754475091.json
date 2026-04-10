@@ -1,0 +1,101 @@
+{
+  "type": "behavioral",
+  "header": {
+    "batch_id": "b_mnrqd64m_7",
+    "session_id": "463ddf6f-bbf7-4113-ad2e-02afcf26a290",
+    "user_hash": "anonymous",
+    "device_uuid": "a8d4a644-646b-4094-a83f-5e671eac87c8",
+    "sdk_version": "0.1.0-demo",
+    "sdk_platform": "web",
+    "sent_at": 1775754475078,
+    "pulse_number": 7
+  },
+  "context": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "hardware_concurrency": 12
+  },
+  "signals": {},
+  "keystroke_windows": [
+    {
+      "zone_hit_counts": [
+        0,
+        2,
+        1,
+        7,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_dwell_means": [
+        0,
+        1.900000000372529,
+        2.199999999254942,
+        1.8571428571428572,
+        0,
+        1.800000000745058,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_dwell_stdevs": [
+        0,
+        0.19999999925494275,
+        0,
+        0.6986868148478689,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "zone_flight_means": [
+        0,
+        966.8499999996275,
+        244.40000000037253,
+        218.83333333333334,
+        0,
+        284,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "pointer_windows": [
+    {
+      "event_count": 43,
+      "movement": {
+        "velocity_mean": 0.8724428021491258,
+        "velocity_stdev": 1.026141400366505,
+        "acceleration_mean": 0.015553667983524233,
+        "curvature_mean": 0,
+        "path_efficiency": 0.8396620061721629,
+        "total_distance": 785.5237421834184,
+        "direction_changes": 15
+      },
+      "clicks": {
+        "count": 1,
+        "hold_stdev": 0,
+        "overshoot_rate": 0
+      },
+      "idle": {
+        "count": 1,
+        "mean_duration_ms": 3208.199999999255
+      }
+    }
+  ],
+  "touch_windows": [],
+  "scroll_windows": [],
+  "sensor_windows": [],
+  "credential_fields": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T17:07:55.092Z"
+  }
+}

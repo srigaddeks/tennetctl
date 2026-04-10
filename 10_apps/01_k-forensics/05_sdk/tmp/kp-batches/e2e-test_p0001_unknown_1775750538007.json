@@ -1,0 +1,16 @@
+{
+  "header": {
+    "session_id": "e2e-test-001",
+    "device_id": "dev-test-001",
+    "user_hash": "testhash",
+    "pulse_number": 1,
+    "batch_id": "bt-1",
+    "type": "keystroke",
+    "timestamp_ms": 1000
+  },
+  "events": [],
+  "_demo_meta": {
+    "auth_method": "legacy",
+    "received_at": "2026-04-09T16:02:18.011Z"
+  }
+}

@@ -217,12 +217,11 @@ async def generate_challenge(
             user_hash=user_hash,
             actor_id=user_hash,
         )
-        # Store core attrs in EAV.
+        # Store core attrs in EAV (codes must match dim_attr_defs seeds).
         for attr_code, value in [
             ("purpose", purpose),
             ("phrase", phrase),
-            ("nonce", nonce),
-            ("expires_at_ms", str(expires_at_ms)),
+            ("expires_at", str(expires_at_ms)),
             ("used", "false"),
         ]:
             await upsert_challenge_attr(

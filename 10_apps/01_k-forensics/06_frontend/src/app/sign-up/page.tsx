@@ -77,18 +77,25 @@ export default function SignUpPage() {
         ? form.orgName
         : `${personalName}'s org`;
 
-    const res = await signup({
-      username: form.username,
-      password: form.password,
-      email: form.email || undefined,
-      display_name: form.displayName || undefined,
-      account_type: accountType,
-      org_name: effectiveOrgName,
-      default_workspace_name: "kbio",
-    });
+    let res;
+    try {
+      res = await signup({
+        username: form.username,
+        password: form.password,
+        email: form.email || undefined,
+        display_name: form.displayName || undefined,
+        account_type: accountType,
+        org_name: effectiveOrgName,
+        default_workspace_name: "kbio",
+      });
+    } catch (e) {
+      setProvisionError(e instanceof Error ? e.message : "Unexpected error");
+      setProvisionStage(-1);
+      return;
+    }
 
     if (!res.ok) {
-      setProvisionError(res.error.message);
+      setProvisionError(res.error?.message ?? "Signup failed");
       setProvisionStage(-1);
       return;
     }

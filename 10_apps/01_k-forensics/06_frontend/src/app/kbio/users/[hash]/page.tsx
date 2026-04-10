@@ -10,45 +10,25 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { baselineQualityVariant, truncateId } from "@/lib/kbio-utils";
-import type { KbioUserProfileData, KbioCentroidData } from "@/types/api";
-
-const MOCK_CENTROIDS: KbioCentroidData[] = [
-  { id: "cen-001", modality: "keystroke", platform: "windows", input_method: "physical_keyboard", weight: 0.35, sample_count: 4820, created_at: "2026-03-01T10:00:00Z" },
-  { id: "cen-002", modality: "mouse", platform: "windows", input_method: "optical_mouse", weight: 0.25, sample_count: 8120, created_at: "2026-03-01T10:00:00Z" },
-  { id: "cen-003", modality: "touch", platform: "android", input_method: "capacitive_touch", weight: 0.20, sample_count: 2340, created_at: "2026-03-15T08:00:00Z" },
-  { id: "cen-004", modality: "scroll", platform: "windows", input_method: "scroll_wheel", weight: 0.10, sample_count: 1560, created_at: "2026-03-01T10:00:00Z" },
-  { id: "cen-005", modality: "accelerometer", platform: "android", input_method: "device_sensor", weight: 0.10, sample_count: 980, created_at: "2026-03-15T08:00:00Z" },
-];
-
-const MOCK_PROFILE: KbioUserProfileData = {
-  user_hash: "usr_h4sh_001_abc",
-  baseline_quality: "strong",
-  profile_maturity: 0.95,
-  total_sessions: 87,
-  total_events: 124500,
-  last_seen_at: "2026-04-09T14:32:00Z",
-  centroids: MOCK_CENTROIDS,
-  credential_profiles: 3,
-  device_count: 2,
-};
-
-const MOCK_DEVICES = [
-  { device_uuid: "dev-uuid-001-abcdef", platform: "Windows 11", trust_status: "trusted", last_seen_at: "2026-04-09T14:32:00Z" },
-  { device_uuid: "dev-uuid-005-ghijkl", platform: "Android 14", trust_status: "trusted", last_seen_at: "2026-04-08T18:45:00Z" },
-];
+import { baselineQualityVariant } from "@/lib/kbio-utils";
+import { getKbioProfile } from "@/lib/api";
+import type { KbioUserProfileData } from "@/types/api";
 
 export default function UserDetailPage() {
   const params = useParams<{ hash: string }>();
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
-
-  const profile = { ...MOCK_PROFILE, user_hash: params.hash ?? MOCK_PROFILE.user_hash };
+  const [profile, setProfile] = React.useState<KbioUserProfileData | null>(null);
 
   React.useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 300);
-    return () => clearTimeout(t);
-  }, []);
+    if (!params.hash) return;
+    getKbioProfile(params.hash)
+      .then((res) => {
+        if (res.ok && res.data) setProfile(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [params.hash]);
 
   if (loading) {
     return (
@@ -58,6 +38,19 @@ export default function UserDetailPage() {
         <Skeleton className="h-4 w-48 mb-6" />
         <Skeleton className="h-40 rounded-md mb-8" />
         <Skeleton className="h-60 rounded-md" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="px-8 py-8 max-w-[1100px]">
+        <Button variant="ghost" size="sm" className="mb-4 -ml-2" onClick={() => router.push("/kbio/users")}>
+          <ArrowLeft size={14} /> Back to Users
+        </Button>
+        <div className="text-center py-10 text-foreground-muted text-sm">
+          Profile not found for {params.hash}. It may not have been created yet.
+        </div>
       </div>
     );
   }
@@ -80,7 +73,6 @@ export default function UserDetailPage() {
         </p>
       </div>
 
-      {/* Profile overview */}
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -118,75 +110,37 @@ export default function UserDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Centroids table */}
-      <Card className="mb-8 overflow-hidden">
-        <CardHeader>
-          <CardTitle>Behavioral Centroids</CardTitle>
-        </CardHeader>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Modality</TableHead>
-              <TableHead>Platform</TableHead>
-              <TableHead>Input Method</TableHead>
-              <TableHead>Weight</TableHead>
-              <TableHead>Samples</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {profile.centroids.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium capitalize">{c.modality}</TableCell>
-                <TableCell className="text-xs text-foreground-muted capitalize">{c.platform}</TableCell>
-                <TableCell className="text-xs text-foreground-muted">{c.input_method.replace(/_/g, " ")}</TableCell>
-                <TableCell className="text-xs font-mono">{(c.weight * 100).toFixed(0)}%</TableCell>
-                <TableCell className="text-xs text-foreground-muted">{c.sample_count.toLocaleString()}</TableCell>
-                <TableCell className="text-xs text-foreground-muted">{new Date(c.created_at).toLocaleDateString()}</TableCell>
+      {profile.centroids.length > 0 && (
+        <Card className="mb-8 overflow-hidden">
+          <CardHeader>
+            <CardTitle>Behavioral Centroids</CardTitle>
+          </CardHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Modality</TableHead>
+                <TableHead>Platform</TableHead>
+                <TableHead>Input Method</TableHead>
+                <TableHead>Weight</TableHead>
+                <TableHead>Samples</TableHead>
+                <TableHead>Created</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
-
-      {/* Linked devices */}
-      <Card className="overflow-hidden">
-        <CardHeader>
-          <CardTitle>Linked Devices</CardTitle>
-        </CardHeader>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Device UUID</TableHead>
-              <TableHead>Platform</TableHead>
-              <TableHead>Trust Status</TableHead>
-              <TableHead>Last Seen</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {MOCK_DEVICES.map((d) => (
-              <TableRow
-                key={d.device_uuid}
-                className="cursor-pointer"
-                onClick={() => router.push(`/kbio/devices`)}
-              >
-                <TableCell>
-                  <span className="font-mono text-xs">{truncateId(d.device_uuid, 16)}</span>
-                </TableCell>
-                <TableCell className="text-xs">{d.platform}</TableCell>
-                <TableCell>
-                  <Badge variant={d.trust_status === "trusted" ? "success" : "warning"}>
-                    {d.trust_status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-xs text-foreground-muted">
-                  {new Date(d.last_seen_at).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {profile.centroids.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell className="font-medium capitalize">{c.modality}</TableCell>
+                  <TableCell className="text-xs text-foreground-muted capitalize">{c.platform}</TableCell>
+                  <TableCell className="text-xs text-foreground-muted">{c.input_method.replace(/_/g, " ")}</TableCell>
+                  <TableCell className="text-xs font-mono">{(c.weight * 100).toFixed(0)}%</TableCell>
+                  <TableCell className="text-xs text-foreground-muted">{c.sample_count.toLocaleString()}</TableCell>
+                  <TableCell className="text-xs text-foreground-muted">{new Date(c.created_at).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }

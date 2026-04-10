@@ -1,0 +1,35 @@
+- generic [ref=e1]:
+  - generic [ref=e28]:
+    - banner [ref=e29]:
+      - link "k-forensics" [ref=e30] [cursor=pointer]:
+        - /url: /orgs
+      - generic [ref=e31]:
+        - generic [ref=e32]: testuser
+        - button "Switch to light mode" [active] [ref=e63]:
+          - img [ref=e64]
+        - link [ref=e36] [cursor=pointer]:
+          - /url: /settings
+          - button "Settings" [ref=e37]:
+            - img [ref=e38]
+        - button "Sign out" [ref=e41]:
+          - img [ref=e42]
+          - text: Sign out
+    - main [ref=e45]:
+      - generic [ref=e46]:
+        - img [ref=e47]
+        - heading "Organizations" [level=1] [ref=e51]
+      - paragraph [ref=e52]: Select an organization to view its workspaces.
+      - generic [ref=e54]:
+        - img [ref=e56]
+        - generic [ref=e60]:
+          - paragraph [ref=e61]: No organizations found
+          - paragraph [ref=e62]: You don't have any organization memberships yet.
+  - region "Notifications alt+T"
+  - status [ref=e18]:
+    - generic [ref=e19]:
+      - img [ref=e21]
+      - generic [ref=e23]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+  - alert [ref=e17]

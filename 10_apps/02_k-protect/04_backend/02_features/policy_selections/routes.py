@@ -55,6 +55,9 @@ async def create_policy_selection(
             notes=body.notes,
             policy_category=body.policy_category,
             policy_name=body.policy_name,
+            threat_type_code=body.threat_type_code,
+            signal_overrides=body.signal_overrides,
+            action_override=body.action_override,
             actor_id=actor_id,
         )
     return _resp.success_response(row)
@@ -83,6 +86,9 @@ async def patch_policy_selection(
             config_overrides=body.config_overrides,
             notes=body.notes,
             is_active=body.is_active,
+            threat_type_code=body.threat_type_code,
+            signal_overrides=body.signal_overrides,
+            action_override=body.action_override,
             actor_id=actor_id,
         )
     return _resp.success_response(row)

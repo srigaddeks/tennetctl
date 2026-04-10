@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: k-forensics
+    - generic [ref=e11]:
+      - heading "Create your account" [level=1] [ref=e12]
+      - paragraph [ref=e13]: How will you use k-forensics?
+      - generic [ref=e14]:
+        - button "Personal For individual investigators" [ref=e15] [cursor=pointer]:
+          - img [ref=e16]
+          - generic [ref=e19]: Personal
+          - generic [ref=e20]: For individual investigators
+        - button "Business For teams and organisations" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+          - generic [ref=e26]: Business
+          - generic [ref=e27]: For teams and organisations
+      - paragraph [ref=e28]:
+        - text: Already have an account?
+        - link "Sign in" [ref=e29] [cursor=pointer]:
+          - /url: /sign-in
+  - region "Notifications alt+T"
+  - alert [ref=e30]

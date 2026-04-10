@@ -44,7 +44,7 @@ async def upsert_challenge_attr(
     challenge_id: str,
     attr_code: str,
     value: str,
-    actor_id: str,
+    actor_id: str = "",
 ) -> None:
     """Upsert a single EAV attribute for a challenge.
 
@@ -59,7 +59,7 @@ async def upsert_challenge_attr(
         """
         INSERT INTO "10_kbio"."20_dtl_attrs"
             (id, entity_type_id, entity_id, attr_def_id, key_text,
-             created_by, created_at)
+             created_at)
         VALUES (
             $1,
             (SELECT id FROM "10_kbio"."06_dim_entity_types" WHERE code = 'kbio_challenge'),
@@ -70,7 +70,6 @@ async def upsert_challenge_attr(
              )
              AND code = $3),
             $4,
-            $5,
             CURRENT_TIMESTAMP
         )
         ON CONFLICT (entity_id, attr_def_id)
@@ -81,7 +80,6 @@ async def upsert_challenge_attr(
         challenge_id,
         attr_code,
         value,
-        actor_id,
     )
 
 

@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 _db = importlib.import_module("01_core.db")
 _resp = importlib.import_module("01_core.response")
 _errors = importlib.import_module("01_core.errors")
-_config = importlib.import_module("01_core.config")
+_auth = importlib.import_module("01_core.api_key_auth")
 
 from .schemas import CreateTrustedEntityRequest
 from .service import (
@@ -23,18 +23,6 @@ from .service import (
 )
 
 router = APIRouter(prefix="/v1/internal", tags=["kbio-trust"])
-
-
-def _validate_service_token(request: Request) -> None:
-    """Raise 401 AppError if X-Internal-Service-Token is missing or wrong."""
-    settings = _config.get_settings()
-    token = request.headers.get("X-Internal-Service-Token", "")
-    if not token or token != settings.kbio_internal_service_token:
-        raise _errors.AppError(
-            "UNAUTHORIZED",
-            "Missing or invalid X-Internal-Service-Token.",
-            401,
-        )
 
 
 @router.get(
@@ -59,7 +47,7 @@ async def get_trust_profile_endpoint(
         200: {"ok": true, "data": TrustProfileData}
         401: missing/invalid token
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     pool = _db.get_pool()
     async with pool.acquire() as conn:
@@ -107,7 +95,7 @@ async def create_trusted_entity_endpoint(
         422: unknown entity_type
         500: unexpected failure
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     actor_id = request.headers.get("X-Actor-ID", "service")
 
@@ -158,7 +146,7 @@ async def revoke_trusted_entity_endpoint(
         401: missing/invalid token
         404: entity not found
     """
-    _validate_service_token(request)
+    await _auth.validate_api_key(request)
 
     actor_id = request.headers.get("X-Actor-ID", "service")
 
