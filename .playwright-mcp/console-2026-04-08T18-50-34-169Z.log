@@ -1,4 +1,0 @@
-[     122ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
-[     466ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:24650
-[   14819ms] [ERROR] Access to fetch at 'http://localhost:58000/v1/sessions' from origin 'http://localhost:53000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:53000/iam:0
-[   14819ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:58000/v1/sessions:0
