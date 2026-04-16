@@ -64,7 +64,7 @@ export function SecretRowActions({ secret }: { secret: VaultSecretMeta }) {
         onClose={() => setConfirmOpen(false)}
         title={`Delete "${secret.key}"?`}
         description="Soft-deletes every version of this key. Key cannot be reused in v0.2."
-        size="sm"
+        size="md"
       >
         <div
           className="flex flex-col gap-4"
@@ -72,8 +72,8 @@ export function SecretRowActions({ secret }: { secret: VaultSecretMeta }) {
         >
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             This cannot be undone from the UI. Anything reading{" "}
-            <code className="font-mono text-xs">{secret.key}</code> will
-            immediately fail.
+            <code className="break-all font-mono text-xs">{secret.key}</code>{" "}
+            will immediately fail.
           </p>
           <div className="flex justify-end gap-2">
             <Button
