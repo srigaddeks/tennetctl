@@ -10,21 +10,21 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Milestone: v0.1 Foundation + IAM
-Phase: 4 of 7 (Orgs & Workspaces vertical) — Ready to plan
-Plan: Not started
-Status: Ready for next PLAN
-Last activity: 2026-04-16 — Phase 3 complete: IAM + audit + views; 9 migrations applied; 19 tests green
+Phase: 4 of 7 (Orgs & Workspaces vertical) — Planning
+Plan: 04-01 created, awaiting approval
+Status: PLAN created, ready for APPLY
+Last activity: 2026-04-16 — Created .paul/phases/04-orgs-workspaces/04-01-PLAN.md (Org backend — schemas/repo/service/routes + 2 nodes)
 
 Progress:
-- Milestone: [█████░░░░░] 43% (Phases 1 + 2 + 3 of 7 complete)
-- Phase 4: [░░░░░░░░░░] 0% (not started)
+- Milestone: [█████░░░░░] 43% (Phases 1 + 2 + 3 of 7 complete; Phase 4 drafted)
+- Phase 4: [░░░░░░░░░░] 0% (01 drafted)
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [Loop complete — Phase 3 closed; ready for Phase 4]
+  ✓        ○        ○     [Plan 04-01 created, awaiting approval]
 ```
 
 ## Performance Metrics
@@ -76,9 +76,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Views use MAX(...) FILTER for EAV pivot; hide internal FKs | Phase 3 Plan 04 | Scales; internal refactors invisible |
 
 ### Git State
-Last commit: 3d11e9c — feat(02-catalog-foundation): Node Catalog Protocol v1 — schema + loader + runner
+Last commit: d73a995 — feat(03-iam-audit): IAM schema + catalog registration + audit pipeline + views
 Branch: feat/pivot
-**Phase 3 commit pending** — about to be created during this transition. Will cover: IAM schema (7 sub-feature SQL files) + IAM manifest + audit feature (schema + node + tests) + views (3 migrations) + JSONB codec + authz setup-bypass + 19/19 tests.
+Phase 3 committed (47 files, +3307/-69 lines). Pre-existing drift (unchanged) remains uncommitted.
 
 ### Deferred Issues
 None.
@@ -109,9 +109,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Phase 3 complete — IAM schema + manifest + audit pipeline + views all live; 19/19 tests green
-Next action: Run `/paul:plan` for Phase 4 Plan 01 (Org sub-feature — schemas/repo/service/routes + nodes + manifest entry)
-Resume file: .paul/ROADMAP.md (Phase 4)
+Stopped at: Plan 04-01 drafted — Org backend (schemas/repo/service/routes + 2 nodes + manifest + main.py wiring + pytest integration)
+Next action: Review plan, then run `/paul:apply .paul/phases/04-orgs-workspaces/04-01-PLAN.md`
+Resume file: .paul/phases/04-orgs-workspaces/04-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
