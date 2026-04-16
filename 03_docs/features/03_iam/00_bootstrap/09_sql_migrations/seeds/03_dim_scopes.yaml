@@ -1,0 +1,9 @@
+schema: "03_iam"
+table: "03_dim_scopes"
+rows:
+  - {id: 1, code: "read:all",   label: "Read All (global)",   scope_level: global, description: "Read all resources across all tenants",    deprecated_at: null}
+  - {id: 2, code: "write:all",  label: "Write All (global)",  scope_level: global, description: "Write all resources across all tenants",   deprecated_at: null}
+  - {id: 3, code: "admin:all",  label: "Admin All (global)",  scope_level: global, description: "Admin all resources across all tenants",   deprecated_at: null}
+  - {id: 4, code: "read:org",   label: "Read Org",            scope_level: org,    description: "Read resources within the caller's org",    deprecated_at: null}
+  - {id: 5, code: "write:org",  label: "Write Org",           scope_level: org,    description: "Write resources within the caller's org",   deprecated_at: null}
+  - {id: 6, code: "admin:org",  label: "Admin Org",           scope_level: org,    description: "Admin resources within the caller's org",   deprecated_at: null}

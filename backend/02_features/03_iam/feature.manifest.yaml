@@ -1,0 +1,96 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: iam
+  number: 3
+  module: iam
+  always_on: true
+  label: Identity & Access Management
+  description: Orgs, workspaces, users, roles, groups, scopes, applications. Always on; tenant-boundary foundation for every other feature.
+  manifest_version: 1
+
+spec:
+  depends_on_modules: []
+
+  sub_features:
+    - key: iam.orgs
+      number: 1
+      label: Organisations
+      description: Tenant boundaries and org identity. Top-level resource; everything else is scoped under an org.
+      owns:
+        schema: "03_iam"
+        tables: ["10_fct_orgs", "40_lnk_user_orgs"]
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []
+
+    - key: iam.workspaces
+      number: 2
+      label: Workspaces
+      description: Scoped work containers within an org. Slug unique per (org_id, slug).
+      owns:
+        schema: "03_iam"
+        tables: ["11_fct_workspaces", "41_lnk_user_workspaces"]
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []
+
+    - key: iam.users
+      number: 3
+      label: Users
+      description: Human and service identities. Shared EAV infra (dim_entity_types, dtl_attr_defs, dtl_attrs) lives in the feature-level 03_iam/00_bootstrap migration, not under any one sub-feature.
+      owns:
+        schema: "03_iam"
+        tables: ["12_fct_users"]
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []
+
+    - key: iam.roles
+      number: 4
+      label: Roles & Scopes
+      description: Named permission bundles. Roles carry scope grants via lnk_role_scopes. Global (org_id NULL) and org-scoped roles both live here. Shared dim_scopes + dim_role_types live in the feature-level bootstrap.
+      owns:
+        schema: "03_iam"
+        tables:
+          - "13_fct_roles"
+          - "42_lnk_user_roles"
+          - "44_lnk_role_scopes"
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []
+
+    - key: iam.groups
+      number: 5
+      label: Groups
+      description: User collections for bulk role assignment. Always org-scoped.
+      owns:
+        schema: "03_iam"
+        tables: ["14_fct_groups", "43_lnk_user_groups"]
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []
+
+    - key: iam.applications
+      number: 6
+      label: Applications
+      description: External products or services using the API with scoped credentials. Always org-scoped.
+      owns:
+        schema: "03_iam"
+        tables: ["15_fct_applications"]
+        views: []
+        seeds: []
+      nodes: []
+      routes: []
+      ui_pages: []

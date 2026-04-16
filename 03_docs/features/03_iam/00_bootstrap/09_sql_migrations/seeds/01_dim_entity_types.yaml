@@ -1,0 +1,10 @@
+schema: "03_iam"
+table: "01_dim_entity_types"
+rows:
+  - {id: 1, code: org,         label: Organisation, description: "Top-level tenant boundary",               deprecated_at: null}
+  - {id: 2, code: workspace,   label: Workspace,    description: "Scoped work container within an org",      deprecated_at: null}
+  - {id: 3, code: user,        label: User,         description: "Human or service identity",                deprecated_at: null}
+  - {id: 4, code: role,        label: Role,         description: "Named permission bundle",                  deprecated_at: null}
+  - {id: 5, code: group,       label: Group,        description: "User collection for role assignment",      deprecated_at: null}
+  - {id: 6, code: application, label: Application,  description: "External product/service using the API",   deprecated_at: null}
+  - {id: 7, code: session,     label: Session,      description: "Authenticated user session (future use)",  deprecated_at: null}

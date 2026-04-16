@@ -1,0 +1,13 @@
+schema: "03_iam"
+table: "20_dtl_attr_defs"
+rows:
+  # Org attrs (entity_type_id=1)
+  - {entity_type_id: 1, code: display_name, label: "Display Name",  value_type: text, description: "Human-readable org name",            deprecated_at: null}
+
+  # Workspace attrs (entity_type_id=2)
+  - {entity_type_id: 2, code: display_name, label: "Display Name",  value_type: text, description: "Human-readable workspace name",      deprecated_at: null}
+
+  # User attrs (entity_type_id=3)
+  - {entity_type_id: 3, code: email,        label: "Email",         value_type: text, description: "Primary email address",              deprecated_at: null}
+  - {entity_type_id: 3, code: display_name, label: "Display Name",  value_type: text, description: "Human-readable user name",           deprecated_at: null}
+  - {entity_type_id: 3, code: avatar_url,   label: "Avatar URL",    value_type: text, description: "URL to user profile image",          deprecated_at: null}

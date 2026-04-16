@@ -1,0 +1,5 @@
+schema: "03_iam"
+table: "04_dim_role_types"
+rows:
+  - {id: 1, code: system, label: System, description: "Built-in role, immutable (e.g. platform_admin, org_owner)", deprecated_at: null}
+  - {id: 2, code: custom, label: Custom, description: "Role created by an org admin, fully editable",              deprecated_at: null}

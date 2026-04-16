@@ -62,23 +62,24 @@ async def test_fixture_feature_registers() -> None:
         await _clean(pool)
         # Run 1: insert
         report1 = await _catalog.upsert_all(
-            pool, frozenset({"core"}), fixtures=True
+            pool, frozenset({"core", "iam"}), fixtures=True
         )
-        assert report1.features_upserted == 1
-        assert report1.sub_features_upserted == 1
-        # Fixture now exposes 5 nodes (ping/echo/slow/flaky/broken) for runner tests.
-        assert report1.nodes_upserted == 5
+        # Report counts include both the IAM feature (always_on) and the fixture.
+        # Test assertions focus on fixture-specific rows via _count() below.
+        assert report1.features_upserted >= 1
+        assert report1.sub_features_upserted >= 1
+        assert report1.nodes_upserted >= 5  # 5 fixture nodes; IAM adds 0
         assert not report1.errors
 
         assert await _count(pool, "10_fct_features", FIXTURE_FEATURE_KEY) == 1
         assert await _count(pool, "11_fct_sub_features", FIXTURE_SUB_KEY) == 1
         assert await _count(pool, "12_fct_nodes", FIXTURE_NODE_KEY) == 1
 
-        # Run 2: idempotent — no new rows
+        # Run 2: idempotent — no new fixture rows
         report2 = await _catalog.upsert_all(
-            pool, frozenset({"core"}), fixtures=True
+            pool, frozenset({"core", "iam"}), fixtures=True
         )
-        assert report2.features_upserted == 1  # upsert counts as "upserted" even if row exists
+        assert report2.features_upserted >= 1  # upsert counts include all loaded manifests
         assert await _count(pool, "10_fct_features", FIXTURE_FEATURE_KEY) == 1
         assert await _count(pool, "11_fct_sub_features", FIXTURE_SUB_KEY) == 1
         assert await _count(pool, "12_fct_nodes", FIXTURE_NODE_KEY) == 1

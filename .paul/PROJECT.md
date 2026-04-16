@@ -14,7 +14,7 @@ Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, 
 |-----------|-------|
 | Type | Application |
 | Version | 0.1.0 |
-| Status | Phases 1 + 2 complete — Phase 3 (IAM & Audit) starting |
+| Status | Phases 1 + 2 + 3 complete — Phase 4 (Orgs & Workspaces vertical) starting |
 | Last Updated | 2026-04-16 |
 
 ## Requirements
@@ -40,13 +40,17 @@ Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, 
 - ✓ **`backend/01_catalog/` Python module** — manifest parser (Pydantic = schema), boot loader wired into FastAPI lifespan, cross-import linter (catches `from X` + `import_module("X")`) — Phase 2 Plan 02
 - ✓ **`/tnt` Claude Code skill** — 44-line onboarding for the node catalog pattern — Phase 2 Plan 02
 - ✓ **Node runner** — `run_node(pool, key, ctx, inputs)` dispatch with execution policy (timeout, retry on TransientError, tx modes caller/own/none), pluggable authz hook, NodeContext propagation (audit scope + distributed tracing) — Phase 2 Plan 03
+- ✓ **`"03_iam"` Postgres schema** — 17 tables across 4 dim + 6 fct + 2 dtl + 5 lnk; per-sub-feature migration layout (orgs/workspaces/users/roles/groups/applications each own their SQL) — Phase 3 Plan 01
+- ✓ **IAM feature manifest** — `backend/02_features/03_iam/feature.manifest.yaml` registered in catalog (1 feature + 6 empty sub-feature shells); first real NCP v1 consumer — Phase 3 Plan 02
+- ✓ **`"04_audit"` schema + `audit.events.emit` node** — evt_audit table with triple CHECK (category/outcome/scope); tx=caller effect node writes rows atomically inside caller's transaction; scope propagates from NodeContext — Phase 3 Plan 03
+- ✓ **IAM read-path views** — v_orgs, v_workspaces, v_users with MAX(...) FILTER EAV pivot + account_type dim resolution; 5 dim_attr_defs seeded (org/workspace display_name, user email/display_name/avatar_url) — Phase 3 Plan 04
+- ✓ **JSONB codec on asyncpg pool** — dict⇄JSONB transparent across all repos — Phase 3 Plan 03
 
 ### Active (In Progress)
-None — ready for Phase 3.
+None — ready for Phase 4.
 
 ### Planned (Next)
-- Phase 3: IAM & Audit schema (dim/fct/dtl/lnk tables, EAV foundation, IAM feature.manifest.yaml — first real consumer of NCP v1, audit service, `emit_audit` node)
-- Phase 4: Orgs & Workspaces vertical (repo → service → routes → nodes → UI → Playwright; all cross-sub-feature calls via `run_node`)
+- Phase 4: Orgs & Workspaces vertical (repo → service → routes → nodes → UI → Playwright; all cross-sub-feature calls via `run_node`; effect nodes emit audit via `run_node("audit.events.emit", ...)`)
 - Phase 5: Users & Account Types vertical
 - Phase 6: Roles, Groups, Scopes & Applications vertical
 - Phase 7: Auth Config & Feature Flags vertical
@@ -121,6 +125,11 @@ Codebase rebuilt from scratch. Previous tennetctl iteration deleted. Clean slate
 | Idempotency check runs BEFORE Pydantic input validation in runner | If a node declares idempotency_key as required Input, Pydantic would mask the runner-level policy error; runner policy concerns should surface first | 2026-04-16 | Active |
 | Pydantic models are the manifest schema (no separate JSON Schema file) | Single source of truth; Pydantic v2 `model_json_schema()` generates the schema when external tools need it | 2026-04-16 | Active |
 | Cross-import linter parses both `from X` and `import_module("X")` | Numeric-prefix dirs require importlib; without Call-node detection the linter is a no-op on this project | 2026-04-16 | Active |
+| Per-sub-feature migration layout (`{feat}/05_sub_features/{sub}/00_bootstrap/09_sql_migrations/`) | Each sub-feature owns its SQL; scales to 10-30 sub-features cleanly. Feature-level `{feat}/00_bootstrap/` holds shared schema + dim + EAV | 2026-04-16 | Active |
+| Audit scope triple-defense (DB CHECK + Pydantic + handler) with two bypasses (setup category, failure outcome) | Every audit event must carry user_id+session_id+org_id+workspace_id unless explicit bypass; enforced at the lowest layer | 2026-04-16 | Active |
+| Views use `MAX(key_text) FILTER (WHERE ad.code = '...')` for EAV pivot | Scales as attrs grow; single GROUP BY per view; no LATERAL complexity | 2026-04-16 | Active |
+| Views hide internal FK columns (v_users exposes account_type TEXT, not account_type_id) | Consumers see semantic codes; internal refactors don't break API | 2026-04-16 | Active |
+| Node keys require 3 segments: feature.sub.action | 2-segment keys collide with sub-feature key shape in NCP v1 regex | 2026-04-16 | Active |
 
 ## Success Metrics
 
@@ -156,4 +165,4 @@ Codebase rebuilt from scratch. Previous tennetctl iteration deleted. Clean slate
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-04-16 after Phase 2 (Catalog Foundation) complete*
+*Last updated: 2026-04-16 after Phase 3 (IAM & Audit Schema) complete*

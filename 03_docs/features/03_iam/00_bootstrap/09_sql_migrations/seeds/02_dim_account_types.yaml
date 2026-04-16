@@ -1,0 +1,7 @@
+schema: "03_iam"
+table: "02_dim_account_types"
+rows:
+  - {id: 1, code: email_password, label: "Email + Password", description: "Standard email/password authentication", deprecated_at: null}
+  - {id: 2, code: magic_link,     label: "Magic Link",       description: "Email one-time login link",              deprecated_at: null}
+  - {id: 3, code: google_oauth,   label: "Google OAuth",     description: "Sign in with Google",                    deprecated_at: null}
+  - {id: 4, code: github_oauth,   label: "GitHub OAuth",     description: "Sign in with GitHub",                    deprecated_at: null}

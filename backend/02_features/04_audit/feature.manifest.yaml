@@ -1,0 +1,40 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: audit
+  number: 4
+  module: audit
+  always_on: true
+  label: Audit
+  description: Append-only audit event pipeline. Every effect node across the platform emits here via run_node("audit.emit", ...). Scope (user/session/org/workspace) enforced at DB CHECK layer.
+  manifest_version: 1
+
+spec:
+  depends_on_modules: []
+
+  sub_features:
+    - key: audit.events
+      number: 1
+      label: Audit Events
+      description: evt_audit table + emit_audit effect node. Caller context comes from NodeContext; CHECK constraint enforces scope for non-setup / non-failure events.
+      owns:
+        schema: "04_audit"
+        tables: ["60_evt_audit"]
+        views: []
+        seeds: []
+      nodes:
+        - key: audit.events.emit
+          kind: effect
+          handler: sub_features.01_events.nodes.audit_emit.EmitAudit
+          label: Emit Audit Event
+          description: Writes a row to evt_audit using NodeContext for scope + trace propagation and caller inputs for event_key, outcome, metadata.
+          emits_audit: true
+          version: 1
+          tags: [audit, cross-cutting]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes: []
+      ui_pages: []

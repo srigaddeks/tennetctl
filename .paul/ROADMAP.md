@@ -10,7 +10,7 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 **v0.1 Foundation + IAM** (v0.1.0)
 Status: In progress
-Phases: 2 of 7 complete (Phase 3 starting — IAM & Audit schema)
+Phases: 3 of 7 complete (Phase 4 starting — Orgs & Workspaces vertical)
 
 ## Phases
 
@@ -22,7 +22,7 @@ Phases: 2 of 7 complete (Phase 3 starting — IAM & Audit schema)
 |-------|------|-------|--------|-----------|
 | 1 | Core Infrastructure | 3 | ✅ Complete | 2026-04-13 |
 | 2 | Catalog Foundation | 3 | ✅ Complete | 2026-04-16 |
-| 3 | IAM & Audit Schema | 4 | Not started | - |
+| 3 | IAM & Audit Schema | 4 | ✅ Complete | 2026-04-16 |
 | 4 | Orgs & Workspaces (vertical) | TBD | Not started | - |
 | 5 | Users & Account Types (vertical) | TBD | Not started | - |
 | 6 | Roles, Groups, Scopes & Applications (vertical) | TBD | Not started | - |
@@ -72,10 +72,10 @@ Phases: 2 of 7 complete (Phase 3 starting — IAM & Audit schema)
 - All views for read paths (`v_orgs`, `v_workspaces`, `v_users`, etc.)
 
 **Plans:**
-- [ ] 03-01: IAM schema migrations (relocated from old 02-01; depends on Phase 2)
-- [ ] 03-02: IAM feature.manifest.yaml + catalog registration verification
-- [ ] 03-03: Audit schema + audit service + `emit_audit` node
-- [ ] 03-04: Views and EAV refinement
+- [x] 03-01: IAM schema migrations
+- [x] 03-02: IAM feature.manifest.yaml + catalog registration verification
+- [x] 03-03: Audit schema + audit.events.emit node (+ inline IAM per-sub-feature layout restructure)
+- [x] 03-04: Views (v_orgs, v_workspaces, v_users) + 5 dim_attr_defs seeded
 
 ### Phase 4: Orgs & Workspaces (vertical)
 
@@ -177,4 +177,4 @@ Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
 
 ---
 *Roadmap created: 2026-04-12*
-*Last updated: 2026-04-16 — Phase 2 (Catalog Foundation) complete; NCP v1 operational; Phase 3 (IAM & Audit) starting*
+*Last updated: 2026-04-16 — Phase 3 (IAM & Audit Schema) complete; audit pipeline + views live; Phase 4 (Orgs & Workspaces vertical) starting*

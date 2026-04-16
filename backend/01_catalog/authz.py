@@ -44,7 +44,10 @@ async def check_call(ctx: Any, node_meta: dict) -> None:
     for fn in _checkers:
         await fn(ctx, node_meta)
 
-    if ctx.audit_category == "system":
+    # system + setup bypass user_id requirement: system calls are trusted framework code;
+    # setup calls happen at boot before users exist (e.g. initial org/admin seed).
+    # See NCP v1 §9.
+    if ctx.audit_category in ("system", "setup"):
         return
 
     if ctx.user_id is None:
