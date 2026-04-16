@@ -20,11 +20,50 @@ spec:
       description: Tenant boundaries and org identity. Top-level resource; everything else is scoped under an org.
       owns:
         schema: "03_iam"
-        tables: ["10_fct_orgs", "40_lnk_user_orgs"]
-        views: []
+        tables: ["10_fct_orgs"]
+        views: ["v_orgs"]
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.orgs.create
+          kind: effect
+          handler: sub_features.01_orgs.nodes.iam_orgs_create.OrgsCreate
+          label: Create Organization
+          description: Creates an org with slug + display_name; emits audit iam.orgs.created atomically with the fct + dtl writes.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: iam.orgs.get
+          kind: control
+          handler: sub_features.01_orgs.nodes.iam_orgs_get.OrgsGet
+          label: Get Organization
+          description: Read-only cross-sub-feature lookup for tenant scope validation; returns flat v_orgs row or None. Does not emit audit (kind=control).
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/orgs
+          handler: sub_features.01_orgs.routes.list_orgs_route
+        - method: POST
+          path: /v1/orgs
+          handler: sub_features.01_orgs.routes.create_org_route
+        - method: GET
+          path: "/v1/orgs/{id}"
+          handler: sub_features.01_orgs.routes.get_org_route
+        - method: PATCH
+          path: "/v1/orgs/{id}"
+          handler: sub_features.01_orgs.routes.update_org_route
+        - method: DELETE
+          path: "/v1/orgs/{id}"
+          handler: sub_features.01_orgs.routes.delete_org_route
       ui_pages: []
 
     - key: iam.workspaces
@@ -33,11 +72,50 @@ spec:
       description: Scoped work containers within an org. Slug unique per (org_id, slug).
       owns:
         schema: "03_iam"
-        tables: ["11_fct_workspaces", "41_lnk_user_workspaces"]
-        views: []
+        tables: ["11_fct_workspaces"]
+        views: ["v_workspaces"]
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.workspaces.create
+          kind: effect
+          handler: sub_features.02_workspaces.nodes.iam_workspaces_create.WorkspacesCreate
+          label: Create Workspace
+          description: Validates parent org exists, enforces per-org slug uniqueness, creates workspace + display_name attr, emits audit iam.workspaces.created.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: iam.workspaces.get
+          kind: control
+          handler: sub_features.02_workspaces.nodes.iam_workspaces_get.WorkspacesGet
+          label: Get Workspace
+          description: Read-only cross-sub-feature lookup; returns flat v_workspaces row or None.
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/workspaces
+          handler: sub_features.02_workspaces.routes.list_workspaces_route
+        - method: POST
+          path: /v1/workspaces
+          handler: sub_features.02_workspaces.routes.create_workspace_route
+        - method: GET
+          path: "/v1/workspaces/{id}"
+          handler: sub_features.02_workspaces.routes.get_workspace_route
+        - method: PATCH
+          path: "/v1/workspaces/{id}"
+          handler: sub_features.02_workspaces.routes.update_workspace_route
+        - method: DELETE
+          path: "/v1/workspaces/{id}"
+          handler: sub_features.02_workspaces.routes.delete_workspace_route
       ui_pages: []
 
     - key: iam.users
@@ -47,10 +125,49 @@ spec:
       owns:
         schema: "03_iam"
         tables: ["12_fct_users"]
-        views: []
+        views: ["v_users"]
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.users.create
+          kind: effect
+          handler: sub_features.03_users.nodes.iam_users_create.UsersCreate
+          label: Create User
+          description: Creates a user with account_type + email/display_name/avatar_url; emits audit iam.users.created.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: iam.users.get
+          kind: control
+          handler: sub_features.03_users.nodes.iam_users_get.UsersGet
+          label: Get User
+          description: Read-only cross-sub-feature lookup; returns flat v_users row or None.
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/users
+          handler: sub_features.03_users.routes.list_users_route
+        - method: POST
+          path: /v1/users
+          handler: sub_features.03_users.routes.create_user_route
+        - method: GET
+          path: "/v1/users/{id}"
+          handler: sub_features.03_users.routes.get_user_route
+        - method: PATCH
+          path: "/v1/users/{id}"
+          handler: sub_features.03_users.routes.update_user_route
+        - method: DELETE
+          path: "/v1/users/{id}"
+          handler: sub_features.03_users.routes.delete_user_route
       ui_pages: []
 
     - key: iam.roles
@@ -63,10 +180,43 @@ spec:
           - "13_fct_roles"
           - "42_lnk_user_roles"
           - "44_lnk_role_scopes"
-        views: []
+        views: ["v_roles"]
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.roles.create
+          kind: effect
+          handler: sub_features.04_roles.nodes.iam_roles_create.RolesCreate
+          label: Create Role
+          description: Creates a role (global or org-scoped) with EAV code/label/description; emits audit iam.roles.created.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.roles.get
+          kind: control
+          handler: sub_features.04_roles.nodes.iam_roles_get.RolesGet
+          label: Get Role
+          description: Read-only cross-sub-feature lookup; returns flat v_roles row or None.
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/roles
+          handler: sub_features.04_roles.routes.list_roles_route
+        - method: POST
+          path: /v1/roles
+          handler: sub_features.04_roles.routes.create_role_route
+        - method: GET
+          path: "/v1/roles/{id}"
+          handler: sub_features.04_roles.routes.get_role_route
+        - method: PATCH
+          path: "/v1/roles/{id}"
+          handler: sub_features.04_roles.routes.update_role_route
+        - method: DELETE
+          path: "/v1/roles/{id}"
+          handler: sub_features.04_roles.routes.delete_role_route
       ui_pages: []
 
     - key: iam.groups
@@ -76,10 +226,110 @@ spec:
       owns:
         schema: "03_iam"
         tables: ["14_fct_groups", "43_lnk_user_groups"]
+        views: ["v_groups"]
+        seeds: []
+      nodes:
+        - key: iam.groups.create
+          kind: effect
+          handler: sub_features.05_groups.nodes.iam_groups_create.GroupsCreate
+          label: Create Group
+          description: Creates org-scoped group with EAV code/label/description; emits audit iam.groups.created.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.groups.get
+          kind: control
+          handler: sub_features.05_groups.nodes.iam_groups_get.GroupsGet
+          label: Get Group
+          description: Read-only cross-sub-feature lookup; returns flat v_groups row or None.
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/groups
+          handler: sub_features.05_groups.routes.list_groups_route
+        - method: POST
+          path: /v1/groups
+          handler: sub_features.05_groups.routes.create_group_route
+        - method: GET
+          path: "/v1/groups/{id}"
+          handler: sub_features.05_groups.routes.get_group_route
+        - method: PATCH
+          path: "/v1/groups/{id}"
+          handler: sub_features.05_groups.routes.update_group_route
+        - method: DELETE
+          path: "/v1/groups/{id}"
+          handler: sub_features.05_groups.routes.delete_group_route
+      ui_pages: []
+
+    - key: iam.memberships
+      number: 7
+      label: Memberships
+      description: User-org and user-workspace lnk rows. Assign / revoke / list. Immutable rows — revoke = DELETE.
+      owns:
+        schema: "03_iam"
+        tables: ["40_lnk_user_orgs", "41_lnk_user_workspaces"]
         views: []
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.memberships.org.assign
+          kind: effect
+          handler: sub_features.07_memberships.nodes.iam_memberships_org_assign.MembershipsOrgAssign
+          label: Assign User to Org
+          description: Validates user + org exist, inserts lnk_user_orgs, emits audit iam.memberships.org.assigned.
+          emits_audit: true
+          version: 1
+          tags: [identity, membership, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.memberships.org.revoke
+          kind: effect
+          handler: sub_features.07_memberships.nodes.iam_memberships_org_revoke.MembershipsOrgRevoke
+          label: Revoke Org Membership
+          description: Deletes lnk_user_orgs row by id; emits audit iam.memberships.org.revoked.
+          emits_audit: true
+          version: 1
+          tags: [identity, membership, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.memberships.workspace.assign
+          kind: effect
+          handler: sub_features.07_memberships.nodes.iam_memberships_workspace_assign.MembershipsWorkspaceAssign
+          label: Assign User to Workspace
+          description: Validates user + workspace exist, derives org_id from workspace, inserts lnk_user_workspaces, emits audit.
+          emits_audit: true
+          version: 1
+          tags: [identity, membership, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.memberships.workspace.revoke
+          kind: effect
+          handler: sub_features.07_memberships.nodes.iam_memberships_workspace_revoke.MembershipsWorkspaceRevoke
+          label: Revoke Workspace Membership
+          description: Deletes lnk_user_workspaces row by id; emits audit.
+          emits_audit: true
+          version: 1
+          tags: [identity, membership, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/org-members
+          handler: sub_features.07_memberships.routes.list_org_memberships_route
+        - method: POST
+          path: /v1/org-members
+          handler: sub_features.07_memberships.routes.create_org_membership_route
+        - method: DELETE
+          path: "/v1/org-members/{id}"
+          handler: sub_features.07_memberships.routes.delete_org_membership_route
+        - method: GET
+          path: /v1/workspace-members
+          handler: sub_features.07_memberships.routes.list_workspace_memberships_route
+        - method: POST
+          path: /v1/workspace-members
+          handler: sub_features.07_memberships.routes.create_workspace_membership_route
+        - method: DELETE
+          path: "/v1/workspace-members/{id}"
+          handler: sub_features.07_memberships.routes.delete_workspace_membership_route
       ui_pages: []
 
     - key: iam.applications
@@ -89,8 +339,41 @@ spec:
       owns:
         schema: "03_iam"
         tables: ["15_fct_applications"]
-        views: []
+        views: ["v_applications"]
         seeds: []
-      nodes: []
-      routes: []
+      nodes:
+        - key: iam.applications.create
+          kind: effect
+          handler: sub_features.06_applications.nodes.iam_applications_create.ApplicationsCreate
+          label: Create Application
+          description: Creates org-scoped application with EAV code/label/description; emits audit iam.applications.created.
+          emits_audit: true
+          version: 1
+          tags: [identity, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.applications.get
+          kind: control
+          handler: sub_features.06_applications.nodes.iam_applications_get.ApplicationsGet
+          label: Get Application
+          description: Read-only cross-sub-feature lookup; returns flat v_applications row or None.
+          emits_audit: false
+          version: 1
+          tags: [identity, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/applications
+          handler: sub_features.06_applications.routes.list_applications_route
+        - method: POST
+          path: /v1/applications
+          handler: sub_features.06_applications.routes.create_application_route
+        - method: GET
+          path: "/v1/applications/{id}"
+          handler: sub_features.06_applications.routes.get_application_route
+        - method: PATCH
+          path: "/v1/applications/{id}"
+          handler: sub_features.06_applications.routes.update_application_route
+        - method: DELETE
+          path: "/v1/applications/{id}"
+          handler: sub_features.06_applications.routes.delete_application_route
       ui_pages: []

@@ -1,0 +1,318 @@
+# ============================================================================
+# Migration execution order
+#
+# The migration runner (backend/01_core/database.py) reads this file to
+# determine the exact order in which SQL files are applied.
+#
+# Rules:
+#   - One filename per line under the "order:" key
+#   - Files are executed top-to-bottom, skipping already-applied ones
+#   - Every .sql file in this directory MUST be listed here
+#   - New migrations: append to the end of this list
+#   - The runner warns about .sql files on disk that are missing from this list
+# ============================================================================
+
+order:
+  # ── Phase 1: Bootstrap ────────────────────────────────────────────────────
+  - 20260313_a_create-all-schemas.sql
+  - 20260313_01_schema_migration.sql
+  - 20260313_create_schema_01_dev_features.sql
+
+  # ── Phase 2: Auth core ────────────────────────────────────────────────────
+  - 20260314_create-auth-core-v2.sql
+  - 20260314_create-auth-feature-governance-v2.sql
+  - 20260314_create-auth-orgs-workspaces-v2.sql
+  - 20260314_add-user-onboarding-properties.sql
+  - 20260314_create-invitation-system.sql
+  - 20260314_create-impersonation.sql
+  - 20260314_create-unified-audit.sql
+
+  # ── Phase 3: API keys, notifications, enhancements, licensing ─────────────
+  - 20260315_create-api-key-system.sql
+  - 20260315_create-notification-system.sql
+  - 20260315_enhancements-v1.sql
+  - 20260315_create-license-profiles.sql
+  - 20260315_add-licensing-system.sql
+  - 20260315_add-org-feature-settings.sql
+  - 20260315_seed-superadmin-test-user.sql
+
+  # ── Phase 4: Sandbox schema (tables only — seeds need GRC category) ────────
+  - 20260316_create-sandbox-schema.sql
+  - 20260316_enhance-sandbox-schema.sql
+  - 20260316_create-asset-inventory.sql
+  - 20260316_enhance-asset-inventory.sql
+  - 20260316_add-notification-indexes.sql
+
+  # ── Phase 5: Portal views, attachments, comments (moved up — needed by 0317+) ──
+  - 20260323_create-portal-views.sql
+  - 20260322_create-attachments-schema.sql
+  - 20260322_create-comments-schema.sql
+
+  # ── Phase 6: GRC library, risk registry, tasks + permissions ──────────────
+  - 20260320_create-grc-library-schema.sql
+  - 20260320_create-risk-registry-schema.sql
+  - 20260320_create-tasks-schema.sql
+  - 20260317_seed-org-workspace-system-roles.sql
+  - 20260320_seed-grc-permissions.sql
+
+  # ── Phase 6b: Sandbox permission seeds (need 'grc' category from above) ──
+  - 20260316_seed-sandbox-permissions.sql
+  - 20260316_seed-asset-inventory-permissions.sql
+
+  # ── Phase 7: Framework deployments + views (depend on GRC library) ────────
+  - 20260316_create-framework-deployments.sql
+  - 20260316_create-test-executions.sql
+  - 20260316_add-version-numbers.sql
+  - 20260316_create-framework-deployments-view.sql
+  - 20260316_seed-platform-admin-views.sql
+
+  # ── Phase 8: AI, docs, feedback, independent 0317 files ──────────────────
+  - 20260317_create-ai-schema.sql
+  - 20260317_create-docs-schema.sql
+  - 20260317_create-feedback-schema.sql
+  - 20260317_create-ai-job-queue.sql
+  - 20260317_add-connector-is-draft.sql
+  - 20260317_add-passwordless-auth.sql
+  - 20260317_add-provider-type-to-agent-configs.sql
+  - 20260317_add-variable-queries.sql
+  - 20260317_dataset-records-redesign.sql
+  - 20260317_docs-add-is-visible.sql
+  - 20260317_fix-org-management-feature-scope.sql
+  - 20260317_org-scoped-templates.sql
+  - 20260317_template-static-variables.sql
+  - 20260317_variable-key-static-source.sql
+  - 20260317_assign-impersonation-permissions-to-super-admin.sql
+  - 20260317_backfill-org-workspace-system-groups.sql
+  - 20260317_backfill-super-admin-permissions.sql
+  - 20260317_seed-ai-permissions.sql
+  - 20260317_seed-basic-user-attachment-permissions.sql
+  - 20260317_seed-default-users-group.sql
+  - 20260317_seed-docs-permissions.sql
+  - 20260317_seed-feedback-permissions.sql
+  - 20260317_seed-magic-link-notification.sql
+  - 20260317_update-connector-view-is-draft.sql
+  - 20260317_seed-global-risk-library-permissions.sql
+
+  # ── Phase 9: Files that depend on GRC/risk/tasks/portal/attachments/comments ──
+  - 20260317_create-global-risk-library.sql
+  - 20260317_create-grc-insights-views.sql
+  - 20260317_add-attachment-storage-url.sql
+  - 20260317_add-feedback-ticket-entity-type.sql
+  - 20260317_add-scope-org-to-tests.sql
+  - 20260317_add-scope-org-to-test-view.sql
+  - 20260317_add-version-to-control-view.sql
+  - 20260317_fix-version-codes.sql
+  - 20260317_portal-views-crud.sql
+  - 20260317_backfill-framework-scope-org.sql
+  - 20260317_expand-attachment-audit-event-types.sql
+  - 20260317_expand-comment-audit-event-types.sql
+  - 20260317_seed-global-portal-view.sql
+  - 20260317_seed-system-variable-queries.sql
+
+  # ── Phase 10: Assessments, evidence, reports, GRC enhancements (0318) ─────
+  - 20260318_create-assessments-schema.sql
+  - 20260318_create-evidence-checker-tables.sql
+  - 20260318_create-reports-schema.sql
+  - 20260318_grc-library-enhancements.sql
+  - 20260318_framework-builder-sessions.sql
+  - 20260318_create-grc-framework-hierarchy-view.sql
+  - 20260318_create-grc-hierarchy-view.sql
+  - 20260318_add-copilot-attachments.sql
+  - 20260318_add-frameworks-submit-permission.sql
+  - 20260318_add-gap-analysis-to-criteria-results.sql
+  - 20260318_add-markdown-report-to-evidence-reports.sql
+  - 20260318_backfill-org-workspace-memberships.sql
+  - 20260318_fix-basic-user-permissions.sql
+  - 20260318_seed-evidence-checker.sql
+  - 20260318_seed-framework-approve-permission.sql
+
+  # ── Phase 11: Control tests v2, notifications, signals (0319) ─────────────
+  - 20260319_control-tests-v2.sql
+  - 20260319_add-builder-session-scope.sql
+  - 20260319_add-entity-url-variable-keys.sql
+  - 20260319_add-group-hierarchy.sql
+  - 20260319_add-invite-campaigns.sql
+  - 20260319_add-otp-codes-table.sql
+  - 20260319_add-pageindex-to-attachments.sql
+  - 20260319_add-rendered-body-html-to-queue.sql
+  - 20260319_add-variable-query-event-linking.sql
+  - 20260319_add-webpush-templates.sql
+  - 20260319_add-workspace-scope-to-framework-summary-view.sql
+  - 20260319_notification-categories-inbox.sql
+  - 20260319_org-notifications-api.sql
+  - 20260319_signal-pipeline-ai.sql
+
+  # ── Phase 12: Remaining 0320 files ────────────────────────────────────────
+  - 20260320_global-library.sql
+  - 20260320_notification-enhancements.sql
+  - 20260320_otp-email-verification.sql
+  - 20260320_queue-source-env.sql
+
+  # ── Phase 13: Task enhancements (0321) ───────────────────────────────────
+  - 20260321_drop-evidence-templates-equivalences.sql
+  - 20260321_enhance-tasks.sql
+
+  # ── Phase 14: Agent sandbox, attachment/comment enhancements (0322) ───────
+  - 20260322_create-agent-sandbox-schema.sql
+  - 20260322_enhance-attachments.sql
+  - 20260322_enhance-comments.sql
+  - 20260322_enhance-risk-registry.sql
+  - 20260322_seed-agent-sandbox-permissions.sql
+  - 20260322_seed-comments-attachments-permissions.sql
+  - 20260322_seed-signal-codegen-agent.sql
+
+  # ── Phase 15: SMTP, remaining portal (0323) ──────────────────────────────
+  - 20260323_create-smtp-config-table.sql
+  - 20260323_seed-notification-permissions.sql
+
+  # ── Phase 16: Assignee portal (0324) ─────────────────────────────────────
+  - 20260324_assignee-passwordless-portal.sql
+  - 20260324_grant-org-admin-docs-write.sql
+
+  # ── Phase 17: Issues, PDF, global libraries (0325) ───────────────────────
+  - 20260325_create-issues-schema.sql
+  - 20260325_create-pdf-templates.sql
+  - 20260325_backfill-grc-role-for-scoped-system-groups.sql
+  - 20260325_global-control-test-library.sql
+  - 20260325_global-dataset-library.sql
+  - 20260325_risk-control-mapping-approval.sql
+
+  # ── Phase 18: Connector configs (0326) ───────────────────────────────────
+  - 20260326_seed-connector-config-schemas.sql
+  - 20260326_test_control_mapping_approval.sql
+
+  # ── Phase 19: AI attachments, task criteria, admin seed (0327) ────────────
+  - 20260327_create-ai-attachments-table.sql
+  - 20260327_create-task-criteria-table.sql
+  - 20260327_seed-platform-admin-user.sql
+  - 20260327_seed-system-data.sql
+  - 20260327_fix-staging-schema-mismatches.sql
+  - 20260327_grant-app-user-permissions.sql
+
+  # ── Phase 20: GRC workspace roles, groups, evidence workflow (0330) ───────
+  - 20260330_seed-grc-workspace-roles.sql
+  - 20260330_enhance-task-evidence-statuses.sql
+  - 20260330_add-finding-workflow-statuses.sql
+  - 20260330_add-grc-role-to-invitations.sql
+  - 20260330_grc-role-on-workspace-membership.sql
+
+  # ── Phase 21: Engagement-scoped invitations + notification templates (0331) ─
+  - 20260331_add-engagement-to-invitations.sql
+  - 20260331_seed-invitation-notification-templates.sql
+  - 20260331_allow-null-user-id-in-notification-queue.sql
+  # ── Phase 20: Risk Questionnaire System ───────────────────────────────────
+  # Order is critical: templates → versions → assignments → responses (FK chain)
+  - 20260327_create-risk-questionnaires.sql
+  - 20260327_create-risk-questionnaire-versions.sql
+  - 20260327_create-risk-questionnaire-assignments.sql
+  - 20260327_create-risk-questionnaire-responses.sql
+
+  # ── Phase 21b: Audit engagement pipeline (0327) — must run before GTM ────────
+  - 20260327_create-audit-engagements-v2.sql
+
+  # ── Phase 22: GTM dual model (0328) — depends on 12_engagements schema ───────
+  - 20260328_gtm-dual-model-schema.sql
+
+  # ── Phase 23: Sandbox live session columns (0327) ───────────────────────────
+  - 20260327_add_live_sessions_updated_columns.sql
+
+  # ── Phase 24: Auditor access flags, GRC org-level roles, engagement seeds (0401) ─
+  - 20260401_add-org-workspace-entity-types.sql
+  - 20260401_add-auditor-access-flags.sql
+  - 20260401_create-grc-role-assignments.sql
+  - 20260401_seed-engagement-type-and-comment-entity.sql
+  - 20260401_reconcile-groups-roles-permissions.sql
+
+  # ── Phase 25: Azure AD + Google Workspace connectors, disable legacy connectors (0401) ─
+  - 20260401_add-azure-ad-google-workspace-connectors.sql
+  - 20260401_disable-unsupported-connector-types.sql
+
+  # ── Phase 26: Full prod sync — creates missing tables/columns/views (0401) ────
+  # Must run BEFORE sync-dev-to-staging so 47_lnk_grc_role_assignments exists
+  - 20260401_full-prod-sync.sql
+
+  # ── Phase 27: Sync dev schema to staging parity (0401) ───────────────────────
+  - 20260401_sync-dev-to-staging.sql
+
+  # ── Phase 28: Assignee magic link + notification template seeds (0401) ────────
+  - 20260401_seed-assignee-magic-link-template.sql
+
+  # ── Phase 29: GRC role rename + notification template redesign (0401) ────────
+  - 20260401_rename-grc-lead-to-practitioner.sql
+  - 20260401_redesign-notification-templates-standard.sql
+  - 20260401_seed-missing-notification-templates.sql
+  - 20260401_seed-grc-notification-templates.sql
+
+  # ── Phase 30: Workflow notification types + invitation scope arrays (0402) ────
+  - 20260402_seed-workflow-notification-types.sql
+  - 20260402_seed-workflow-templates-part1.sql
+  - 20260402_seed-workflow-templates-part2.sql
+  - 20260402_add-invitation-scope-arrays.sql
+
+  # ── Phase 31: Full environment seed upsert (0402) ──────────────────────────
+  # Idempotent upsert of all seed data: feature flags, roles, groups, permissions,
+  # portal views, notification templates/rules, license profiles, GRC dims, etc.
+  # Generated from dev via: python3 91_scripts/extract_seeds.py --all
+  - 20260402_seed-full-environment.sql
+
+  # ── Phase 32: Global library data (frameworks, controls, risks, questionnaires) ─
+  # Idempotent upsert of all published/global library content from dev.
+  # 2 frameworks (ISO 27001 + SOC2), 76 controls, 49 requirements,
+  # 22 control tests, 25 global risks, 7 questionnaires.
+  - 20260402_seed-global-library-data.sql
+
+  # ── Phase 33: Publish state fix for library frameworks (0402) ────────────────
+  - 20260402_fix-library-publish-state.sql
+
+  # ── Phase 34: Auditor workspace membership, evidence, and rollout controls (0402) ─
+  - 20260402_add-engagement-memberships-foundation.sql
+  - 20260402_add-auditor-evidence-request-guardrails.sql
+  - 20260402_add-evidence-access-grants.sql
+  - 20260402_add-auditor-task-finding-flags.sql
+  - 20260402_map-auditor-workspace-role-permissions.sql
+
+  # ── Phase 35: Staging/prod schema forward-sync (0402) ────────────────────────
+  # Brings staging/prod fully in sync with dev schema additions.
+  # sync-dev-from-staging.sql is dev-only (not listed here — it fixes dev to match staging).
+  - 20260402_sync-dev-to-staging-forward.sql
+
+  # ── Phase 36: Role-permission full sync + DPDP framework seed (0402) ─────────
+  - 20260402_sync-role-permissions.sql
+  - 20260402_seed-dpdp-framework.sql
+
+  # ── Phase 37: Re-grant all app user permissions (0402) ───────────────────────
+  # Covers schemas added after 20260327_grant-app-user-permissions.sql ran
+  # (notably 12_engagements). Idempotent — safe to re-run.
+  - 20260402_regrant-app-user-permissions.sql
+
+  # ── Phase 38: Full environment schema parity sync (0406) ─────────────────────
+  # Brings all envs into parity: missing indexes on dev, missing view on dev,
+  # duplicate/stale CHECK constraints on staging/prod (comments, attachments).
+  - 20260406_sync-all-envs-schema-parity.sql
+
+  # ── Phase 39: Complete environment parity (0406) ─────────────────────────────
+  # Syncs all remaining drift: notification indexes, sandbox FKs, API key FK
+  # RESTRICT, missing CHECK constraints, and missing indexes across all envs.
+  - 20260406_sync-full-env-parity.sql
+
+  # ── Phase 40: Auditor workspace prod rollout (0407) ─────────────────────────
+  - 20260407_enable-auditor-workspace-prod-flags.sql
+
+  # ── Phase 41: Engagement and task builder enhancements (0406-0407) ────────
+  - 20260406_add-external-audit-type.sql
+  - 20260406_sync-engagement-entity-types.sql
+  - 20260406_task-builder-sessions.sql
+  - 20260406_add-builder-session-activity-log.sql
+  - 20260407_enhance-deployments-view.sql
+  - 20260407_fix-grc-role-code-constraint.sql
+
+  # ── Phase 42: UI workflow fixes and audit events (0408) ───────────────────
+  - 20260408_add-replaced-to-doc-audit-events.sql
+  - 20260408_seed-comment-mention-template.sql
+  - 20260408_add-missing-auditor-task-types.sql
+
+  # ── Phase 43: Framework Catalog Enhancements (0408) ───────────────────────
+  - 20260408_fix_framework_catalog_control_count.sql
+  - 20260408_enhance-framework-catalog-stable-metadata.sql
+  - 20260408_add-task-id-to-requests.sql
+

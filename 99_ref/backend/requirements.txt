@@ -1,0 +1,39 @@
+  # Keep this file machine-readable for pip tooling.
+# Record dependency review date, purpose, and security notes in:
+# backend/99_docs/01_dependencies/01_current_inventory.md
+argon2-cffi==25.1.0
+asyncpg==0.31.0
+authlib==1.6.9
+fastapi==0.135.1
+httpx==0.28.1
+opentelemetry-api==1.40.0
+opentelemetry-exporter-otlp-proto-http==1.40.0
+opentelemetry-sdk==1.40.0
+pydantic==2.12.5
+email-validator>=2.2.0
+PyYAML==6.0.3
+redis==5.2.1
+uvicorn==0.41.0
+python-dotenv==1.0.1
+python-multipart==0.0.20
+jinja2==3.1.6
+aiosmtplib==5.1.0
+cryptography>=46.0.1
+webpush==1.0.6
+langfuse==2.57.3
+openpyxl==3.1.5
+pypdf==5.1.0
+python-docx==1.1.2
+markdown==3.7
+fpdf2==2.8.2
+
+# Pillow==11.1.0
+tzdata==2025.1
+# Storage providers
+azure-storage-blob==12.24.0
+aioboto3==13.4.0
+google-cloud-storage==3.0.0
+# Vector store
+qdrant-client==1.17.1
+# Sandbox signal execution
+RestrictedPython==8.1

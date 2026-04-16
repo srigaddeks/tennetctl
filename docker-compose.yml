@@ -84,6 +84,54 @@ services:
     networks:
       - tennetctl_v2
 
+  apisix:
+    image: apache/apisix:3.15.0-debian
+    ports:
+      - "51780:9080"
+      - "51743:9443"
+      - "51718:9180"
+      - "51791:9091"
+    environment:
+      APISIX_ADMIN_KEY: ${APISIX_ADMIN_KEY:-tennetctl_dev_admin_key}
+    configs:
+      - source: apisix_config
+        target: /usr/local/apisix/conf/config.yaml
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9091/apisix/prometheus/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - tennetctl_v2
+
+configs:
+  apisix_config:
+    content: |
+      apisix:
+        node_listen: 9080
+        enable_ipv6: false
+        enable_admin: true
+      deployment:
+        role: traditional
+        role_traditional:
+          config_provider: yaml
+        admin:
+          admin_key:
+            - name: admin
+              key: ${APISIX_ADMIN_KEY}
+              role: admin
+          admin_listen:
+            ip: 0.0.0.0
+            port: 9180
+          allow_admin:
+            - 0.0.0.0/0
+      plugin_attr:
+        prometheus:
+          export_addr:
+            ip: 0.0.0.0
+            port: 9091
+
 volumes:
   tennetctl_v2_pgdata:
   tennetctl_v2_minio:

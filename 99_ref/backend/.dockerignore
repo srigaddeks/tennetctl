@@ -1,0 +1,41 @@
+# Secrets — never in the image
+.env
+.env.local
+.env.example
+.env.*.local
+
+# Dev/test only — not needed at runtime
+90_tests/
+99_docs/
+01_sql_migrations/02_inprogress/
+
+# Build artifacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Local tooling
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# VCS / meta
+.git/
+.gitignore
+Dockerfile
+.dockerignore

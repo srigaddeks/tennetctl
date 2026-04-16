@@ -1,0 +1,159 @@
+from __future__ import annotations
+
+from importlib import import_module
+from typing import Annotated
+
+from fastapi import Depends, Query
+
+_telemetry_module = import_module("backend.01_core.telemetry")
+_auth_module = import_module("backend.03_auth_manage.dependencies")
+_service_module = import_module("backend.20_ai.15_job_queue.service")
+_schemas_module = import_module("backend.20_ai.15_job_queue.schemas")
+_deps_module = import_module("backend.20_ai.15_job_queue.dependencies")
+
+InstrumentedAPIRouter = _telemetry_module.InstrumentedAPIRouter
+get_current_access_claims = _auth_module.get_current_access_claims
+JobQueueService = _service_module.JobQueueService
+EnqueueJobRequest = _schemas_module.EnqueueJobRequest
+CreateBatchRequest = _schemas_module.CreateBatchRequest
+JobListResponse = _schemas_module.JobListResponse
+JobResponse = _schemas_module.JobResponse
+BatchResponse = _schemas_module.BatchResponse
+QueueDepthResponse = _schemas_module.QueueDepthResponse
+RateLimitStatusResponse = _schemas_module.RateLimitStatusResponse
+UpdateRateLimitRequest = _schemas_module.UpdateRateLimitRequest
+get_job_queue_service = _deps_module.get_job_queue_service
+
+router = InstrumentedAPIRouter(prefix="/api/v1/ai/jobs", tags=["ai-jobs"])
+
+
+@router.post("", response_model=JobResponse, status_code=201)
+async def enqueue_job(
+    request: EnqueueJobRequest,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    org_id: str | None = Query(None),
+    workspace_id: str | None = Query(None),
+) -> JobResponse:
+    return await service.enqueue_job(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        org_id=org_id, workspace_id=workspace_id, request=request,
+    )
+
+
+@router.get("", response_model=JobListResponse)
+async def list_jobs(
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    user_id: str | None = Query(None),
+    agent_type_code: str | None = Query(None),
+    status_code: str | None = Query(None),
+    batch_id: str | None = Query(None),
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+) -> JobListResponse:
+    return await service.list_jobs(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        user_id=user_id, agent_type_code=agent_type_code,
+        status_code=status_code, batch_id=batch_id, limit=limit, offset=offset,
+    )
+
+
+@router.post("/batches", response_model=dict, status_code=201)
+async def create_batch(
+    request: CreateBatchRequest,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    org_id: str | None = Query(None),
+    workspace_id: str | None = Query(None),
+) -> dict:
+    batch, jobs = await service.create_batch(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        org_id=org_id, workspace_id=workspace_id, request=request,
+    )
+    return {"batch": batch.model_dump(), "jobs": [j.model_dump() for j in jobs]}
+
+
+@router.get("/batches/{batch_id}", response_model=BatchResponse)
+async def get_batch_progress(
+    batch_id: str,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+) -> BatchResponse:
+    return await service.get_batch_progress(
+        batch_id=batch_id,
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        caller_id=claims["sub"],
+    )
+
+
+# ── Admin endpoints ──────────────────────────────────────────────────────────
+
+@router.get("/admin/queue-depth", response_model=list[QueueDepthResponse])
+async def get_queue_depth(
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+) -> list[QueueDepthResponse]:
+    return await service.get_queue_depth(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+    )
+
+
+@router.get("/admin/rate-limits", response_model=list[RateLimitStatusResponse])
+async def get_rate_limit_status(
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+) -> list[RateLimitStatusResponse]:
+    return await service.get_rate_limit_status(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+    )
+
+
+@router.patch("/admin/rate-limits/{agent_type_code}", status_code=204)
+async def update_rate_limit(
+    agent_type_code: str,
+    request: UpdateRateLimitRequest,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    org_id: str | None = Query(None),
+) -> None:
+    await service.update_rate_limit(
+        caller_id=claims["sub"],
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        agent_type_code=agent_type_code,
+        org_id=org_id,
+        request=request,
+    )
+
+
+# ── Per-job routes (parameterized, must come LAST to avoid shadowing /batches and /admin) ─
+
+@router.get("/{job_id}", response_model=JobResponse)
+async def get_job(
+    job_id: str,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+) -> JobResponse:
+    return await service.get_job(
+        job_id=job_id,
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        caller_id=claims["sub"],
+    )
+
+
+@router.post("/{job_id}/cancel", status_code=204)
+async def cancel_job(
+    job_id: str,
+    service: Annotated[JobQueueService, Depends(get_job_queue_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+) -> None:
+    await service.cancel_job(
+        job_id=job_id,
+        tenant_key=claims.get("tenant_key", "__platform__"),
+        caller_id=claims["sub"],
+    )

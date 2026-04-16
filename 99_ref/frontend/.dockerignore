@@ -1,0 +1,31 @@
+# Dependencies — copied from deps stage, not needed in build context
+node_modules
+**/node_modules
+
+# Build outputs — rebuilt inside Docker
+.next
+**/.next
+.turbo
+**/.turbo
+
+# Local env files — never bake secrets into the image
+.env
+.env.local
+.env.*.local
+
+# TypeScript incremental build info
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Dev / editor artifacts
+*.log
+**/*.log
+.vscode/
+.idea/
+storybook-static
+docs
+tests
+
+# Git
+.git
+.gitignore

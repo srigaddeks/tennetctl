@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #060b16;
+  --bg2: #0a1222;
+  --bg3: #0e1a30;
+  --bg4: #142240;
+  --white: #f1f5f9;
+  --t1: #e2e8f0;
+  --t2: #94a3b8;
+  --t3: #64748b;
+  --t4: #475569;
+  --brd: #1a2c4a;
+}
+
+html.light {
+  --bg: #f8fafc;
+  --bg2: #ffffff;
+  --bg3: #f1f5f9;
+  --bg4: #e2e8f0;
+  --white: #0f172a;
+  --t1: #1e293b;
+  --t2: #475569;
+  --t3: #64748b;
+  --t4: #94a3b8;
+  --brd: #e2e8f0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+/* ═══ React Flow ═══ */
+.react-flow__background {
+  background: var(--bg) !important;
+}
+
+/* Edges behind nodes */
+.react-flow__edges { z-index: 0 !important; }
+.react-flow__node { z-index: 1 !important; }
+
+.react-flow__minimap {
+  background: var(--bg2) !important;
+  border: 1px solid var(--brd) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+}
+
+.react-flow__controls {
+  border: 1px solid var(--brd) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+}
+
+.react-flow__controls-button {
+  background: var(--bg2) !important;
+  border-bottom: 1px solid var(--brd) !important;
+  fill: var(--t3) !important;
+  width: 34px !important;
+  height: 34px !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--bg3) !important;
+  fill: var(--white) !important;
+}
+
+.react-flow__attribution { display: none !important; }
+
+/* Edge label pill styling */
+.react-flow__edge-textbg {
+  rx: 6 !important;
+  ry: 6 !important;
+  fill: #0a1222 !important;
+  fill-opacity: 0.95 !important;
+}
+
+/* Light mode overrides */
+html.light .react-flow__edge-textbg {
+  fill: #ffffff !important;
+  fill-opacity: 0.98 !important;
+}
+
+html.light .react-flow__minimap {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .react-flow__controls {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .react-flow__controls-button {
+  background: #fff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .react-flow__controls-button:hover {
+  background: #f1f5f9 !important;
+}
+
+/* Selection */
+.react-flow__node.selected > div {
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.5), 0 0 30px rgba(99,102,241,0.1) !important;
+}

@@ -11,3 +11,18 @@ rows:
   - {entity_type_id: 3, code: email,        label: "Email",         value_type: text, description: "Primary email address",              deprecated_at: null}
   - {entity_type_id: 3, code: display_name, label: "Display Name",  value_type: text, description: "Human-readable user name",           deprecated_at: null}
   - {entity_type_id: 3, code: avatar_url,   label: "Avatar URL",    value_type: text, description: "URL to user profile image",          deprecated_at: null}
+
+  # Role attrs (entity_type_id=4)
+  - {entity_type_id: 4, code: code,         label: "Code",          value_type: text, description: "Stable role identifier (unique per org or global)", deprecated_at: null}
+  - {entity_type_id: 4, code: label,        label: "Label",         value_type: text, description: "Human-readable role name",           deprecated_at: null}
+  - {entity_type_id: 4, code: description,  label: "Description",   value_type: text, description: "Free-text role description",        deprecated_at: null}
+
+  # Group attrs (entity_type_id=5)
+  - {entity_type_id: 5, code: code,         label: "Code",          value_type: text, description: "Stable group identifier (unique per org)", deprecated_at: null}
+  - {entity_type_id: 5, code: label,        label: "Label",         value_type: text, description: "Human-readable group name",         deprecated_at: null}
+  - {entity_type_id: 5, code: description,  label: "Description",   value_type: text, description: "Free-text group description",       deprecated_at: null}
+
+  # Application attrs (entity_type_id=6)
+  - {entity_type_id: 6, code: code,         label: "Code",          value_type: text, description: "Stable application identifier (unique per org)", deprecated_at: null}
+  - {entity_type_id: 6, code: label,        label: "Label",         value_type: text, description: "Human-readable application name",   deprecated_at: null}
+  - {entity_type_id: 6, code: description,  label: "Description",   value_type: text, description: "Free-text application description", deprecated_at: null}

@@ -1,0 +1,69 @@
+from __future__ import annotations
+
+from importlib import import_module
+from typing import Annotated
+
+from fastapi import Depends, Query
+
+_telemetry_module = import_module("backend.01_core.telemetry")
+_auth_module = import_module("backend.03_auth_manage.dependencies")
+_service_module = import_module("backend.20_ai.10_guardrails.service")
+_schemas_module = import_module("backend.20_ai.10_guardrails.schemas")
+_deps_module = import_module("backend.20_ai.10_guardrails.dependencies")
+
+InstrumentedAPIRouter = _telemetry_module.InstrumentedAPIRouter
+get_current_access_claims = _auth_module.get_current_access_claims
+GuardrailService = _service_module.GuardrailService
+GuardrailConfigResponse = _schemas_module.GuardrailConfigResponse
+UpsertGuardrailConfigRequest = _schemas_module.UpsertGuardrailConfigRequest
+GuardrailEventListResponse = _schemas_module.GuardrailEventListResponse
+get_guardrail_service = _deps_module.get_guardrail_service
+
+router = InstrumentedAPIRouter(prefix="/api/v1/ai/guardrails", tags=["ai-guardrails"])
+
+
+@router.get("", response_model=list[GuardrailConfigResponse])
+async def list_guardrail_configs(
+    service: Annotated[GuardrailService, Depends(get_guardrail_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    org_id: str | None = Query(None),
+) -> list[GuardrailConfigResponse]:
+    return await service.list_configs(
+        user_id=claims.subject,
+        tenant_key=claims.tenant_key,
+        org_id=org_id,
+    )
+
+
+@router.put("", response_model=GuardrailConfigResponse)
+async def upsert_guardrail_config(
+    request: UpsertGuardrailConfigRequest,
+    service: Annotated[GuardrailService, Depends(get_guardrail_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    org_id: str | None = Query(None),
+) -> GuardrailConfigResponse:
+    return await service.upsert_config(
+        user_id=claims.subject,
+        tenant_key=claims.tenant_key,
+        org_id=org_id,
+        request=request,
+    )
+
+
+@router.get("/events", response_model=GuardrailEventListResponse)
+async def list_guardrail_events(
+    service: Annotated[GuardrailService, Depends(get_guardrail_service)],
+    claims: Annotated[dict, Depends(get_current_access_claims)],
+    user_id: str | None = Query(None),
+    guardrail_type_code: str | None = Query(None),
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+) -> GuardrailEventListResponse:
+    return await service.list_events(
+        user_id=claims.subject,
+        tenant_key=claims.tenant_key,
+        filter_user_id=user_id,
+        guardrail_type_code=guardrail_type_code,
+        limit=limit,
+        offset=offset,
+    )

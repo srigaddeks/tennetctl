@@ -1,0 +1,11 @@
+{
+  "extends": "./packages/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@kcontrol/ui/*": ["./packages/ui/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

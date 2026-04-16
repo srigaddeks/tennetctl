@@ -1,0 +1,212 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: featureflags
+  number: 9
+  module: featureflags
+  always_on: true
+  label: Feature Flags
+  description: Flag definitions (global / org / application scoped), per-environment state, targeting rules, per-entity overrides, per-flag RBAC, and the evaluator. Replaces GrowthBook / Unleash for self-hosted deployments.
+  manifest_version: 1
+
+spec:
+  depends_on_modules: [iam]
+
+  sub_features:
+    - key: featureflags.flags
+      number: 1
+      label: Flags
+      description: Flag definitions scoped to global / org / application. Per-environment on/off state and default value.
+      owns:
+        schema: "09_featureflags"
+        tables: ["10_fct_flags", "11_fct_flag_states"]
+        views: ["v_flags", "v_flag_states"]
+        seeds: []
+      nodes:
+        - key: featureflags.flags.create
+          kind: effect
+          handler: sub_features.01_flags.nodes.featureflags_flags_create.FlagsCreate
+          label: Create Flag
+          description: Creates a flag at global/org/application scope, auto-provisions per-env state rows, emits audit.
+          emits_audit: true
+          version: 1
+          tags: [featureflags, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: featureflags.flags.get
+          kind: control
+          handler: sub_features.01_flags.nodes.featureflags_flags_get.FlagsGet
+          label: Get Flag
+          description: Read-only cross-sub-feature lookup; returns flat v_flags row or None.
+          emits_audit: false
+          version: 1
+          tags: [featureflags, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/flags
+          handler: sub_features.01_flags.routes.list_flags_route
+        - method: POST
+          path: /v1/flags
+          handler: sub_features.01_flags.routes.create_flag_route
+        - method: GET
+          path: "/v1/flags/{id}"
+          handler: sub_features.01_flags.routes.get_flag_route
+        - method: PATCH
+          path: "/v1/flags/{id}"
+          handler: sub_features.01_flags.routes.update_flag_route
+        - method: DELETE
+          path: "/v1/flags/{id}"
+          handler: sub_features.01_flags.routes.delete_flag_route
+        - method: GET
+          path: /v1/flag-states
+          handler: sub_features.01_flags.routes.list_flag_states_route
+        - method: GET
+          path: "/v1/flag-states/{id}"
+          handler: sub_features.01_flags.routes.get_flag_state_route
+        - method: PATCH
+          path: "/v1/flag-states/{id}"
+          handler: sub_features.01_flags.routes.update_flag_state_route
+      ui_pages: []
+
+    - key: featureflags.permissions
+      number: 2
+      label: Permissions
+      description: Per-flag role bindings — view / toggle / write / admin. Gates mutations on rules, overrides, and the flag itself.
+      owns:
+        schema: "09_featureflags"
+        tables: ["40_lnk_role_flag_permissions"]
+        views: ["v_role_flag_permissions"]
+        seeds: []
+      nodes:
+        - key: featureflags.permissions.grant
+          kind: effect
+          handler: sub_features.02_permissions.nodes.featureflags_permissions_grant.PermissionsGrant
+          label: Grant Permission
+          description: Attach a role + permission bundle to a flag. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [featureflags, permissions, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: featureflags.permissions.revoke
+          kind: effect
+          handler: sub_features.02_permissions.nodes.featureflags_permissions_revoke.PermissionsRevoke
+          label: Revoke Permission
+          description: Remove a role-flag-permission grant. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [featureflags, permissions, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/flag-permissions
+          handler: sub_features.02_permissions.routes.list_grants_route
+        - method: POST
+          path: /v1/flag-permissions
+          handler: sub_features.02_permissions.routes.create_grant_route
+        - method: GET
+          path: "/v1/flag-permissions/{id}"
+          handler: sub_features.02_permissions.routes.get_grant_route
+        - method: DELETE
+          path: "/v1/flag-permissions/{id}"
+          handler: sub_features.02_permissions.routes.delete_grant_route
+      ui_pages: []
+
+    - key: featureflags.rules
+      number: 3
+      label: Targeting Rules
+      description: Ordered rules per (flag, environment). Each rule has conditions, a value to serve on match, and a rollout percentage.
+      owns:
+        schema: "09_featureflags"
+        tables: ["20_fct_rules"]
+        views: ["v_rules"]
+        seeds: []
+      nodes:
+        - key: featureflags.rules.create
+          kind: effect
+          handler: sub_features.03_rules.nodes.featureflags_rules_create.RulesCreate
+          label: Create Rule
+          description: Add a targeting rule to a flag for a specific environment.
+          emits_audit: true
+          version: 1
+          tags: [featureflags, rules, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/flag-rules
+          handler: sub_features.03_rules.routes.list_rules_route
+        - method: POST
+          path: /v1/flag-rules
+          handler: sub_features.03_rules.routes.create_rule_route
+        - method: GET
+          path: "/v1/flag-rules/{id}"
+          handler: sub_features.03_rules.routes.get_rule_route
+        - method: PATCH
+          path: "/v1/flag-rules/{id}"
+          handler: sub_features.03_rules.routes.update_rule_route
+        - method: DELETE
+          path: "/v1/flag-rules/{id}"
+          handler: sub_features.03_rules.routes.delete_rule_route
+      ui_pages: []
+
+    - key: featureflags.overrides
+      number: 4
+      label: Overrides
+      description: Explicit per-entity (user or org) force values. Higher precedence than rules. Revoke = delete.
+      owns:
+        schema: "09_featureflags"
+        tables: ["21_fct_overrides"]
+        views: ["v_overrides"]
+        seeds: []
+      nodes:
+        - key: featureflags.overrides.set
+          kind: effect
+          handler: sub_features.04_overrides.nodes.featureflags_overrides_set.OverridesSet
+          label: Set Override
+          description: Force a flag value for one entity in one environment.
+          emits_audit: true
+          version: 1
+          tags: [featureflags, overrides, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: GET
+          path: /v1/flag-overrides
+          handler: sub_features.04_overrides.routes.list_overrides_route
+        - method: POST
+          path: /v1/flag-overrides
+          handler: sub_features.04_overrides.routes.create_override_route
+        - method: GET
+          path: "/v1/flag-overrides/{id}"
+          handler: sub_features.04_overrides.routes.get_override_route
+        - method: PATCH
+          path: "/v1/flag-overrides/{id}"
+          handler: sub_features.04_overrides.routes.update_override_route
+        - method: DELETE
+          path: "/v1/flag-overrides/{id}"
+          handler: sub_features.04_overrides.routes.delete_override_route
+      ui_pages: []
+
+    - key: featureflags.evaluations
+      number: 5
+      label: Evaluations
+      description: Evaluator engine, POST /v1/evaluate endpoint, and featureflags.evaluations.resolve control node. No writes; no audit.
+      owns:
+        schema: "09_featureflags"
+        tables: []
+        views: []
+        seeds: []
+      nodes:
+        - key: featureflags.evaluations.resolve
+          kind: control
+          handler: sub_features.05_evaluations.nodes.featureflags_evaluations_resolve.EvaluationsResolve
+          label: Resolve Flag
+          description: Resolve a flag_key + environment + context to a value + reason. Read-only; no audit.
+          emits_audit: false
+          version: 1
+          tags: [featureflags, evaluate, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+      routes:
+        - method: POST
+          path: /v1/evaluate
+          handler: sub_features.05_evaluations.routes.evaluate_route
+      ui_pages: []
