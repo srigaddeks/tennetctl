@@ -94,7 +94,7 @@ If a merged sub-feature introduces a critical bug and you need to revert it:
 
 1. **Revert the PR** — use `git revert` on the merge commit. This creates a new commit that undoes the changes without losing history.
 2. **Create a follow-up migration** — even though you've reverted the code, the database migration is "live." Write a new migration file (with the next `{NNN}` sequence number) that undoes the schema changes if necessary. For data-only bugfixes, you may not need a migration.
-3. **Update the manifests** — set the sub-feature status back to `BUILDING` or `PLANNED` (depending on severity), and log the revert in the feature's worklog or an ADR.
+3. **Update the manifests** — set the sub-feature status back to `DESIGNED` (code reverted, docs still valid) or `PLANNED` (design also invalidated), and log the revert in the feature's worklog or an ADR.
 
 This is a known gap: we don't yet have a streamlined process for partial rollbacks or hotfixes. For now, revert + follow-up migration is the safest approach.
 
@@ -226,15 +226,16 @@ Rollback
 - [ ] Rollback steps documented in PR
 ```
 
-### Step 4: Run the Agents
+### Step 4: Run the Review Agents
 
-Before merging, run the automated review agents:
+Before merging, run the Claude Code review agents in your session:
 
 ```text
-code-reviewer    -> Check code quality and conventions
-security-reviewer -> Check for vulnerabilities
-build-error-resolver -> Verify build passes
+/review          -> Code quality and conventions (code-reviewer agent)
+/security-review -> Vulnerabilities and security issues (security-reviewer agent)
 ```
+
+Fix all CRITICAL and HIGH findings before merging. MEDIUM findings should be logged as follow-up issues unless they're trivial to fix in place. Build errors are blocking — do not merge with a broken build.
 
 ### Step 5: Merge
 

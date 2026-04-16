@@ -77,20 +77,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Scaffolder CLI skipped for v0.1 | Phase 2 | Copy-existing pattern is simple enough |
 
 ### Git State
-Last commit: 34fd4fd (Phase 2 batch commit DEFERRED — working tree has ~97 changed files, most from pre-Phase-2 drift; user to approve scope before commit)
+Last commit: 3d11e9c — feat(02-catalog-foundation): Node Catalog Protocol v1 — schema + loader + runner
 Branch: feat/pivot
-Phase 2 files ready to stage when user approves:
-  - .paul/PROJECT.md, ROADMAP.md, STATE.md, paul.json
-  - .paul/phases/02-catalog-foundation/ (3 PLANs + 3 SUMMARIES)
-  - .paul/phases/03-iam-audit/ (relocated IAM plan + SUMMARY pending)
-  - 03_docs/00_main/protocols/001_node_catalog_protocol_v1.md
-  - 03_docs/00_main/08_decisions/027_node_catalog_and_runner.md
-  - 03_docs/features/00_setup/05_sub_features/01_catalog/ (3 migrations + 4 seeds)
-  - backend/01_catalog/ (all 8 files)
-  - backend/main.py (lifespan wiring)
-  - .claude/skills/tnt.md
-  - tests/fixtures/features/99_test_fixture/ (5 node handlers + manifest)
-  - tests/test_catalog_loader.py, test_catalog_runner.py
+Pre-existing drift (~52 files from prior sessions) intentionally NOT included in Phase 2 commit; deferred for separate cleanup.
 
 ### Deferred Issues
 None.

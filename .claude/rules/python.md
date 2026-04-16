@@ -60,7 +60,7 @@ Every create/update/delete emits an audit event via `_audit.emit_audit_event(con
 ## Start command
 
 ```bash
-cd tennetctl && .venv/bin/python -m uvicorn backend.main:app --port 18000 --host 0.0.0.0 --reload
+cd tennetctl && .venv/bin/python -m uvicorn backend.main:app --port 51734 --host 0.0.0.0 --reload
 ```
 
 Never use `.venv/bin/uvicorn` directly — it picks up system Python.

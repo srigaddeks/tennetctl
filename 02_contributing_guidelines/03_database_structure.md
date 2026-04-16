@@ -25,12 +25,12 @@ Adding a new property (email, department, display_name) requires **zero schema c
 
 ```sql
 -- 1. Register the attribute definition
-INSERT INTO "02_iam".07_dim_attr_defs
+INSERT INTO "03_iam".07_dim_attr_defs
     (id, entity_type_id, code, label, value_type, is_required, is_unique, description)
 VALUES (8, 1, 'department', 'Department', 'text', false, false, 'User department.');
 
 -- 2. Store the value
-INSERT INTO "02_iam".20_dtl_attrs (entity_type_id, entity_id, attr_def_id, key_text, created_by)
+INSERT INTO "03_iam".20_dtl_attrs (entity_type_id, entity_id, attr_def_id, key_text, created_by)
 VALUES (1, '<user-uuid>', 8, 'Engineering', '<actor-uuid>');
 ```
 
@@ -68,8 +68,8 @@ tennetctl uses **three Postgres roles** to enforce least-privilege at the databa
 - **Used by:** Read-only API endpoints (GET), monitoring, BI tools
 
 ```sql
-GRANT USAGE ON SCHEMA "02_iam" TO tennetctl_read;
-GRANT SELECT ON ALL TABLES IN SCHEMA "02_iam" TO tennetctl_read;
+GRANT USAGE ON SCHEMA "03_iam" TO tennetctl_read;
+GRANT SELECT ON ALL TABLES IN SCHEMA "03_iam" TO tennetctl_read;
 ```
 
 ### 2. Write Account (`tennetctl_write`)
@@ -80,8 +80,8 @@ GRANT SELECT ON ALL TABLES IN SCHEMA "02_iam" TO tennetctl_read;
 - **Used by:** API server (FastAPI backend)
 
 ```sql
-GRANT USAGE ON SCHEMA "02_iam" TO tennetctl_write;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "02_iam" TO tennetctl_write;
+GRANT USAGE ON SCHEMA "03_iam" TO tennetctl_write;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "03_iam" TO tennetctl_write;
 ```
 
 ### 3. Admin Account (`tennetctl_admin`)
@@ -92,7 +92,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "02_iam" TO tennetc
 - **Used by:** Migration scripts only (`scripts.migrate`)
 
 ```sql
-GRANT ALL PRIVILEGES ON SCHEMA "02_iam" TO tennetctl_admin;
+GRANT ALL PRIVILEGES ON SCHEMA "03_iam" TO tennetctl_admin;
 ```
 
 ### Why Three Accounts?
@@ -109,12 +109,13 @@ Each module owns exactly one Postgres schema. Never create tables in `public`.
 
 | Module | Schema |
 |--------|--------|
-| IAM | `"02_iam"` |
-| Audit | `"03_audit"` |
-| Monitoring | `"04_monitoring"` |
-| Notifications | `"05_notify"` |
-| Product Ops | `"06_ops"` |
-| Vault | `"07_vault"` |
+| Schema Migrations | `"00_schema_migrations"` |
+| Vault | `"02_vault"` |
+| IAM | `"03_iam"` |
+| Audit | `"04_audit"` |
+| Monitoring | `"05_monitoring"` |
+| Notify | `"06_notify"` |
+| Billing | `"07_billing"` |
 | LLM Ops | `"08_llmops"` |
 
 **A module only queries its own schema.** Cross-module data access uses the event bus or service interfaces in `01_core/`.
@@ -253,7 +254,7 @@ mv_{description}      — materialized views (for expensive aggregations)
 ### Example View
 
 ```sql
-CREATE OR REPLACE VIEW "02_iam".v_orgs AS
+CREATE OR REPLACE VIEW "03_iam".v_orgs AS
 SELECT
     o.id,
     o.is_active,
@@ -266,10 +267,10 @@ SELECT
     MAX(CASE WHEN ad.code = 'settings' THEN a.key_jsonb END) AS settings,
     o.created_at,
     o.updated_at
-FROM "02_iam".11_fct_orgs o
-LEFT JOIN "02_iam".01_dim_org_statuses s ON o.status_id = s.id
-LEFT JOIN "02_iam".20_dtl_attrs a ON a.entity_type_id = 2 AND a.entity_id = o.id
-LEFT JOIN "02_iam".07_dim_attr_defs ad ON a.attr_def_id = ad.id
+FROM "03_iam".11_fct_orgs o
+LEFT JOIN "03_iam".01_dim_org_statuses s ON o.status_id = s.id
+LEFT JOIN "03_iam".20_dtl_attrs a ON a.entity_type_id = 2 AND a.entity_id = o.id
+LEFT JOIN "03_iam".07_dim_attr_defs ad ON a.attr_def_id = ad.id
 GROUP BY o.id, s.code;
 ```
 
@@ -295,11 +296,11 @@ Never rely on database-generated names. Every constraint is explicitly named:
 Every table and every column must have a `COMMENT`. No exceptions.
 
 ```sql
-COMMENT ON TABLE "02_iam"."11_fct_orgs" IS
+COMMENT ON TABLE "03_iam"."11_fct_orgs" IS
     'Organisations (tenants). One row per organisation. Identity only — '
     'descriptive attributes stored in 20_dtl_attrs.';
 
-COMMENT ON COLUMN "02_iam"."11_fct_orgs".created_by IS
+COMMENT ON COLUMN "03_iam"."11_fct_orgs".created_by IS
     'UUID of creating user. NULL=system. References fct_users.id — '
     'FK not enforced to preserve schema isolation.';
 ```

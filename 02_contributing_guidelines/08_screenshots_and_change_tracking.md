@@ -1,4 +1,4 @@
-# Screenshots and Change Tracking
+p# Screenshots and Change Tracking
 
 Every PR that changes the database, API, or UI must include visual documentation. This keeps the repo easy to navigate and makes code review faster.
 
@@ -35,13 +35,13 @@ Use `psql` to capture the table structure:
 docker compose exec postgres psql -U tennetctl -d tennetctl
 
 # Show table structure
-\d+ "02_iam"."11_fct_orgs"
+\d+ "03_iam"."11_fct_orgs"
 
 # Show view definition
-\d+ "02_iam".v_orgs
+\d+ "03_iam".v_orgs
 
 # List all tables in a schema
-\dt+ "02_iam".*
+\dt+ "03_iam".*
 ```
 
 Take a screenshot of the terminal output, or copy-paste into the PR as a code block.
@@ -74,8 +74,8 @@ Attach screenshots directly in the PR body under the `## Screenshots` section:
 
 ### Database Schema
 ```
-tennetctl=# \d+ "02_iam"."11_fct_orgs"
-                           Table "02_iam.11_fct_orgs"
+tennetctl=# \d+ "03_iam"."11_fct_orgs"
+                           Table "03_iam.11_fct_orgs"
    Column    |            Type             |     Description
 -------------+-----------------------------+---------------------
  id          | character varying(36)       | UUID v7 primary key

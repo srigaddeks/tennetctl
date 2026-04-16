@@ -25,7 +25,7 @@ Project-specific DB rules. Claude knows SQL and PostgreSQL — this file covers 
 - **NEVER use Postgres ENUMs.** Use `dim_*` tables (INSERT-only, extend without DDL).
 - **NEVER put JSONB or strings in `fct_*`.** Strings go in `dtl_*`, JSONB in `dtl_*` or `evt_*`.
 - **dim_* IDs are permanent.** Never renumber. Never DELETE rows. Use `deprecated_at`.
-- **`updated_at` is set ONLY by trigger**, never by app code. `lnk_*` and `evt_*` have none.
+- **`updated_at` is set by the application** — explicitly in every UPDATE statement. No triggers exist. `lnk_*` and `evt_*` have no `updated_at`.
 - Use `TIMESTAMP` not `TIMESTAMPTZ` — app always passes UTC.
 - Use `CURRENT_TIMESTAMP` not `now()`.
 - `deleted_at TIMESTAMP` not `is_deleted BOOLEAN`.
@@ -47,8 +47,40 @@ Project-specific DB rules. Claude knows SQL and PostgreSQL — this file covers 
 
 ## Migrations
 
-File: `YYYYMMDD_{NNN}_{description}.sql` (NNN = global 3-digit sequence)
+File: `YYYYMMDD_{NNN}_{description}.sql` (NNN = **global** 3-digit sequence — unique across all sub-features)
 
-Every file has `-- UP ====` and `-- DOWN ====` sections. DOWN must completely revert UP. Seed `dim_*` data in same migration as the table. COMMENT ON every table and column. All constraints explicitly named (`pk_`, `fk_`, `uq_`, `chk_`, `idx_`, `trg_`).
+Every file has `-- UP ====` and `-- DOWN ====` sections. DOWN must completely revert UP. COMMENT ON every table and column. All constraints explicitly named (`pk_`, `fk_`, `uq_`, `chk_`, `idx_`, `trg_`).
 
-Location: `03_docs/features/{nn}_{feature}/05_sub_features/{nn}_{sub_feature}/09_sql_migrations/02_in_progress/` → move to `01_migrated/` after apply. Schema-creation migrations (CREATE SCHEMA + shared `dim_entity_types` / `dim_attr_defs` / `dtl_attrs`) live in the special `00_bootstrap/` sub-feature, which sorts first and runs before any other sub-feature's migrations.
+**Location (feature-distributed):**
+```
+03_docs/features/{nn}_{feature}/05_sub_features/{nn}_{sub}/09_sql_migrations/
+  02_in_progress/   ← write new migrations here
+  01_migrated/      ← migrator moves files here after apply
+  seeds/            ← YAML or JSON seed files for dim_* tables
+```
+
+The migrator discovers all `02_in_progress/*.sql` files recursively and sorts globally by filename. After applying, each file is moved to `01_migrated/`. Rollback moves it back to `02_in_progress/`.
+
+Schema-creation migrations (CREATE SCHEMA + shared dim/dtl tables) live in `00_bootstrap/` sub-feature, which sorts first by NNN convention.
+
+**Seed files** (`seeds/*.yaml` or `seeds/*.json`) populate `dim_*` tables and are idempotent (ON CONFLICT DO NOTHING). Run with:
+```bash
+python -m backend.01_migrator.runner seed
+```
+
+Seed YAML format:
+```yaml
+schema: "03_iam"
+table: "01_dim_account_types"
+rows:
+  - id: 1
+    code: email_password
+    label: Email + Password
+    description: Standard email and password authentication
+    deprecated_at: null
+```
+
+**Scaffold a new migration:**
+```bash
+python -m backend.01_migrator.runner new --name create-iam-schema --feature 03_iam --sub 00_bootstrap
+```

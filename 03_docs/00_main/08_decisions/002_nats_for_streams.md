@@ -1,6 +1,6 @@
 # ADR-002: NATS JetStream for Monitoring Ingestion and Internal Event Streaming
 
-**Status:** Accepted
+**Status:** Accepted — updated 2026-04-13 (NATS is a conditional, not always-required, dependency)
 **Date:** 2026-03-29
 
 ---
@@ -17,11 +17,13 @@ Additionally, the Postgres LISTEN/NOTIFY pattern used for internal module-to-mod
 
 ## Decision
 
-NATS 2.10 with JetStream enabled is a required dependency alongside Postgres. It is used exclusively for high-volume ingestion pipelines in the monitoring module:
+NATS 2.10 with JetStream enabled is a **conditional dependency** — required only when the `monitoring`, `product_ops`, or `llm_ops` modules are enabled via `TENNETCTL_MODULES`. It is used exclusively for high-volume ingestion pipelines:
 
 - Metrics ingestion (Prometheus push and scrape results)
 - Distributed trace ingestion (OTLP/HTTP)
 - Structured log ingestion
+
+When only `core`, `iam`, `audit`, and `vault` are enabled, NATS is not started and not required. A deployment running the minimal module set needs only Postgres.
 
 Internal module-to-module events (IAM → Notifications, Monitoring → Alerting, etc.) continue to use the Postgres LISTEN/NOTIFY + transactional outbox pattern. NATS is not used for internal eventing.
 

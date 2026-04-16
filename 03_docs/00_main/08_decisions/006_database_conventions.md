@@ -14,18 +14,19 @@ Every table, column, constraint, index, and view must follow a convention that c
 
 ---
 
-## Portability Principle
+## Design Discipline Principle
 
-The schema is written to be portable across any standard SQL database (Postgres, MySQL, SQLite, CockroachDB, SQL Server). This means:
+Postgres is the only supported database (see ADR-001). This is not a portability constraint — it is a discipline constraint. Schema design avoids unnecessary complexity that ties the codebase to implementation details that belong in the application layer.
 
-- **No stored procedures, functions, or triggers.** Logic lives in the application.
-- **No database extensions** (no `uuid-ossp`, no `pgcrypto`, no `pg_partman`).
-- **No ENUMs.** Use `dim_*` lookup tables instead.
-- **No cross-database-specific constructs** unless documented as optional Postgres enhancements.
+- **No stored procedures, functions, or triggers.** Logic lives in Python. Hidden database-side logic is impossible to test, version, or reason about.
+- **No database extensions** (no `uuid-ossp`, no `pgcrypto`, no `pg_partman`). UUID v7 is generated in Python (ADR-004). Extensions add deployment complexity for no gain.
+- **No ENUMs.** Use `dim_*` lookup tables instead. ENUMs require DDL to extend; dim rows do not.
 
-**Allowed:** `TABLES`, `VIEWS`, `MATERIALIZED VIEWS`, standard column types, standard constraints, standard indexes.
+**Allowed:** `TABLES`, `VIEWS`, `MATERIALIZED VIEWS`, standard column types, standard constraints, standard indexes, Postgres-native types (`JSONB`, `UUID`, `INET`), Postgres-specific features (`RLS`, advisory locks, `LISTEN/NOTIFY`, CTEs, window functions).
 
 **Not allowed:** Triggers, stored procedures, functions, extensions, ENUMs.
+
+**Note:** Application code that requires Postgres-specific runtime features (RLS policies, advisory locks, `LISTEN/NOTIFY`) must document this explicitly. These are features, not workarounds.
 
 ---
 
@@ -52,12 +53,13 @@ Each module owns exactly one Postgres schema:
 
 | Module | Schema |
 |--------|--------|
-| IAM | `"02_iam"` |
-| Audit | `"03_audit"` |
-| Monitoring | `"04_monitoring"` |
-| Notifications | `"05_notify"` |
-| Product Ops | `"06_ops"` |
-| Vault | `"07_vault"` |
+| Schema Migrations | `"00_schema_migrations"` |
+| Vault | `"02_vault"` |
+| IAM | `"03_iam"` |
+| Audit | `"04_audit"` |
+| Monitoring | `"05_monitoring"` |
+| Notify | `"06_notify"` |
+| Billing | `"07_billing"` |
 | LLM Ops | `"08_llmops"` |
 
 Schemas are created once in the bootstrap migration. No runtime schema creation.
@@ -117,7 +119,7 @@ No names. No emails. No strings. No JSONB. Those go in `dtl_attrs`.
 One row per attribute per entity. Two value columns:
 
 - `key_text TEXT` — simple string values (email, name, slug, url)
-- `key_jsonb JSONB` (or `JSON` on MySQL) — structured values (settings, config)
+- `key_jsonb JSONB` — structured values (settings, config); use native Postgres JSONB operators
 
 Every key must be declared in `07_dim_attr_defs` before it can be used.
 
@@ -125,12 +127,12 @@ Every key must be declared in `07_dim_attr_defs` before it can be used.
 
 ```sql
 -- 1. Register the key
-INSERT INTO "02_iam".07_dim_attr_defs
+INSERT INTO "03_iam".07_dim_attr_defs
     (id, entity_type_id, code, label, value_type, is_required, is_unique, description)
 VALUES (8, 1, 'department', 'Department', 'text', false, false, 'User department.');
 
 -- 2. Store the value
-INSERT INTO "02_iam".20_dtl_attrs (entity_type_id, entity_id, attr_def_id, key_text, created_by)
+INSERT INTO "03_iam".20_dtl_attrs (entity_type_id, entity_id, attr_def_id, key_text, created_by)
 VALUES (1, '<user-uuid>', 8, 'Engineering', '<actor-uuid>');
 ```
 
@@ -204,7 +206,7 @@ CREATE TABLE "{schema}".{nn}_dtl_{name} (
     entity_id       VARCHAR(36) NOT NULL,
     attr_def_id     SMALLINT    NOT NULL,
     key_text        TEXT,
-    key_jsonb       TEXT,              -- JSON stored as TEXT for max portability
+    key_jsonb       JSONB,             -- Native Postgres JSONB for query operators
     created_by      VARCHAR(36),
     updated_by      VARCHAR(36),
     created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -224,7 +226,7 @@ CREATE TABLE "{schema}".{nn}_dtl_{name} (
 CREATE INDEX idx_{name}_entity ON {table} (entity_type_id, entity_id);
 ```
 
-On Postgres, declare `key_jsonb` as `JSONB` for native query operators. On other databases use `TEXT` and parse in the application.
+Use `JSONB` (not `TEXT`). Native Postgres JSONB operators (`@>`, `->`, `->>`) are available and performant. The old note about TEXT portability is superseded — Postgres is the only supported database.
 
 ---
 
@@ -271,8 +273,8 @@ CREATE TABLE "{schema}".{nn}_evt_{name} (
     id          VARCHAR(36) NOT NULL,
     org_id      VARCHAR(36),
     actor_id    VARCHAR(36),
-    ip_address  VARCHAR(45),           -- TEXT not INET — portable across databases
-    metadata    TEXT        NOT NULL DEFAULT '{}',  -- JSON string
+    ip_address  VARCHAR(45),           -- VARCHAR not INET — avoids PG-only network type in event tables
+    metadata    JSONB       NOT NULL DEFAULT '{}', -- JSONB for queryability
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     -- NO updated_at, NO deleted_at, NO updated_by — events are immutable facts
 
@@ -292,7 +294,7 @@ There are no triggers. The application is responsible for setting `updated_at`.
 # Every UPDATE must explicitly include these two columns
 await conn.execute(
     """
-    UPDATE "02_iam"."11_fct_orgs"
+    UPDATE "03_iam"."11_fct_orgs"
     SET is_active = $1,
         updated_by = $2,
         updated_at = CURRENT_TIMESTAMP
@@ -351,14 +353,14 @@ DB cascades are invisible in application code. Service-layer cascades can emit e
 
 ## 7. Audit Columns and Cross-Module FKs
 
-`created_by` and `updated_by` conceptually reference `"02_iam".fct_users.id`.
+`created_by` and `updated_by` conceptually reference `"03_iam".fct_users.id`.
 
 FK constraints across schemas violate module isolation. These columns are stored as `VARCHAR(36)` (UUID string) with no FK constraint enforced. The application guarantees validity.
 
 Document this in every COMMENT:
 
 ```sql
-COMMENT ON COLUMN "02_iam"."11_fct_orgs".created_by IS
+COMMENT ON COLUMN "03_iam"."11_fct_orgs".created_by IS
     'UUID of creating user. NULL=system. References fct_users.id — '
     'FK not enforced to preserve schema isolation.';
 ```
@@ -395,16 +397,16 @@ Use materialized views for expensive aggregations that are queried frequently
 (e.g., org member counts, permission sets). Refresh on a schedule or on write.
 
 ```sql
-CREATE MATERIALIZED VIEW "02_iam".mv_org_member_counts AS
+CREATE MATERIALIZED VIEW "03_iam".mv_org_member_counts AS
 SELECT org_id, COUNT(*) AS member_count
-FROM "02_iam".40_lnk_org_members
+FROM "03_iam".40_lnk_org_members
 WHERE ...
 GROUP BY org_id;
 
-CREATE UNIQUE INDEX ON "02_iam".mv_org_member_counts (org_id);
+CREATE UNIQUE INDEX ON "03_iam".mv_org_member_counts (org_id);
 
 -- Refresh after writes:
-REFRESH MATERIALIZED VIEW CONCURRENTLY "02_iam".mv_org_member_counts;
+REFRESH MATERIALIZED VIEW CONCURRENTLY "03_iam".mv_org_member_counts;
 ```
 
 ---
@@ -435,11 +437,11 @@ Keep    →  org dtl_attrs rows                       (organisational data, not 
 
 ```sql
 -- 1. Erase all user PII
-DELETE FROM "02_iam"."20_dtl_attrs"
+DELETE FROM "03_iam"."20_dtl_attrs"
 WHERE entity_type_id = 1 AND entity_id = $1;
 
 -- 2. Tombstone the identity record
-UPDATE "02_iam"."10_fct_users"
+UPDATE "03_iam"."10_fct_users"
 SET deleted_at = CURRENT_TIMESTAMP, updated_by = $2, updated_at = CURRENT_TIMESTAMP
 WHERE id = $1;
 ```

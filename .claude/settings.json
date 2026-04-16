@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
   "mcpServers": {
     "playwright": {
       "command": "/opt/homebrew/bin/npx",

@@ -1,6 +1,6 @@
 # ADR-011: Monitoring Frontend Architecture
 
-**Status:** Accepted
+**Status:** Accepted — updated 2026-04-13 (React Flow chosen for deferred graph views; see ADR-023)
 **Date:** 2026-03-29
 
 ---

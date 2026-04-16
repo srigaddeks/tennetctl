@@ -120,14 +120,14 @@ Rules:
 async def get_org_by_id(conn, org_id: str) -> dict | None:
     """Fetch an organisation by ID from v_orgs view. Returns None if not found."""
     return await conn.fetchrow(
-        'SELECT * FROM "02_iam".v_orgs WHERE id = $1 AND is_deleted = FALSE',
+        'SELECT * FROM "03_iam".v_orgs WHERE id = $1 AND is_deleted = FALSE',
         org_id
     )
 
 async def create_org(conn, *, org_id: str, status_id: int, actor_id: str) -> None:
     """Insert a new org record into fct_orgs."""
     await conn.execute(
-        '''INSERT INTO "02_iam"."11_fct_orgs"
+        '''INSERT INTO "03_iam"."11_fct_orgs"
            (id, status_id, created_by, updated_by)
            VALUES ($1, $2, $3, $3)''',
         org_id, status_id, actor_id
@@ -136,7 +136,7 @@ async def create_org(conn, *, org_id: str, status_id: int, actor_id: str) -> Non
 async def update_org_status(conn, *, org_id: str, status_id: int, actor_id: str) -> None:
     """Update org status. Sets updated_at and updated_by."""
     await conn.execute(
-        '''UPDATE "02_iam"."11_fct_orgs"
+        '''UPDATE "03_iam"."11_fct_orgs"
            SET status_id = $1,
                updated_by = $2,
                updated_at = CURRENT_TIMESTAMP

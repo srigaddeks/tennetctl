@@ -50,7 +50,7 @@ This isolation is also what makes tennetctl composable. A team that only wants t
 
 IAM, audit, and vault are not features added on top of tennetctl. They are the foundation that everything else is built on. Every module assumes:
 
-- All data is accestennetctlled via Row-Level Security at the database layer
+- All data is accessed via Row-Level Security at the database layer
 - All state changes emit an audit event
 - All secrets are encrypted at rest
 - All API endpoints are authenticated unless explicitly marked public
@@ -63,12 +63,12 @@ Security failures in a control plane are catastrophic. tennetctl treats security
 
 tennetctl is open source because the problem it solves is universal and the community benefits from working on it together. Open source here means:
 
-- The entire codebase is public and MIT licensed
+- The entire codebase is public and AGPL-3 licensed
 - Every architectural decision is documented with its rationale
 - Contributing is documented clearly enough that an external developer can add a feature without talking to the core team
 - No features are paywalled or reserved for a commercial edition
 
-If tennetctl ever becomes a commercial product, it will do so through hosting, support, and enterprise services — never by taking open-source features and hiding them behind a paywall.
+AGPL-3 means anyone who deploys tennetctl over a network and modifies it must share their changes. This protects the community while keeping the full codebase genuinely open. The commercial model is built on selling self-hosted licenses and support to external teams — not on hiding features behind a paywall.
 
 ---
 

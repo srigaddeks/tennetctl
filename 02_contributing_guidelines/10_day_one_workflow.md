@@ -18,7 +18,7 @@ Phase 3: Integration   — Cross-module events, E2E tests, frontend pages
 Phase 4: Ship          — Self-review, merge, update roadmap
 ```
 
-We'll walk through each phase using **Vault** (module 07) as the example.
+We'll walk through each phase using **Vault** (module 02) as the example.
 
 ---
 
@@ -55,7 +55,7 @@ Answer these questions in writing before creating any directories:
 Use the "Sub-Feature Build" issue template for each sub-feature. But first, create a **parent issue** for the module itself:
 
 ```markdown
-## Module: 07_vault — Secrets Management
+## Module: 02_vault — Secrets Management
 
 ### Overview
 {2-3 sentences from step 0.2}
@@ -85,19 +85,19 @@ Then open one issue per sub-feature using the "Sub-Feature Build" template.
 
 ```bash
 # Feature docs (note: 09_sql_migrations lives inside each sub-feature, not here)
-mkdir -p 03_docs/features/07_vault/{04_architecture,05_sub_features}
+mkdir -p 03_docs/features/02_vault/{04_architecture,05_sub_features}
 
 # The bootstrap sub-feature — owns the schema-creation migration
-mkdir -p 03_docs/features/07_vault/05_sub_features/00_bootstrap/09_sql_migrations/{01_migrated,02_in_progress}
+mkdir -p 03_docs/features/02_vault/05_sub_features/00_bootstrap/09_sql_migrations/{01_migrated,02_in_progress}
 ```
 
 ### 1.2 Write the Feature Manifest
 
-Create `03_docs/features/07_vault/feature.manifest.yaml`:
+Create `03_docs/features/02_vault/feature.manifest.yaml`:
 
 ```yaml
 title: "Vault — Secrets Management"
-feature: "07_vault"
+feature: "02_vault"
 status: ACTIVE
 owner: "your-github-username"
 created_at: "2026-04-06"
@@ -132,7 +132,7 @@ sub_features:
 
 ### 1.3 Write the Feature Overview
 
-Create `03_docs/features/07_vault/00_overview.md`:
+Create `03_docs/features/02_vault/00_overview.md`:
 
 ```markdown
 # Vault — Secrets Management
@@ -170,7 +170,7 @@ See feature.manifest.yaml for the full list and build order.
 
 ### 1.4 Write the Architecture Doc
 
-Create `03_docs/features/07_vault/04_architecture/01_architecture.md`:
+Create `03_docs/features/02_vault/04_architecture/01_architecture.md`:
 
 Document:
 - How envelope encryption works (master key → data key → ciphertext)
@@ -182,21 +182,21 @@ Document:
 
 This is the first migration for the module. It creates the schema and the shared dim/dtl tables that all sub-features will use.
 
-Create `03_docs/features/07_vault/05_sub_features/00_bootstrap/09_sql_migrations/02_in_progress/YYYYMMDD_NNN_vault_bootstrap.sql`:
+Create `03_docs/features/02_vault/05_sub_features/00_bootstrap/09_sql_migrations/02_in_progress/YYYYMMDD_NNN_vault_bootstrap.sql`:
 
 ```sql
 -- =============================================================================
 -- Migration: YYYYMMDD_NNN_vault_bootstrap.sql
--- Module:    07_vault
+-- Module:    02_vault
 -- Description: Bootstrap the vault schema with shared dim and dtl tables
 -- =============================================================================
 
 -- UP =========================================================================
 
-CREATE SCHEMA IF NOT EXISTS "07_vault";
+CREATE SCHEMA IF NOT EXISTS "02_vault";
 
 -- Shared entity types for this module
-CREATE TABLE "07_vault".06_dim_entity_types (
+CREATE TABLE "02_vault".06_dim_entity_types (
     id            SMALLINT NOT NULL,
     code          TEXT     NOT NULL,
     label         TEXT     NOT NULL,
@@ -207,16 +207,16 @@ CREATE TABLE "07_vault".06_dim_entity_types (
     CONSTRAINT uq_dim_entity_types_code UNIQUE (code)
 );
 
-COMMENT ON TABLE "07_vault".06_dim_entity_types IS
+COMMENT ON TABLE "02_vault".06_dim_entity_types IS
     'Entity types managed by the vault module. Used by dtl_attrs for EAV.';
 
-INSERT INTO "07_vault".06_dim_entity_types (id, code, label, description) VALUES
+INSERT INTO "02_vault".06_dim_entity_types (id, code, label, description) VALUES
     (1, 'project',     'Project',     'Vault project — a container for secrets'),
     (2, 'secret',      'Secret',      'An encrypted secret (key-value pair)'),
     (3, 'rotation',    'Rotation',    'A rotation policy for a secret');
 
 -- Shared attribute definitions
-CREATE TABLE "07_vault".07_dim_attr_defs (
+CREATE TABLE "02_vault".07_dim_attr_defs (
     id              SMALLINT NOT NULL,
     entity_type_id  SMALLINT NOT NULL,
     code            TEXT     NOT NULL,
@@ -229,17 +229,17 @@ CREATE TABLE "07_vault".07_dim_attr_defs (
     CONSTRAINT pk_dim_attr_defs            PRIMARY KEY (id),
     CONSTRAINT uq_dim_attr_defs_code       UNIQUE (entity_type_id, code),
     CONSTRAINT fk_dim_attr_defs_entity     FOREIGN KEY (entity_type_id)
-        REFERENCES "07_vault".06_dim_entity_types(id),
+        REFERENCES "02_vault".06_dim_entity_types(id),
     CONSTRAINT chk_dim_attr_defs_value_type CHECK (
         value_type IN ('text', 'jsonb')
     )
 );
 
-COMMENT ON TABLE "07_vault".07_dim_attr_defs IS
+COMMENT ON TABLE "02_vault".07_dim_attr_defs IS
     'Attribute definitions for vault EAV. Every property must be registered here.';
 
 -- Seed initial attribute definitions
-INSERT INTO "07_vault".07_dim_attr_defs
+INSERT INTO "02_vault".07_dim_attr_defs
     (id, entity_type_id, code, label, value_type, is_required, is_unique, description)
 VALUES
     (1, 1, 'name',        'Name',        'text',  true,  false, 'Project display name.'),
@@ -247,7 +247,7 @@ VALUES
     (3, 1, 'description', 'Description', 'text',  false, false, 'Project description.');
 
 -- Shared EAV attributes table
-CREATE TABLE "07_vault".20_dtl_attrs (
+CREATE TABLE "02_vault".20_dtl_attrs (
     entity_type_id  SMALLINT    NOT NULL,
     entity_id       VARCHAR(36) NOT NULL,
     attr_def_id     SMALLINT    NOT NULL,
@@ -260,30 +260,30 @@ CREATE TABLE "07_vault".20_dtl_attrs (
 
     CONSTRAINT pk_dtl_attrs            PRIMARY KEY (entity_type_id, entity_id, attr_def_id),
     CONSTRAINT fk_dtl_attrs_entity     FOREIGN KEY (entity_type_id)
-        REFERENCES "07_vault".06_dim_entity_types(id),
+        REFERENCES "02_vault".06_dim_entity_types(id),
     CONSTRAINT fk_dtl_attrs_attr       FOREIGN KEY (attr_def_id)
-        REFERENCES "07_vault".07_dim_attr_defs(id),
+        REFERENCES "02_vault".07_dim_attr_defs(id),
     CONSTRAINT chk_dtl_attrs_one_value CHECK (
         (key_text IS NOT NULL AND key_jsonb IS NULL) OR
         (key_jsonb IS NOT NULL AND key_text IS NULL)
     )
 );
 
-CREATE INDEX idx_dtl_attrs_entity ON "07_vault".20_dtl_attrs (entity_type_id, entity_id);
+CREATE INDEX idx_dtl_attrs_entity ON "02_vault".20_dtl_attrs (entity_type_id, entity_id);
 
-COMMENT ON TABLE "07_vault".20_dtl_attrs IS
+COMMENT ON TABLE "02_vault".20_dtl_attrs IS
     'EAV attribute values for all vault entities. One row per attribute per entity.';
-COMMENT ON COLUMN "07_vault".20_dtl_attrs.key_text IS
+COMMENT ON COLUMN "02_vault".20_dtl_attrs.key_text IS
     'Simple string value. Exactly one of key_text or key_jsonb must be set.';
-COMMENT ON COLUMN "07_vault".20_dtl_attrs.key_jsonb IS
+COMMENT ON COLUMN "02_vault".20_dtl_attrs.key_jsonb IS
     'Structured JSON value stored as TEXT for portability. Parse in application.';
 
 -- DOWN =======================================================================
 
-DROP TABLE IF EXISTS "07_vault".20_dtl_attrs;
-DROP TABLE IF EXISTS "07_vault".07_dim_attr_defs;
-DROP TABLE IF EXISTS "07_vault".06_dim_entity_types;
-DROP SCHEMA IF EXISTS "07_vault";
+DROP TABLE IF EXISTS "02_vault".20_dtl_attrs;
+DROP TABLE IF EXISTS "02_vault".07_dim_attr_defs;
+DROP TABLE IF EXISTS "02_vault".06_dim_entity_types;
+DROP SCHEMA IF EXISTS "02_vault";
 ```
 
 ### 1.6 Verify the Bootstrap Migration
@@ -291,7 +291,7 @@ DROP SCHEMA IF EXISTS "07_vault";
 ```bash
 uv run python -m scripts.migrate up
 docker compose exec postgres psql -U tennetctl -d tennetctl \
-  -c '\dt+ "07_vault".*'
+  -c '\dt+ "02_vault".*'
 uv run python -m scripts.migrate down
 uv run python -m scripts.migrate up
 ```
@@ -318,7 +318,7 @@ mkdir -p frontend/src/app/vault
 feat(docs): scaffold vault module — schema, manifests, architecture
 
 Contains:
-- 03_docs/features/07_vault/ (overview, architecture, manifest)
+- 03_docs/features/02_vault/ (overview, architecture, manifest)
 - Bootstrap migration (schema + shared dim/dtl tables)
 - Backend/frontend directory scaffold
 
@@ -370,7 +370,7 @@ For EACH sub-feature, follow this exact cycle:
 Use the "Sub-Feature Build" template. Fill in:
 
 ```markdown
-## Sub-Feature: 07_vault / 01_project
+## Sub-Feature: 02_vault / 01_project
 
 ### Scope Lock
 
@@ -396,7 +396,7 @@ Use the "Sub-Feature Build" template. Fill in:
 
 #### Step 2: Write the Scope Doc
 
-Create `03_docs/features/07_vault/05_sub_features/01_project/01_scope.md`:
+Create `03_docs/features/02_vault/05_sub_features/01_project/01_scope.md`:
 
 ```markdown
 # Vault Projects — Scope
@@ -507,7 +507,7 @@ Create `02_design.md`:
 
 #### Step 4: Write the Migration
 
-Create `YYYYMMDD_NNN_vault_projects.sql` in `03_docs/features/07_vault/05_sub_features/01_project/09_sql_migrations/02_in_progress/`.
+Create `YYYYMMDD_NNN_vault_projects.sql` in `03_docs/features/02_vault/05_sub_features/01_project/09_sql_migrations/02_in_progress/`.
 
 Follow the exact templates from [03_database_structure.md](03_database_structure.md).
 
@@ -535,7 +535,7 @@ Self-review. Merge.
 #### Step 7: Write Tests (RED)
 
 ```python
-# backend/tests/07_vault/01_project/test_create_project.py
+# backend/tests/02_vault/01_project/test_create_project.py
 
 async def test_create_project_success(client, seeded_org, auth_headers):
     """Creating a vault project returns 201 with project data."""
@@ -606,7 +606,7 @@ frontend/src/app/vault/projects/
 #### Step 10: Robot Framework Tests
 
 ```robot
-# tests/e2e/07_vault/01_create_project.robot
+# tests/e2e/02_vault/01_create_project.robot
 
 *** Test Cases ***
 Create Vault Project Successfully

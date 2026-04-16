@@ -45,7 +45,7 @@ Always check `data.ok`. Never trust raw response.
 **Never use `@playwright/test` or `.spec.ts` files.** All E2E tests are Robot Framework `.robot` files using the Browser library.
 
 ```
-02_frontend/tests/e2e/{feature}/
+tests/e2e/{feature}/
   └── 01_{sub}.robot
 ```
 

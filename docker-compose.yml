@@ -1,0 +1,96 @@
+name: tennetctl_v2
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: tennetctl
+      POSTGRES_USER: tennetctl
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tennetctl_dev}
+    volumes:
+      - tennetctl_v2_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tennetctl"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - tennetctl_v2
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tennetctl}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-tennetctl_dev}
+    volumes:
+      - tennetctl_v2_minio:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - tennetctl_v2
+
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: --jetstream --store_dir /data --http_port 8222
+    volumes:
+      - tennetctl_v2_nats:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - tennetctl_v2
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - tennetctl_v2_qdrant:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/6333"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - tennetctl_v2
+
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - tennetctl_v2_valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - tennetctl_v2
+
+volumes:
+  tennetctl_v2_pgdata:
+  tennetctl_v2_minio:
+  tennetctl_v2_nats:
+  tennetctl_v2_qdrant:
+  tennetctl_v2_valkey:
+
+networks:
+  tennetctl_v2:
+    driver: bridge

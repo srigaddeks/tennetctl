@@ -7,7 +7,7 @@ Get tennetctl running locally in under 10 minutes.
 | Tool | Version | Install |
 |------|---------|---------|
 | Docker + Docker Compose | 24+ | https://docs.docker.com/get-docker/ |
-| Python | 3.12+ | https://www.python.org/downloads/ |
+| Python | 3.13+ | https://www.python.org/downloads/ |
 | uv | latest | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | Node.js | 20+ | https://nodejs.org/ |
 | Git | any | pre-installed on most systems |

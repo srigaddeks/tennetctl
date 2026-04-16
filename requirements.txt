@@ -1,0 +1,13 @@
+# TennetCTL — Python dependencies
+asyncpg>=0.30.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+pydantic>=2.0
+python-dotenv>=1.0
+uuid-utils>=0.10.0
+
+# Dev / Testing
+pytest>=8.0
+pytest-asyncio>=0.24
+pytest-cov>=6.0
+httpx>=0.28.0

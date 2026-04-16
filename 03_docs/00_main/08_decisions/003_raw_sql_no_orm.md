@@ -77,7 +77,7 @@ async def get_user_by_id(conn: asyncpg.Connection, user_id: UUID) -> dict | None
     return await conn.fetchrow(
         """
         SELECT id, email, status_id, created_at
-        FROM "02_iam".fct_users
+        FROM "03_iam".fct_users
         WHERE id = $1
         """,
         user_id

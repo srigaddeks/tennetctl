@@ -1,18 +1,16 @@
 # Adding a Feature
 
-> **This document has moved.** The contributor workflow lives in `04_contributing_guidelines/`. This file is kept as a redirect so old links don't 404.
+This document is intentionally a redirect.
 
-## Where to go
+The contributor workflow lives in `02_contributing_guidelines/` so there is one source of truth.
+
+## Where to Go
 
 | You want to… | Read |
 | ------------ | ---- |
-| Add a brand new top-level feature (IAM, Vault, Audit, …) | [04_contributing_guidelines/01_building_a_feature.md](../../04_contributing_guidelines/01_building_a_feature.md) |
-| Add a sub-feature inside an existing feature | [04_contributing_guidelines/01a_building_a_sub_feature.md](../../04_contributing_guidelines/01a_building_a_sub_feature.md) |
-| Enhance an already-merged sub-feature | [04_contributing_guidelines/02_building_an_enhancement.md](../../04_contributing_guidelines/02_building_an_enhancement.md) |
-| Understand the database conventions before writing SQL | [04_contributing_guidelines/03_database_structure.md](../../04_contributing_guidelines/03_database_structure.md) |
-| See a worked example (Vault, hypothetical) | [04_contributing_guidelines/10_day_one_workflow.md](../../04_contributing_guidelines/10_day_one_workflow.md) |
-| See a worked example (IAM, real) | [04_contributing_guidelines/11_iam_build_plan.md](../../04_contributing_guidelines/11_iam_build_plan.md) |
+| Add a new top-level feature | [../../02_contributing_guidelines/01_building_a_feature.md](../../02_contributing_guidelines/01_building_a_feature.md) |
+| Add a new sub-feature | [../../02_contributing_guidelines/01a_building_a_sub_feature.md](../../02_contributing_guidelines/01a_building_a_sub_feature.md) |
+| Enhance an existing sub-feature | [../../02_contributing_guidelines/02_building_an_enhancement.md](../../02_contributing_guidelines/02_building_an_enhancement.md) |
+| Check naming and layout rules | [../../02_contributing_guidelines/04_folder_naming_standards.md](../../02_contributing_guidelines/04_folder_naming_standards.md) |
 
-## Why the move
-
-The contributor workflow used to live here under `03_docs/00_main/`, but it duplicated content with `04_contributing_guidelines/` and the two copies drifted apart. The contributing guidelines folder is the single source of truth. This file is intentionally short so there is nothing to drift.
+This file stays short on purpose so it cannot drift.
