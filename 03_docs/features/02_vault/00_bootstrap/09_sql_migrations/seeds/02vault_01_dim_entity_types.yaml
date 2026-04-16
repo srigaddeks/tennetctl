@@ -1,0 +1,4 @@
+schema: "02_vault"
+table: "01_dim_entity_types"
+rows:
+  - {id: 1, code: secret, label: Secret, description: "Envelope-encrypted secret entry (fct_vault_entries row)", deprecated_at: null}

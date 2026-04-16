@@ -25,9 +25,11 @@ logger = logging.getLogger("tennetctl")
 # Populated as features are built. Module gating checks config.modules
 # before importing/mounting each router.
 MODULE_ROUTERS: dict[str, str] = {
-    # "iam": "backend.02_features.iam.routes",
-    # "audit": "backend.02_features.audit.routes",
-    # "monitoring": "backend.02_features.monitoring.routes",
+    "vault": "backend.02_features.02_vault.routes",
+    "iam": "backend.02_features.03_iam.routes",
+    "featureflags": "backend.02_features.09_featureflags.routes",
+    # "audit": "backend.02_features.04_audit.routes",  # no routes yet (only nodes)
+    # "monitoring": "backend.02_features.05_monitoring.routes",
 }
 
 
@@ -56,6 +58,30 @@ async def lifespan(application: FastAPI):
         report.nodes_upserted,
         report.deprecated,
     )
+
+    # Vault lifespan — only when the module is enabled. Blocks startup if the
+    # root key is missing or the pre-auth gate is closed (ADR-028).
+    if "vault" in config.modules:
+        if not config.allow_unauthenticated_vault:
+            raise RuntimeError(
+                "vault module is enabled but TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT is not true. "
+                "v0.2 requires this flag until phase 8 ships auth. See ADR-028."
+            )
+        logger.warning(
+            "TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT is active — vault routes are open. "
+            "Remove the flag once phase 8 (auth) is deployed."
+        )
+        _vault_crypto = import_module("backend.02_features.02_vault.crypto")
+        _vault_client_mod = import_module("backend.02_features.02_vault.client")
+        _vault_bootstrap = import_module("backend.02_features.02_vault.bootstrap")
+
+        root_key = _vault_crypto.load_root_key()
+        vault = _vault_client_mod.VaultClient(pool, root_key)
+        application.state.vault = vault
+
+        inserted = await _vault_bootstrap.ensure_bootstrap_secrets(pool, vault)
+        if inserted > 0:
+            logger.info("Vault bootstrap: %d new secret(s) seeded.", inserted)
 
     yield
 
@@ -86,6 +112,10 @@ _middleware.register_middleware(app)
 async def health():
     """Health check endpoint."""
     return _response.success({"status": "healthy"})
+
+
+_catalog_routes = import_module("backend.01_catalog.routes")
+app.include_router(_catalog_routes.router)
 
 
 def _mount_module_routers(application: FastAPI, modules: frozenset[str]) -> None:

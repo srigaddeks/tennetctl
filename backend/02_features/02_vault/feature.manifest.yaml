@@ -1,0 +1,95 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: vault
+  number: 2
+  module: vault
+  always_on: false
+  label: Vault
+  description: Secret storage with AES-256-GCM envelope encryption. Backs auth secrets, signing keys, Argon2 pepper, OAuth client creds, third-party API tokens. See ADR-028.
+  manifest_version: 1
+
+spec:
+  depends_on_modules: []
+
+  sub_features:
+    - key: vault.secrets
+      number: 1
+      label: Secrets
+      description: CRUD + rotate for envelope-encrypted secrets. Values stored as ciphertext + wrapped-DEK + nonce; plaintext is decrypted in-process via VaultClient.
+      owns:
+        schema: "02_vault"
+        tables:
+          - "10_fct_vault_entries"
+          - "01_dim_entity_types"
+          - "20_dtl_attr_defs"
+          - "21_dtl_attrs"
+        views: ["v_vault_entries"]
+        seeds: []
+      nodes:
+        - key: vault.secrets.put
+          kind: effect
+          handler: sub_features.01_secrets.nodes.vault_secrets_put.VaultSecretsPut
+          label: Put Secret
+          description: Creates a new envelope-encrypted secret at version=1; emits audit vault.secrets.created atomically with the write.
+          emits_audit: true
+          version: 1
+          tags: [vault, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: vault.secrets.get
+          kind: request
+          handler: sub_features.01_secrets.nodes.vault_secrets_get.VaultSecretsGet
+          label: Get Secret
+          description: Read plaintext via the in-process SWR cache. Does NOT emit audit — the node is the hot path; the HTTP GET /v1/vault/{key} admin route is the audited surface.
+          emits_audit: false
+          version: 1
+          tags: [vault, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: none
+        - key: vault.secrets.rotate
+          kind: effect
+          handler: sub_features.01_secrets.nodes.vault_secrets_rotate.VaultSecretsRotate
+          label: Rotate Secret
+          description: Creates a new (key, version+1) row under a fresh DEK; emits audit vault.secrets.rotated; invalidates the cache.
+          emits_audit: true
+          version: 1
+          tags: [vault, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: vault.secrets.delete
+          kind: effect
+          handler: sub_features.01_secrets.nodes.vault_secrets_delete.VaultSecretsDelete
+          label: Delete Secret
+          description: Soft-deletes every version of a key; emits audit vault.secrets.deleted; invalidates the cache.
+          emits_audit: true
+          version: 1
+          tags: [vault, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/vault
+          handler: sub_features.01_secrets.routes.list_secrets_route
+        - method: POST
+          path: /v1/vault
+          handler: sub_features.01_secrets.routes.create_secret_route
+        - method: GET
+          path: "/v1/vault/{key}"
+          handler: sub_features.01_secrets.routes.get_secret_route
+        - method: POST
+          path: "/v1/vault/{key}/rotate"
+          handler: sub_features.01_secrets.routes.rotate_secret_route
+        - method: DELETE
+          path: "/v1/vault/{key}"
+          handler: sub_features.01_secrets.routes.delete_secret_route
+      ui_pages: []
