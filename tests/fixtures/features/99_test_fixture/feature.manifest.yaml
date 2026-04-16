@@ -1,0 +1,87 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: core
+  number: 99
+  module: core
+  always_on: false
+  label: Test Fixture
+  description: Throwaway feature for catalog + runner smoke tests. Uses module=core with number=99 so it loads under TENNETCTL_MODULES=core but does not collide with any real feature number.
+  manifest_version: 1
+
+spec:
+  depends_on_modules: []
+  sub_features:
+    - key: core.sample
+      number: 1
+      label: Sample
+      description: Five control nodes exercising the runner execution policy.
+      owns:
+        schema: "00_schema_migrations"
+        tables: []
+        views: []
+        seeds: []
+      nodes:
+        - key: core.sample.ping
+          kind: control
+          handler: sub_features.01_sample.nodes.core_sample_ping.PingNode
+          label: Ping
+          description: No-op control node for catalog smoke tests.
+          emits_audit: false
+          version: 1
+          tags: [test, fixture]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: none
+        - key: core.sample.echo
+          kind: control
+          handler: sub_features.01_sample.nodes.core_sample_echo.EchoNode
+          label: Echo
+          description: Echoes input msg + returns ctx trace info for AC-1 verification.
+          emits_audit: false
+          version: 1
+          tags: [test, fixture]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: none
+        - key: core.sample.slow
+          kind: control
+          handler: sub_features.01_sample.nodes.core_sample_slow.SlowNode
+          label: Slow
+          description: Sleeps 2s — used to verify runner timeout cancellation.
+          emits_audit: false
+          version: 1
+          tags: [test, fixture]
+          execution:
+            timeout_ms: 200
+            retries: 0
+            tx: none
+        - key: core.sample.flaky
+          kind: control
+          handler: sub_features.01_sample.nodes.core_sample_flaky.FlakyNode
+          label: Flaky
+          description: Raises TransientError twice, then succeeds on third attempt.
+          emits_audit: false
+          version: 1
+          tags: [test, fixture]
+          execution:
+            timeout_ms: 5000
+            retries: 2
+            tx: none
+        - key: core.sample.broken
+          kind: control
+          handler: sub_features.01_sample.nodes.core_sample_broken.BrokenNode
+          label: Broken
+          description: Always raises DomainError (non-retryable). Used to verify retry gating.
+          emits_audit: false
+          version: 1
+          tags: [test, fixture]
+          execution:
+            timeout_ms: 5000
+            retries: 2
+            tx: none
+      routes: []
+      ui_pages: []

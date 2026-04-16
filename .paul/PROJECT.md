@@ -14,8 +14,8 @@ Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, 
 |-----------|-------|
 | Type | Application |
 | Version | 0.1.0 |
-| Status | Phase 1 complete — Phase 2 starting |
-| Last Updated | 2026-04-13 |
+| Status | Phases 1 + 2 complete — Phase 3 (IAM & Audit) starting |
+| Last Updated | 2026-04-16 |
 
 ## Requirements
 
@@ -34,16 +34,22 @@ Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, 
 - ✓ Node registry skeleton — Phase 1 Plan 02
 - ✓ Next.js frontend shell with Tailwind CSS, app router, shared TS types (api.ts), typed API client (apiFetch) — Phase 1 Plan 03
 - ✓ Robot Framework + Playwright Browser E2E harness with first passing test suite — Phase 1 Plan 03
+- ✓ **Node Catalog Protocol v1** — authoritative spec at `03_docs/00_main/protocols/001_node_catalog_protocol_v1.md` — Phase 2 Plan 01
+- ✓ **ADR-027** Node Catalog + Runner — rationale + alternatives + escape hatches — Phase 2 Plan 01
+- ✓ **`"01_catalog"` Postgres schema** (9 tables + 19 seeded dim rows; CHECK constraint enforces effect-must-emit-audit at DB layer) — Phase 2 Plan 01
+- ✓ **`backend/01_catalog/` Python module** — manifest parser (Pydantic = schema), boot loader wired into FastAPI lifespan, cross-import linter (catches `from X` + `import_module("X")`) — Phase 2 Plan 02
+- ✓ **`/tnt` Claude Code skill** — 44-line onboarding for the node catalog pattern — Phase 2 Plan 02
+- ✓ **Node runner** — `run_node(pool, key, ctx, inputs)` dispatch with execution policy (timeout, retry on TransientError, tx modes caller/own/none), pluggable authz hook, NodeContext propagation (audit scope + distributed tracing) — Phase 2 Plan 03
 
 ### Active (In Progress)
-None — ready for Phase 2.
+None — ready for Phase 3.
 
 ### Planned (Next)
-- Phase 2: IAM + audit schema (dim/fct/dtl/lnk tables, EAV foundation, audit service, emit_audit node)
-- Phase 3: Orgs & Workspaces vertical (repo → service → routes → nodes → UI → Playwright)
-- Phase 4: Users & Account Types vertical
-- Phase 5: Roles, Groups, Scopes & Applications vertical
-- Phase 6: Auth Config & Feature Flags vertical
+- Phase 3: IAM & Audit schema (dim/fct/dtl/lnk tables, EAV foundation, IAM feature.manifest.yaml — first real consumer of NCP v1, audit service, `emit_audit` node)
+- Phase 4: Orgs & Workspaces vertical (repo → service → routes → nodes → UI → Playwright; all cross-sub-feature calls via `run_node`)
+- Phase 5: Users & Account Types vertical
+- Phase 6: Roles, Groups, Scopes & Applications vertical
+- Phase 7: Auth Config & Feature Flags vertical
 
 ### Out of Scope
 - Visual drag-and-drop editor (read-only viewer first; editor is future milestone)
@@ -109,6 +115,12 @@ Codebase rebuilt from scratch. Previous tennetctl iteration deleted. Clean slate
 | Frontend port 51735 (non-standard) | Project convention: avoid default ports to prevent conflicts; all E2E tests and CORS config use 51735 | 2026-04-13 | Active |
 | Custom SQL migrator over Alembic/ORM | asyncpg-only; UP/DOWN migrations; ordered by filename; rollback and history tracking | 2026-04-13 | Active |
 | Frozen dataclass Config (not BaseSettings) | Simpler, no extra dependency, immutable at startup | 2026-04-13 | Active |
+| Node Catalog Protocol v1 (NCP v1) — sub-features communicate only via `run_node` | Direct imports across sub-features make module gating impossible, produce spaghetti coupling, and lose audit scope propagation. NCP mandates catalog-dispatched calls with typed NodeContext | 2026-04-16 | Active |
+| Catalog `fct_*` PKs use SMALLINT GENERATED IDENTITY (deviation from UUID v7 rule) | System-level entities seeded via manifest upsert, referenced by many rows; SMALLINT keeps index pages small and makes manifest upsert-by-key simpler | 2026-04-16 | Active |
+| Effect-must-emit-audit enforced at DB + Pydantic + runner layer | Triple defense means no effect node can ever register with emits_audit=false regardless of which layer is bypassed | 2026-04-16 | Active |
+| Idempotency check runs BEFORE Pydantic input validation in runner | If a node declares idempotency_key as required Input, Pydantic would mask the runner-level policy error; runner policy concerns should surface first | 2026-04-16 | Active |
+| Pydantic models are the manifest schema (no separate JSON Schema file) | Single source of truth; Pydantic v2 `model_json_schema()` generates the schema when external tools need it | 2026-04-16 | Active |
+| Cross-import linter parses both `from X` and `import_module("X")` | Numeric-prefix dirs require importlib; without Call-node detection the linter is a no-op on this project | 2026-04-16 | Active |
 
 ## Success Metrics
 
@@ -144,4 +156,4 @@ Codebase rebuilt from scratch. Previous tennetctl iteration deleted. Clean slate
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-04-13 after Phase 1 complete*
+*Last updated: 2026-04-16 after Phase 2 (Catalog Foundation) complete*

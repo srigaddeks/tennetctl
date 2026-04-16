@@ -1,0 +1,6 @@
+schema: "01_catalog"
+table: "02_dim_node_kinds"
+rows:
+  - {id: 1, code: request, label: Request, description: "Gateway-compiled to APISIX (auth, rate limit, flags)",  deprecated_at: null}
+  - {id: 2, code: effect,  label: Effect,  description: "Backend runtime (DB writes, audit, notifications)",     deprecated_at: null}
+  - {id: 3, code: control, label: Control, description: "Flow logic only (branch, parallel, merge)",              deprecated_at: null}

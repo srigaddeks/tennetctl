@@ -1,0 +1,8 @@
+schema: "01_catalog"
+table: "04_dim_entity_types"
+rows:
+  - {id: 1, code: feature,     label: Feature,      description: "Top-level product domain",             deprecated_at: null}
+  - {id: 2, code: sub_feature, label: "Sub-feature", description: "Scoped unit within a feature",        deprecated_at: null}
+  - {id: 3, code: node,        label: Node,         description: "Atomic unit of behavior",              deprecated_at: null}
+  - {id: 4, code: flow,        label: Flow,         description: "DAG of nodes (reserved for v1)",       deprecated_at: null}
+  - {id: 5, code: flow_node,   label: "Flow Node",  description: "Node instance in a flow (reserved)",   deprecated_at: null}

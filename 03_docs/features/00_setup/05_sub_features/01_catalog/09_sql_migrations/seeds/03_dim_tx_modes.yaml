@@ -1,0 +1,6 @@
+schema: "01_catalog"
+table: "03_dim_tx_modes"
+rows:
+  - {id: 1, code: caller, label: "Caller TX", description: "Reuse caller connection + open transaction",         deprecated_at: null}
+  - {id: 2, code: own,    label: "Own TX",    description: "Acquire new connection, independent transaction",    deprecated_at: null}
+  - {id: 3, code: none,   label: "No TX",     description: "No DB connection (pure compute / request nodes)",    deprecated_at: null}

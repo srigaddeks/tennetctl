@@ -1,0 +1,11 @@
+schema: "01_catalog"
+table: "01_dim_modules"
+rows:
+  - {id: 1, code: core,       label: Core,        description: "Framework infrastructure (always on)",       always_on: true,  deprecated_at: null}
+  - {id: 2, code: iam,        label: IAM,         description: "Identity & Access Management (always on)",   always_on: true,  deprecated_at: null}
+  - {id: 3, code: audit,      label: Audit,       description: "Audit event pipeline (always on)",           always_on: true,  deprecated_at: null}
+  - {id: 4, code: monitoring, label: Monitoring,  description: "Traces, metrics, logs",                      always_on: false, deprecated_at: null}
+  - {id: 5, code: vault,      label: Vault,       description: "Secrets + config",                           always_on: false, deprecated_at: null}
+  - {id: 6, code: notify,     label: Notify,      description: "Email/SMS/push dispatch",                    always_on: false, deprecated_at: null}
+  - {id: 7, code: billing,    label: Billing,     description: "Subscriptions + invoices",                   always_on: false, deprecated_at: null}
+  - {id: 8, code: llmops,     label: "LLM Ops",   description: "LLM invocation + eval",                      always_on: false, deprecated_at: null}
