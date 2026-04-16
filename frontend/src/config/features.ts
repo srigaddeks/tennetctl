@@ -52,11 +52,12 @@ export const FEATURES: FeatureNav[] = [
   {
     key: "vault",
     label: "Vault",
-    description: "Envelope-encrypted secret storage. Values are shown once at create / rotate and never re-displayed.",
+    description: "Envelope-encrypted secrets (write-only after create) + plaintext typed configs (viewable + editable). Both scoped global / org / workspace.",
     basePath: "/vault",
     testId: "nav-feature-vault",
     subFeatures: [
-      { href: "/vault", label: "All secrets", testId: "nav-vault-secrets" },
+      { href: "/vault/secrets", label: "Secrets", testId: "nav-vault-secrets" },
+      { href: "/vault/configs", label: "Configs",  testId: "nav-vault-configs" },
     ],
   },
   {

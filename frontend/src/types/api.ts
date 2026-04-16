@@ -436,11 +436,19 @@ export type EvaluateResponse = {
 
 // ─── Vault ───────────────────────────────────────────────────────
 
+export type VaultScope = "global" | "org" | "workspace";
+export type VaultValueType = "boolean" | "string" | "number" | "json";
+
+// ─── Vault: Secrets ──────────────────────────────────────────────
+
 // Metadata shape — list + create + rotate responses use this. NEVER carries plaintext.
 export type VaultSecretMeta = {
   key: string;
   version: number;
   description: string | null;
+  scope: VaultScope;
+  org_id: string | null;
+  workspace_id: string | null;
   is_active: boolean;
   is_test: boolean;
   created_by: string;
@@ -453,11 +461,49 @@ export type VaultSecretCreateBody = {
   key: string;
   value: string;
   description?: string | null;
+  scope?: VaultScope;
+  org_id?: string | null;
+  workspace_id?: string | null;
 };
 
 export type VaultSecretRotateBody = {
   value: string;
   description?: string | null;
+};
+
+// ─── Vault: Configs ──────────────────────────────────────────────
+
+export type VaultConfigMeta = {
+  id: string;
+  key: string;
+  value_type: VaultValueType;
+  value: unknown;
+  description: string | null;
+  scope: VaultScope;
+  org_id: string | null;
+  workspace_id: string | null;
+  is_active: boolean;
+  is_test: boolean;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type VaultConfigCreateBody = {
+  key: string;
+  value_type: VaultValueType;
+  value: unknown;
+  description?: string | null;
+  scope?: VaultScope;
+  org_id?: string | null;
+  workspace_id?: string | null;
+};
+
+export type VaultConfigUpdateBody = {
+  value?: unknown;
+  description?: string | null;
+  is_active?: boolean;
 };
 
 // ─── Catalog ─────────────────────────────────────────────────────
