@@ -83,13 +83,86 @@ spec:
         - method: POST
           path: /v1/vault
           handler: sub_features.01_secrets.routes.create_secret_route
-        - method: GET
-          path: "/v1/vault/{key}"
-          handler: sub_features.01_secrets.routes.get_secret_route
         - method: POST
           path: "/v1/vault/{key}/rotate"
           handler: sub_features.01_secrets.routes.rotate_secret_route
         - method: DELETE
           path: "/v1/vault/{key}"
           handler: sub_features.01_secrets.routes.delete_secret_route
+      ui_pages: []
+
+    - key: vault.configs
+      number: 2
+      label: Configs
+      description: Plaintext typed configuration values (boolean / string / number / json) scoped to global / org / workspace. Unlike secrets, configs are viewable + editable.
+      owns:
+        schema: "02_vault"
+        tables: ["11_fct_vault_configs", "03_dim_value_types"]
+        views: ["v_vault_configs"]
+        seeds: []
+      nodes:
+        - key: vault.configs.create
+          kind: effect
+          handler: sub_features.02_configs.nodes.vault_configs_create.VaultConfigsCreate
+          label: Create Config
+          description: Creates a typed plaintext config at (scope, org_id, workspace_id, key); emits audit vault.configs.created.
+          emits_audit: true
+          version: 1
+          tags: [vault, config, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: vault.configs.get
+          kind: control
+          handler: sub_features.02_configs.nodes.vault_configs_get.VaultConfigsGet
+          label: Get Config
+          description: Read-only lookup by id. Returns flat v_vault_configs row or None.
+          emits_audit: false
+          version: 1
+          tags: [vault, config, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+        - key: vault.configs.update
+          kind: effect
+          handler: sub_features.02_configs.nodes.vault_configs_update.VaultConfigsUpdate
+          label: Update Config
+          description: PATCH value / description / is_active. Value type-checked against declared value_type. Emits audit vault.configs.updated.
+          emits_audit: true
+          version: 1
+          tags: [vault, config, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: vault.configs.delete
+          kind: effect
+          handler: sub_features.02_configs.nodes.vault_configs_delete.VaultConfigsDelete
+          label: Delete Config
+          description: Soft-delete by id. Emits audit vault.configs.deleted.
+          emits_audit: true
+          version: 1
+          tags: [vault, config, write]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/vault-configs
+          handler: sub_features.02_configs.routes.list_configs_route
+        - method: POST
+          path: /v1/vault-configs
+          handler: sub_features.02_configs.routes.create_config_route
+        - method: GET
+          path: "/v1/vault-configs/{config_id}"
+          handler: sub_features.02_configs.routes.get_config_route
+        - method: PATCH
+          path: "/v1/vault-configs/{config_id}"
+          handler: sub_features.02_configs.routes.update_config_route
+        - method: DELETE
+          path: "/v1/vault-configs/{config_id}"
+          handler: sub_features.02_configs.routes.delete_config_route
       ui_pages: []

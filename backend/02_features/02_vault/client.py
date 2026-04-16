@@ -5,9 +5,10 @@ Every backend feature that needs a secret calls `request.app.state.vault.get(key
 Values are cached for 60 seconds (SWR) per key; rotate/delete service paths call
 `invalidate(key)` to bust the cache immediately.
 
-The node `vault.secrets.get` also reads through this client (not HTTP) — see
-AC-5 of plan 07-01: node reads bypass audit for latency; HTTP `GET /v1/vault/{key}`
-audits every access for operator visibility.
+Scope resolution (plan 07-03): v0.2 resolves every get() at scope=global. A later
+plan will add `get_scoped(key, scope, org_id, workspace_id)` for per-tenant secrets
+with a global fallback. The HTTP plaintext view is gone — this client is the only
+in-process read path.
 """
 
 from __future__ import annotations
@@ -58,11 +59,14 @@ class VaultClient:
         self._cache.clear()
 
     async def _fetch(self, key: str) -> tuple[str, int]:
+        # v0.2: always resolve at scope=global (scope_id=1, org_id NULL, workspace_id NULL).
         async with self._pool.acquire() as conn:
             row = await conn.fetchrow(
                 'SELECT ciphertext, wrapped_dek, nonce, version '
                 'FROM "02_vault"."10_fct_vault_entries" '
-                'WHERE key = $1 AND deleted_at IS NULL '
+                'WHERE scope_id = 1 '
+                '  AND org_id IS NULL AND workspace_id IS NULL '
+                '  AND key = $1 AND deleted_at IS NULL '
                 'ORDER BY version DESC LIMIT 1',
                 key,
             )

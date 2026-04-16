@@ -1,20 +1,27 @@
 """
 vault.secrets — Pydantic v2 API models.
 
-SecretCreate / SecretRotate drive the write surface. SecretMeta is the flat read
-shape returned everywhere except the single plaintext-read endpoint. SecretValue
-is ONLY returned by the internal admin endpoint GET /v1/vault/{key}; list
-responses never carry it.
+Scope model (ADR-028, plan 07-03):
+  - scope='global'    → org_id None, workspace_id None
+  - scope='org'       → org_id set, workspace_id None
+  - scope='workspace' → org_id set, workspace_id set
+
+The `SecretValue` schema was removed — v0.3 dropped the plaintext HTTP view.
+Reveal-once is the only path that carries plaintext, and it holds the value in
+a client-side ref after POST/rotate (never re-fetched from the server).
 """
 
 from __future__ import annotations
 
 import re
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 _KEY_RE = re.compile(r"^[a-z][a-z0-9._-]{0,127}$")
+
+VaultScope = Literal["global", "org", "workspace"]
 
 
 def _validate_key(v: str) -> str:
@@ -26,17 +33,39 @@ def _validate_key(v: str) -> str:
     return v
 
 
+def _validate_scope_shape(
+    scope: VaultScope, org_id: str | None, workspace_id: str | None
+) -> None:
+    if scope == "global":
+        if org_id is not None or workspace_id is not None:
+            raise ValueError("scope='global' requires org_id=null and workspace_id=null")
+    elif scope == "org":
+        if not org_id or workspace_id is not None:
+            raise ValueError("scope='org' requires org_id set and workspace_id=null")
+    elif scope == "workspace":
+        if not org_id or not workspace_id:
+            raise ValueError("scope='workspace' requires both org_id and workspace_id")
+
+
 class SecretCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     key: str
     value: str = Field(min_length=1, max_length=65536)
     description: str | None = Field(default=None, max_length=500)
+    scope: VaultScope = "global"
+    org_id: str | None = None
+    workspace_id: str | None = None
 
     @field_validator("key")
     @classmethod
     def _key_shape(cls, v: str) -> str:
         return _validate_key(v)
+
+    @model_validator(mode="after")
+    def _scope_shape(self) -> "SecretCreate":
+        _validate_scope_shape(self.scope, self.org_id, self.workspace_id)
+        return self
 
 
 class SecretRotate(BaseModel):
@@ -53,6 +82,9 @@ class SecretMeta(BaseModel):
     key: str
     version: int
     description: str | None = None
+    scope: VaultScope
+    org_id: str | None = None
+    workspace_id: str | None = None
     is_active: bool
     is_test: bool
     created_by: str
@@ -66,12 +98,3 @@ class SecretMeta(BaseModel):
         if isinstance(v, datetime):
             return v.isoformat()
         return v
-
-
-class SecretValue(BaseModel):
-    """Returned only by GET /v1/vault/{key}. Never from list."""
-    model_config = ConfigDict(extra="forbid")
-
-    key: str
-    version: int
-    value: str

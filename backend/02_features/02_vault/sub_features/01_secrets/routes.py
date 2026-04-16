@@ -1,16 +1,18 @@
 """
-vault.secrets — FastAPI routes (5-endpoint shape).
+vault.secrets — FastAPI routes.
 
-Item path uses {key} not {id} — secrets are identified by their user-supplied stable
-key, not a UUID. Documented deviation from the default iam pattern (ADR-028).
+Scope-aware (plan 07-03). HTTP routes are metadata-only; the plaintext HTTP view
+(GET /v1/vault/{key}) was removed — secrets are never readable over HTTP after
+the reveal-once flow at create/rotate time. VaultClient.get (in-process Python
+API used by Phase 8 auth) remains the only read path.
 
-Routes are the transaction boundary: they acquire a conn from the pool and, for writes,
-open a transaction. NodeContext extras carry pool + vault so downstream service + audit
-emission work end-to-end. audit_category='setup' for mutations so evt_audit scope CHECK
-passes while auth is pre-phase-8.
-
-Pre-auth gate: if TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT is not true, every vault route
-returns 503 VAULT_LOCKED. This gate lifts automatically once phase 8 ships auth.
+Endpoints (4, down from 5):
+  GET    /v1/vault                                 — list metadata + scope filters
+  POST   /v1/vault                                 — create (returns metadata, reveal-once client-side)
+  POST   /v1/vault/{key}/rotate                    — rotate (returns metadata, reveal-once client-side)
+  DELETE /v1/vault/{key}                           — soft-delete
+  (the item path carries ?scope=... &org_id=... &workspace_id=... query params
+   when the caller needs to disambiguate beyond global scope)
 """
 
 from __future__ import annotations
@@ -36,13 +38,11 @@ _service: Any = import_module(
 SecretCreate = _schemas.SecretCreate
 SecretRotate = _schemas.SecretRotate
 SecretMeta = _schemas.SecretMeta
-SecretValue = _schemas.SecretValue
 
 router = APIRouter(prefix="/v1/vault", tags=["vault.secrets"])
 
 
 def _ensure_vault_available(request: Request) -> Any:
-    """Return VaultClient + 503 if not available or pre-auth gate is closed."""
     config = request.app.state.config
     if not config.allow_unauthenticated_vault:
         raise _errors.AppError(
@@ -64,16 +64,11 @@ def _ensure_vault_available(request: Request) -> Any:
 
 
 def _build_ctx(request: Request, pool: Any, vault: Any, *, audit_category: str) -> Any:
-    user_id = request.headers.get("x-user-id")
-    session_id = request.headers.get("x-session-id")
-    org_id = request.headers.get("x-org-id")
-    workspace_id = request.headers.get("x-workspace-id")
-
     return _catalog_ctx.NodeContext(
-        user_id=user_id,
-        session_id=session_id,
-        org_id=org_id,
-        workspace_id=workspace_id,
+        user_id=request.headers.get("x-user-id"),
+        session_id=request.headers.get("x-session-id"),
+        org_id=request.headers.get("x-org-id"),
+        workspace_id=request.headers.get("x-workspace-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(request.state, "request_id", "") or _core_id.uuid7(),
@@ -87,23 +82,25 @@ async def list_secrets_route(
     request: Request,
     limit: int = 50,
     offset: int = 0,
+    scope: str | None = None,
+    org_id: str | None = None,
+    workspace_id: str | None = None,
 ) -> dict:
     vault = _ensure_vault_available(request)
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool, vault, audit_category="system")
     async with pool.acquire() as conn:
         items, total = await _service.list_secrets(
-            conn, ctx, limit=limit, offset=offset,
+            conn, ctx,
+            limit=limit, offset=offset,
+            scope=scope, org_id=org_id, workspace_id=workspace_id,
         )
     data = [SecretMeta(**row).model_dump() for row in items]
     return _response.paginated(data, total=total, limit=limit, offset=offset)
 
 
 @router.post("", status_code=201)
-async def create_secret_route(
-    request: Request,
-    body: SecretCreate,
-) -> dict:
+async def create_secret_route(request: Request, body: SecretCreate) -> dict:
     vault = _ensure_vault_available(request)
     pool = request.app.state.pool
     ctx_base = _build_ctx(request, pool, vault, audit_category="setup")
@@ -116,23 +113,11 @@ async def create_secret_route(
                 key=body.key,
                 value=body.value,
                 description=body.description,
+                scope=body.scope,
+                org_id=body.org_id,
+                workspace_id=body.workspace_id,
             )
     return _response.success(SecretMeta(**secret).model_dump())
-
-
-@router.get("/{key}", status_code=200)
-async def get_secret_route(request: Request, key: str) -> dict:
-    vault = _ensure_vault_available(request)
-    pool = request.app.state.pool
-    ctx_base = _build_ctx(request, pool, vault, audit_category="setup")
-    # Audit emission goes through the pool-held transaction.
-    async with pool.acquire() as conn:
-        async with conn.transaction():
-            ctx = replace(ctx_base, conn=conn)
-            result = await _service.read_secret(
-                pool, ctx, vault_client=vault, key=key,
-            )
-    return _response.success(SecretValue(**result).model_dump())
 
 
 @router.post("/{key}/rotate", status_code=200)
@@ -140,6 +125,9 @@ async def rotate_secret_route(
     request: Request,
     key: str,
     body: SecretRotate,
+    scope: str = "global",
+    org_id: str | None = None,
+    workspace_id: str | None = None,
 ) -> dict:
     vault = _ensure_vault_available(request)
     pool = request.app.state.pool
@@ -153,12 +141,21 @@ async def rotate_secret_route(
                 key=key,
                 value=body.value,
                 description=body.description,
+                scope=scope,
+                org_id=org_id,
+                workspace_id=workspace_id,
             )
     return _response.success(SecretMeta(**secret).model_dump())
 
 
 @router.delete("/{key}", status_code=204)
-async def delete_secret_route(request: Request, key: str) -> Response:
+async def delete_secret_route(
+    request: Request,
+    key: str,
+    scope: str = "global",
+    org_id: str | None = None,
+    workspace_id: str | None = None,
+) -> Response:
     vault = _ensure_vault_available(request)
     pool = request.app.state.pool
     ctx_base = _build_ctx(request, pool, vault, audit_category="setup")
@@ -166,6 +163,9 @@ async def delete_secret_route(request: Request, key: str) -> Response:
         async with conn.transaction():
             ctx = replace(ctx_base, conn=conn)
             await _service.delete_secret(
-                pool, conn, ctx, vault_client=vault, key=key,
+                pool, conn, ctx,
+                vault_client=vault,
+                key=key,
+                scope=scope, org_id=org_id, workspace_id=workspace_id,
             )
     return Response(status_code=204)

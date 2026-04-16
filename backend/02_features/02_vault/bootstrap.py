@@ -49,7 +49,9 @@ async def ensure_bootstrap_secrets(pool: Any, vault_client: Any) -> int:
     for key, description in _BOOTSTRAP_KEYS:
         async with pool.acquire() as conn:
             async with conn.transaction():
-                existing = await _repo.get_metadata_by_key(conn, key)
+                existing = await _repo.get_metadata_by_scope_key(
+                    conn, scope="global", org_id=None, workspace_id=None, key=key,
+                )
                 if existing is not None:
                     continue
 
@@ -72,6 +74,9 @@ async def ensure_bootstrap_secrets(pool: Any, vault_client: Any) -> int:
                     key=key,
                     value=_generate_secret(),
                     description=description,
+                    scope="global",
+                    org_id=None,
+                    workspace_id=None,
                     source="bootstrap",
                 )
                 inserted += 1

@@ -1,4 +1,4 @@
-"""vault.secrets.put — effect node. Create an envelope-encrypted secret at v1."""
+"""vault.configs.create — effect node. Create a plaintext typed config value."""
 
 from __future__ import annotations
 
@@ -9,25 +9,26 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 _node_mod: Any = import_module("backend.01_catalog.node")
 _service: Any = import_module(
-    "backend.02_features.02_vault.sub_features.01_secrets.service"
+    "backend.02_features.02_vault.sub_features.02_configs.service"
 )
 
 
-class VaultSecretsPut(_node_mod.Node):
-    key = "vault.secrets.put"
+class VaultConfigsCreate(_node_mod.Node):
+    key = "vault.configs.create"
     kind = "effect"
 
     class Input(BaseModel):
         model_config = ConfigDict(extra="forbid")
         key: str
-        value: str = Field(min_length=1, max_length=65536)
-        description: str | None = None
+        value_type: Literal["boolean", "string", "number", "json"]
+        value: Any
+        description: str | None = Field(default=None, max_length=500)
         scope: Literal["global", "org", "workspace"] = "global"
         org_id: str | None = None
         workspace_id: str | None = None
 
         @model_validator(mode="after")
-        def _scope_shape(self) -> "VaultSecretsPut.Input":
+        def _scope_shape(self) -> "VaultConfigsCreate.Input":
             if self.scope == "global" and (self.org_id or self.workspace_id):
                 raise ValueError("scope='global' requires org_id+workspace_id null")
             if self.scope == "org" and (not self.org_id or self.workspace_id):
@@ -37,25 +38,21 @@ class VaultSecretsPut(_node_mod.Node):
             return self
 
     class Output(BaseModel):
-        secret: dict
+        config: dict
 
-    async def run(self, ctx: Any, inputs: Input) -> "VaultSecretsPut.Output":
+    async def run(self, ctx: Any, inputs: Input) -> "VaultConfigsCreate.Output":
         extras = ctx.extras or {}
         pool = extras.get("pool")
-        vault = extras.get("vault")
-        if pool is None or vault is None:
-            raise RuntimeError(
-                "NodeContext.extras must carry 'pool' and 'vault' for vault.secrets.put"
-            )
-        secret = await _service.create_secret(
+        if pool is None:
+            raise RuntimeError("NodeContext.extras must carry 'pool' for vault.configs.create")
+        config = await _service.create_config(
             pool, ctx.conn, ctx,
-            vault_client=vault,
             key=inputs.key,
+            value_type=inputs.value_type,
             value=inputs.value,
             description=inputs.description,
             scope=inputs.scope,
             org_id=inputs.org_id,
             workspace_id=inputs.workspace_id,
-            source="node",
         )
-        return self.Output(secret=secret)
+        return self.Output(config=config)
