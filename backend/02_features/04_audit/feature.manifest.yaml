@@ -7,7 +7,7 @@ metadata:
   module: audit
   always_on: true
   label: Audit
-  description: Append-only audit event pipeline. Every effect node across the platform emits here via run_node("audit.emit", ...). Scope (user/session/org/workspace) enforced at DB CHECK layer.
+  description: Append-only audit event pipeline + PostHog-class analytics (taxonomy, query API, soon UI + outbox). Every effect node platform-wide emits here via run_node("audit.events.emit", ...); any consumer queries via run_node("audit.events.query", ...). Scope (user/session/org/workspace) enforced at DB CHECK layer.
   manifest_version: 1
 
 spec:
@@ -17,12 +17,17 @@ spec:
     - key: audit.events
       number: 1
       label: Audit Events
-      description: evt_audit table + emit_audit effect node. Caller context comes from NodeContext; CHECK constraint enforces scope for non-setup / non-failure events.
+      description: evt_audit table + dim_audit_categories + dim_audit_event_keys + v_audit_events view. emit_audit (effect) for the write path; query_events (control) for the read path. Caller context comes from NodeContext; CHECK constraint enforces scope for non-setup / non-failure events.
       owns:
         schema: "04_audit"
-        tables: ["60_evt_audit"]
-        views: []
-        seeds: []
+        tables:
+          - "60_evt_audit"
+          - "01_dim_audit_categories"
+          - "02_dim_audit_event_keys"
+        views:
+          - "v_audit_events"
+        seeds:
+          - "04audit_categories.yaml"
       nodes:
         - key: audit.events.emit
           kind: effect
@@ -36,5 +41,41 @@ spec:
             timeout_ms: 5000
             retries: 0
             tx: caller
-      routes: []
+        - key: audit.events.query
+          kind: control
+          handler: sub_features.01_events.nodes.query_events.QueryAuditEvents
+          label: Query Audit Events
+          description: Read-only cursor-paginated query over v_audit_events. Used by Notify subscription workers, admin dashboards, and export jobs. Does not emit audit (hot-path bypass, matches vault precedent).
+          emits_audit: false
+          version: 1
+          tags: [audit, read, cross-cutting]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: audit.events.subscribe
+          kind: control
+          handler: sub_features.01_events.nodes.subscribe_events.AuditEventsSubscribe
+          label: Subscribe Audit Events
+          description: Polling-based durable outbox consumer. Returns events newer than the given outbox cursor id. Notify workers + webhook dispatchers call this on each pg_notify wake-up or on a polling schedule.
+          emits_audit: false
+          version: 1
+          tags: [audit, outbox, cross-cutting]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/audit-events
+          handler: sub_features.01_events.routes.list_audit_events_route
+        - method: GET
+          path: /v1/audit-events/stats
+          handler: sub_features.01_events.routes.stats_audit_events_route
+        - method: GET
+          path: "/v1/audit-events/{event_id}"
+          handler: sub_features.01_events.routes.get_audit_event_route
+        - method: GET
+          path: /v1/audit-event-keys
+          handler: sub_features.01_events.routes.list_audit_event_keys_route
       ui_pages: []

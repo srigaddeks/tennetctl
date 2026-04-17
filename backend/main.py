@@ -28,7 +28,8 @@ MODULE_ROUTERS: dict[str, str] = {
     "vault": "backend.02_features.02_vault.routes",
     "iam": "backend.02_features.03_iam.routes",
     "featureflags": "backend.02_features.09_featureflags.routes",
-    # "audit": "backend.02_features.04_audit.routes",  # no routes yet (only nodes)
+    "audit": "backend.02_features.04_audit.routes",
+    "notify": "backend.02_features.06_notify.routes",
     # "monitoring": "backend.02_features.05_monitoring.routes",
 }
 
@@ -60,17 +61,8 @@ async def lifespan(application: FastAPI):
     )
 
     # Vault lifespan — only when the module is enabled. Blocks startup if the
-    # root key is missing or the pre-auth gate is closed (ADR-028).
+    # root key is missing (ADR-028).
     if "vault" in config.modules:
-        if not config.allow_unauthenticated_vault:
-            raise RuntimeError(
-                "vault module is enabled but TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT is not true. "
-                "v0.2 requires this flag until phase 8 ships auth. See ADR-028."
-            )
-        logger.warning(
-            "TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT is active — vault routes are open. "
-            "Remove the flag once phase 8 (auth) is deployed."
-        )
         _vault_crypto = import_module("backend.02_features.02_vault.crypto")
         _vault_client_mod = import_module("backend.02_features.02_vault.client")
         _vault_bootstrap = import_module("backend.02_features.02_vault.bootstrap")
@@ -83,7 +75,66 @@ async def lifespan(application: FastAPI):
         if inserted > 0:
             logger.info("Vault bootstrap: %d new secret(s) seeded.", inserted)
 
+    # Notify workers — only when the module is enabled.
+    _notify_worker_task = None
+    _notify_email_task = None
+    _notify_webpush_task = None
+    _notify_campaign_task = None
+    if "notify" in config.modules:
+        _notify_worker = import_module("backend.02_features.06_notify.worker")
+        _notify_worker_task = _notify_worker.start_worker(pool)
+        logger.info("Notify subscription worker started.")
+
+        _notify_email_svc = import_module(
+            "backend.02_features.06_notify.sub_features.07_email.service"
+        )
+        _base_tracking_url = f"http://localhost:{config.app_port}"
+        _notify_email_task = _notify_email_svc.start_email_sender(
+            pool, application.state.vault, _base_tracking_url
+        )
+        logger.info("Notify email sender started.")
+
+        _notify_webpush_svc = import_module(
+            "backend.02_features.06_notify.sub_features.08_webpush.service"
+        )
+        await _notify_webpush_svc.ensure_vapid_keys(pool, application.state.vault)
+        logger.info("VAPID keys ready.")
+        _notify_webpush_task = _notify_webpush_svc.start_webpush_sender(
+            pool, application.state.vault
+        )
+        logger.info("Notify webpush sender started.")
+
+        _campaign_runner = import_module(
+            "backend.02_features.06_notify.campaign_runner"
+        )
+        _notify_campaign_task = _campaign_runner.start_campaign_runner(pool)
+        logger.info("Notify campaign runner started.")
+
     yield
+
+    if _notify_worker_task is not None:
+        _notify_worker_task.cancel()
+        import asyncio as _asyncio
+        await _asyncio.gather(_notify_worker_task, return_exceptions=True)
+        logger.info("Notify subscription worker stopped.")
+
+    if _notify_email_task is not None:
+        _notify_email_task.cancel()
+        import asyncio as _asyncio
+        await _asyncio.gather(_notify_email_task, return_exceptions=True)
+        logger.info("Notify email sender stopped.")
+
+    if _notify_webpush_task is not None:
+        _notify_webpush_task.cancel()
+        import asyncio as _asyncio
+        await _asyncio.gather(_notify_webpush_task, return_exceptions=True)
+        logger.info("Notify webpush sender stopped.")
+
+    if _notify_campaign_task is not None:
+        _notify_campaign_task.cancel()
+        import asyncio as _asyncio
+        await _asyncio.gather(_notify_campaign_task, return_exceptions=True)
+        logger.info("Notify campaign runner stopped.")
 
     await _db.close_pool(pool)
     logger.info("TennetCTL stopped.")

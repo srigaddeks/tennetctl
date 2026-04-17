@@ -64,22 +64,36 @@ async def upsert_feature(
     number: int,
     module_id: int,
 ) -> int:
-    """Upsert by key. Returns the feature id."""
-    row: asyncpg.Record | None = await conn.fetchrow(
+    """Upsert by key without burning the SMALLINT sequence on conflicts.
+
+    Uses SELECT-then-INSERT-or-UPDATE so the sequence only advances for
+    genuinely new rows (INSERT ... ON CONFLICT DO UPDATE always advances
+    the sequence, exhausting SMALLINT quickly across test runs).
+    """
+    existing = await conn.fetchrow(
+        f'SELECT id FROM {_SCHEMA}."10_fct_features" WHERE key = $1', key
+    )
+    if existing:
+        await conn.execute(
+            f"""
+            UPDATE {_SCHEMA}."10_fct_features"
+            SET number = $2, module_id = $3,
+                updated_at = CURRENT_TIMESTAMP,
+                deprecated_at = NULL, tombstoned_at = NULL
+            WHERE key = $1
+            """,
+            key, number, module_id,
+        )
+        return existing["id"]
+    row = await conn.fetchrow(
         f"""
         INSERT INTO {_SCHEMA}."10_fct_features" (key, number, module_id)
         VALUES ($1, $2, $3)
-        ON CONFLICT (key) DO UPDATE
-            SET number = EXCLUDED.number,
-                module_id = EXCLUDED.module_id,
-                updated_at = CURRENT_TIMESTAMP,
-                deprecated_at = NULL,
-                tombstoned_at = NULL
         RETURNING id
         """,
         key, number, module_id,
     )
-    assert row is not None, "INSERT ... RETURNING must return a row"
+    assert row is not None
     return row["id"]
 
 
@@ -90,21 +104,31 @@ async def upsert_sub_feature(
     feature_id: int,
     number: int,
 ) -> int:
-    row: asyncpg.Record | None = await conn.fetchrow(
+    """Upsert by key without burning the SMALLINT sequence on conflicts."""
+    existing = await conn.fetchrow(
+        f'SELECT id FROM {_SCHEMA}."11_fct_sub_features" WHERE key = $1', key
+    )
+    if existing:
+        await conn.execute(
+            f"""
+            UPDATE {_SCHEMA}."11_fct_sub_features"
+            SET feature_id = $2, number = $3,
+                updated_at = CURRENT_TIMESTAMP,
+                deprecated_at = NULL, tombstoned_at = NULL
+            WHERE key = $1
+            """,
+            key, feature_id, number,
+        )
+        return existing["id"]
+    row = await conn.fetchrow(
         f"""
         INSERT INTO {_SCHEMA}."11_fct_sub_features" (key, feature_id, number)
         VALUES ($1, $2, $3)
-        ON CONFLICT (key) DO UPDATE
-            SET feature_id = EXCLUDED.feature_id,
-                number = EXCLUDED.number,
-                updated_at = CURRENT_TIMESTAMP,
-                deprecated_at = NULL,
-                tombstoned_at = NULL
         RETURNING id
         """,
         key, feature_id, number,
     )
-    assert row is not None, "INSERT ... RETURNING must return a row"
+    assert row is not None
     return row["id"]
 
 
@@ -121,31 +145,37 @@ async def upsert_node(
     retries: int,
     tx_mode_id: int,
 ) -> int:
-    row: asyncpg.Record | None = await conn.fetchrow(
+    """Upsert by key without burning the SMALLINT sequence on conflicts."""
+    existing = await conn.fetchrow(
+        f'SELECT id FROM {_SCHEMA}."12_fct_nodes" WHERE key = $1', key
+    )
+    if existing:
+        await conn.execute(
+            f"""
+            UPDATE {_SCHEMA}."12_fct_nodes"
+            SET sub_feature_id = $2, kind_id = $3, handler_path = $4,
+                version = $5, emits_audit = $6, timeout_ms = $7, retries = $8,
+                tx_mode_id = $9, updated_at = CURRENT_TIMESTAMP,
+                deprecated_at = NULL, tombstoned_at = NULL
+            WHERE key = $1
+            """,
+            key, sub_feature_id, kind_id, handler_path,
+            version, emits_audit, timeout_ms, retries, tx_mode_id,
+        )
+        return existing["id"]
+    row = await conn.fetchrow(
         f"""
         INSERT INTO {_SCHEMA}."12_fct_nodes" (
             key, sub_feature_id, kind_id, handler_path,
             version, emits_audit, timeout_ms, retries, tx_mode_id
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        ON CONFLICT (key) DO UPDATE
-            SET sub_feature_id = EXCLUDED.sub_feature_id,
-                kind_id = EXCLUDED.kind_id,
-                handler_path = EXCLUDED.handler_path,
-                version = EXCLUDED.version,
-                emits_audit = EXCLUDED.emits_audit,
-                timeout_ms = EXCLUDED.timeout_ms,
-                retries = EXCLUDED.retries,
-                tx_mode_id = EXCLUDED.tx_mode_id,
-                updated_at = CURRENT_TIMESTAMP,
-                deprecated_at = NULL,
-                tombstoned_at = NULL
         RETURNING id
         """,
         key, sub_feature_id, kind_id, handler_path,
         version, emits_audit, timeout_ms, retries, tx_mode_id,
     )
-    assert row is not None, "INSERT ... RETURNING must return a row"
+    assert row is not None
     return row["id"]
 
 

@@ -1,0 +1,324 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: notify
+  number: 6
+  module: notify
+  always_on: false
+  label: Notify
+  description: Mailchimp-class multi-channel notification platform. Transactional, critical (multi-channel fan-out), marketing, and digest categories. Templates with Jinja2 rendering, per-channel bodies, SMTP configs, template groups, variable system (static + dynamic SQL), subscriptions fed by audit outbox, email + web push + in-app delivery, campaigns, analytics.
+  manifest_version: 1
+
+spec:
+  depends_on_modules:
+    - iam
+    - audit
+
+  sub_features:
+    - key: notify.smtp_configs
+      number: 1
+      label: SMTP Configs
+      description: Vault-backed SMTP sender identities. One config per sending domain (transactional, marketing, critical). Credentials stored in vault; auth_vault_key references the vault secret key.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "10_fct_notify_smtp_configs"
+        views:
+          - "v_notify_smtp_configs"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/smtp-configs
+          handler: sub_features.01_smtp_configs.routes.list_smtp_configs_route
+        - method: POST
+          path: /v1/notify/smtp-configs
+          handler: sub_features.01_smtp_configs.routes.create_smtp_config_route
+        - method: GET
+          path: "/v1/notify/smtp-configs/{config_id}"
+          handler: sub_features.01_smtp_configs.routes.get_smtp_config_route
+        - method: PATCH
+          path: "/v1/notify/smtp-configs/{config_id}"
+          handler: sub_features.01_smtp_configs.routes.update_smtp_config_route
+        - method: DELETE
+          path: "/v1/notify/smtp-configs/{config_id}"
+          handler: sub_features.01_smtp_configs.routes.delete_smtp_config_route
+      ui_pages: []
+
+    - key: notify.template_groups
+      number: 2
+      label: Template Groups
+      description: Logical buckets grouping templates by category and optional SMTP config. Critical category groups trigger multi-channel fan-out. Each group can bind its own SMTP config for isolation (transactional vs marketing vs critical senders).
+      owns:
+        schema: "06_notify"
+        tables:
+          - "11_fct_notify_template_groups"
+        views:
+          - "v_notify_template_groups"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/template-groups
+          handler: sub_features.02_template_groups.routes.list_template_groups_route
+        - method: POST
+          path: /v1/notify/template-groups
+          handler: sub_features.02_template_groups.routes.create_template_group_route
+        - method: GET
+          path: "/v1/notify/template-groups/{group_id}"
+          handler: sub_features.02_template_groups.routes.get_template_group_route
+        - method: PATCH
+          path: "/v1/notify/template-groups/{group_id}"
+          handler: sub_features.02_template_groups.routes.update_template_group_route
+        - method: DELETE
+          path: "/v1/notify/template-groups/{group_id}"
+          handler: sub_features.02_template_groups.routes.delete_template_group_route
+      ui_pages: []
+
+    - key: notify.templates
+      number: 3
+      label: Templates
+      description: Jinja2 templates with per-channel bodies (HTML + text + preheader). Subject is also Jinja2. Variables are injected at render time (static or dynamic SQL per Plan 11-02). notify.templates.render node fetches + renders in one call.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "12_fct_notify_templates"
+          - "20_dtl_notify_template_bodies"
+        views:
+          - "v_notify_templates"
+      nodes:
+        - key: notify.templates.render
+          kind: control
+          handler: sub_features.03_templates.nodes.render_template.RenderTemplate
+          label: Render Template
+          description: Fetch template + per-channel body from DB, render subject + body via Jinja2 StrictUndefined with provided variables dict. Raises ValueError on missing template or channel body; raises UndefinedError on missing variable.
+          emits_audit: false
+          version: 1
+          tags: [notify, templates, render]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/notify/templates
+          handler: sub_features.03_templates.routes.list_templates_route
+        - method: POST
+          path: /v1/notify/templates
+          handler: sub_features.03_templates.routes.create_template_route
+        - method: GET
+          path: "/v1/notify/templates/{template_id}"
+          handler: sub_features.03_templates.routes.get_template_route
+        - method: PATCH
+          path: "/v1/notify/templates/{template_id}"
+          handler: sub_features.03_templates.routes.update_template_route
+        - method: PUT
+          path: "/v1/notify/templates/{template_id}/bodies"
+          handler: sub_features.03_templates.routes.upsert_bodies_route
+        - method: DELETE
+          path: "/v1/notify/templates/{template_id}"
+          handler: sub_features.03_templates.routes.delete_template_route
+      ui_pages: []
+
+    - key: notify.template_variables
+      number: 4
+      label: Template Variables
+      description: Registered Jinja2 variables per template. Static (literal value set at creation) or dynamic_sql (safelisted SELECT against v_* views, parameterized from audit event context). Resolved by notify.templates.render before rendering; caller-supplied variables always override registered values.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "13_fct_notify_template_variables"
+        views:
+          - "v_notify_template_variables"
+      nodes: []
+      routes:
+        - method: GET
+          path: "/v1/notify/templates/{template_id}/variables"
+          handler: sub_features.04_variables.routes.list_variables_route
+        - method: POST
+          path: "/v1/notify/templates/{template_id}/variables"
+          handler: sub_features.04_variables.routes.create_variable_route
+        - method: POST
+          path: "/v1/notify/templates/{template_id}/variables/resolve"
+          handler: sub_features.04_variables.routes.resolve_variables_route
+        - method: GET
+          path: "/v1/notify/templates/{template_id}/variables/{var_id}"
+          handler: sub_features.04_variables.routes.get_variable_route
+        - method: PATCH
+          path: "/v1/notify/templates/{template_id}/variables/{var_id}"
+          handler: sub_features.04_variables.routes.update_variable_route
+        - method: DELETE
+          path: "/v1/notify/templates/{template_id}/variables/{var_id}"
+          handler: sub_features.04_variables.routes.delete_variable_route
+      ui_pages: []
+
+    - key: notify.subscriptions
+      number: 5
+      label: Subscriptions
+      description: Maps event_key_pattern to a template + channel per org. Worker matches incoming audit events against active subscriptions to create delivery rows. Critical category templates fan out across email, webpush, and in_app channels simultaneously.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "14_fct_notify_subscriptions"
+        views:
+          - "v_notify_subscriptions"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/subscriptions
+          handler: sub_features.05_subscriptions.routes.list_subscriptions_route
+        - method: POST
+          path: /v1/notify/subscriptions
+          handler: sub_features.05_subscriptions.routes.create_subscription_route
+        - method: GET
+          path: "/v1/notify/subscriptions/{sub_id}"
+          handler: sub_features.05_subscriptions.routes.get_subscription_route
+        - method: PATCH
+          path: "/v1/notify/subscriptions/{sub_id}"
+          handler: sub_features.05_subscriptions.routes.update_subscription_route
+        - method: DELETE
+          path: "/v1/notify/subscriptions/{sub_id}"
+          handler: sub_features.05_subscriptions.routes.delete_subscription_route
+      ui_pages: []
+
+    - key: notify.deliveries
+      number: 6
+      label: Deliveries
+      description: Delivery queue populated by the subscription worker and the transactional API. Stores recipient, channel, priority, status, and resolved_variables snapshot. Append-only tracking events (open/click/bounce/unsubscribe) in 61_evt_notify_delivery_events. PATCH marks in-app deliveries as read.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "15_fct_notify_deliveries"
+          - "61_evt_notify_delivery_events"
+        views:
+          - "v_notify_deliveries"
+          - "v_notify_delivery_events"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/deliveries
+          handler: sub_features.06_deliveries.routes.list_deliveries_route
+        - method: GET
+          path: "/v1/notify/deliveries/{delivery_id}"
+          handler: sub_features.06_deliveries.routes.get_delivery_route
+        - method: PATCH
+          path: "/v1/notify/deliveries/{delivery_id}"
+          handler: sub_features.06_deliveries.routes.patch_delivery_route
+      ui_pages: []
+
+    - key: notify.email
+      number: 7
+      label: Email Channel
+      description: Email delivery via aiosmtplib using per-template-group SMTP configs stored in vault. Pytracking open-pixel and click-tracking redirects. Bounce webhook updates delivery status.
+      owns:
+        schema: "06_notify"
+        tables: []
+        views: []
+      nodes: []
+      routes:
+        - method: GET
+          path: "/v1/notify/email/track/o/{token}"
+          handler: sub_features.07_email.routes.open_tracking_route
+        - method: GET
+          path: "/v1/notify/email/track/c/{token}"
+          handler: sub_features.07_email.routes.click_tracking_route
+        - method: POST
+          path: /v1/notify/email/webhooks/bounce
+          handler: sub_features.07_email.routes.bounce_webhook_route
+      ui_pages: []
+
+    - key: notify.webpush
+      number: 8
+      label: Web Push Channel
+      description: Browser push notifications via VAPID + Web Push Protocol. VAPID keys bootstrapped into vault at startup. Supports multiple browser subscriptions per user. Sender polls webpush deliveries (channel_id=2) and dispatches via pywebpush.webpush_async.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "16_fct_notify_webpush_subscriptions"
+        views:
+          - "v_notify_webpush_subscriptions"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/webpush/vapid-public-key
+          handler: sub_features.08_webpush.routes.get_vapid_public_key_route
+        - method: GET
+          path: /v1/notify/webpush/subscriptions
+          handler: sub_features.08_webpush.routes.list_subscriptions_route
+        - method: POST
+          path: /v1/notify/webpush/subscriptions
+          handler: sub_features.08_webpush.routes.create_subscription_route
+        - method: DELETE
+          path: "/v1/notify/webpush/subscriptions/{sub_id}"
+          handler: sub_features.08_webpush.routes.delete_subscription_route
+      ui_pages: []
+
+    - key: notify.campaigns
+      number: 10
+      label: Campaigns
+      description: Broadcast campaigns targeting a filtered audience of org users. Audience DSL filters by account type. Throttled delivery creation with campaign lifecycle (draft → scheduled → running → completed). Campaign runner polls every 60s for due campaigns.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "05_dim_notify_campaign_statuses"
+          - "18_fct_notify_campaigns"
+        views:
+          - "v_notify_campaigns"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/campaigns
+          handler: sub_features.10_campaigns.routes.list_campaigns_route
+        - method: POST
+          path: /v1/notify/campaigns
+          handler: sub_features.10_campaigns.routes.create_campaign_route
+        - method: GET
+          path: "/v1/notify/campaigns/{campaign_id}"
+          handler: sub_features.10_campaigns.routes.get_campaign_route
+        - method: PATCH
+          path: "/v1/notify/campaigns/{campaign_id}"
+          handler: sub_features.10_campaigns.routes.update_campaign_route
+        - method: DELETE
+          path: "/v1/notify/campaigns/{campaign_id}"
+          handler: sub_features.10_campaigns.routes.delete_campaign_route
+      ui_pages: []
+
+    - key: notify.preferences
+      number: 9
+      label: User Preferences
+      description: Per-user opt-in/out preferences per (channel, category) pair. critical category cannot be opted out. Worker checks preferences before creating non-critical deliveries. GET returns all 16 combinations with defaults.
+      owns:
+        schema: "06_notify"
+        tables:
+          - "17_fct_notify_user_preferences"
+        views:
+          - "v_notify_user_preferences"
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/notify/preferences
+          handler: sub_features.09_preferences.routes.list_preferences_route
+        - method: PATCH
+          path: /v1/notify/preferences
+          handler: sub_features.09_preferences.routes.patch_preferences_route
+      ui_pages: []
+
+    - key: notify.send
+      number: 11
+      label: Transactional Send
+      description: Pure REST API for direct transactional notifications. POST /v1/notify/send creates a delivery immediately without an audit-event trigger. notify.send.transactional effect node wraps the same logic for use from other sub-features.
+      owns:
+        schema: "06_notify"
+        tables: []
+        views: []
+      nodes:
+        - key: notify.send.transactional
+          kind: effect
+          emits_audit: true
+          label: Transactional Send
+          handler: sub_features.11_send.nodes.send_transactional.SendTransactional
+          description: Creates a transactional delivery bypassing audit-event subscription. Used for magic links, OTP, password reset, and other direct sends.
+      routes:
+        - method: POST
+          path: /v1/notify/send
+          handler: sub_features.11_send.routes.send_transactional_route
+      ui_pages: []

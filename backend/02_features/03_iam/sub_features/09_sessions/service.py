@@ -1,0 +1,235 @@
+"""
+iam.sessions — service layer.
+
+Mints + validates HMAC-SHA256 signed opaque tokens. Token format:
+
+    <session_id>.<base64url(HMAC-SHA256(signing_key, session_id))>
+
+Signing key is fetched from vault key auth.session.signing_key_v1 (32 random
+bytes, base64-encoded). The vault client SWR-caches for 60s, so validation cost
+is sub-millisecond after warmup.
+
+`auth.session.ttl_days` (vault config, default 7) drives expires_at. Configs
+arrive as JSONB; we coerce to int and clamp 1..90.
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import hmac
+from datetime import datetime, timedelta, timezone
+from importlib import import_module
+from typing import Any
+
+_core_id: Any = import_module("backend.01_core.id")
+_errors: Any = import_module("backend.01_core.errors")
+_catalog: Any = import_module("backend.01_catalog")
+_repo: Any = import_module(
+    "backend.02_features.03_iam.sub_features.09_sessions.repository"
+)
+_configs_repo: Any = import_module(
+    "backend.02_features.02_vault.sub_features.02_configs.repository"
+)
+
+_SIGNING_KEY_VAULT_KEY = "auth.session.signing_key_v1"
+_TTL_CONFIG_KEY = "auth.session.ttl_days"
+_DEFAULT_TTL_DAYS = 7
+
+
+def _b64url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
+
+def _sign(session_id: str, signing_key: bytes) -> str:
+    sig = hmac.new(signing_key, session_id.encode("ascii"), hashlib.sha256).digest()
+    return _b64url_encode(sig)
+
+
+async def _signing_key_bytes(vault_client: Any) -> bytes:
+    """Fetch + base64-decode the signing key. Cached upstream by VaultClient (60s)."""
+    raw = await vault_client.get(_SIGNING_KEY_VAULT_KEY)
+    return base64.b64decode(raw)
+
+
+async def _resolve_ttl_days(conn: Any) -> int:
+    cfg = await _configs_repo.get_by_scope_key(
+        conn, scope="global", org_id=None, workspace_id=None, key=_TTL_CONFIG_KEY,
+    )
+    if cfg is None:
+        return _DEFAULT_TTL_DAYS
+    raw = cfg["value"]
+    try:
+        n = int(raw)
+    except (TypeError, ValueError):
+        return _DEFAULT_TTL_DAYS
+    return max(1, min(90, n))
+
+
+def make_token(session_id: str, signing_key: bytes) -> str:
+    return f"{session_id}.{_sign(session_id, signing_key)}"
+
+
+def parse_token(token: str, signing_key: bytes) -> str | None:
+    """Validate signature + return embedded session_id, or None if tampered."""
+    if not token or "." not in token:
+        return None
+    session_id, _, sig = token.partition(".")
+    if not session_id or not sig:
+        return None
+    expected = _sign(session_id, signing_key)
+    if not hmac.compare_digest(sig, expected):
+        return None
+    return session_id
+
+
+async def mint_session(
+    conn: Any,
+    *,
+    vault_client: Any,
+    user_id: str,
+    org_id: str | None = None,
+    workspace_id: str | None = None,
+    ttl_days: int | None = None,
+) -> tuple[str, dict]:
+    """Create a session row and return (token, session_metadata)."""
+    session_id = _core_id.uuid7()
+    ttl = ttl_days if ttl_days is not None else await _resolve_ttl_days(conn)
+    expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=ttl)
+    await _repo.insert_session(
+        conn,
+        id=session_id,
+        user_id=user_id,
+        org_id=org_id,
+        workspace_id=workspace_id,
+        expires_at=expires,
+        created_by=user_id,
+    )
+    signing_key = await _signing_key_bytes(vault_client)
+    token = make_token(session_id, signing_key)
+    metadata = await _repo.get_by_id(conn, session_id)
+    if metadata is None:
+        raise RuntimeError(f"session {session_id} not visible after insert")
+    return token, metadata
+
+
+async def validate_token(
+    conn: Any,
+    *,
+    vault_client: Any,
+    token: str,
+) -> dict | None:
+    """Return the session row iff signature matches AND row is_valid. Else None."""
+    signing_key = await _signing_key_bytes(vault_client)
+    session_id = parse_token(token, signing_key)
+    if session_id is None:
+        return None
+    row = await _repo.get_by_id(conn, session_id)
+    if row is None or not row["is_valid"]:
+        return None
+    return row
+
+
+async def revoke_session(conn: Any, *, session_id: str, updated_by: str) -> bool:
+    return await _repo.revoke_session(
+        conn, session_id=session_id, updated_by=updated_by,
+    )
+
+
+# ── Self-service: list + revoke + extend the caller's own sessions ─
+
+async def list_my_sessions(
+    conn: Any,
+    *,
+    user_id: str,
+    limit: int = 50,
+    offset: int = 0,
+    only_valid: bool = False,
+) -> tuple[list[dict], int]:
+    return await _repo.list_by_user(
+        conn, user_id=user_id, limit=limit, offset=offset, only_valid=only_valid,
+    )
+
+
+async def get_my_session(conn: Any, *, user_id: str, session_id: str) -> dict | None:
+    """Return the session iff it belongs to the caller. Else None (so route can 404)."""
+    row = await _repo.get_by_id(conn, session_id)
+    if row is None or row["user_id"] != user_id:
+        return None
+    return row
+
+
+async def revoke_my_session(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    user_id: str,
+    session_id: str,
+) -> bool:
+    """Revoke a session owned by `user_id`. Emits iam.sessions.revoked audit."""
+    owned = await get_my_session(conn, user_id=user_id, session_id=session_id)
+    if owned is None:
+        raise _errors.NotFoundError(f"Session {session_id!r} not found.")
+
+    revoked = await _repo.revoke_session(
+        conn, session_id=session_id, updated_by=user_id,
+    )
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {
+            "event_key": "iam.sessions.revoked",
+            "outcome": "success",
+            "metadata": {
+                "session_id": session_id,
+                "user_id": user_id,
+                "already_revoked": not revoked,
+            },
+        },
+    )
+    return revoked
+
+
+async def extend_my_session(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    vault_client: Any,
+    user_id: str,
+    session_id: str,
+) -> dict:
+    """Push expires_at out by the configured TTL. Session must be owned + still live."""
+    owned = await get_my_session(conn, user_id=user_id, session_id=session_id)
+    if owned is None:
+        raise _errors.NotFoundError(f"Session {session_id!r} not found.")
+    if not owned["is_valid"]:
+        raise _errors.UnauthorizedError("session is not valid and cannot be extended")
+
+    ttl_days = await _resolve_ttl_days(conn)
+    new_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=ttl_days)
+    ok = await _repo.extend_expires(
+        conn, session_id=session_id, new_expires_at=new_expires, updated_by=user_id,
+    )
+    if not ok:
+        raise _errors.UnauthorizedError("session is not valid and cannot be extended")
+
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {
+            "event_key": "iam.sessions.extended",
+            "outcome": "success",
+            "metadata": {
+                "session_id": session_id,
+                "user_id": user_id,
+                "ttl_days": ttl_days,
+            },
+        },
+    )
+    updated = await _repo.get_by_id(conn, session_id)
+    if updated is None:
+        raise RuntimeError(f"session {session_id} vanished after extend")
+    # Silence unused-import warning: vault_client is the documented prerequisite
+    # for session trust; future plans may re-sign the token here.
+    del vault_client
+    return updated

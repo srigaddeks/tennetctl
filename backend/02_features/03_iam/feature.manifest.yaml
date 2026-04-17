@@ -332,6 +332,114 @@ spec:
           handler: sub_features.07_memberships.routes.delete_workspace_membership_route
       ui_pages: []
 
+    - key: iam.credentials
+      number: 8
+      label: Credentials
+      description: Argon2id password hashes for email_password users. Pepper from vault. Self-service password change via PATCH /v1/credentials/me — verifies current, hashes new, revokes sibling sessions.
+      owns:
+        schema: "03_iam"
+        tables: ["22_dtl_credentials"]
+        views: []
+        seeds: []
+      nodes: []
+      routes:
+        - method: PATCH
+          path: /v1/credentials/me
+          handler: sub_features.08_credentials.routes.change_my_password_route
+      ui_pages: []
+
+    - key: iam.sessions
+      number: 9
+      label: Sessions
+      description: Opaque HMAC-SHA256 signed session tokens + self-service session management (list my sessions, revoke, extend). Signing key from vault (auth.session.signing_key_v1). TTL from vault config auth.session.ttl_days (default 7 days).
+      owns:
+        schema: "03_iam"
+        tables: ["16_fct_sessions"]
+        views: ["v_sessions"]
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/sessions
+          handler: sub_features.09_sessions.routes.list_my_sessions_route
+        - method: GET
+          path: "/v1/sessions/{id}"
+          handler: sub_features.09_sessions.routes.get_my_session_route
+        - method: PATCH
+          path: "/v1/sessions/{id}"
+          handler: sub_features.09_sessions.routes.patch_my_session_route
+        - method: DELETE
+          path: "/v1/sessions/{id}"
+          handler: sub_features.09_sessions.routes.delete_my_session_route
+      ui_pages: []
+
+    - key: iam.auth
+      number: 10
+      label: Authentication
+      description: Signup, signin, signout, OAuth (Google/GitHub), and the /me endpoint. Composes iam.users + iam.credentials + iam.sessions; emits iam.auth.* audit events.
+      owns:
+        schema: "03_iam"
+        tables: []
+        views: []
+        seeds: []
+      nodes:
+        - key: iam.auth.signup
+          kind: effect
+          handler: sub_features.10_auth.nodes.iam_auth_signup.AuthSignup
+          label: Sign Up
+          description: Creates a new email_password user, hashes the password with the vault pepper, mints a session, and emits audit iam.auth.signup.
+          emits_audit: true
+          version: 1
+          tags: [auth, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.auth.signin
+          kind: effect
+          handler: sub_features.10_auth.nodes.iam_auth_signin.AuthSignin
+          label: Sign In
+          description: Verifies an email_password credential against the stored argon2id hash; on success mints a session and emits audit iam.auth.signin (success or failure outcome).
+          emits_audit: true
+          version: 1
+          tags: [auth, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.auth.validate_session
+          kind: request
+          handler: sub_features.10_auth.nodes.iam_auth_validate_session.AuthValidateSession
+          label: Validate Session
+          description: Decodes + verifies an opaque session token; returns the session row (with derived is_valid) or None. Read-only; no audit (request kind, gateway-eligible).
+          emits_audit: false
+          version: 1
+          tags: [auth, read]
+          execution: {timeout_ms: 2000, retries: 0, tx: caller}
+        - key: iam.auth.revoke_session
+          kind: effect
+          handler: sub_features.10_auth.nodes.iam_auth_revoke_session.AuthRevokeSession
+          label: Revoke Session
+          description: Marks the session revoked_at and emits audit iam.auth.signout. Idempotent — revoking an already-revoked session returns revoked=False.
+          emits_audit: true
+          version: 1
+          tags: [auth, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: POST
+          path: /v1/auth/signup
+          handler: sub_features.10_auth.routes.signup_route
+        - method: POST
+          path: /v1/auth/signin
+          handler: sub_features.10_auth.routes.signin_route
+        - method: POST
+          path: /v1/auth/signout
+          handler: sub_features.10_auth.routes.signout_route
+        - method: GET
+          path: /v1/auth/me
+          handler: sub_features.10_auth.routes.me_route
+        - method: POST
+          path: /v1/auth/google
+          handler: sub_features.10_auth.routes.google_oauth_route
+        - method: POST
+          path: /v1/auth/github
+          handler: sub_features.10_auth.routes.github_oauth_route
+      ui_pages: []
+
     - key: iam.applications
       number: 6
       label: Applications

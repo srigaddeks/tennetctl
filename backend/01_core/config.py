@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 _project_root = Path(__file__).resolve().parent.parent.parent
 load_dotenv(_project_root / ".env")
 
-_DEFAULT_MODULES = "core,iam,audit,featureflags,vault"
+_DEFAULT_MODULES = "core,iam,audit,featureflags,vault,notify"
 _DEFAULT_PORT = 51734
 
 _ALLOWED_TENNET_ENV = frozenset({

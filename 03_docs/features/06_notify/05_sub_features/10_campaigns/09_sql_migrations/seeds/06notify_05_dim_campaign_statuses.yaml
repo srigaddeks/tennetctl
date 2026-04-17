@@ -1,0 +1,38 @@
+schema: "06_notify"
+table: "05_dim_notify_campaign_statuses"
+rows:
+  - id: 1
+    code: draft
+    label: Draft
+    description: Campaign is being configured. Not yet scheduled for delivery.
+    deprecated_at: null
+  - id: 2
+    code: scheduled
+    label: Scheduled
+    description: Campaign is queued for delivery at scheduled_at. Runner will pick up when time arrives.
+    deprecated_at: null
+  - id: 3
+    code: running
+    label: Running
+    description: Campaign runner is actively creating deliveries for the audience.
+    deprecated_at: null
+  - id: 4
+    code: paused
+    label: Paused
+    description: Campaign run was paused mid-execution. Can be resumed.
+    deprecated_at: null
+  - id: 5
+    code: completed
+    label: Completed
+    description: All audience deliveries have been created successfully.
+    deprecated_at: null
+  - id: 6
+    code: cancelled
+    label: Cancelled
+    description: Campaign was cancelled before completion. No further deliveries created.
+    deprecated_at: null
+  - id: 7
+    code: failed
+    label: Failed
+    description: Campaign runner encountered an unrecoverable error. Inspect campaign logs.
+    deprecated_at: null

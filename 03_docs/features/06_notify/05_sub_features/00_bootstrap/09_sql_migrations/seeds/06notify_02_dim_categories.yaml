@@ -1,0 +1,23 @@
+schema: "06_notify"
+table: "02_dim_notify_categories"
+rows:
+  - id: 1
+    code: transactional
+    label: Transactional
+    description: Triggered by user actions (signup, password reset, magic link). Single-channel, low latency.
+    deprecated_at: null
+  - id: 2
+    code: critical
+    label: Critical
+    description: Mission-critical security alerts. Multi-channel fan-out to all user-enabled channels. Cannot be opted out by end users.
+    deprecated_at: null
+  - id: 3
+    code: marketing
+    label: Marketing
+    description: Campaigns, broadcasts, and promotional content. User-opt-out respected.
+    deprecated_at: null
+  - id: 4
+    code: digest
+    label: Digest
+    description: Batched summaries (daily/weekly). Throttled delivery; user-opt-out respected.
+    deprecated_at: null

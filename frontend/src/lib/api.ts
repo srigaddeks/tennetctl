@@ -45,6 +45,7 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
+    credentials: "include",
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -60,6 +61,7 @@ export async function apiList<T>(
 ): Promise<ListResult<T>> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
+    credentials: "include",
     ...options,
     headers: {
       "Content-Type": "application/json",

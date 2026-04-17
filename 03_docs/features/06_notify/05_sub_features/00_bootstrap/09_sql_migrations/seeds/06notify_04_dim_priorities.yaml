@@ -1,0 +1,23 @@
+schema: "06_notify"
+table: "04_dim_notify_priorities"
+rows:
+  - id: 1
+    code: low
+    label: Low
+    description: Digest and bulk mail. Heavily throttled; lowest queue priority.
+    deprecated_at: null
+  - id: 2
+    code: normal
+    label: Normal
+    description: Default priority for transactional and marketing deliveries.
+    deprecated_at: null
+  - id: 3
+    code: high
+    label: High
+    description: Elevated priority; faster queue processing; used for time-sensitive transactional mail.
+    deprecated_at: null
+  - id: 4
+    code: critical
+    label: Critical
+    description: Bypasses throttling; fans out to all user-enabled channels; cannot be user-disabled. Reserved for security alerts.
+    deprecated_at: null

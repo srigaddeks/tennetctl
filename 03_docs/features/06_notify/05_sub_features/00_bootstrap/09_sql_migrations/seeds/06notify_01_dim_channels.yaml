@@ -1,0 +1,23 @@
+schema: "06_notify"
+table: "01_dim_notify_channels"
+rows:
+  - id: 1
+    code: email
+    label: Email
+    description: SMTP email delivery with open/click tracking and bounce handling.
+    deprecated_at: null
+  - id: 2
+    code: webpush
+    label: Web Push
+    description: Browser push notifications via VAPID + Web Push Protocol.
+    deprecated_at: null
+  - id: 3
+    code: in_app
+    label: In-App
+    description: In-application notification bell and persistent banner for critical alerts.
+    deprecated_at: null
+  - id: 4
+    code: sms
+    label: SMS
+    description: SMS delivery (schema ready; sender integration deferred to v0.2).
+    deprecated_at: null

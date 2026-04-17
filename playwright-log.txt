@@ -1,0 +1,84 @@
+{"level":30,"time":"2026-04-16T18:31:14.340Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Listening on 127.0.0.1:51950"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-16T18:31:15.419Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.419Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.421Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.421Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-16T18:31:15.430Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.430Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.431Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.431Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-16T18:31:15.438Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.438Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.439Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.439Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-16T18:31:15.442Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.442Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-16T18:31:15.446Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.446Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-16T18:31:15.457Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"Start of node method closeAllBrowsers"}
+{"level":30,"time":"2026-04-16T18:31:15.458Z","pid":74346,"hostname":"Sris-Mac-mini.local","msg":"End of node method closeAllBrowsers"}

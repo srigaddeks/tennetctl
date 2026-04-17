@@ -349,11 +349,12 @@ export function TR({
   children,
   onClick,
   selected,
+  ...rest
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   selected?: boolean;
-}) {
+} & React.HTMLAttributes<HTMLTableRowElement>) {
   return (
     <tr
       onClick={onClick}
@@ -362,6 +363,7 @@ export function TR({
           "cursor-pointer transition hover:bg-zinc-50 dark:hover:bg-zinc-900/60",
         selected && "bg-zinc-100 dark:bg-zinc-900"
       )}
+      {...rest}
     >
       {children}
     </tr>

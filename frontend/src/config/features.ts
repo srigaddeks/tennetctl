@@ -61,6 +61,30 @@ export const FEATURES: FeatureNav[] = [
     ],
   },
   {
+    key: "audit",
+    label: "Audit",
+    description: "PostHog-class event analytics over the append-only audit log. Filter by actor/org/event, inspect metadata, trace spans, aggregate.",
+    basePath: "/audit",
+    testId: "nav-feature-audit",
+    subFeatures: [
+      { href: "/audit", label: "Explorer", testId: "nav-audit-explorer" },
+    ],
+  },
+  {
+    key: "notify",
+    label: "Notify",
+    description: "Multi-channel notification platform. Templates, subscriptions, delivery tracking, and user preferences.",
+    basePath: "/notify",
+    testId: "nav-feature-notify",
+    subFeatures: [
+      { href: "/notify/templates",   label: "Templates",   testId: "nav-notify-templates" },
+      { href: "/notify/campaigns",   label: "Campaigns",   testId: "nav-notify-campaigns" },
+      { href: "/notify/deliveries",  label: "Deliveries",  testId: "nav-notify-deliveries" },
+      { href: "/notify/send",        label: "Send API",    testId: "nav-notify-send" },
+      { href: "/notify/preferences", label: "Preferences", testId: "nav-notify-preferences" },
+    ],
+  },
+  {
     key: "nodes",
     label: "Node Catalog",
     description: "Live registry of every feature, sub-feature, and node currently installed.",

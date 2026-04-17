@@ -1,0 +1,23 @@
+schema: "04_audit"
+table: "01_dim_audit_categories"
+rows:
+  - id: 1
+    code: system
+    label: System
+    description: Platform-initiated action with an authenticated caller (has full scope).
+    deprecated_at: null
+  - id: 2
+    code: user
+    label: User
+    description: User-initiated mutation with full audit scope (user/session/org/workspace).
+    deprecated_at: null
+  - id: 3
+    code: integration
+    label: Integration
+    description: External / machine-to-machine caller (e.g. API key, webhook).
+    deprecated_at: null
+  - id: 4
+    code: setup
+    label: Setup
+    description: Bootstrap / pre-auth operations; bypasses the full-scope CHECK constraint.
+    deprecated_at: null

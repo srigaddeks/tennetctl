@@ -34,6 +34,15 @@ _groups_routes: Any = import_module(
 _applications_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.06_applications.routes"
 )
+_auth_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.10_auth.routes"
+)
+_credentials_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.08_credentials.routes"
+)
+_sessions_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.09_sessions.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -43,3 +52,6 @@ router.include_router(_memberships_routes.router)
 router.include_router(_roles_routes.router)
 router.include_router(_groups_routes.router)
 router.include_router(_applications_routes.router)
+router.include_router(_credentials_routes.router)
+router.include_router(_sessions_routes.router)
+router.include_router(_auth_routes.router)

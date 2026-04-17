@@ -9,31 +9,35 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Milestone: v0.1 Foundation + IAM
-Phase: 7 of 8 (Vault) — BACKEND + UI + E2E COMPLETE
-Plan: 07-01 + 07-02 complete — VAULT SHIPPED FULL-STACK
-Status: UNIFY closed for 04-01, 04-02, 05-01, 05-02, 06-01, 07-01, 07-02 — vault end-to-end green (backend + frontend + Robot E2E)
-Last activity: 2026-04-16 — Completed 07-02 (vault UI: reveal-once dialogs, create/rotate/delete flows, /vault page, Robot + Playwright E2E 4/4 pass)
+Milestone: v0.1 Foundation + IAM (now spans 12 phases)
+Phase: 12 of 12 (IAM Security Completion) — starting
+Plan: 11-12 complete (PLAN ✓ APPLY ✓ UNIFY ✓)
+Status: Phase 11 COMPLETE. Full Notify stack shipped: 12 plans, SMTP/webpush/in-app/campaigns/templates/variables/subscriptions/deliveries/send-API. Build clean, 54+ notify tests green. Next: 12-01 (Magic Link).
+Last activity: 2026-04-17 — Phase 11 complete
 
 Progress:
-- Milestone: [██████████] 95% (Phases 1-3 complete; Phase 4-6 backend + Phase 7 vault full-stack complete; Phase 8 auth remains)
-- IAM backend: 7 sub-features / 36 routes / 17 catalog nodes / 24 integration tests / full audit trail
-- Vault full-stack: 1 sub-feature / 5 routes / 4 catalog nodes / 25 backend tests + 4 Robot E2E / AES-256-GCM envelope encryption / bootstrap secrets auto-seeded / reveal-once UI pattern proven at DOM level
+- Milestone: [██████░░░░] 58% (Phases 1-7 complete; 08 backend done; 09/10/11/12 scaffolded in roadmap)
+- IAM auth backend (basics): 3 sub-features / 26 tests / 4 catalog nodes / session middleware / OAuth monkeypatched — IAM security completion (magic link/OTP/passkeys) deferred to Phase 12
+- Audit write path: evt_audit table + emit node (Phase 3 Plan 03); read path + UI + outbox now planned as Phase 10
+- Notify (Phase 11, 12 plans): dim tables with critical category + priority fan-out; template groups keyed to SMTP configs; static + dynamic-SQL variables (safelisted, parameterized by audit event); template designer UI; pure `POST /v1/notify/send` transactional API
+- IAM Security Completion (Phase 12, 4 plans): magic link + OTP (email + TOTP) + passkeys + password reset — depends on Notify for delivery
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [7 plans closed: 04-01, 04-02, 05-01, 05-02, 06-01, 07-01, 07-02]
+  ✓        ✓        ✓     [11-12 complete — Phase 11 Notify full-stack done]
 ```
+
+Next loop: 12-01 (Magic Link)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: ~28 min
-- Total execution time: ~455 min
+- Total plans completed: 17
+- Average duration: ~27 min
+- Total execution time: ~477 min
 
 **By Phase:**
 
@@ -46,6 +50,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | 05-users | 2/2 ✅ backend complete | ~25min | ~13min |
 | 06-roles-groups-apps | 1/1 ✅ backend complete | ~35min | ~35min |
 | 07-vault | 2/2 ✅ full-stack complete | ~90min | ~45min |
+| 08-auth | 1/2 🟡 backend complete | ~15min | ~15min |
+| 10-audit-analytics | 4/4 ✅ full-stack complete (explorer + analytics + outbox) | ~182min | ~46min |
+| 11-notify | 12/12 ✅ complete | ~4 sessions | — |
 
 ## Accumulated Context
 
@@ -92,6 +99,12 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Seed filenames must be globally unique | Phase 7 Plan 01 (discovered) | Seeder tracks by filename across features; use feature-prefixed names (e.g. 02vault_*.yaml) |
 | Reveal-once UI uses useRef + unmount | Phase 7 Plan 02 | Plaintext held in ref (not state / not TanStack cache); dialog returns null when closed → textarea detached from DOM. Page reload cannot recover the value. |
 | Row-scoped testids for per-row dialogs | Phase 7 Plan 02 | Playwright Browser library strict mode rejects duplicate selectors; suffix with ${key} on any form/button inside a row-mounted dialog. |
+| dim_* tables: plain SMALLINT PK (not IDENTITY) when statically seeded; IDENTITY when dynamically populated | Phase 10 Plan 01 | Convention-fix: seeder uses `OVERRIDING SYSTEM VALUE=no`, so GENERATED ALWAYS blocks explicit-id YAML seeds. dim_audit_categories (static) is SMALLINT; dim_audit_event_keys (dynamic) is IDENTITY |
+| Audit taxonomy joins evt_audit by TEXT code (no FK on evt_audit) | Phase 10 Plan 01 | Preserves emit_audit backward compat (CHECK + text column unchanged); v_audit_events LEFT JOINs dim_audit_categories.code + dim_audit_event_keys.key |
+| Audit HTTP reads emit `audit.events.queried` fire-and-forget from separate conn | Phase 10 Plan 01 | Audit-of-reads contract (vault precedent); never couples to read tx, never fails the read |
+| Node tx=caller is the default for control nodes (not tx=none) | Phase 10 Plan 01 | Matches featureflags.flags.get; nodes need ctx.conn to read. tx=none is for pure compute / request-path nodes only |
+| Cross-org audit query authz at HTTP layer (fail-closed + filter auto-injection) | Phase 10 Plan 01 | Service stays composable for admin surfaces; HTTP route rejects with 403 when session org ≠ filter org, auto-injects session org when filter omitted |
+| Every backend sub-feature = full vertical (backend + frontend + Robot E2E in one plan) | User directive (2026-04-16, mid 10-01) | No more backend-only plans from Plan 10-02 onward. Phase 11 + 12 plans already structured as full verticals in ROADMAP |
 
 ### Git State
 Last commit: c1ff157 — docs(04-orgs-workspaces): draft Plan 04-01 — Org backend (schemas/repo/service/routes + 2 nodes)
@@ -115,6 +128,8 @@ None.
 - First IAM vertical (iam.orgs backend) — Plan 04-01 ✓
 - Vault foundation (envelope encryption, bootstrap secrets, env-var contract) — Plan 07-01 ✓
 - Vault UI + reveal-once enforcement + Robot E2E — Plan 07-02 ✓
+- Auth backend (credentials/sessions/auth) wiring + 26 tests green — Plan 08-01 ✓
+- Audit taxonomy + query API + `audit.events.query` control node + 21 tests green — Plan 10-01 ✓
 
 ### Deferred Gaps (v0.1.5 Runtime Hardening milestone)
 - Versioning operational (v1 → v2 migration pattern)
@@ -132,10 +147,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-16
-Stopped at: Vault full-stack complete + tested end-to-end. Backend: 129/129 pytest ex-migrator. Frontend: tsc + next build clean. E2E: Robot 4/4 pass (create / rotate / delete / reveal-once-truly-once). Visual MCP drive confirmed sentinels never leak into DOM / localStorage / sessionStorage post-dismiss. 33 new vault files + 5 modified across the stack.
-Next action: Ready for Phase 8 (auth) — bootstrap secrets seeded + reveal-once pattern reusable. Also: decide on the vault-scoped commit vs resolving prior uncommitted phases first.
-Resume file: .paul/phases/07-vault/07-02-SUMMARY.md
+Last session: 2026-04-17
+Stopped at: 11-09 PLAN created.
+Next action: /paul:plan 12-01 (Magic Link sub-feature)
+Resume file: .paul/phases/12-iam-security/12-01-PLAN.md (to be created)
 
 ---
 *STATE.md — Updated after every significant action*

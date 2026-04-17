@@ -1,0 +1,48 @@
+schema: "06_notify"
+table: "03_dim_notify_statuses"
+rows:
+  - id: 1
+    code: pending
+    label: Pending
+    description: Delivery queued; awaiting worker pickup.
+    deprecated_at: null
+  - id: 2
+    code: queued
+    label: Queued
+    description: Accepted by worker; in send queue.
+    deprecated_at: null
+  - id: 3
+    code: sent
+    label: Sent
+    description: Successfully handed off to the delivery provider (SMTP/push/etc.).
+    deprecated_at: null
+  - id: 4
+    code: delivered
+    label: Delivered
+    description: Confirmed delivery receipt from provider (where supported).
+    deprecated_at: null
+  - id: 5
+    code: opened
+    label: Opened
+    description: Open pixel fired (email) or notification tapped (push/in-app).
+    deprecated_at: null
+  - id: 6
+    code: clicked
+    label: Clicked
+    description: Tracked link clicked in email or notification body.
+    deprecated_at: null
+  - id: 7
+    code: bounced
+    label: Bounced
+    description: Hard or soft bounce received from SMTP provider.
+    deprecated_at: null
+  - id: 8
+    code: failed
+    label: Failed
+    description: Delivery failed after all retries exhausted.
+    deprecated_at: null
+  - id: 9
+    code: unsubscribed
+    label: Unsubscribed
+    description: Recipient clicked unsubscribe link or preference toggled off.
+    deprecated_at: null
