@@ -44,11 +44,16 @@ async def _cleanup(pool: Any) -> None:
         )
         user_ids = [r["user_id"] for r in rows]
 
-        # Delete invites by email pattern
+        # Delete invites by email pattern (recipient or inviter)
         await conn.execute(
             'DELETE FROM "03_iam"."30_fct_user_invites" WHERE email LIKE $1',
             f"{_TEST_PREFIX}%",
         )
+        if user_ids:
+            await conn.execute(
+                'DELETE FROM "03_iam"."30_fct_user_invites" WHERE invited_by = ANY($1::text[])',
+                user_ids,
+            )
 
         if not user_ids:
             return
@@ -138,7 +143,7 @@ async def test_create_invite_returns_201_without_token(live_app):
             workspace_id=None,
             trace_id=_core_id.uuid7(),
             span_id=_core_id.uuid7(),
-            audit_category="iam",
+            audit_category="setup",
             conn=conn,
             extras={"pool": pool},
         )
@@ -174,7 +179,7 @@ async def test_accept_invite_creates_user_and_returns_session(live_app):
             workspace_id=None,
             trace_id=_core_id.uuid7(),
             span_id=_core_id.uuid7(),
-            audit_category="iam",
+            audit_category="setup",
             conn=conn,
             extras={"pool": pool},
         )
@@ -223,7 +228,7 @@ async def test_cancel_invite_returns_204(live_app):
             workspace_id=None,
             trace_id=_core_id.uuid7(),
             span_id=_core_id.uuid7(),
-            audit_category="iam",
+            audit_category="setup",
             conn=conn,
             extras={"pool": pool},
         )
@@ -243,7 +248,7 @@ async def test_cancel_invite_returns_204(live_app):
             workspace_id=None,
             trace_id=_core_id.uuid7(),
             span_id=_core_id.uuid7(),
-            audit_category="iam",
+            audit_category="setup",
             conn=conn,
             extras={"pool": pool},
         )

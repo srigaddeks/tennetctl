@@ -1643,3 +1643,31 @@ export type InitialAdminResult = {
   session_token: string;
   session: Record<string, unknown>;
 };
+
+// ── IAM Invites ───────────────────────────────────────────────────────────────
+
+export type Invite = {
+  id: string;
+  org_id: string;
+  email: string;
+  invited_by: string;
+  inviter_email: string | null;
+  inviter_display_name: string | null;
+  role_id: string | null;
+  status: 1 | 2 | 3 | 4; // 1=pending 2=accepted 3=cancelled 4=expired
+  expires_at: string;
+  accepted_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InviteCreateBody = {
+  email: string;
+  role_id?: string | null;
+};
+
+export type AcceptInviteBody = {
+  token: string;
+  password: string;
+  display_name: string;
+};

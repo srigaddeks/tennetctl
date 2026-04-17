@@ -44,7 +44,7 @@ async def get_by_id(conn: Any, invite_id: str) -> dict | None:
 async def get_by_token_hash(conn: Any, token_hash: str) -> dict | None:
     row = await conn.fetchrow(
         f"""
-        SELECT * FROM {_VIEW}
+        SELECT * FROM {_TABLE}
         WHERE token_hash = $1
           AND status = 1
           AND expires_at > CURRENT_TIMESTAMP

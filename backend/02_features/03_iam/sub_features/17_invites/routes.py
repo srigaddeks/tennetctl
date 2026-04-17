@@ -28,7 +28,7 @@ router = APIRouter(tags=["iam.invites"])
 SESSION_COOKIE = "tennetctl_session"
 
 
-def _build_ctx(request: Request, pool: Any, *, audit_category: str = "iam") -> Any:
+def _build_ctx(request: Request, pool: Any, *, audit_category: str = "system") -> Any:
     return _catalog_ctx.NodeContext(
         user_id=getattr(request.state, "user_id", None),
         session_id=getattr(request.state, "session_id", None),
