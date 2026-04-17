@@ -1,0 +1,17 @@
+---
+source_file: "02_contributing_guidelines/03_database_structure.md"
+type: "document"
+community: "Documentation & Guides"
+tags:
+  - graphify/document
+  - graphify/EXTRACTED
+  - community/Documentation_&_Guides
+---
+
+# dim_* Table Template (SMALLINT PK lookups)
+
+## Connections
+- [[Database Structure Guide]] - `references` [EXTRACTED]
+- [[EAV pattern (fct_ identity only, dtl_ attrs, dim_ lookups, no business cols on fct)]] - `conceptually_related_to` [EXTRACTED]
+
+#graphify/document #graphify/EXTRACTED #community/Documentation_&_Guides

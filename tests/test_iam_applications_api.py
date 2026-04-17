@@ -45,6 +45,10 @@ async def _cleanup(pool: Any) -> None:
                 app_ids,
             )
             await conn.execute(
+                'DELETE FROM "03_iam"."45_lnk_application_scopes" WHERE application_id = ANY($1::varchar[])',
+                app_ids,
+            )
+            await conn.execute(
                 'DELETE FROM "03_iam"."21_dtl_attrs" WHERE entity_type_id=6 AND entity_id = ANY($1::text[])',
                 app_ids,
             )
@@ -130,6 +134,78 @@ async def test_application_rejects_missing_org(live_app) -> None:
               "code": f"{_TEST_CODE_PREFIX}x", "label": "X"},
     )
     assert r.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_application_scope_assignment(live_app) -> None:
+    client, _pool = live_app
+    org_id = await _create_org(client, "itest-apps-org-a")
+
+    r = await client.post(
+        "/v1/applications",
+        json={"org_id": org_id, "code": f"{_TEST_CODE_PREFIX}scopes", "label": "Scoped"},
+    )
+    assert r.status_code == 201, r.text
+    app_id = r.json()["data"]["id"]
+    assert r.json()["data"]["scope_ids"] == []
+
+    # Assign two scopes
+    r = await client.patch(
+        f"/v1/applications/{app_id}", json={"scope_ids": [4, 5]},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["data"]["scope_ids"] == [4, 5]
+
+    # GET hydrates scope_ids
+    r = await client.get(f"/v1/applications/{app_id}")
+    assert r.json()["data"]["scope_ids"] == [4, 5]
+
+    # Replace semantics: [4,5] -> [6]
+    r = await client.patch(
+        f"/v1/applications/{app_id}", json={"scope_ids": [6]},
+    )
+    assert r.status_code == 200
+    assert r.json()["data"]["scope_ids"] == [6]
+
+    # Clear scopes
+    r = await client.patch(
+        f"/v1/applications/{app_id}", json={"scope_ids": []},
+    )
+    assert r.status_code == 200
+    assert r.json()["data"]["scope_ids"] == []
+
+    # Invalid scope_id → validation error
+    r = await client.patch(
+        f"/v1/applications/{app_id}", json={"scope_ids": [999]},
+    )
+    assert r.status_code in (400, 422), r.text
+
+    # Idempotent: same set twice collapses to single write
+    await client.patch(f"/v1/applications/{app_id}", json={"scope_ids": [4, 5]})
+    r = await client.patch(
+        f"/v1/applications/{app_id}", json={"scope_ids": [5, 4]},  # re-ordered
+    )
+    assert r.status_code == 200
+    assert r.json()["data"]["scope_ids"] == [4, 5]
+
+
+@pytest.mark.asyncio
+async def test_application_list_includes_scope_ids(live_app) -> None:
+    client, _pool = live_app
+    org_id = await _create_org(client, "itest-apps-org-a")
+
+    r = await client.post(
+        "/v1/applications",
+        json={"org_id": org_id, "code": f"{_TEST_CODE_PREFIX}listed", "label": "Listed"},
+    )
+    app_id = r.json()["data"]["id"]
+    await client.patch(f"/v1/applications/{app_id}", json={"scope_ids": [4]})
+
+    r = await client.get(f"/v1/applications?org_id={org_id}")
+    assert r.status_code == 200
+    items = r.json()["data"]
+    found = next(a for a in items if a["id"] == app_id)
+    assert found["scope_ids"] == [4]
 
 
 @pytest.mark.asyncio

@@ -42,11 +42,12 @@ export default function SecurityPage() {
   const credentials = listData?.items ?? [];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6">
-      <div>
-        <h1 className="text-xl font-semibold" data-testid="security-heading">Security</h1>
-        <p className="mt-1 text-sm text-zinc-500">Manage your two-factor authentication devices.</p>
+    <div className="flex flex-1 flex-col">
+      <div className="border-b border-zinc-200 bg-white px-8 py-6 dark:border-zinc-800 dark:bg-zinc-950">
+        <h1 className="text-xl font-semibold tracking-tight" data-testid="security-heading">Security</h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your two-factor authentication and passkey devices.</p>
       </div>
+      <div className="mx-auto w-full max-w-2xl space-y-8 px-8 py-6">
 
       {/* Enrolled TOTP devices */}
       <section>
@@ -316,6 +317,7 @@ export default function SecurityPage() {
           </form>
         )}
       </section>
+    </div>
     </div>
   );
 }

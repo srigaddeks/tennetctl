@@ -1,0 +1,29 @@
+---
+source_file: "frontend/src/features/monitoring/hooks/use-alerts.ts"
+type: "code"
+community: "Monitoring Alerts Frontend Hooks"
+location: "L1"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Monitoring_Alerts_Frontend_Hooks
+---
+
+# use-alerts.ts
+
+## Connections
+- [[useAlertEvent()]] - `contains` [EXTRACTED]
+- [[useAlertEvents()]] - `contains` [EXTRACTED]
+- [[useAlertRule()]] - `contains` [EXTRACTED]
+- [[useAlertRules()]] - `contains` [EXTRACTED]
+- [[useCreateAlertRule()]] - `contains` [EXTRACTED]
+- [[useCreateSilence()]] - `contains` [EXTRACTED]
+- [[useDeleteAlertRule()]] - `contains` [EXTRACTED]
+- [[useDeleteSilence()]] - `contains` [EXTRACTED]
+- [[usePauseAlertRule()]] - `contains` [EXTRACTED]
+- [[useSilenceFromEvent()]] - `contains` [EXTRACTED]
+- [[useSilences()]] - `contains` [EXTRACTED]
+- [[useUnpauseAlertRule()]] - `contains` [EXTRACTED]
+- [[useUpdateAlertRule()]] - `contains` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Monitoring_Alerts_Frontend_Hooks

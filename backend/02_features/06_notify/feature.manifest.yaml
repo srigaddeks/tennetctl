@@ -7,7 +7,7 @@ metadata:
   module: notify
   always_on: false
   label: Notify
-  description: Mailchimp-class multi-channel notification platform. Transactional, critical (multi-channel fan-out), marketing, and digest categories. Templates with Jinja2 rendering, per-channel bodies, SMTP configs, template groups, variable system (static + dynamic SQL), subscriptions fed by audit outbox, email + web push + in-app delivery, campaigns, analytics.
+  description: Core multi-channel notification primitive. Templates with Jinja2 rendering, per-channel bodies, SMTP configs, template groups, variable system (static + dynamic SQL), subscriptions fed by audit outbox, unified delivery table, email + web push + in-app channels, user preferences, transactional send API. Campaigns / broadcast / marketing are intentionally out of scope — build those in a separate app against this API.
   manifest_version: 1
 
 spec:
@@ -250,36 +250,6 @@ spec:
         - method: DELETE
           path: "/v1/notify/webpush/subscriptions/{sub_id}"
           handler: sub_features.08_webpush.routes.delete_subscription_route
-      ui_pages: []
-
-    - key: notify.campaigns
-      number: 10
-      label: Campaigns
-      description: Broadcast campaigns targeting a filtered audience of org users. Audience DSL filters by account type. Throttled delivery creation with campaign lifecycle (draft → scheduled → running → completed). Campaign runner polls every 60s for due campaigns.
-      owns:
-        schema: "06_notify"
-        tables:
-          - "05_dim_notify_campaign_statuses"
-          - "18_fct_notify_campaigns"
-        views:
-          - "v_notify_campaigns"
-      nodes: []
-      routes:
-        - method: GET
-          path: /v1/notify/campaigns
-          handler: sub_features.10_campaigns.routes.list_campaigns_route
-        - method: POST
-          path: /v1/notify/campaigns
-          handler: sub_features.10_campaigns.routes.create_campaign_route
-        - method: GET
-          path: "/v1/notify/campaigns/{campaign_id}"
-          handler: sub_features.10_campaigns.routes.get_campaign_route
-        - method: PATCH
-          path: "/v1/notify/campaigns/{campaign_id}"
-          handler: sub_features.10_campaigns.routes.update_campaign_route
-        - method: DELETE
-          path: "/v1/notify/campaigns/{campaign_id}"
-          handler: sub_features.10_campaigns.routes.delete_campaign_route
       ui_pages: []
 
     - key: notify.preferences

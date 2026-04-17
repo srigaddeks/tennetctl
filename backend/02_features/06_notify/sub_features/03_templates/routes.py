@@ -15,6 +15,9 @@ _catalog_ctx: Any = import_module("backend.01_catalog.context")
 _schemas: Any = import_module(
     "backend.02_features.06_notify.sub_features.03_templates.schemas"
 )
+_repo: Any = import_module(
+    "backend.02_features.06_notify.sub_features.03_templates.repository"
+)
 _service: Any = import_module(
     "backend.02_features.06_notify.sub_features.03_templates.service"
 )
@@ -38,7 +41,7 @@ def _build_ctx(request: Request, pool: Any) -> Any:
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),
-        audit_category="system",
+        audit_category="setup",
         extras={"pool": pool},
     )
 
@@ -125,6 +128,18 @@ async def test_send_route(
             vault=vault,
         )
     return _response.success({"sent_to": sent_to})
+
+
+@router.get("/v1/notify/templates/{template_id}/analytics", status_code=200)
+async def template_analytics_route(request: Request, template_id: str) -> dict:
+    """Per-template delivery + event counts for observability dashboards."""
+    user_id = getattr(request.state, "user_id", None)
+    if not user_id:
+        raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        data = await _repo.get_template_analytics(conn, template_id=template_id)
+    return _response.success(data)
 
 
 @router.delete("/v1/notify/templates/{template_id}", status_code=204)

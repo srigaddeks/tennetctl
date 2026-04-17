@@ -55,6 +55,9 @@ _passkeys_routes: Any = import_module(
 _pw_reset_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.14_password_reset.routes"
 )
+_api_keys_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.15_api_keys.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -71,3 +74,4 @@ router.include_router(_magic_link_routes.router)
 router.include_router(_otp_routes.router)
 router.include_router(_passkeys_routes.router)
 router.include_router(_pw_reset_routes.router)
+router.include_router(_api_keys_routes.router)

@@ -273,8 +273,8 @@ async def test_webpush_no_subscriptions_marks_failed(live_app):
 
 
 @pytest.mark.asyncio
-async def test_webpush_send_error_marks_failed(live_app):
-    """WebPushException from provider marks delivery as failed."""
+async def test_webpush_send_error_schedules_retry(live_app):
+    """WebPushException from provider leaves delivery queued with a scheduled retry."""
     pool, _ = live_app
     async with pool.acquire() as conn:
         template = await _insert_template(conn)
@@ -288,10 +288,13 @@ async def test_webpush_send_error_marks_failed(live_app):
     ):
         count = await _webpush_svc.process_queued_webpush_deliveries(pool, vault)
 
-    assert count == 1  # processed (even though it failed)
+    assert count == 1  # processed
     async with pool.acquire() as conn:
         d = await _del_repo.get_delivery(conn, delivery["id"])
-    assert d["status_code"] == "failed"
+    # First failure → retry path (not yet marked failed).
+    assert d["status_code"] == "queued"
+    assert d["attempt_count"] == 1
+    assert d["next_retry_at"] is not None
     assert "410" in (d["failure_reason"] or "") or "push" in (d["failure_reason"] or "")
 
 

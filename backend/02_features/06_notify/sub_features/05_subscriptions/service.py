@@ -61,6 +61,8 @@ async def create_subscription(
         event_key_pattern=data["event_key_pattern"],
         template_id=data["template_id"],
         channel_id=data["channel_id"],
+        recipient_mode=data.get("recipient_mode", "actor"),
+        recipient_filter=data.get("recipient_filter") or {},
         created_by=ctx.user_id or "system",
     )
     await _catalog.run_node(

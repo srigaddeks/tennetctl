@@ -1,0 +1,6 @@
+schema: "05_monitoring"
+table: "04_dim_monitoring_span_status"
+rows:
+  - {id: 0, code: unset, label: Unset, description: "OTLP StatusCode UNSET. No status recorded.",      deprecated_at: null}
+  - {id: 1, code: ok,    label: OK,    description: "OTLP StatusCode OK. Span completed successfully.",deprecated_at: null}
+  - {id: 2, code: error, label: Error, description: "OTLP StatusCode ERROR. Span failed.",             deprecated_at: null}

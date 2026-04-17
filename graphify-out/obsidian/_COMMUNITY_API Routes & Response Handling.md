@@ -1,0 +1,346 @@
+---
+type: community
+cohesion: 0.02
+members: 304
+---
+
+# API Routes & Response Handling
+
+**Cohesion:** 0.02 - loosely connected
+**Members:** 304 nodes
+
+## Members
+- [[ApplicationRead]] - code - backend/02_features/03_iam/sub_features/06_applications/schemas.py
+- [[Build success envelope dict.]] - rationale - backend/01_core/response.py
+- [[Build success envelope with pagination metadata.]] - rationale - backend/01_core/response.py
+- [[ConfigMeta]] - code - backend/02_features/02_vault/sub_features/02_configs/schemas.py
+- [[Construct NodeContext from request headers + app pool.      `pool` is stashed in]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[FlagRead]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[FlagStateRead]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[Flat shape returned to API callers. Mirrors v_orgs (minus deleted_at).]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[GroupRead]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[List all active webpush subscriptions for the authenticated user.]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[Metrics mutations run at org scope (no workspace); audit_category='setup' bypass]] - rationale - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[NotFoundError]] - code - backend/01_core/errors.py
+- [[OrgMembershipRead]] - code - backend/02_features/03_iam/sub_features/07_memberships/schemas.py
+- [[OrgRead]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[OverrideRead]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/schemas.py
+- [[Per-template delivery + event counts for observability dashboards.]] - rationale - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[Read shape for a session row exposed to the client.]] - rationale - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[Read shape. Value IS visible for configs (unlike secrets).]] - rationale - backend/02_features/02_vault/sub_features/02_configs/schemas.py
+- [[Read user_id  session_id  org_id  workspace_id from session middleware.]] - rationale - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[Register or refresh a browser push subscription.      Body { endpoint, p256dh,]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[Resolve all registered variables for a template with the given context. For prev]] - rationale - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[Response envelope helpers.  Every API response uses the standard envelope   {o]] - rationale - backend/01_core/response.py
+- [[Return a JSONResponse with success envelope.]] - rationale - backend/01_core/response.py
+- [[Return all active webpush subscriptions for a user.]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/repository.py
+- [[Return the VAPID base64url public key. No auth required — it is public.]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[RoleFlagPermissionRead]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/schemas.py
+- [[RoleRead]] - code - backend/02_features/03_iam/sub_features/04_roles/schemas.py
+- [[RuleRead]] - code - backend/02_features/09_featureflags/sub_features/03_rules/schemas.py
+- [[SMTP config mutations are org-level config (no workspace scope);     audit_categ]] - rationale - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[SessionMeta]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[SessionRead]] - code - backend/02_features/03_iam/sub_features/09_sessions/schemas.py
+- [[Shortcut silence an existing alert's fingerprint. Body matcher may be     empty]] - rationale - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[SmtpConfigRow]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/schemas.py
+- [[SubscriptionRow]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/schemas.py
+- [[TemplateGroupRow]] - code - backend/02_features/06_notify/sub_features/02_template_groups/schemas.py
+- [[TemplateRow]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateVariableRow]] - code - backend/02_features/06_notify/sub_features/04_variables/schemas.py
+- [[Unregister a push subscription (soft-delete).]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[UserRead]] - code - backend/02_features/03_iam/sub_features/03_users/schemas.py
+- [[WorkspaceMembershipRead]] - code - backend/02_features/03_iam/sub_features/07_memberships/schemas.py
+- [[WorkspaceRead]] - code - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[_build_ctx()]] - code - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[_build_response_payload()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[_ensure_vault_available()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[_naive()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[_oauth_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[_request_is_https()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[_require_auth()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[_resolve_org_id()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[_scope()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[_seconds_until()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[_set_session_cookie()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[_vault()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[audit.saved_views — FastAPI routes.  CRUD for persisted audit-explorer filter pr]] - rationale - backend/02_features/04_audit/sub_features/02_saved_views/routes.py
+- [[auth_begin()_1]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[auth_complete()_1]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[consume_magic_link_route()]] - code - backend/02_features/03_iam/sub_features/11_magic_link/routes.py
+- [[create_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[create_application_route()]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[create_config_route()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[create_dashboard_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[create_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[create_flag_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[create_grant_route()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/routes.py
+- [[create_group_route()]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[create_org_membership_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[create_org_route()]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[create_override_route()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[create_panel_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[create_role_route()]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[create_rule_route()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[create_saved_query_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[create_silence_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[create_smtp_config()_1]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[create_smtp_config_route()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[create_subscription()_1]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[create_subscription_route()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[create_synthetic_check_route()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[create_template_group()_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[create_template_group_route()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[create_template_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[create_user_route()]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[create_variable()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[create_variable_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[create_workspace_membership_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[create_workspace_route()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[delete_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[delete_application_route()]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[delete_config_route()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[delete_credential()_1]] - code - backend/02_features/03_iam/sub_features/13_passkeys/repository.py
+- [[delete_dashboard_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[delete_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[delete_flag_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[delete_grant_route()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/routes.py
+- [[delete_group_route()]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[delete_my_session_route()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[delete_org_membership_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[delete_org_route()]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[delete_override_route()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[delete_panel_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[delete_passkey()]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[delete_role_route()]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[delete_rule_route()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[delete_saved_query_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[delete_silence_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[delete_smtp_config()_1]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[delete_smtp_config_route()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[delete_subscription()_1]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[delete_subscription_route()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[delete_synthetic_check_route()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[delete_template_group()_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[delete_template_group_route()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[delete_template_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[delete_user_route()]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[delete_variable()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[delete_variable_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[delete_workspace_membership_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[delete_workspace_route()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[from_row()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[get_alert_event()_1]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[get_alert_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[get_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[get_application_route()]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[get_audit_event_route()]] - code - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[get_config_route()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[get_dashboard_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[get_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[get_flag_by_id()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[get_flag_by_scope_key()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[get_flag_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[get_flag_state_by_id()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[get_flag_state_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[get_grant_route()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/routes.py
+- [[get_group_route()]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[get_metric_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[get_my_session_route()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[get_org_route()]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[get_override_route()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[get_panel_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[get_role_route()]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[get_rule_route()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[get_saved_query_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[get_scope_id()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[get_smtp_config()_1]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[get_smtp_config_by_key()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[get_smtp_config_route()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[get_subscription()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[get_subscription_route()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[get_synthetic_check_route()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[get_template_group()_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[get_template_group_route()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[get_template_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[get_user_route()]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[get_value_type_id()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[get_vapid_public_key_route()]] - code - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[get_variable()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[get_variable_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[get_workspace_route()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[github_oauth_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[google_oauth_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[increment_metric_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[insert_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[insert_flag_state()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[list_alert_rules_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[list_alerts_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[list_applications_route()]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[list_configs_route()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[list_dashboards_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[list_env_ids()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[list_flag_states()_1]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[list_flag_states()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[list_flag_states_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[list_flags()_1]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[list_flags()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[list_flags_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[list_grants_route()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/routes.py
+- [[list_groups_route()]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[list_metrics_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[list_my_sessions_route()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[list_nodes()]] - code - backend/01_catalog/routes.py
+- [[list_org_memberships_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[list_orgs_route()]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[list_overrides_route()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[list_panels_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[list_passkeys()]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[list_roles_route()]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[list_rules_route()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[list_saved_queries_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[list_silences_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[list_smtp_configs()_1]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[list_smtp_configs_route()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[list_subscriptions()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[list_subscriptions_route()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[list_synthetic_checks_route()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[list_template_groups()_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[list_template_groups_route()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[list_templates_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[list_users_route()]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[list_variables()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[list_variables_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[list_workspace_memberships_route()]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[list_workspaces_route()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[me_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[metrics_query_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[observe_histogram_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[paginated()]] - code - backend/01_core/response.py
+- [[patch_my_session_route()]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[pause_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[register_begin()_1]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[register_complete()_1]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[register_metric_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[repository.py_7]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[repository.py_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[repository.py_4]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[repository.py_9]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[repository.py_30]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[request_magic_link_route()]] - code - backend/02_features/03_iam/sub_features/11_magic_link/routes.py
+- [[request_otp_route()]] - code - backend/02_features/03_iam/sub_features/12_otp/routes.py
+- [[resolve_variables_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[response.py]] - code - backend/01_core/response.py
+- [[routes.py]] - code - backend/01_catalog/routes.py
+- [[routes.py_41]] - code - backend/02_features/02_vault/routes.py
+- [[routes.py_42]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[routes.py_13]] - code - backend/02_features/03_iam/routes.py
+- [[routes.py_19]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[routes.py_18]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[routes.py_22]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[routes.py_14]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[routes.py_25]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[routes.py_20]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[routes.py_21]] - code - backend/02_features/03_iam/sub_features/07_memberships/routes.py
+- [[routes.py_26]] - code - backend/02_features/03_iam/sub_features/09_sessions/routes.py
+- [[routes.py_24]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[routes.py_15]] - code - backend/02_features/03_iam/sub_features/11_magic_link/routes.py
+- [[routes.py_23]] - code - backend/02_features/03_iam/sub_features/12_otp/routes.py
+- [[routes.py_16]] - code - backend/02_features/03_iam/sub_features/13_passkeys/routes.py
+- [[routes.py_43]] - code - backend/02_features/04_audit/routes.py
+- [[routes.py_27]] - code - backend/02_features/05_monitoring/routes.py
+- [[routes.py_28]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[routes.py_31]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[routes.py_34]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[routes.py_32]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[routes.py_29]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[routes.py_1]] - code - backend/02_features/06_notify/routes.py
+- [[routes.py_8]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[routes.py_2]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[routes.py_6]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[routes.py_5]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[routes.py_11]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[routes.py_4]] - code - backend/02_features/06_notify/sub_features/08_webpush/routes.py
+- [[routes.py_9]] - code - backend/02_features/06_notify/sub_features/11_send/routes.py
+- [[routes.py_35]] - code - backend/02_features/09_featureflags/routes.py
+- [[routes.py_36]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[routes.py_37]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/routes.py
+- [[routes.py_39]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[routes.py_38]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[run_saved_query_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[send_transactional_route()]] - code - backend/02_features/06_notify/sub_features/11_send/routes.py
+- [[service.py_31]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[set_gauge_route()]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/routes.py
+- [[setup_totp_route()]] - code - backend/02_features/03_iam/sub_features/12_otp/routes.py
+- [[signin_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[signout_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[signup_route()]] - code - backend/02_features/03_iam/sub_features/10_auth/routes.py
+- [[silence_alert_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[soft_delete_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[soft_delete_flag_states_cascade()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[success()]] - code - backend/01_core/response.py
+- [[success_response()]] - code - backend/01_core/response.py
+- [[template_analytics_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[test_send_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[unpause_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[update_alert_rule_route()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/routes.py
+- [[update_application_route()]] - code - backend/02_features/03_iam/sub_features/06_applications/routes.py
+- [[update_config_route()]] - code - backend/02_features/02_vault/sub_features/02_configs/routes.py
+- [[update_dashboard_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[update_flag()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[update_flag_fields()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[update_flag_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[update_flag_state()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[update_flag_state_fields()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/repository.py
+- [[update_flag_state_route()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/routes.py
+- [[update_group_route()]] - code - backend/02_features/03_iam/sub_features/05_groups/routes.py
+- [[update_org_route()]] - code - backend/02_features/03_iam/sub_features/01_orgs/routes.py
+- [[update_override_route()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/routes.py
+- [[update_panel_route()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/routes.py
+- [[update_role_route()]] - code - backend/02_features/03_iam/sub_features/04_roles/routes.py
+- [[update_rule_route()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/routes.py
+- [[update_saved_query_route()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/routes.py
+- [[update_smtp_config()_1]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/repository.py
+- [[update_smtp_config_route()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/routes.py
+- [[update_subscription()_1]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[update_subscription_route()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/routes.py
+- [[update_synthetic_check_route()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/routes.py
+- [[update_template_group()_1]] - code - backend/02_features/06_notify/sub_features/02_template_groups/repository.py
+- [[update_template_group_route()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/routes.py
+- [[update_template_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[update_user_route()]] - code - backend/02_features/03_iam/sub_features/03_users/routes.py
+- [[update_variable()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[update_variable_route()]] - code - backend/02_features/06_notify/sub_features/04_variables/routes.py
+- [[update_workspace_route()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/routes.py
+- [[upsert_bodies_route()]] - code - backend/02_features/06_notify/sub_features/03_templates/routes.py
+- [[verify_otp_route()]] - code - backend/02_features/03_iam/sub_features/12_otp/routes.py
+- [[verify_totp_route()]] - code - backend/02_features/03_iam/sub_features/12_otp/routes.py
+
+## Live Query (requires Dataview plugin)
+
+```dataview
+TABLE source_file, type FROM #community/API_Routes_&_Response_Handling
+SORT file.name ASC
+```
+
+## Connections to other communities
+- 168 edges to [[_COMMUNITY_Service & Repository Layer]]
+- 52 edges to [[_COMMUNITY_Node Catalog & Feature Implementations]]
+- 47 edges to [[_COMMUNITY_Auth & Error Handling]]
+- 20 edges to [[_COMMUNITY_Session Auth & Middleware]]
+- 15 edges to [[_COMMUNITY_Audit Events & Saved Views]]
+- 13 edges to [[_COMMUNITY_Notify Templates & Email Delivery]]
+- 10 edges to [[_COMMUNITY_Monitoring Dashboards Backend]]
+- 7 edges to [[_COMMUNITY_Admin Routes & DLQ]]
+- 5 edges to [[_COMMUNITY_Core Infrastructure]]
+- 4 edges to [[_COMMUNITY_Audit Emit Pipeline]]
+- 3 edges to [[_COMMUNITY_Monitoring Query DSL]]
+- 3 edges to [[_COMMUNITY_Alert Evaluator Worker]]
+- 3 edges to [[_COMMUNITY_Feature Flag Evaluations Node]]
+- 1 edge to [[_COMMUNITY_Vault Config Update Node]]
+
+## Top bridge nodes
+- [[success()]] - degree 135, connects to 6 communities
+- [[NotFoundError]] - degree 101, connects to 5 communities
+- [[audit.saved_views — FastAPI routes.  CRUD for persisted audit-explorer filter pr]] - degree 46, connects to 5 communities
+- [[_build_ctx()]] - degree 164, connects to 3 communities
+- [[from_row()]] - degree 37, connects to 3 communities

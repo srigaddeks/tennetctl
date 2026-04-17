@@ -42,7 +42,7 @@ Forgot Password Page Loads
     [Documentation]    /auth/forgot-password renders the reset form.
     Go To    ${FRONTEND}/auth/forgot-password
     Wait For Load State    networkidle
-    Get Element    [data-testid="forgot-password-heading"]
+    Get Element    [data-testid="auth-title"]
     Get Element    [data-testid="forgot-password-email"]
     Get Element    [data-testid="forgot-password-submit"]
 
@@ -86,5 +86,5 @@ Password Reset Page With No Token Shows Error
     [Documentation]    /auth/password-reset without a token shows the missing-token message.
     Go To    ${FRONTEND}/auth/password-reset
     Wait For Load State    networkidle
-    Get Element    [data-testid="password-reset-heading"]
+    Get Element    [data-testid="auth-title"]
     Get Element    [data-testid="password-reset-no-token"]

@@ -4,9 +4,12 @@ import { PageHeader } from "@/components/page-header";
 import { FEATURES } from "@/config/features";
 
 const FEATURE_TONE: Record<string, string> = {
-  iam: "bg-emerald-50 dark:bg-emerald-950/30",
-  "feature-flags": "bg-blue-50 dark:bg-blue-950/30",
-  nodes: "bg-purple-50 dark:bg-purple-950/30",
+  iam: "bg-emerald-300 dark:bg-emerald-700",
+  "feature-flags": "bg-blue-300 dark:bg-blue-700",
+  vault: "bg-amber-300 dark:bg-amber-700",
+  audit: "bg-orange-300 dark:bg-orange-700",
+  notify: "bg-sky-300 dark:bg-sky-700",
+  nodes: "bg-purple-300 dark:bg-purple-700",
 };
 
 export default function Overview() {

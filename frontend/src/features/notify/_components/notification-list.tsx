@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useMarkRead } from "@/features/notify/hooks/use-in-app-notifications";
 import { cn } from "@/lib/cn";
 import type { InAppDelivery } from "@/types/api";
@@ -19,9 +21,11 @@ const PRIORITY_BADGE: Record<string, string> = {
 function NotificationItem({
   delivery,
   onRead,
+  onOpen,
 }: {
   delivery: InAppDelivery;
   onRead: (id: string) => void;
+  onOpen: (delivery: InAppDelivery) => void;
 }) {
   const isUnread = !["opened", "clicked", "failed", "unsubscribed"].includes(
     delivery.status_code,
@@ -29,13 +33,24 @@ function NotificationItem({
   const vars = delivery.resolved_variables as Record<string, string>;
   const title = vars.subject ?? vars.title ?? "Notification";
   const body = vars.body ?? vars.message ?? "";
+  const hasDeepLink = !!delivery.deep_link;
 
   return (
     <div
+      role={hasDeepLink ? "button" : undefined}
+      tabIndex={hasDeepLink ? 0 : undefined}
+      onClick={hasDeepLink ? () => onOpen(delivery) : undefined}
+      onKeyDown={hasDeepLink ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen(delivery);
+        }
+      } : undefined}
       className={cn(
         "flex items-start gap-3 rounded-lg p-3 transition-colors",
+        hasDeepLink && "cursor-pointer",
         isUnread
-          ? "bg-blue-50 dark:bg-blue-950/30"
+          ? "bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50"
           : "hover:bg-zinc-50 dark:hover:bg-zinc-900",
       )}
       data-testid={`notification-item-${delivery.id}`}
@@ -70,7 +85,10 @@ function NotificationItem({
       {isUnread && (
         <button
           type="button"
-          onClick={() => onRead(delivery.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRead(delivery.id);
+          }}
           className="shrink-0 rounded px-2 py-0.5 text-[10px] font-medium text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/40"
           data-testid={`mark-read-${delivery.id}`}
         >
@@ -82,10 +100,19 @@ function NotificationItem({
 }
 
 export function NotificationList({ items, onClose }: Props) {
+  const router = useRouter();
   const markRead = useMarkRead();
 
   const handleRead = (id: string) => {
     markRead.mutate(id);
+  };
+
+  const handleOpen = (d: InAppDelivery) => {
+    if (d.deep_link) {
+      markRead.mutate(d.id);
+      router.push(d.deep_link);
+      onClose();
+    }
   };
 
   if (items.length === 0) {
@@ -114,7 +141,7 @@ export function NotificationList({ items, onClose }: Props) {
       </div>
       <div className="divide-y divide-zinc-100 px-2 py-1 dark:divide-zinc-900">
         {items.map((d) => (
-          <NotificationItem key={d.id} delivery={d} onRead={handleRead} />
+          <NotificationItem key={d.id} delivery={d} onRead={handleRead} onOpen={handleOpen} />
         ))}
       </div>
     </div>

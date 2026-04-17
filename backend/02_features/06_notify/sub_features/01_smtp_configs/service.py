@@ -31,6 +31,8 @@ async def create_smtp_config(conn: Any, pool: Any, ctx: Any, *, data: dict) -> d
         tls=data["tls"],
         username=data["username"],
         auth_vault_key=data["auth_vault_key"],
+        from_email=data.get("from_email"),
+        from_name=data.get("from_name"),
         created_by=ctx.user_id or "system",
     )
     await _catalog.run_node(

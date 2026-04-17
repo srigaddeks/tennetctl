@@ -1,0 +1,8 @@
+# Monitoring module is already seeded in 01_catalog.01_dim_modules (id=4)
+# by the catalog bootstrap seed (03_docs/features/00_setup/.../01_dim_modules.yaml).
+# This file confirms/re-asserts the row idempotently (ON CONFLICT DO NOTHING) so the
+# feature manifest can assert its module is registered at boot time.
+schema: "01_catalog"
+table: "01_dim_modules"
+rows:
+  - {id: 4, code: monitoring, label: Monitoring, description: "Traces, metrics, logs", always_on: false, deprecated_at: null}

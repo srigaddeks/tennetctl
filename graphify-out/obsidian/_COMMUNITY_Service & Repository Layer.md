@@ -1,0 +1,392 @@
+---
+type: community
+cohesion: 0.01
+members: 347
+---
+
+# Service & Repository Layer
+
+**Cohesion:** 0.01 - loosely connected
+**Members:** 347 nodes
+
+## Members
+- [[._ctx()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[._per_check_loop()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[._reload_loop()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[._run_single()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[.child_span()]] - code - backend/01_catalog/context.py
+- [[.start()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[All active subscriptions for the worker's matching loop.]] - rationale - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[Atomic REPLACE delete existing rows + insert the new set. Caller must hold a tx]] - rationale - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[Bootstrap VAPID keys into vault if not already present.      Returns the base64u]] - rationale - backend/02_features/06_notify/sub_features/08_webpush/service.py
+- [[Bump updated_at  updated_by without other column changes (e.g. after an attr up]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[ConflictError]] - code - backend/01_core/errors.py
+- [[Create a session row and return (token, session_metadata).]] - rationale - backend/02_features/03_iam/sub_features/09_sessions/service.py
+- [[Create a transactional delivery. Returns (delivery_id, was_new).      was_new=Fa]] - rationale - backend/02_features/06_notify/sub_features/11_send/service.py
+- [[Create delivery row(s) for one matched subscription + audit event.]] - rationale - backend/02_features/06_notify/worker.py
+- [[Create email_password user + credential + session. Returns (token, user, session]] - rationale - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[Derive a child context for the next hop. Fresh span_id, parent links to us.]] - rationale - backend/01_catalog/context.py
+- [[Dispatch a node call through the catalog.      - Looks up `key` in fct_nodes (jo]] - rationale - backend/01_catalog/runner.py
+- [[Dispatch audit.events.emit; runner reuses ctx.conn for atomicity.]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[Exchange code - upsert user (google_oauthgithub_oauth account_type) - mint se]] - rationale - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[Fast path for evaluator — returns active overrides matching any of the given]] - rationale - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[Fast path for evaluator — returns rules in priority order, active only.]] - rationale - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[Fetch or lazily create the TENNETCTL_SINGLE_TENANT default org.]] - rationale - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[Generate TOTP secret, encrypt, store. Return credential_id + otpauth URI.]] - rationale - backend/02_features/03_iam/sub_features/12_otp/service.py
+- [[Generate a UUID v7 string.]] - rationale - backend/01_core/id.py
+- [[Given a user + flag, return the highest permission rank the user has on the]] - rationale - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[In single-tenant mode, ensure user is a member of the default org and return org]] - rationale - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[Insert a new row into fct_orgs. Caller catches UniqueViolationError on slug coll]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[Look up a node contract by key. Returns None if not found.]] - rationale - backend/01_core/node_registry.py
+- [[Look up the attr_def_id for (entity_type=org, code=display_name).]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[Main loop LISTEN on 'audit_events' for wake-up.     Falls back to polling every]] - rationale - backend/02_features/06_notify/worker.py
+- [[Match event_key against a subscription pattern.      Rules       -]] - rationale - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[NodeContext]] - code - backend/01_catalog/context.py
+- [[NodeContext — carried through every `run_node` call (NCP v1 §6).  Immutable (fro]] - rationale - backend/01_catalog/context.py
+- [[Notify subscription worker.  Polls the audit outbox, matches active subscription]] - rationale - backend/02_features/06_notify/worker.py
+- [[Orchestrator — invoked by the evaluator worker.      ``ctx_factory(rule)`` must]] - rationale - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[PATCH — only provided fields change. Raises NotFoundError if missing  deleted.]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[Paginated list of orgs. Always excludes soft-deleted rows. Optional     is_activ]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[Poll the audit outbox for events newer than `since_id`.     For each event, matc]] - rationale - backend/02_features/06_notify/worker.py
+- [[Raise ForbiddenError if caller lacks `required` permission on flag_id.      `req]] - rationale - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[Read-only — no audit.]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[Read-only — no audit._1]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[Resolve all registered variables for a template.      Static variables return s]] - rationale - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[Resolve all registered variables for a template. No audit — read-only.]] - rationale - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[Restrict deep_link to path-only URLs (start with ) to prevent open redirects.]] - rationale - backend/02_features/06_notify/worker.py
+- [[Return a matching silence_id if any active silence matches the alert.      Match]] - rationale - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[Return all active subscriptions across all orgs — used by the worker.]] - rationale - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[Return the account_type code of any non-deleted user holding this email, else No]] - rationale - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[Return the list of user_ids that should receive this delivery.      actor — the]] - rationale - backend/02_features/06_notify/worker.py
+- [[Returns (ok, err_msg).]] - rationale - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[Runner query — all active checks across all orgs.]] - rationale - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[Soft delete + audit. Raises NotFoundError if missing  already deleted.]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[Start the notify subscription worker as an asyncio background task.     Call fro]] - rationale - backend/02_features/06_notify/worker.py
+- [[Synthetic check runner — periodically fetches each active check's target URL.  E]] - rationale - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[SyntheticRunner]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[True if any of the user's roles holds scope code flagsadminall.]] - rationale - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[UUID v7 generation — the only ID generator in the project.  Never use uuid4(). N]] - rationale - backend/01_core/id.py
+- [[UnauthorizedError]] - code - backend/01_core/errors.py
+- [[Update slug. Returns True if one row updated, False if not found  soft-deleted.]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[Upsert a user EAV attribute (email  display_name  avatar_url).]] - rationale - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[Upsert rule state row — used by worker after each evaluation cycle.]] - rationale - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[Upsert the display_name EAV row for an org. attr_row_id is a caller-generated]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[Validate parent org exists, enforce per-org slug uniqueness, insert fct +     dt]] - rationale - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[_assert_application()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[_assert_flag()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[_assert_org()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/service.py
+- [[_assert_org_exists()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[_assert_org_if_set()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[_assert_user()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[_attach_to_default_org_if_needed()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_attr_def_id()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[_email_exists_any_type()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_emit()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[_emit_audit()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[_enqueue_for_subscription()]] - code - backend/02_features/06_notify/worker.py
+- [[_ensure_default_org()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_evaluate_assertions()]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[_exchange_github()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_exchange_google()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_fetch_workspace()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[_find_user_by_email_and_type()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_get_description_attr_def_id()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[_get_display_name_attr_def_id()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[_json_dumps()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[_now()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[_resolve_recipients()]] - code - backend/02_features/06_notify/worker.py
+- [[_safe_deep_link()]] - code - backend/02_features/06_notify/worker.py
+- [[_scope_id()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[_value_type_id()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[_vault_get()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[_worker_loop()]] - code - backend/02_features/06_notify/worker.py
+- [[assign_org()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[assign_workspace()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[audit.outbox — asyncpg repository.  Reads from 61_evt_audit_outbox JOIN v_audit_]] - rationale - backend/02_features/04_audit/sub_features/03_outbox/repository.py
+- [[audit.outbox — service layer (thin wrappers over repo).]] - rationale - backend/02_features/04_audit/sub_features/03_outbox/service.py
+- [[check_flag_permission()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[clear_description()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[context.py]] - code - backend/01_catalog/context.py
+- [[create()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/service.py
+- [[create_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[create_config()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[create_dashboard()]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/service.py
+- [[create_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[create_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[create_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[create_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[create_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[create_silence()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[create_smtp_config()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[create_subscription()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[create_template()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[create_template_group()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[create_user()]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[create_variable()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[create_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[delete()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/service.py
+- [[delete_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[delete_config()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[delete_grant()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[delete_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[delete_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[delete_org_membership()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[delete_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[delete_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[delete_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[delete_silence()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[delete_smtp_config()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[delete_subscription()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[delete_template()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[delete_template_group()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[delete_user()]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[delete_variable()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[delete_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[delete_workspace_membership()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[dim_scope_ids_exist()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[ensure_vapid_keys()]] - code - backend/02_features/06_notify/sub_features/08_webpush/service.py
+- [[evaluate_all_active_rules()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[find_matching_silences()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[get()_1]] - code - backend/01_core/node_registry.py
+- [[get()]] - code - backend/02_features/04_audit/sub_features/01_events/service.py
+- [[get_account_type_id()]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[get_alert_event()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[get_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[get_by_id()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[get_by_key()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[get_by_org_code()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[get_by_org_slug()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[get_by_scope_key()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[get_by_slug()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[get_by_triple()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[get_config()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[get_entity_type_id()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[get_env_id()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[get_grant()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[get_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[get_org()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[get_org_membership_by_id()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[get_org_membership_by_pair()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[get_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[get_permission_id()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[get_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[get_role_type_id()]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[get_rule()_1]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[get_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[get_silence()_1]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[get_silence()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[get_smtp_config()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[get_subscription()_1]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[get_template()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[get_template_by_key()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[get_template_group()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[get_user()]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[get_variable()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[get_workspace()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[get_workspace_membership_by_id()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[get_workspace_membership_by_pair()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[grant_permission()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[id.py]] - code - backend/01_core/id.py
+- [[insert()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[insert_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[insert_config()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[insert_grant()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[insert_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[insert_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[insert_org_membership()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[insert_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[insert_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[insert_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[insert_session()]] - code - backend/02_features/03_iam/sub_features/09_sessions/repository.py
+- [[insert_silence()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[insert_user()]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[insert_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[insert_workspace_membership()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[list_active_for_worker()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[list_active_subscriptions_all()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/repository.py
+- [[list_alert_events()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[list_all_active()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[list_applications()_1]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[list_applications()]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[list_checks()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/service.py
+- [[list_configs()_1]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[list_configs()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[list_for_org()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[list_for_user()_1]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/repository.py
+- [[list_for_user()]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/service.py
+- [[list_grants()_1]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[list_grants()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[list_groups()_1]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[list_groups()]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[list_org()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[list_org_memberships()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[list_orgs()_1]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[list_orgs()]] - code - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[list_overrides()_1]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[list_overrides()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[list_overrides_for_eval()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[list_roles()_1]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[list_roles()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[list_rules()_1]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[list_rules()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[list_rules_for_eval()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[list_scope_ids()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[list_scope_ids_many()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[list_silences()_1]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[list_silences()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[list_smtp_configs()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[list_subscriptions()_1]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[list_template_groups()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[list_templates()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[list_users()_1]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[list_users()]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[list_variables()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[list_workspace()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[list_workspace_memberships()]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[list_workspaces()_1]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[list_workspaces()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[matches_pattern()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[max_rank_for_user_on_flag()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[me()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[mint_session()]] - code - backend/02_features/03_iam/sub_features/09_sessions/service.py
+- [[oauth_signin()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[pause_rule()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[process_audit_events()]] - code - backend/02_features/06_notify/worker.py
+- [[replace_application_scopes()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[repository.py_34]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[repository.py_16]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[repository.py_15]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[repository.py_19]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[repository.py_11]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[repository.py_21]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[repository.py_17]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[repository.py_18]] - code - backend/02_features/03_iam/sub_features/07_memberships/repository.py
+- [[repository.py_22]] - code - backend/02_features/03_iam/sub_features/09_sessions/repository.py
+- [[repository.py_25]] - code - backend/02_features/05_monitoring/sub_features/01_logs/repository.py
+- [[repository.py_28]] - code - backend/02_features/05_monitoring/sub_features/03_traces/repository.py
+- [[repository.py_26]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/repository.py
+- [[repository.py_27]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[repository.py_24]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[repository.py_31]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[repository.py_33]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[repository.py_32]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[resolve_variables()_1]] - code - backend/02_features/06_notify/sub_features/04_variables/repository.py
+- [[resolve_variables()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[revoke_org()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[revoke_permission()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[revoke_session()_1]] - code - backend/02_features/03_iam/sub_features/09_sessions/repository.py
+- [[revoke_workspace()]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[run()_2]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/service.py
+- [[run_node()]] - code - backend/01_catalog/runner.py
+- [[send_test_email()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[send_transactional()]] - code - backend/02_features/06_notify/sub_features/11_send/service.py
+- [[service.py_36]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[service.py_16]] - code - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[service.py_15]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[service.py_19]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[service.py_11]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[service.py_22]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[service.py_17]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[service.py_18]] - code - backend/02_features/03_iam/sub_features/07_memberships/service.py
+- [[service.py_21]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[service.py_27]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/service.py
+- [[service.py_28]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/service.py
+- [[service.py_25]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[service.py_6]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[service.py]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[service.py_4]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[service.py_3]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[service.py_9]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[service.py_7]] - code - backend/02_features/06_notify/sub_features/11_send/service.py
+- [[service.py_32]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/service.py
+- [[service.py_34]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[service.py_33]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[set_attr()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[set_description()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[set_display_name()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[setup_totp()]] - code - backend/02_features/03_iam/sub_features/12_otp/service.py
+- [[severity_id_by_code()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[signin()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[signout()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[signup()]] - code - backend/02_features/03_iam/sub_features/10_auth/service.py
+- [[soft_delete()]] - code - backend/02_features/02_vault/sub_features/02_configs/repository.py
+- [[soft_delete_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[soft_delete_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[soft_delete_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[soft_delete_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[soft_delete_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[soft_delete_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[soft_delete_silence()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[soft_delete_user()]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[soft_delete_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[start_worker()]] - code - backend/02_features/06_notify/worker.py
+- [[synthetic_runner.py]] - code - backend/02_features/05_monitoring/workers/synthetic_runner.py
+- [[system()]] - code - backend/01_catalog/context.py
+- [[touch_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/repository.py
+- [[touch_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[touch_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[touch_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/repository.py
+- [[touch_user()]] - code - backend/02_features/03_iam/sub_features/03_users/repository.py
+- [[touch_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[unpause_rule()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[update()_2]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[update()_1]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/service.py
+- [[update_active()]] - code - backend/02_features/03_iam/sub_features/05_groups/repository.py
+- [[update_application()]] - code - backend/02_features/03_iam/sub_features/06_applications/service.py
+- [[update_config()]] - code - backend/02_features/02_vault/sub_features/02_configs/service.py
+- [[update_group()]] - code - backend/02_features/03_iam/sub_features/05_groups/service.py
+- [[update_org()]] - code - backend/02_features/03_iam/sub_features/01_orgs/service.py
+- [[update_org_slug()]] - code - backend/02_features/03_iam/sub_features/01_orgs/repository.py
+- [[update_override()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/service.py
+- [[update_override_fields()]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/repository.py
+- [[update_role()]] - code - backend/02_features/03_iam/sub_features/04_roles/service.py
+- [[update_rule()_1]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/repository.py
+- [[update_rule()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/service.py
+- [[update_rule_fields()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/repository.py
+- [[update_rule_state()]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/service.py
+- [[update_smtp_config()]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/service.py
+- [[update_subscription()]] - code - backend/02_features/06_notify/sub_features/05_subscriptions/service.py
+- [[update_template()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[update_template_group()]] - code - backend/02_features/06_notify/sub_features/02_template_groups/service.py
+- [[update_user()]] - code - backend/02_features/03_iam/sub_features/03_users/service.py
+- [[update_variable()]] - code - backend/02_features/06_notify/sub_features/04_variables/service.py
+- [[update_workspace()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/service.py
+- [[update_workspace_slug()]] - code - backend/02_features/03_iam/sub_features/02_workspaces/repository.py
+- [[upsert_bodies()]] - code - backend/02_features/06_notify/sub_features/03_templates/service.py
+- [[upsert_state()]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/repository.py
+- [[user_has_admin_all_scope()]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/repository.py
+- [[uuid7()]] - code - backend/01_core/id.py
+- [[worker.py]] - code - backend/02_features/06_notify/worker.py
+
+## Live Query (requires Dataview plugin)
+
+```dataview
+TABLE source_file, type FROM #community/Service_&_Repository_Layer
+SORT file.name ASC
+```
+
+## Connections to other communities
+- 168 edges to [[_COMMUNITY_API Routes & Response Handling]]
+- 68 edges to [[_COMMUNITY_Auth & Error Handling]]
+- 52 edges to [[_COMMUNITY_Session Auth & Middleware]]
+- 48 edges to [[_COMMUNITY_Node Catalog & Feature Implementations]]
+- 40 edges to [[_COMMUNITY_Monitoring Query DSL]]
+- 37 edges to [[_COMMUNITY_Alert Evaluator Worker]]
+- 18 edges to [[_COMMUNITY_Notify Templates & Email Delivery]]
+- 16 edges to [[_COMMUNITY_Audit Emit Pipeline]]
+- 16 edges to [[_COMMUNITY_Monitoring Dashboards Backend]]
+- 14 edges to [[_COMMUNITY_Admin Routes & DLQ]]
+- 12 edges to [[_COMMUNITY_Core Infrastructure]]
+- 12 edges to [[_COMMUNITY_Audit Events & Saved Views]]
+- 6 edges to [[_COMMUNITY_Monitoring Stores & Workers]]
+- 5 edges to [[_COMMUNITY_Audit Outbox]]
+- 3 edges to [[_COMMUNITY_Observability Instrumentation]]
+- 3 edges to [[_COMMUNITY_Feature Flag Evaluations Node]]
+- 2 edges to [[_COMMUNITY_Vault Config Update Node]]
+
+## Top bridge nodes
+- [[get()_1]] - degree 187, connects to 17 communities
+- [[uuid7()]] - degree 62, connects to 10 communities
+- [[audit.outbox — service layer (thin wrappers over repo).]] - degree 40, connects to 10 communities
+- [[audit.outbox — asyncpg repository.  Reads from 61_evt_audit_outbox JOIN v_audit_]] - degree 38, connects to 8 communities
+- [[run_node()]] - degree 55, connects to 6 communities

@@ -1,0 +1,6 @@
+schema: "05_monitoring"
+table: "02_dim_monitoring_metric_kinds"
+rows:
+  - {id: 1, code: counter,   label: Counter,   description: "Monotonically increasing cumulative value.",                     deprecated_at: null}
+  - {id: 2, code: gauge,     label: Gauge,     description: "Mutable single value (set, last wins).",                         deprecated_at: null}
+  - {id: 3, code: histogram, label: Histogram, description: "Bucketed distribution. Requires histogram_buckets on registry.", deprecated_at: null}

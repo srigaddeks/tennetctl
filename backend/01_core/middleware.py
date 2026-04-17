@@ -55,10 +55,23 @@ def _extract_token(request: Request) -> str | None:
 
 
 class SessionMiddleware(BaseHTTPMiddleware):
-    """Validate the inbound session token and inject scope onto request.state.
+    """Validate the inbound session token or API key and inject scope onto state.
 
-    Open by default — never rejects. Routes that require auth check
-    `request.state.user_id` themselves (see iam.auth.routes).
+    Two authentication paths are recognised, in priority order:
+
+      1. API key — Authorization: Bearer nk_<key_id>.<secret>
+         → state.user_id + org_id populated from the key's owner
+         → state.session_id stays None
+         → state.api_key_id + state.scopes populated
+         → require_scope() enforces per-route scope requirements
+
+      2. Session token — session cookie, x-session-token header, or
+         Bearer (non-nk_) header.
+         → state.{user_id, session_id, org_id, workspace_id} populated
+         → state.scopes = None (session users have all scopes)
+
+    Open by default — never rejects. Routes guard themselves via
+    request.state.user_id or require_scope().
     """
 
     async def dispatch(self, request: Request, call_next):
@@ -66,10 +79,49 @@ class SessionMiddleware(BaseHTTPMiddleware):
         request.state.session_id = None
         request.state.org_id = None
         request.state.workspace_id = None
+        request.state.api_key_id = None
+        request.state.scopes = None  # None = session auth = all scopes
 
-        token = _extract_token(request)
         vault = getattr(request.app.state, "vault", None)
         pool = getattr(request.app.state, "pool", None)
+
+        # Path 1: API key (Bearer with "nk_" prefix).
+        auth = request.headers.get("authorization") or ""
+        raw_auth = auth.split(" ", 1)[1].strip() if auth.lower().startswith("bearer ") else ""
+        if (
+            raw_auth.startswith("nk_")
+            and vault is not None
+            and pool is not None
+        ):
+            try:
+                _api_keys: Any = import_module(
+                    "backend.02_features.03_iam.sub_features.15_api_keys.service"
+                )
+                _api_keys_repo: Any = import_module(
+                    "backend.02_features.03_iam.sub_features.15_api_keys.repository"
+                )
+                async with pool.acquire() as conn:
+                    key_row = await _api_keys.validate_token(
+                        conn, vault, token=raw_auth,
+                    )
+                    if key_row is not None:
+                        request.state.user_id = key_row["user_id"]
+                        request.state.org_id = key_row["org_id"]
+                        request.state.api_key_id = key_row["id"]
+                        request.state.scopes = list(key_row.get("scopes") or [])
+                        # Best-effort — do not block the request on this.
+                        try:
+                            await _api_keys_repo.touch_last_used(
+                                conn, key_id=key_row["key_id"],
+                            )
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            return await call_next(request)
+
+        # Path 2: Session token (cookie / x-session-token / plain Bearer).
+        token = _extract_token(request)
         if token and vault is not None and pool is not None:
             try:
                 _sessions: Any = import_module(
@@ -88,6 +140,29 @@ class SessionMiddleware(BaseHTTPMiddleware):
                 request.state.workspace_id = row.get("workspace_id")
 
         return await call_next(request)
+
+
+def require_scope(request: Request, scope: str) -> None:
+    """Raise 403 if the caller is API-key-authenticated and lacks `scope`.
+
+    Session users (state.scopes == None) pass through — their permission model
+    is the session cookie and route-level checks already applied. API keys
+    must hold `scope` explicitly.
+
+    Call at the top of any protected route:
+        require_scope(request, "notify:send")
+    """
+    if getattr(request.state, "user_id", None) is None:
+        raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
+    scopes = getattr(request.state, "scopes", None)
+    if scopes is None:
+        return  # session user
+    if scope not in scopes:
+        raise _errors.AppError(
+            "FORBIDDEN",
+            f"API key missing required scope: {scope}",
+            403,
+        )
 
 
 def register_middleware(app: FastAPI) -> None:

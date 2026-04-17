@@ -26,7 +26,10 @@ SmtpConfigRow = _schemas.SmtpConfigRow
 router = APIRouter(tags=["notify.smtp_configs"])
 
 
-def _build_ctx(request: Request, pool: Any) -> Any:
+def _build_ctx(request: Request, pool: Any, *, audit_category: str = "setup") -> Any:
+    """SMTP config mutations are org-level config (no workspace scope);
+    audit_category='setup' bypasses the workspace_id requirement in chk_evt_audit_scope.
+    """
     state = request.state
     return _catalog_ctx.NodeContext(
         user_id=getattr(state, "user_id", None) or request.headers.get("x-user-id"),
@@ -36,7 +39,7 @@ def _build_ctx(request: Request, pool: Any) -> Any:
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),
-        audit_category="system",
+        audit_category=audit_category,
         extras={"pool": pool},
     )
 

@@ -1,0 +1,20 @@
+---
+source_file: "frontend/src/components/org-scoped-resource-page.tsx"
+type: "code"
+community: "Backend Bootstrap & Catalog"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Backend_Bootstrap_&_Catalog
+---
+
+# OrgScopedResourcePage — generic CRUD page for org-scoped resources (groups, applications)
+
+## Connections
+- [[Modal — accessible dialog wrapper using native HTML dialog element]] - `references` [EXTRACTED]
+- [[PageHeader — reusable page heading with title, description, and action slot]] - `references` [EXTRACTED]
+- [[api.ts — typed API client apiFetch, apiList, buildQuery, ApiClientError; envelope-aware]] - `references` [EXTRACTED]
+- [[toast.tsx — ToastProvider context + useToast hook for in-app notifications]] - `calls` [EXTRACTED]
+- [[ui.tsx — shared UI primitives Button, Input, Select, Textarea, Field, Badge, Table, Skeleton, EmptyState, ErrorState]] - `references` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Backend_Bootstrap_&_Catalog

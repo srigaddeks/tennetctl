@@ -105,7 +105,9 @@ async def poll_and_claim_webpush_deliveries(
         SET attempted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
         WHERE id IN (
             SELECT id FROM {_DELIVERIES_FCT}
-            WHERE status_id = 2 AND channel_id = 2 AND attempted_at IS NULL
+            WHERE status_id = 2 AND channel_id = 2
+              AND (next_retry_at IS NULL OR next_retry_at <= CURRENT_TIMESTAMP)
+              AND (scheduled_at IS NULL OR scheduled_at <= CURRENT_TIMESTAMP)
             ORDER BY created_at ASC LIMIT $1
             FOR UPDATE SKIP LOCKED
         )
@@ -134,9 +136,11 @@ async def mark_delivery_sent(conn: Any, *, delivery_id: str) -> None:
     await conn.execute(
         f"""
         UPDATE {_DELIVERIES_FCT}
-        SET status_id    = 3,
-            delivered_at = CURRENT_TIMESTAMP,
-            updated_at   = CURRENT_TIMESTAMP
+        SET status_id     = 3,
+            delivered_at  = CURRENT_TIMESTAMP,
+            next_retry_at = NULL,
+            attempt_count = attempt_count + 1,
+            updated_at    = CURRENT_TIMESTAMP
         WHERE id = $1
         """,
         delivery_id,

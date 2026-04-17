@@ -11,6 +11,7 @@ import {
 import { apiFetch, buildQuery } from "@/lib/api";
 import type {
   NotifyTemplate,
+  NotifyTemplateAnalytics,
   NotifyTemplateCreate,
   NotifyTemplateGroup,
   NotifyTemplateGroupListResponse,
@@ -116,6 +117,18 @@ export function useTemplateGroups(orgId: string | null): UseQueryResult<NotifyTe
 
 // Exposed for external pickers — returns the raw group list.
 export type { NotifyTemplateGroup };
+
+
+export function useTemplateAnalytics(id: string | null): UseQueryResult<NotifyTemplateAnalytics> {
+  return useQuery({
+    queryKey: ["notify-template-analytics", id ?? ""],
+    queryFn: () => {
+      if (!id) throw new Error("id required");
+      return apiFetch<NotifyTemplateAnalytics>(`/v1/notify/templates/${id}/analytics`);
+    },
+    enabled: !!id,
+  });
+}
 
 export function useTestSend(): UseMutationResult<
   { sent_to: string },

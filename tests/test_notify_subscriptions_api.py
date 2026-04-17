@@ -288,7 +288,11 @@ async def test_subscription_missing_required(live_app):
 
 @pytest.mark.asyncio
 async def test_worker_creates_delivery_on_matching_event(live_app):
-    """Matching audit event → subscription matched → delivery row created."""
+    """Matching audit event → subscription matched → delivery row(s) created.
+
+    Non-critical subscription fans out to subscribed channel (email) + in-app
+    (id=3) so the bell icon always reflects the event.
+    """
     client, pool = live_app
     grp = await _create_group(client, "g-wkr-match")
     tmpl = await _create_template(client, grp["id"], "t-wkr-match")
@@ -305,12 +309,14 @@ async def test_worker_creates_delivery_on_matching_event(live_app):
 
     async with pool.acquire() as conn:
         rows = await conn.fetch(
-            'SELECT * FROM "06_notify"."15_fct_notify_deliveries" WHERE org_id = $1',
+            'SELECT * FROM "06_notify"."15_fct_notify_deliveries" WHERE org_id = $1 ORDER BY channel_id',
             _ORG_ID,
         )
-    assert len(rows) == 1
-    assert rows[0]["recipient_user_id"] == _USER_ID
-    assert rows[0]["channel_id"] == 1  # email
+    # Expect two deliveries: email (subscribed channel) + in-app (always-on bell channel)
+    assert len(rows) == 2
+    channels = sorted(r["channel_id"] for r in rows)
+    assert channels == [1, 3]  # email + in_app
+    assert all(r["recipient_user_id"] == _USER_ID for r in rows)
 
 
 @pytest.mark.asyncio
@@ -466,8 +472,9 @@ async def test_delivery_get_one(live_app):
     await _insert_audit_event(pool, "iam.users.created")
     await _worker.process_audit_events(pool, start_cursor)
 
-    # Get the first delivery ID
-    r_list = await client.get(f"/v1/notify/deliveries?org_id={_ORG_ID}")
+    # Get the email delivery (in-app is also created by the fan-out, but this
+    # test asserts the subscribed channel variant specifically).
+    r_list = await client.get(f"/v1/notify/deliveries?org_id={_ORG_ID}&channel=email")
     delivery_id = r_list.json()["data"]["items"][0]["id"]
 
     r = await client.get(f"/v1/notify/deliveries/{delivery_id}")

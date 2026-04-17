@@ -1,0 +1,17 @@
+---
+source_file: "backend/02_features/05_monitoring/stores/resources_store.py"
+type: "code"
+community: "Alert Rules & Evaluation"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Alert_Rules_&_Evaluation
+---
+
+# ResourcesStore Protocol — upsert interface for OTel resource identities
+
+## Connections
+- [[PostgresResourcesStore — SHA-256 hash-interned upsert into 11_fct_monitoring_resources]] - `implements` [EXTRACTED]
+- [[Store Types — frozen dataclasses ResourceRecord, LogRecord, LogQuery, MetricDef, MetricPoint, TimeseriesPoint, TimeseriesResult, SpanRecord, SpanQuery]] - `references` [INFERRED]
+
+#graphify/code #graphify/EXTRACTED #community/Alert_Rules_&_Evaluation

@@ -69,7 +69,11 @@ async def create_application(
 
 
 async def get_application(conn: Any, _ctx: Any, *, application_id: str) -> dict | None:
-    return await _repo.get_by_id(conn, application_id)
+    row = await _repo.get_by_id(conn, application_id)
+    if row is None:
+        return None
+    row["scope_ids"] = await _repo.list_scope_ids(conn, application_id)
+    return row
 
 
 async def list_applications(
@@ -77,9 +81,14 @@ async def list_applications(
     limit: int = 50, offset: int = 0,
     org_id: str | None = None, is_active: bool | None = None,
 ) -> tuple[list[dict], int]:
-    return await _repo.list_applications(
+    items, total = await _repo.list_applications(
         conn, limit=limit, offset=offset, org_id=org_id, is_active=is_active,
     )
+    if items:
+        scopes = await _repo.list_scope_ids_many(conn, [r["id"] for r in items])
+        for r in items:
+            r["scope_ids"] = scopes.get(r["id"], [])
+    return items, total
 
 
 async def update_application(
@@ -88,6 +97,7 @@ async def update_application(
     label: str | None = None,
     description: str | None = None,
     is_active: bool | None = None,
+    scope_ids: list[int] | None = None,
 ) -> dict:
     current = await _repo.get_by_id(conn, application_id)
     if current is None:
@@ -109,10 +119,31 @@ async def update_application(
             raise _errors.NotFoundError(f"Application {application_id!r} not found.")
         changed["is_active"] = is_active
 
+    if scope_ids is not None:
+        requested = sorted(set(scope_ids))
+        if requested:
+            found = await _repo.dim_scope_ids_exist(conn, requested)
+            missing = [s for s in requested if s not in found]
+            if missing:
+                raise _errors.ValidationError(
+                    f"unknown scope ids: {missing}",
+                )
+        previous = await _repo.list_scope_ids(conn, application_id)
+        if previous != requested:
+            await _repo.replace_application_scopes(
+                conn,
+                application_id=application_id,
+                org_id=current["org_id"],
+                scope_ids=requested,
+                created_by=updated_by,
+            )
+            changed["scope_ids"] = requested
+
     if any_attr and "is_active" not in changed:
         await _repo.touch_application(conn, id=application_id, updated_by=updated_by)
 
     if not changed:
+        current["scope_ids"] = await _repo.list_scope_ids(conn, application_id)
         return current
 
     await _emit(
@@ -123,6 +154,7 @@ async def update_application(
     updated = await _repo.get_by_id(conn, application_id)
     if updated is None:
         raise RuntimeError(f"application {application_id} vanished after update")
+    updated["scope_ids"] = await _repo.list_scope_ids(conn, application_id)
     return updated
 
 

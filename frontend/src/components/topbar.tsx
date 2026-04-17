@@ -68,7 +68,11 @@ export function TopBar() {
           )}
           {user ? (
             <>
-              <div className="flex items-center gap-2" data-testid="topbar-user">
+              <Link
+                href="/account/security"
+                className="flex items-center gap-2 rounded-md px-2 py-1 transition hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                data-testid="topbar-user"
+              >
                 {user.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -96,7 +100,7 @@ export function TopBar() {
                     </div>
                   ) : null}
                 </div>
-              </div>
+              </Link>
               <button
                 type="button"
                 data-testid="topbar-signout"

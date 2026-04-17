@@ -1,0 +1,92 @@
+# Python build / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.mypy_cache/
+.ruff_cache/
+
+# Next.js / Node
+node_modules/
+.next/
+out/
+.turbo/
+.cache/
+*.tsbuildinfo
+
+# Logs
+*.log
+logs/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Graphify output (never index its own output)
+graphify-out/
+
+# Tests (assertions, fixtures, robot files — not architecture)
+tests/
+output.xml
+log.html
+report.html
+playwright-log.txt
+
+# Test artifacts
+artifacts/
+
+# Python package stubs (mostly empty)
+__init__.py
+
+# Next.js public assets (boilerplate SVGs, service worker)
+frontend/public/
+
+# Frontend / Node config boilerplate
+next.config.ts
+next-env.d.ts
+postcss.config.mjs
+eslint.config.mjs
+tailwind.config.ts
+
+# Dependency manifests (not source)
+requirements.txt
+package.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Reference projects (legacy code, not this project's source)
+99_ref/
+
+# Claude Code — operational noise only (skills + rules + paul-framework are indexed)
+.claude/hooks/
+.claude/scripts/
+.claude/mcp-configs/
+.claude/worktrees/
+.claude/agents/
+.claude/commands/
+
+# Secrets / env
+.env
+.env.*

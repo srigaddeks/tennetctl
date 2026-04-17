@@ -247,20 +247,18 @@ async def test_mark_in_app_read_forbidden_for_other_user(live_app):
 
 
 @pytest.mark.asyncio
-async def test_mark_read_rejected_for_email_delivery(live_app):
-    """mark_in_app_read raises ValidationError for non-in_app deliveries."""
+async def test_mark_read_works_across_any_channel(live_app):
+    """mark_read flips status for deliveries on any channel (email/webpush/in_app)."""
     pool, _ = live_app
     async with pool.acquire() as conn:
         template = await _insert_template(conn)
         email_delivery = await _insert_email_delivery(conn, template["id"])
 
-    _errors: Any = import_module("backend.01_core.errors")
-
     async with pool.acquire() as conn:
-        with pytest.raises(_errors.ValidationError):
-            await _del_svc.mark_in_app_read(
-                conn, delivery_id=email_delivery["id"], user_id=_USER_A
-            )
+        updated = await _del_svc.mark_read(
+            conn, delivery_id=email_delivery["id"], user_id=_USER_A,
+        )
+    assert updated["status_code"] == "opened"
 
 
 @pytest.mark.asyncio

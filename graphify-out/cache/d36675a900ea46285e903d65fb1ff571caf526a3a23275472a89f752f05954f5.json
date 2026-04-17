@@ -1,0 +1,1 @@
+{"nodes": [{"id": "frontend_lib_use_on_click_outside", "label": "use-on-click-outside.ts \u2014 hook that fires handler when click occurs outside a ref element", "file_type": "code", "source_file": "frontend/src/lib/use-on-click-outside.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

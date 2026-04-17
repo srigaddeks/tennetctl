@@ -16,6 +16,8 @@ class SmtpConfigCreate(BaseModel):
     tls: bool = True
     username: str = Field(..., min_length=1)
     auth_vault_key: str = Field(..., min_length=1, description="Vault secret key holding SMTP password")
+    from_email: str | None = Field(default=None, description="Envelope From address. Falls back to username if null.")
+    from_name: str | None = Field(default=None, max_length=128, description="Display name on the From header.")
 
 
 class SmtpConfigUpdate(BaseModel):
@@ -25,6 +27,8 @@ class SmtpConfigUpdate(BaseModel):
     tls: bool | None = None
     username: str | None = None
     auth_vault_key: str | None = None
+    from_email: str | None = None
+    from_name: str | None = None
     is_active: bool | None = None
 
 
@@ -38,6 +42,8 @@ class SmtpConfigRow(BaseModel):
     tls: bool
     username: str
     auth_vault_key: str
+    from_email: str | None = None
+    from_name: str | None = None
     is_active: bool
     created_by: str
     updated_by: str

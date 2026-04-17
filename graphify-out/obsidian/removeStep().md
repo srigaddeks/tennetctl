@@ -1,0 +1,17 @@
+---
+source_file: "frontend/src/features/audit-analytics/_components/funnel-builder.tsx"
+type: "code"
+community: "Frontend API Client"
+location: "L22"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Frontend_API_Client
+---
+
+# removeStep()
+
+## Connections
+- [[funnel-builder.tsx]] - `contains` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Frontend_API_Client

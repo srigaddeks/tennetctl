@@ -16,13 +16,40 @@ import {
 } from "@tanstack/react-query";
 
 import { apiFetch, buildQuery } from "@/lib/api";
-import type { InAppDelivery, InAppDeliveryListResponse } from "@/types/api";
+import type {
+  InAppDelivery,
+  InAppDeliveryListResponse,
+  UnreadCountResponse,
+} from "@/types/api";
 
 const qk = {
   all: ["in-app-notifications"] as const,
   list: (userId: string, orgId: string | null) =>
     ["in-app-notifications", "list", userId, orgId] as const,
+  unread: (userId: string, orgId: string | null) =>
+    ["in-app-notifications", "unread", userId, orgId] as const,
 };
+
+/**
+ * Server-computed unread count across all channels for the current user.
+ * Cheaper than fetching the full list just to count — use this for the badge.
+ */
+export function useUnreadCountServer(
+  userId: string | null,
+  orgId: string | null,
+): UseQueryResult<UnreadCountResponse> {
+  return useQuery({
+    queryKey: qk.unread(userId ?? "", orgId),
+    queryFn: () => {
+      if (!userId || !orgId) throw new Error("not authenticated");
+      return apiFetch<UnreadCountResponse>(
+        `/v1/notify/unread-count${buildQuery({ org_id: orgId, recipient_user_id: userId })}`,
+      );
+    },
+    enabled: !!userId && !!orgId,
+    refetchInterval: 30_000,
+  });
+}
 
 /** Fetch in-app deliveries for the current user. Polls every 30s. */
 export function useInAppNotifications(

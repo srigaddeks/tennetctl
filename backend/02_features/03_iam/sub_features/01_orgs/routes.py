@@ -47,10 +47,11 @@ def _build_ctx(request: Request, pool: Any, *, audit_category: str) -> Any:
     evt_audit CHECK constraint bypasses scope requirements for setup rows
     until Phase 5+ lands JWT-backed auth.
     """
-    user_id = request.headers.get("x-user-id")
-    session_id = request.headers.get("x-session-id")
-    org_id = request.headers.get("x-org-id")
-    workspace_id = request.headers.get("x-workspace-id")
+    state = request.state
+    user_id = getattr(state, "user_id", None) or request.headers.get("x-user-id")
+    session_id = getattr(state, "session_id", None) or request.headers.get("x-session-id")
+    org_id = getattr(state, "org_id", None) or request.headers.get("x-org-id")
+    workspace_id = getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id")
 
     return _catalog_ctx.NodeContext(
         user_id=user_id,

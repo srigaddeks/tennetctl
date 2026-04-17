@@ -49,7 +49,7 @@ export function SignInForm() {
             data-testid={`tab-${t}`}
             onClick={() => { setTab(t); setMagicSent(false); setOtpSent(false); setOtpCode(""); setPasskeyError(null); }}
             className={[
-              "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition",
+              "flex-1 whitespace-nowrap rounded-md px-2 py-1.5 text-[11px] font-medium transition",
               tab === t
                 ? "bg-white shadow-sm dark:bg-zinc-700"
                 : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300",

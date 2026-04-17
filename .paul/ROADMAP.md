@@ -8,9 +8,19 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 ## Current Milestone
 
-**v0.1 Foundation + IAM** (v0.1.0)
-Status: In progress
-Phases: 7 of 12 complete — Phase 8 (Auth basics) in progress
+**v0.1.6 IAM Hardening for OSS** (v0.1.6)
+Status: 🚧 In Progress
+Theme: Make IAM production-grade before open-sourcing. Config-driven auth policy (no hardcoded thresholds), account lockout, session limits, audit coverage closure, email OTP via existing Notify templates, API key rotation, IAM metrics.
+Phases: 0 of 1 complete
+
+**v0.1.7 Notify Production + Developer Docs** (v0.1.7)
+Status: ✅ Complete
+Theme: Close production gaps so the notify backend is a real primitive for building business apps; ship developer documentation.
+Phases: 6 of 6 complete
+
+**v0.1.5 Observability** (v0.1.5) — ✅ Complete (Phase 13 all 8 plans shipped)
+
+**v0.1 Foundation + IAM** (v0.1.0) — ✅ Complete (12/12 phases)
 
 ## Phases
 
@@ -32,6 +42,16 @@ Phases: 7 of 12 complete — Phase 8 (Auth basics) in progress
 | 10 | Audit Analytics (PostHog-class vertical) | 4 | Not started | - |
 | 11 | Notify (Mailchimp-class vertical) | 12 | ✅ Complete | 2026-04-17 |
 | 12 | IAM Security Completion — Magic Link, OTP, Passkeys (vertical) | 4 | ✅ Complete | 2026-04-17 |
+| 13 | Monitoring — OTel Logs + Metrics + Traces + Alerting (vertical, v0.1.5) | 8 | ⏸ Paused | - |
+| 14 | Notify — API Keys + Send Idempotency (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
+| 15 | Notify — List-Unsubscribe + Suppression List (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
+| 16 | Notify — Scheduled Sends (v0.1.7) [quiet-hours + tz deferred to v0.1.8] | 1 | ✅ Complete | 2026-04-17 |
+| 17 | Notify — Channel Fallback (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
+| 18 | Notify — Per-Template Analytics UI (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
+| 19 | Developer Docs Pass — Integration guide, API reference, deployment, DKIM/DMARC, examples (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
+| 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | 🚧 In Progress | - |
+| 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | 📋 Planned | - |
+| 22 | IAM Enterprise — SAML/OIDC SSO, SCIM, impersonation, IP allowlist, dynamic groups, role expiry, SIEM export (v0.1.9) | 8 | 📋 Planned | - |
 
 ## Phase Details
 
@@ -261,15 +281,247 @@ injection and full pytest + Robot E2E verification.
 
 ---
 
-## Future Milestones (post-v0.1)
+### Phase 13: Monitoring — OTel Logs + Counter Metrics (vertical, v0.1.5)
 
-### v0.1.5 Runtime Hardening (before v0.2)
+**Goal:** Replace the Prometheus/Loki/Grafana stack with an internal, self-hostable observability layer. OTel logs flow through NATS JetStream (`monitoring.logs.otel.>`) into Postgres behind a `LogsStore` Protocol seam. Counter metrics write directly to Postgres behind a `MetricsStore` Protocol. Both stores are ClickHouse-swappable in v0.2 by changing an env var — no caller code changes.
+**Depends on:** Phase 10 (audit analytics — for consistent event-query patterns), NATS JetStream already running in docker-compose
+**Status:** 🟡 Planning — 13-01 created
+
+**Architecture:**
+- **Logs path (OTel + JetStream):** OTLP/HTTP receiver endpoint → publish to `monitoring.logs.otel.>` → durable JetStream consumer worker → `LogsStore.insert_batch()` → Postgres partitioned `evt_monitoring_logs` (daily RANGE partitions)
+- **Metrics path (counters):** `POST /v1/monitoring/metrics/increment` + `monitoring.metrics.increment` node → `MetricsStore.increment()` → direct Postgres write to partitioned `evt_monitoring_metric_points`. Metric definitions live in `fct_monitoring_metrics` registry
+- **Storage seam:** `typing.Protocol` interfaces (`LogsStore`, `MetricsStore`) with single `get_*_store()` factory; switch via `TENNETCTL_MONITORING_STORE_KIND` env var (v0.1.5: postgres only; v0.2: clickhouse swap-in)
+
+**Architecture (revised 2026-04-17 after gap review):**
+- **3 OTel pillars from day one**: logs + metrics (counter/gauge/histogram) + traces/spans
+- **Ingest paths**: OTLP/HTTP receiver → NATS JetStream (durable) → consumer workers → Postgres via `LogsStore`/`SpansStore` Protocols. Metrics: direct HTTP + SDK → `MetricsStore` Protocol → Postgres (no NATS). APISIX Prometheus scraper feeds gateway telemetry in.
+- **Storage seam**: all 4 stores (`LogsStore`, `MetricsStore`, `SpansStore`, `ResourcesStore`) are `typing.Protocol`s. Swap to ClickHouse in v0.2 via `TENNETCTL_MONITORING_STORE_KIND=clickhouse` — no caller changes
+- **Resource interning** in `fct_monitoring_resources` (service_name + instance + version + attrs → BIGINT FK) cuts storage 10–50×
+- **Cardinality caps** enforced at `MetricsStore.increment`; audit emitted on reject
+- **Rollup tables** `_1m`/`_5m`/`_1h` populated by `pg_cron` — 90d queries run against rollups, not raw
+- **Daily range partitioning** on all evt + rollup tables; `pg_cron` partition manager creates/drops per retention policy (hot/warm/cold tiers)
+- **Redaction pipeline** in log consumer (regex + denylist, vault-controlled rules)
+- **Auto-instrumentation**: FastAPI middleware + asyncpg hooks + structlog bridge — backend self-observes
+- **Query DSL** (ADR-028): JSON-based, parameterized, safelisted. UI + alerts + saved queries all use the same DSL
+- **Alerting** reuses Phase 11 Notify (critical category → multi-channel fan-out) — no new delivery code
+- **Synthetic checks** give dead-man's-switch coverage independent of log volume
+- **LISTEN/NOTIFY** drives sub-100ms live tail
+
+**Plans:**
+- [ ] 13-01: Foundation — full 3-pillar schema (logs + metrics + spans + rollups + resources + dim) + 4 store Protocols + Postgres impls + JetStream streams (MONITORING_LOGS + MONITORING_SPANS + MONITORING_DLQ) + feature manifest
+- [ ] 13-02: Metrics ingest — counter + gauge + histogram; REST + catalog nodes + SDK + cardinality enforcement
+- [ ] 13-03: OTLP receiver (logs + traces) + auto-instrumentation (FastAPI + asyncpg + structlog bridge)
+- [ ] 13-04: JetStream consumers (logs + spans) + redaction engine + APISIX Prometheus scraper + DLQ
+- [ ] 13-05: Query DSL (ADR-028) + compiler + query API (logs + metrics + traces) + saved queries + DLQ replay + health endpoint
+- [ ] 13-06: UI — log explorer + live tail + metric dashboards + trace waterfall + dashboards/panels CRUD + Robot E2E
+- [ ] 13-07: pg_cron rollups + partition manager + retention tiering + synthetic checks + LISTEN/NOTIFY live-tail
+- [ ] 13-08: Alerting — rules + evaluator worker + silences + Notify integration + alerts UI + end-to-end Robot E2E
+
+### Phase 14: Notify — API Keys + Send Idempotency (v0.1.7)
+
+**Goal:** Make the Send API safely callable by external systems. Issue scoped API keys, require `Idempotency-Key` on every transactional send, dedupe on repeat.
+**Depends on:** Phase 11 (Notify), Phase 7 (Vault — for key storage)
+
+**Scope:**
+- New table `03_iam.28_fct_api_keys` (key_id + argon2 hash + scopes[] + created_by + last_used_at + expires_at + revoked_at)
+- `GET/POST/DELETE /v1/api-keys` — list/create/revoke; create returns the token exactly once
+- Middleware: `Authorization: Bearer nk_<key_id>.<secret>` in addition to session cookies; populates `request.state.{user_id, org_id}` on match
+- Scopes enforced at the router level: `notify:send`, `notify:read`, `audit:read`, etc.
+- `Idempotency-Key` header on `POST /v1/notify/send` — new dim table for idempotency records OR just a partial unique index on `(org_id, idempotency_key)` on deliveries
+- Admin UI: `/account/api-keys` — create / copy-once / revoke
+- Audit events on key create/revoke
+
+**Plans:**
+- [ ] 14-01: API keys (schema + middleware + UI) + Send API idempotency key
+
+### Phase 15: Notify — List-Unsubscribe + Suppression List (v0.1.7)
+
+**Goal:** Gmail/Yahoo-compliant unsubscribe + auto-skip bounced/unsubscribed recipients on future sends.
+**Depends on:** Phase 14 (API keys — used for signed unsubscribe tokens)
+
+**Scope:**
+- Signed unsubscribe URL token (HMAC via vault, scopes org+user+category) — cookie-less endpoint
+- `GET /v1/notify/unsubscribe?token=...` — preview page + POST variant per RFC 8058
+- Email sender adds `List-Unsubscribe: <mailto:...>, <https://.../unsubscribe?token=...>` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click`
+- New `29_fct_notify_suppressions` (org_id, email, reason_code, created_at) — codes: hard_bounce, manual, complaint
+- Bounce webhook inserts on hard bounce
+- Email sender skips recipients in suppression list (marks delivery `status=unsubscribed`)
+- `/notify/settings` — Suppressions section with list + manual add + delete
+
+**Plans:**
+- [ ] 15-01: Signed unsubscribe token + List-Unsubscribe headers + suppression table + sender skip + Suppressions UI
+
+### Phase 16: Notify — Scheduled Sends + Quiet Hours + User Timezone (v0.1.7)
+
+**Goal:** Defer sends until future time or outside recipient's quiet hours. Per-user timezone.
+**Depends on:** Phase 11 (Notify), Phase 5 (Users — adds tz column)
+
+**Scope:**
+- Add `timezone` to iam users (EAV via `dim_attr_defs`)
+- Add `scheduled_at` + `send_after_local` + `send_before_local` honored by sender polls (already have `scheduled_at` column; honor it)
+- Preferences page: per-user quiet hours (start/end in their tz) stored in user preferences
+- Send API accepts `send_at: ISO8601` or `delay_seconds: int`
+- Worker / sender poll: `WHERE (scheduled_at IS NULL OR scheduled_at <= NOW()) AND within_quiet_hours_ok(...)`
+- In-app deliveries bypass quiet hours (they don't disturb anyone)
+- UI: timezone selector on account page, quiet hours sliders on preferences
+
+**Plans:**
+- [ ] 16-01: User timezone + quiet hours + scheduled send honored by sender polls
+
+### Phase 17: Notify — Channel Fallback (v0.1.7)
+
+**Goal:** "Try webpush, if not delivered in N minutes and not opened, send email." Durable at-least-once multi-channel delivery.
+**Depends on:** Phase 11 (Notify)
+
+**Scope:**
+- Template adds `fallback_chain: [{channel_id, wait_seconds}]` (JSONB column on templates)
+- Worker creates primary-channel delivery; new `fallback_pending` status means "waiting for window"
+- Background task: at `created_at + wait_seconds`, if delivery not opened/clicked/delivered → create next channel in the chain
+- UI: template editor exposes fallback chain
+- `Send API` also honors per-send `fallback_chain`
+- Metrics: fallback-triggered deliveries tagged in audit metadata
+
+**Plans:**
+- [ ] 17-01: fallback_chain column + watcher task + template UI + E2E
+
+### Phase 18: Notify — Per-Template Analytics UI (v0.1.7)
+
+**Goal:** Deliverability dashboard per template: sent, delivered, opened, clicked, bounced, failed — over time. Funnel view.
+**Depends on:** Phase 11 (Notify)
+
+**Scope:**
+- `GET /v1/notify/templates/{id}/analytics?from=...&to=...` — aggregates from `evt_notify_delivery_events`
+- Funnel endpoint: sent → delivered → opened → clicked
+- UI: `/notify/templates/[id]` adds an Analytics tab alongside the body editor
+- Charts: time series (sparkline) + rate cards
+- Export CSV
+
+**Plans:**
+- [ ] 18-01: Analytics endpoint + template detail page analytics tab + CSV export
+
+### Phase 19: Developer Documentation Pass (v0.1.7)
+
+**Goal:** Anyone can build a real business app on this backend after reading the docs. Integration guide, full API reference, template authoring, deployment + DKIM/DMARC, worked examples.
+**Depends on:** Phases 14–18
+
+**Scope:**
+- `03_docs/00_main/09_guides/notify-integration.md` — "From zero to your first notification" (10 min quickstart)
+- `03_docs/00_main/09_guides/notify-template-authoring.md` — Jinja2 variables, per-channel bodies, preheader, fallback chain, testing
+- `03_docs/00_main/09_guides/notify-deployment.md` — SMTP providers (SendGrid/Postmark/Mailgun), DKIM/DMARC/SPF setup, custom tracking domain
+- `03_docs/00_main/09_guides/notify-api-reference.md` — Every endpoint with request/response examples + `curl` + TypeScript snippets
+- `03_docs/00_main/09_guides/notify-examples/` — real business app recipes (password reset, order confirmation, weekly digest, admin alert broadcast)
+- OpenAPI spec generation — `/openapi.json` exposed (FastAPI auto), linked from docs
+- Postman collection / httpie requests file checked into `03_docs/00_main/09_guides/notify-examples/`
+- README pointer updated
+
+**Plans:**
+- [ ] 19-01: Write all notify guides + generate OpenAPI spec + examples folder + README pointers
+
+### Phase 20: IAM Hardening for OSS (v0.1.6)
+
+**Goal:** Make IAM production-grade before open-sourcing. Every threshold/TTL/limit must live in vault-backed config (zero hardcoded values); email OTP must reuse existing Notify templates (no new mailer); audit coverage closed across all auth flows; account lockout, session limits, and password-reset session revocation wired in; TOTP backup codes + API key rotation + IAM metrics.
+**Depends on:** Phase 7 (Vault — config storage), Phase 10 (Audit — emit_audit), Phase 11 (Notify — email templates), Phase 13 (Monitoring — metric emit).
+**Status:** 🚧 In Progress
+
+**Scope decisions (confirmed 2026-04-17):**
+- **Per-org policy**: global defaults + per-org override (1-B). Storage: vault paths only (no EAV). Global at `iam.policy.{key}`; per-org override at `iam.policy.orgs.{org_id}.{key}`. Resolver reads org-scoped key first, falls back to global.
+- **Config granularity**: per-key (2-B). ~20 vault keys. Each change audited independently via existing vault audit path.
+- **Admin UI**: split into own plan 20-02 (3-B-split). 20-01 is backend-only.
+- **Hot-reload**: immediate invalidate on PATCH (4-B). `VaultClient.invalidate(key)` called in same tx as write, consistent with Phase 7 vault rotate/delete.
+
+**Scope (must-fix from pre-OSS audit; deferred: passkey hardening, signin/signup rate limiting, HIBP, 2FA enforcement, session IP-binding):**
+- **Policy config layer**: vault config keys (global at `iam.policy.{key}`; per-org override at `iam.policy.orgs.{org_id}.{key}`):
+  - `password.min_length`, `password.require_upper`, `password.require_digit`, `password.require_symbol`, `password.min_unique_chars`
+  - `lockout.threshold_failed_attempts`, `lockout.window_seconds`, `lockout.duration_seconds`
+  - `session.max_concurrent_per_user`, `session.idle_timeout_seconds`, `session.absolute_ttl_seconds`, `session.eviction_policy` (oldest|lru|reject)
+  - `magic_link.ttl_seconds`, `magic_link.rate_limit_per_email`, `magic_link.rate_window_seconds`
+  - `otp.email_ttl_seconds`, `otp.email_max_attempts`, `otp.rate_limit_per_email`, `otp.rate_window_seconds`, `otp.totp_window`
+  - `password_reset.ttl_seconds`
+  - `AuthPolicy` service: `resolve(org_id, key) -> value`; SWR-cached via VaultClient (60s); immediate invalidate on PATCH
+- **Account lockout**: `fct_failed_auth_attempts` table (user_id or email + source_ip + created_at) + service checks threshold within window on signin → sets `locked_until` via dtl_attrs → signin rejects until unlock
+- **Session limits**: session service enforces `max_concurrent_per_user` at creation (evict oldest / LRU / reject per policy); middleware checks `idle_timeout_seconds` against `last_activity_at` (new column on fct_sessions) and `absolute_ttl_seconds` vs `created_at`; bumps `last_activity_at` on each authenticated request
+- **Password reset session revocation**: `complete_reset` revokes all active sessions for the user atomically in the same tx as password update
+- **Audit coverage closure**: emit on `iam.magic_link.consume_failed`, `iam.otp.email.verify_succeeded`, `iam.otp.email.verify_failed`, `iam.otp.totp.verify_succeeded`, `iam.otp.totp.verify_failed`, `iam.otp.totp.enrolled`, `iam.otp.totp.deleted`, `iam.password_reset.requested`, `iam.password_reset.completed`, `iam.credentials.verify_failed`, `iam.lockout.triggered`, `iam.lockout.cleared`
+- **TOTP backup codes**: new `fct_totp_backup_codes` (user_id, argon2id hash, consumed_at); generated on TOTP enroll (10 codes, single-use); consume flow integrated into `/auth/otp/verify`
+- **Email OTP → Notify migration**: refactor `12_otp/service.py` email send path to call `POST /v1/notify/send` with template key `iam.otp.email` (template created as part of this plan, uses existing transactional group); delete any inline SMTP/aiosmtplib call from 12_otp
+- **API key rotation**: `POST /v1/api-keys/{id}/rotate` — atomically marks old revoked + issues new secret with same scopes; `last_used_at` column updated by Bearer middleware on each auth success
+- **IAM metrics**: emit via existing `monitoring.metrics.increment` node — `iam_failed_auth_total{reason,source}`, `iam_lockouts_triggered_total`, `iam_sessions_evicted_total{reason}`, `iam_active_sessions` (gauge via periodic task), `iam_otp_verify_total{kind,outcome}`, `iam_password_reset_total{outcome}`
+
+**Plans:**
+- [ ] 20-01: Auth policy backend — vault key schema + `AuthPolicy` service (global + per-org resolver, SWR cache, immediate invalidate on PATCH) + safe-default bootstrap seed + pytest
+- [ ] 20-02: Auth policy admin UI — `/iam/security/policy` page (global settings form + per-org override section) + Robot E2E
+- [ ] 20-03: Account lockout (`fct_failed_auth_attempts` + lockout enforcement in credentials signin + audit emissions + `iam.lockout.*` events)
+- [ ] 20-04: Session limits + idle timeout (`last_activity_at` column + concurrent-session eviction + idle/absolute TTL enforcement in SessionMiddleware + audit emissions)
+- [ ] 20-05: Password reset session revocation + audit coverage closure across OTP/magic-link/password-reset (emit events + test coverage)
+- [ ] 20-06: TOTP backup codes + Email OTP migration to Notify templates + API key rotation + `last_used_at` + IAM metrics (6 counters + 1 gauge)
+
+### Phase 21: IAM OSS Completion (v0.1.6)
+
+**Goal:** Close the OSS user-experience + compliance gaps that block a real v0.1.6 open-source release. Email verification at signup, admin invite flow, first-run admin wizard, user deactivation vs soft-delete distinction, GDPR export + erasure, end-user session/device management UI.
+**Depends on:** Phase 11 (Notify — for verification/invite emails), Phase 20 (policy layer for signup.require_email_verification toggle).
+**Status:** 📋 Planned
+
+**Scope:**
+- **Email verification at signup**: new sub-feature `16_email_verification/`, `fct_email_verifications` table (user_id, hashed token, consumed_at, ttl_at), policy-gated (`signup.require_email_verification` in 20-01 vault config). Verification email uses Notify template `iam.email.verify`. Unverified users can sign in but get a banner + limited scope until verified.
+- **Admin invite flow**: new sub-feature `17_invites/`, `fct_user_invites` table (email, org_id, role_ids, invited_by, expires_at, consumed_at, token_hash). `POST /v1/invites` creates + sends email (template `iam.invite.email`). `/auth/accept-invite?token=...` lands on a signup-with-prefilled-email flow that skips email verification (invite proves ownership). Invite policy keys in vault: `invite.ttl_seconds`, `invite.resend_cooldown_seconds`.
+- **First-run admin wizard**: on boot, if `fct_users` has zero rows, backend enters "setup mode" — all routes except `POST /v1/setup/initial-admin` and `GET /v1/setup/status` return 503 with setup hint. First call creates the super-admin with TOTP mandatory + writes a `system_initialized` bootstrap flag in vault.configs. Frontend has `/setup` page that detects setup mode and renders an admin-creation form.
+- **Deactivation vs soft-delete**: today `deleted_at` is the only off-state. Add `is_active BOOLEAN` via dtl_attrs (already registered or register in this plan): `deactivated = can_reactivate=true, preserves_all_data`; `deleted = deleted_at set, pseudonymized, sessions revoked, email hashed`. PATCH `/v1/users/{id}` with `{status: "inactive"}` deactivates; DELETE soft-deletes + pseudonymizes (replace email with `deleted-{uuid}@removed`, clear display_name).
+- **GDPR export + erasure**: `POST /v1/account/data-export` creates an async job (evt_audit_outbox pattern) that assembles user's data from all features (orgs, workspaces, notifications, sessions, audit events where actor=user). Result emailed as signed download link (Notify template). `POST /v1/account/delete-me` performs pseudonymization flow — requires password confirmation + 2FA if enabled. 30-day recovery window before hard-erase purge job runs.
+- **Session/device management UI**: `/account/sessions` shows every active session with {user-agent parsed via `user-agents` python lib, IP, created_at, last_activity_at, current-flag}. Per-row "Sign out this device" + "Sign out all other devices" buttons. Powered by existing 09_sessions API + 20-04 last_activity_at.
+- **SECURITY.md + CODE_OF_CONDUCT.md + responsible disclosure contact** — OSS hygiene files at repo root.
+
+**Plans:**
+- [ ] 21-01: Email verification at signup (schema + service + routes + notify template + policy gate + frontend verify page + Robot E2E)
+- [ ] 21-02: Admin invite flow (schema + service + routes + notify template + accept-invite page + Robot E2E)
+- [ ] 21-03: First-run admin wizard (setup-mode gate + routes + /setup page + bootstrap flag + Robot E2E)
+- [ ] 21-04: Deactivation vs soft-delete (is_active dtl_attr + PATCH status semantics + DELETE pseudonymization + frontend UI + tests)
+- [ ] 21-05: GDPR export + erasure (async job + data assembler + signed download + delete-me flow + 30-day recovery + Robot E2E)
+- [ ] 21-06: Session/device management UI + SECURITY.md + CODE_OF_CONDUCT.md (frontend page + OSS docs + Robot E2E)
+
+### Phase 22: IAM Enterprise (v0.1.9)
+
+**Goal:** Ship the enterprise-grade IAM surface: federated identity (SAML 2.0 + OIDC SSO), automated provisioning (SCIM 2.0), admin impersonation for support teams, IP allowlisting per org, dynamic groups driven by attribute rules, time-bounded role assignments, audit log export to SIEM systems, compliance primitives (TOS tracking, password history).
+**Depends on:** Phase 20 (policy layer), Phase 21 (invite + email verification primitives reused by JIT provisioning).
+**Status:** 📋 Planned — likely its own milestone v0.1.9 given scope.
+
+**Scope:**
+- **SAML 2.0 SSO**: `18_saml_sso/` sub-feature. Per-org IdP config (entity_id, metadata_url_or_xml, cert, attribute mapping). `GET /v1/auth/saml/{org_slug}/metadata` serves SP metadata; `GET /auth/saml/{org_slug}/initiate` redirects to IdP; `POST /auth/saml/{org_slug}/acs` consumes SAMLResponse → JIT user create/update + session. Uses `python3-saml` library. Per-IdP signing/encryption keys in vault.
+- **OIDC SSO**: `19_oidc_sso/` sub-feature. Per-org OIDC provider config (issuer, client_id, client_secret vault_key, scopes, claim mapping). OAuth2 authorization-code flow with PKCE. Standard `/auth/oidc/{org_slug}/initiate` + `/auth/oidc/{org_slug}/callback`. Uses `authlib`.
+- **SCIM 2.0 provisioning**: `20_scim/` sub-feature. Per-org SCIM endpoint + bearer token. `/scim/v2/{org_slug}/Users`, `/Groups` per RFC 7644. Supports {list, get, create, patch, delete} for Users + Groups. Idempotent, returns 409 on duplicate externalId. Provider catalog: Okta, Azure AD, Google Workspace. Deprovisioning (DELETE) deactivates the local user + revokes sessions.
+- **Admin impersonation**: `POST /v1/admin/impersonate/{user_id}` — super-admin only + MFA re-auth required. Creates a new session with `impersonator_user_id` dtl_attr; every action during the impersonated session emits audit with both acting + impersonator IDs. Red banner in UI. Auto-ends after 30 min (configurable). `POST /v1/admin/end-impersonation` reverts.
+- **IP allowlisting per org**: `fct_org_ip_allowlist` (org_id, cidr, label, created_by). Middleware checks the session's org_id → query allowlist → if non-empty, require source IP to match. Empty allowlist = no restriction (default). Admin UI under `/iam/security/ip-allowlist`.
+- **Dynamic groups + domain auto-join**: `dtl_group_rules` (group_id, rule_jsonb like `{"kind":"email_domain","value":"company.com"}` or `{"kind":"attr_match","attr_def_id":N,"op":"eq","value":"..."}`). On user create OR attr change, re-evaluate rules and update lnk_user_group. Domain auto-join is a special case: when a user verifies email matching a configured domain, they auto-join the org + its default group.
+- **Role assignment expiry**: add `expires_at TIMESTAMP NULL` to `lnk_user_role`. Background task every 5 min revokes expired assignments + emits `iam.roles.expired` audit. UI surfaces expiry in role-assignment dialog.
+- **Admin delegation model**: formalize `system_admin`, `org_admin`, `workspace_admin` as seeded roles in `dim_scopes`. Route guards enforce scope hierarchy. `org_admin` can do anything within their org but nothing outside.
+- **Audit log SIEM export**: `21_siem_export/` sub-feature. Per-destination config (kind: `s3`, `splunk_hec`, `datadog`, `webhook`; credentials → vault). Worker reads `evt_audit_outbox`, formats per destination, POSTs. Retries + DLQ.
+- **TOS acceptance tracking**: `fct_tos_versions` (version_id, title, body_markdown, published_at, effective_at) + `lnk_user_tos_acceptance` (user_id, version_id, accepted_at, ip). New TOS version triggers mandatory re-acceptance banner before next request proceeds.
+- **Password history**: `fct_password_history` (user_id, hash, created_at). Policy key `password.history_depth` (default 5) prevents reuse of last N. Checked on `change_password` and `complete_reset`.
+
+**Plans:**
+- [ ] 22-01: SAML 2.0 SSO (python3-saml integration + per-org IdP config + JIT user + admin UI + Robot E2E)
+- [ ] 22-02: OIDC SSO (authlib + per-org OIDC config + JIT user + admin UI + Robot E2E)
+- [ ] 22-03: SCIM 2.0 provisioning (RFC 7644 endpoints + token auth + Okta/Azure tested adapters + Robot E2E)
+- [ ] 22-04: Admin impersonation (route + dual-actor audit + red banner UI + 30-min timeout + Robot E2E)
+- [ ] 22-05: IP allowlisting per org (schema + middleware check + admin UI + Robot E2E)
+- [ ] 22-06: Dynamic groups + domain auto-join (dtl_group_rules + re-evaluator + domain-match on email-verify + admin UI + tests)
+- [ ] 22-07: Role assignment expiry + admin delegation (expires_at + background sweeper + delegation seeds + UI + tests)
+- [ ] 22-08: Audit SIEM export + TOS tracking + password history (3 mini-features bundled; each under one task module)
+
+---
+
+## Future Milestones (post-v0.1.6)
+
+### v0.1.8 Runtime Hardening (deferred gaps)
 Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
 - Versioning operationalized (v1 → v2 migration pattern working in practice)
 - Async effect dispatch via NATS JetStream wired to effect nodes
 - Gateway sync: request-kind nodes propagated to APISIX config
 - Dev hot-reload of catalog on manifest change (not just restart)
 - Bulk operation patterns documented (`get_many` alongside every `get`)
+- Passkey audit-coverage + hardening
+- Signin/signup rate limiting (per-IP + per-email)
+- HaveIBeenPwned breach-password check
+- 2FA-required policy enforcement (per-org + per-role)
 
 ### v0.2 Platform Access Layer
 - **MCP Integration** — `inspect / search / scaffold / validate / run` generic tools (ADR-024) over the catalog
@@ -288,4 +540,4 @@ Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
 
 ---
 *Roadmap created: 2026-04-12*
-*Last updated: 2026-04-17 — Phase 12 complete: IAM Security Completion (magic link + OTP/TOTP + WebAuthn passkeys + password reset). v0.1 Foundation + IAM milestone complete.*
+*Last updated: 2026-04-17 — v0.1.6 IAM Hardening for OSS opened; Phase 20 (5 plans) drafted. Config-driven policy + audit coverage closure + OTP→Notify migration + API key rotation + IAM metrics. Deferred: passkey hardening, rate limiting, HIBP, 2FA enforcement.*

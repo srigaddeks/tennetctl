@@ -1,0 +1,1 @@
+{"nodes": [{"id": "email_schemas", "label": "notify.email schemas (BounceWebhookPayload)", "file_type": "code", "source_file": "backend/02_features/06_notify/sub_features/07_email/schemas.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

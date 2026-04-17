@@ -1,0 +1,19 @@
+---
+source_file: "backend/02_features/03_iam/sub_features/01_orgs/repository.py"
+type: "code"
+community: "Service & Repository Layer"
+location: "L56"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Service_&_Repository_Layer
+---
+
+# list_orgs()
+
+## Connections
+- [[Paginated list of orgs. Always excludes soft-deleted rows. Optional     is_activ]] - `rationale_for` [EXTRACTED]
+- [[list_orgs_route()]] - `calls` [INFERRED]
+- [[repository.py_16]] - `contains` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Service_&_Repository_Layer

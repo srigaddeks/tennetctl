@@ -11,7 +11,8 @@ async def list_templates(conn: Any, *, org_id: str) -> list[dict]:
         """
         SELECT id, org_id, key, group_id, group_key, category_id, category_code,
                category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, is_active, created_by, updated_by, created_at, updated_at,
+               priority_label, fallback_chain,
+               is_active, created_by, updated_by, created_at, updated_at,
                bodies
         FROM "06_notify"."v_notify_templates"
         WHERE org_id = $1
@@ -27,7 +28,8 @@ async def get_template(conn: Any, *, template_id: str) -> dict | None:
         """
         SELECT id, org_id, key, group_id, group_key, category_id, category_code,
                category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, is_active, created_by, updated_by, created_at, updated_at,
+               priority_label, fallback_chain,
+               is_active, created_by, updated_by, created_at, updated_at,
                bodies
         FROM "06_notify"."v_notify_templates"
         WHERE id = $1
@@ -42,7 +44,8 @@ async def get_template_by_key(conn: Any, *, org_id: str, key: str) -> dict | Non
         """
         SELECT id, org_id, key, group_id, group_key, category_id, category_code,
                category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, is_active, created_by, updated_by, created_at, updated_at,
+               priority_label, fallback_chain,
+               is_active, created_by, updated_by, created_at, updated_at,
                bodies
         FROM "06_notify"."v_notify_templates"
         WHERE org_id = $1 AND key = $2
@@ -148,6 +151,40 @@ async def upsert_bodies(
         )
 
 
+async def get_template_analytics(conn: Any, *, template_id: str) -> dict:
+    """Aggregate counts for a template's deliveries + delivery events.
+
+    Returns {by_status, by_event_type, total_deliveries}.
+    """
+    status_rows = await conn.fetch(
+        '''
+        SELECT status_code, COUNT(*) AS n
+        FROM "06_notify"."v_notify_deliveries"
+        WHERE template_id = $1
+        GROUP BY status_code
+        ''',
+        template_id,
+    )
+    event_rows = await conn.fetch(
+        '''
+        SELECT e.event_type, COUNT(*) AS n
+        FROM "06_notify"."v_notify_delivery_events" e
+        JOIN "06_notify"."v_notify_deliveries" d ON d.id = e.delivery_id
+        WHERE d.template_id = $1
+        GROUP BY e.event_type
+        ''',
+        template_id,
+    )
+    by_status = {r["status_code"]: int(r["n"]) for r in status_rows}
+    by_event_type = {r["event_type"]: int(r["n"]) for r in event_rows}
+    total = sum(by_status.values())
+    return {
+        "by_status": by_status,
+        "by_event_type": by_event_type,
+        "total_deliveries": total,
+    }
+
+
 def _row_to_dict(row: Any) -> dict:
     d = dict(row)
     # asyncpg returns json_agg as a string; parse it
@@ -155,4 +192,9 @@ def _row_to_dict(row: Any) -> dict:
         d["bodies"] = json.loads(d["bodies"])
     elif d.get("bodies") is None:
         d["bodies"] = []
+    # fallback_chain is JSONB; asyncpg may return str or already-decoded list
+    if isinstance(d.get("fallback_chain"), str):
+        d["fallback_chain"] = json.loads(d["fallback_chain"])
+    elif d.get("fallback_chain") is None:
+        d["fallback_chain"] = []
     return d

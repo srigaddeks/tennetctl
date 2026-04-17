@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -98,6 +99,14 @@ function NewTemplateDialog({
               </option>
             ))}
           </Select>
+          {(groups.data?.items ?? []).length === 0 && !groups.isLoading && (
+            <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+              No groups yet.{" "}
+              <Link href="/notify/settings" className="font-medium underline hover:text-zinc-900 dark:hover:text-zinc-100">
+                Create one in Settings →
+              </Link>
+            </p>
+          )}
         </Field>
         <Field label="Subject" htmlFor="tmpl-subject">
           <Input

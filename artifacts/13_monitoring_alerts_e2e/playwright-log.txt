@@ -1,0 +1,184 @@
+{"level":30,"time":"2026-04-17T12:07:40.376Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Listening on 127.0.0.1:49668"}
+{"level":30,"time":"2026-04-17T12:07:41.420Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method newBrowser"}
+{"level":30,"time":"2026-04-17T12:07:41.517Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Adding browser to stack: chromium, version: 147.0.7727.15"}
+{"level":30,"time":"2026-04-17T12:07:41.517Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Adding 0 contexts to browser"}
+{"level":30,"time":"2026-04-17T12:07:41.517Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method newBrowser"}
+{"level":30,"time":"2026-04-17T12:07:41.520Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method newContext"}
+{"level":30,"time":"2026-04-17T12:07:41.520Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Creating new context with options: {\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":900}}"}
+{"level":30,"time":"2026-04-17T12:07:41.520Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@a3db43bcdd4f7bcf64cb6c0073d99d2f\"},\"name\":\"chromium\",\"id\":\"browser=305c81f2-7c43-4e2e-b192-c3091fa4525a\",\"headless\":true}"}
+{"level":30,"time":"2026-04-17T12:07:41.520Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Trace file: "}
+{"level":30,"time":"2026-04-17T12:07:41.523Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Setting default timeout for context context=70d1a870-8223-4257-aa4b-1802225e7a47 to 10000"}
+{"level":30,"time":"2026-04-17T12:07:41.523Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Changed active context: context=70d1a870-8223-4257-aa4b-1802225e7a47"}
+{"level":30,"time":"2026-04-17T12:07:41.523Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method newContext"}
+{"level":30,"time":"2026-04-17T12:07:41.525Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method newPage"}
+{"level":30,"time":"2026-04-17T12:07:41.525Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"currentBrowser: {\"_contextStack\":[{\"id\":\"context=70d1a870-8223-4257-aa4b-1802225e7a47\",\"c\":{\"_type\":\"BrowserContext\",\"_guid\":\"browser-context@6b6c1538e24034c65304a4b4d223391c\"},\"pageStack\":[],\"options\":{\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":900}},\"traceFile\":\"\"}],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@a3db43bcdd4f7bcf64cb6c0073d99d2f\"},\"name\":\"chromium\",\"id\":\"browser=305c81f2-7c43-4e2e-b192-c3091fa4525a\",\"headless\":true}"}
+{"level":30,"time":"2026-04-17T12:07:41.553Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Video path: undefined"}
+{"level":30,"time":"2026-04-17T12:07:41.553Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Changed active page"}
+{"level":30,"time":"2026-04-17T12:07:41.555Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method newPage"}
+{"level":30,"time":"2026-04-17T12:07:41.557Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method goTo"}
+{"level":30,"time":"2026-04-17T12:07:41.588Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method goTo"}
+{"level":30,"time":"2026-04-17T12:07:41.590Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:07:41.590Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"signin-form\"] in page."}
+{"level":30,"time":"2026-04-17T12:07:41.605Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:07:41.606Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:07:41.606Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"signin-email\"] in page."}
+{"level":30,"time":"2026-04-17T12:07:41.620Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:07:41.622Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:07:41.622Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"signin-password\"] in page."}
+{"level":30,"time":"2026-04-17T12:07:41.644Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:07:41.646Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:07:41.646Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"signin-submit\"] in page."}
+{"level":30,"time":"2026-04-17T12:07:41.683Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:07:41.685Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:07:41.685Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 15000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:07:42.250Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:07:42.255Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:07:42.257Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:28.238Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:28.268Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:28.270Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:28.270Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 15000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:28.866Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:28.873Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.873Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"heading-monitoring-alerts\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:28.888Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.890Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.890Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with (//tr[@data-testid=\"alert-row\"])[1] in page."}
+{"level":30,"time":"2026-04-17T12:08:28.891Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.893Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.893Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with (//span[@data-testid=\"alert-severity-critical\"])[1] in page."}
+{"level":30,"time":"2026-04-17T12:08:28.894Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:28.896Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:28.897Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:28.898Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:28.899Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:28.900Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:28.916Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:28.917Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:28.917Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 15000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:29.484Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:29.490Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:29.490Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with (//tr[@data-testid=\"alert-row\"])[1] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.499Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:29.501Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-04-17T12:08:29.501Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is disabled, return Locator: [data-testid=\"alert-row-silence\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.502Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-04-17T12:08:29.504Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:29.504Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with (//button[@data-testid=\"alert-row-silence\"])[1] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.554Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:29.556Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:29.556Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"silence-dialog\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.558Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:29.559Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:29.559Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"silence-reason\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.562Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:29.564Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:29.564Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"silence-save\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:29.821Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:29.824Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:29.824Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 10000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:29.824Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:29.871Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:29.872Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:29.874Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:29.874Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:29.876Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:29.884Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:29.886Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:29.886Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 15000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:30.481Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.487Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.487Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"new-rule-button\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.498Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.500Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:30.500Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"new-rule-button\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.531Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:30.533Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.533Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 10000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:30.533Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.535Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.535Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-name\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.559Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.562Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.562Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-name\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.565Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.567Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.567Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-dsl-metric-key\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.570Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.571Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.571Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-condition-threshold\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.574Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.575Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method selectOption"}
+{"level":30,"time":"2026-04-17T12:08:30.575Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-severity-select\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.588Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Option entries: 4"}
+{"level":30,"time":"2026-04-17T12:08:30.588Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Selected entries: 1"}
+{"level":30,"time":"2026-04-17T12:08:30.588Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method selectOption"}
+{"level":30,"time":"2026-04-17T12:08:30.589Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.589Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-notify-template\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.592Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method fillText"}
+{"level":30,"time":"2026-04-17T12:08:30.593Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:30.593Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-save-button\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:30.629Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:30.631Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.631Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 10000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:30.631Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.632Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.632Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with text=e2e-editor-1776427657 in page."}
+{"level":30,"time":"2026-04-17T12:08:30.709Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:30.711Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:30.711Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:30.712Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:30.713Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:30.714Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:30.723Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method goTo"}
+{"level":30,"time":"2026-04-17T12:08:30.725Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:30.725Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 15000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:31.296Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:31.299Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.299Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-row-019d9b56-fc0d-7f30-900d-c6adb013cfa7\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.308Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.309Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:31.309Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-edit-019d9b56-fc0d-7f30-900d-c6adb013cfa7\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.331Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:31.333Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:31.333Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 10000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:31.333Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:31.334Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.335Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-name\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.358Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.360Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method selectOption"}
+{"level":30,"time":"2026-04-17T12:08:31.360Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-severity-select\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.368Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Option entries: 4"}
+{"level":30,"time":"2026-04-17T12:08:31.368Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Selected entries: 1"}
+{"level":30,"time":"2026-04-17T12:08:31.368Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method selectOption"}
+{"level":30,"time":"2026-04-17T12:08:31.369Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method click"}
+{"level":30,"time":"2026-04-17T12:08:31.369Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-save-button\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.396Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method click"}
+{"level":30,"time":"2026-04-17T12:08:31.398Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:31.398Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"timeout: 10000 state: networkidle"}
+{"level":30,"time":"2026-04-17T12:08:31.398Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method WaitForPageLoadState"}
+{"level":30,"time":"2026-04-17T12:08:31.399Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.399Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Strict mode is enabled, find Locator with [data-testid=\"rule-row-019d9b56-fc0d-7f30-900d-c6adb013cfa7\"] in page."}
+{"level":30,"time":"2026-04-17T12:08:31.474Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-04-17T12:08:31.476Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:31.477Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:31.478Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method closeAllBrowsers"}
+{"level":30,"time":"2026-04-17T12:08:31.481Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Removed page=3d13f552-db91-488d-8dc8-269a34685c47 from context=70d1a870-8223-4257-aa4b-1802225e7a47 page stack"}
+{"level":30,"time":"2026-04-17T12:08:31.495Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method closeAllBrowsers"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:8777:13)
+    at PlaywrightServer.getActiveBrowser (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9689:52)
+    at PlaywrightServer.setTimeout (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js:9887:56)
+    at Object.onReceiveHalfClose (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (/Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/node_modules/@grpc/grpc-js/build/src/server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:530:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-04-17T12:08:31.497Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:31.497Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-04-17T12:08:31.510Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"Start of node method closeAllBrowsers"}
+{"level":30,"time":"2026-04-17T12:08:31.510Z","pid":5868,"hostname":"Sris-Mac-mini.local","msg":"End of node method closeAllBrowsers"}

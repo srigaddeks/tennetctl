@@ -34,6 +34,7 @@ class ApplicationUpdate(BaseModel):
     label: str | None = None
     description: str | None = None
     is_active: bool | None = None
+    scope_ids: list[int] | None = None
 
 
 class ApplicationRead(BaseModel):
@@ -45,6 +46,7 @@ class ApplicationRead(BaseModel):
     description: str | None = None
     is_active: bool
     is_test: bool
+    scope_ids: list[int] = []
     created_by: str
     updated_by: str
     created_at: str

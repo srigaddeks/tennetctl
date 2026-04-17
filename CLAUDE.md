@@ -330,3 +330,12 @@ Launch independent agents in parallel.
 | [026](03_docs/00_main/08_decisions/026_minimum_surface_principle.md) | Minimum surface: fewer APIs and nodes, maximum configurability |
 
 Full ADR list: [03_docs/00_main/README.md](03_docs/00_main/README.md)
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)

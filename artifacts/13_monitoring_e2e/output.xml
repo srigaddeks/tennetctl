@@ -1,0 +1,2484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.13.5 on darwin)" generated="2026-04-17T16:08:01.729738" rpa="false" schemaversion="5">
+<suite id="s1" name="Monitoring E2E" source="/Users/sri/Documents/tennetctl/tests/e2e/monitoring">
+<suite id="s1-s1" name="01 Logs Explorer" source="/Users/sri/Documents/tennetctl/tests/e2e/monitoring/01_logs_explorer.robot">
+<kw name="Launch Logs Suite" type="SETUP">
+<kw name="Get Time" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.824958" level="INFO">${ts} = 1776422281</msg>
+<var>${ts}</var>
+<arg>epoch</arg>
+<doc>Returns the given time in the requested format.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.824822" elapsed="0.000152"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.825145" level="INFO">${TS} = 1776422281</msg>
+<arg>${TS}</arg>
+<arg>${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825034" elapsed="0.000127"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.825305" level="INFO">${SVC_NAME} = e2e-logs-1776422281</msg>
+<arg>${SVC_NAME}</arg>
+<arg>e2e-logs-${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825202" elapsed="0.000117"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.825459" level="INFO">${TEST_EMAIL} = e2e-logs-1776422281@tennetctl.test</msg>
+<arg>${TEST_EMAIL}</arg>
+<arg>e2e-logs-${ts}@tennetctl.test</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825363" elapsed="0.000109"/>
+</kw>
+<kw name="API Create Monitoring User" owner="monitoring_keywords">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.825791" level="INFO">${body} = {'email': 'e2e-logs-1776422281@tennetctl.test', 'password': 'pass-mon-logs-E2E!1', 'display_name': 'Logs E2E'}</msg>
+<var>${body}</var>
+<arg>email=${email}</arg>
+<arg>password=${password}</arg>
+<arg>display_name=${display_name}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825627" elapsed="0.000174"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:01.825893" level="INFO">Creating Session using : alias=mon_auth, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<msg time="2026-04-17T16:08:01.825966" level="INFO">${session} = &lt;requests.sessions.Session object at 0x10c1c2270&gt;</msg>
+<var>${session}</var>
+<arg>mon_auth</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825841" elapsed="0.000134"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:01.992576" level="INFO">POST Request : url=http://localhost:51734/v1/auth/signup 
+ path_url=/v1/auth/signup 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '110', 'Content-Type': 'application/json'} 
+ body=b'{"email": "e2e-logs-1776422281@tennetctl.test", "password": "pass-mon-logs-E2E!1", "display_name": "Logs E2E"}' 
+ </msg>
+<msg time="2026-04-17T16:08:01.992626" level="INFO">POST Response : url=http://localhost:51734/v1/auth/signup 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '689', 'content-type': 'application/json', 'set-cookie': 'tennetctl_session=019d9b04-e2e9-7731-a78a-a7002d795d5b.kFWllxzQl9QTHc4ID1myLm5MHOcEdU8uHp2vpecldVk; HttpOnly; Max-Age=604799; Path=/; SameSite=lax', 'x-request-id': '019d9b04-e267-7cb2-80d9-a529a3763f3e'} 
+ body={"ok":true,"data":{"token":"019d9b04-e2e9-7731-a78a-a7002d795d5b.kFWllxzQl9QTHc4ID1myLm5MHOcEdU8uHp2vpecldVk","user":{"id":"019d9b04-e269-7d73-a1c0-efccc4343197","account_type":"email_password","email":"e2e-logs-1776422281@tennetctl.test","display_name":"Logs E2E","avatar_url":null,"is_active":true,"is_test":false,"created_by":"sys","updated_by":"sys","created_at":"2026-04-17T10:38:01.831446","updated_at":"2026-04-17T10:38:01.831446"},"session":{"id":"019d9b04-e2e9-7731-a78a-a7002d795d5b","user_id":"019d9b04-e269-7d73-a1c0-efccc4343197","org_id":"019d9660-8b03-7370-b4ac-c54b2b1d9986","workspace_id":null,"expires_at":"2026-04-24T10:38:01.962557","revoked_at":null,"is_valid":true}}} 
+ </msg>
+<msg time="2026-04-17T16:08:01.992689" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>mon_auth</arg>
+<arg>/v1/auth/signup</arg>
+<arg>json=${body}</arg>
+<arg>expected_status=201</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.826009" elapsed="0.166691"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.993090" level="INFO">${d} = {'token': '019d9b04-e2e9-7731-a78a-a7002d795d5b.kFWllxzQl9QTHc4ID1myLm5MHOcEdU8uHp2vpecldVk', 'user': {'id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'account_type': 'email_password', 'email': 'e2e-log...</msg>
+<var>${d}</var>
+<arg>${resp.json()['data']}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.992778" elapsed="0.000323"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.993304" level="INFO">${result} = {'token': '019d9b04-e2e9-7731-a78a-a7002d795d5b.kFWllxzQl9QTHc4ID1myLm5MHOcEdU8uHp2vpecldVk', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${result}</var>
+<arg>token=${d}[token]</arg>
+<arg>org_id=${d}[session][org_id]</arg>
+<arg>user_id=${d}[session][user_id]</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.993145" elapsed="0.000170"/>
+</kw>
+<return>
+<value>${result}</value>
+<status status="PASS" start="2026-04-17T16:08:01.993339" elapsed="0.000037"/>
+</return>
+<msg time="2026-04-17T16:08:01.993430" level="INFO">${signup} = {'token': '019d9b04-e2e9-7731-a78a-a7002d795d5b.kFWllxzQl9QTHc4ID1myLm5MHOcEdU8uHp2vpecldVk', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${signup}</var>
+<arg>${TEST_EMAIL}</arg>
+<arg>${TEST_PASS}</arg>
+<arg>Logs E2E</arg>
+<doc>Sign up and return a dict with keys: token, org_id, user_id.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.825531" elapsed="0.167908"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.993669" level="INFO">${ORG_ID} = 019d9660-8b03-7370-b4ac-c54b2b1d9986</msg>
+<arg>${ORG_ID}</arg>
+<arg>${signup['org_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.993480" elapsed="0.000204"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.993888" level="INFO">${USER_ID} = 019d9b04-e269-7d73-a1c0-efccc4343197</msg>
+<arg>${USER_ID}</arg>
+<arg>${signup['user_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.993721" elapsed="0.000185"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.994350" level="INFO">${sess_name} = mon_otlp_96688</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.994218" elapsed="0.000142"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:01.994455" level="INFO">Creating Session using : alias=mon_otlp_96688, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:01.994399" elapsed="0.000140"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.994694" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.994577" elapsed="0.000126"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.994835" level="INFO">${now_ns} = 1776422281994818048</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.994738" elapsed="0.000105"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.995074" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.994879" elapsed="0.000204"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.995282" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.995118" elapsed="0.000173"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:01.998336" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '330'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422281994818048", "severityNumber": 9, "severityText": "SEV9", "body": {"stringValue": "e2e-logs-1776422281 info-row-one"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:01.998357" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b04-e30c-7e91-9194-3591ec25e119'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:01.998387" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.995326" elapsed="0.003069"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:01.998418" elapsed="0.000028"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>9</arg>
+<arg>${SVC_NAME} info-row-one</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:01.993977" elapsed="0.004596"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.999003" level="INFO">${sess_name} = mon_otlp_57034</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.998890" elapsed="0.000122"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:01.999100" level="INFO">Creating Session using : alias=mon_otlp_57034, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999048" elapsed="0.000090"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.999285" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999173" elapsed="0.000122"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.999422" level="INFO">${now_ns} = 1776422281999406080</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999328" elapsed="0.000103"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.999653" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999465" elapsed="0.000197"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:01.999847" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999696" elapsed="0.000160"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.002289" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '330'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422281999406080", "severityNumber": 9, "severityText": "SEV9", "body": {"stringValue": "e2e-logs-1776422281 info-row-two"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:02.002335" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b04-e310-7640-b341-1f066b6c6fe5'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:02.002373" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.999888" elapsed="0.002495"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:02.002411" elapsed="0.000030"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>9</arg>
+<arg>${SVC_NAME} info-row-two</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:01.998639" elapsed="0.003947"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.003016" level="INFO">${sess_name} = mon_otlp_77947</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.002894" elapsed="0.000132"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.003120" level="INFO">Creating Session using : alias=mon_otlp_77947, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003064" elapsed="0.000095"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.003315" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003195" elapsed="0.000130"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.003453" level="INFO">${now_ns} = 1776422282003436032</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003360" elapsed="0.000102"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.003688" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003496" elapsed="0.000200"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.003884" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003730" elapsed="0.000163"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.006387" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '332'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422282003436032", "severityNumber": 9, "severityText": "SEV9", "body": {"stringValue": "e2e-logs-1776422281 info-row-three"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:02.006407" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b04-e314-74d2-844d-0d0db38a091e'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:02.006436" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.003924" elapsed="0.002521"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:02.006468" elapsed="0.000025"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>9</arg>
+<arg>${SVC_NAME} info-row-three</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:02.002655" elapsed="0.003962"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.006992" level="INFO">${sess_name} = mon_otlp_40968</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.006894" elapsed="0.000107"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.007091" level="INFO">Creating Session using : alias=mon_otlp_40968, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007035" elapsed="0.000096"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.007282" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007167" elapsed="0.000124"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.007415" level="INFO">${now_ns} = 1776422282007398912</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007324" elapsed="0.000100"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.007661" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007458" elapsed="0.000212"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.007859" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007704" elapsed="0.000164"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.010377" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '333'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422282007398912", "severityNumber": 17, "severityText": "SEV17", "body": {"stringValue": "e2e-logs-1776422281 error-row-one"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:02.010397" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b04-e319-7e40-90c4-a618797a1bfc'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:02.010429" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.007901" elapsed="0.002543"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:02.010466" elapsed="0.000022"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>17</arg>
+<arg>${SVC_NAME} error-row-one</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:02.006679" elapsed="0.003930"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.010968" level="INFO">${sess_name} = mon_otlp_42427</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.010875" elapsed="0.000101"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.011060" level="INFO">Creating Session using : alias=mon_otlp_42427, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011009" elapsed="0.000085"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.011237" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011128" elapsed="0.000118"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.011364" level="INFO">${now_ns} = 1776422282011348992</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011278" elapsed="0.000095"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.011587" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011406" elapsed="0.000190"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:02.011783" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011629" elapsed="0.000163"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:02.014443" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '333'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422282011348992", "severityNumber": 17, "severityText": "SEV17", "body": {"stringValue": "e2e-logs-1776422281 error-row-two"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:02.014472" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:01 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b04-e31c-77d0-aaad-571eb07ffb0b'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:02.014507" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.011824" elapsed="0.002693"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:02.014544" elapsed="0.000029"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>17</arg>
+<arg>${SVC_NAME} error-row-two</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:02.010667" elapsed="0.004068"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:07.015318" level="INFO">Slept 5 seconds.</msg>
+<arg>5s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:02.014807" elapsed="5.000962"/>
+</kw>
+<kw name="New Browser" owner="Browser">
+<msg time="2026-04-17T16:08:07.017734" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/Users/sri/Documents/tennetctl/artifacts/13_monitoring_e2e/browser/traces/temp/ace88894-1018-42ef-ba23-77afd53d702c"}</msg>
+<msg time="2026-04-17T16:08:07.040703" level="INFO">Starting Browser process /Users/sri/Documents/tennetctl/.venv/lib/python3.13/site-packages/Browser/wrapper/index.js using at 127.0.0.1:53953</msg>
+<msg time="2026-04-17T16:08:08.356048" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/Users/sri/Documents/tennetctl/artifacts/13_monitoring_e2e/browser/traces/temp/ace88894-1018-42ef-ba23-77afd53d702c"}</msg>
+<arg>chromium</arg>
+<arg>headless=true</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-04-17T16:08:07.016456" elapsed="1.339814"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-04-17T16:08:08.357429" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}</msg>
+<msg time="2026-04-17T16:08:08.362089" level="INFO">Successfully created context. </msg>
+<msg time="2026-04-17T16:08:08.362119" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 900}}</msg>
+<arg>viewport={'width': 1280, 'height': 900}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.356529" elapsed="0.005628"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-04-17T16:08:08.391928" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<arg>about:blank</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.362238" elapsed="0.029791"/>
+</kw>
+<kw name="Sign In Monitoring User" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:08.426995" level="INFO">Successfully opened URL http://localhost:51735/auth/signin</msg>
+<arg>${MONITORING_FRONTEND}/auth/signin</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.392373" elapsed="0.034705"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:08.442576" level="INFO">Waited for Element with selector [data-testid="signin-form"] at state visible</msg>
+<arg>[data-testid="signin-form"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.427190" elapsed="0.015469"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:08.443114" level="INFO">Fills the text 'e2e-logs-1776422281@tennetctl.test' in the given field.</msg>
+<arg>[data-testid="signin-email"]</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.442796" elapsed="0.016255"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:08.459447" level="INFO">Fills the text 'pass-mon-logs-E2E!1' in the given field.</msg>
+<arg>[data-testid="signin-password"]</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.459164" elapsed="0.029294"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:08.488853" level="INFO">Clicks the element '[data-testid="signin-submit"]'.</msg>
+<arg>[data-testid="signin-submit"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.488583" elapsed="0.032350"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:08.521337" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:09.089752" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:08.521037" elapsed="0.569002"/>
+</kw>
+<arg>${TEST_EMAIL}</arg>
+<arg>${TEST_PASS}</arg>
+<status status="PASS" start="2026-04-17T16:08:08.392172" elapsed="0.698070"/>
+</kw>
+<status status="PASS" start="2026-04-17T16:08:01.824516" elapsed="7.265863"/>
+</kw>
+<test id="s1-s1-t1" name="Logs Explorer Renders Seeded Rows" line="42">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:09.125765" level="INFO">Successfully opened URL http://localhost:51735/monitoring/logs</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.097624" elapsed="0.028247"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:09.126527" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:09.716018" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.125996" elapsed="0.590429"/>
+</kw>
+<arg>/monitoring/logs</arg>
+<status status="PASS" start="2026-04-17T16:08:09.097175" elapsed="0.619421"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:09.733762" level="INFO">Waited for Element with selector [data-testid="monitoring-log-explorer"] at state visible</msg>
+<arg>[data-testid="monitoring-log-explorer"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.716818" elapsed="0.017088"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:09.734617" level="INFO">Fills the text 'e2e-logs-1776422281' in the given field.</msg>
+<arg>[data-testid="monitoring-log-body-search"]</arg>
+<arg>${SVC_NAME}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.734112" elapsed="0.009519"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:11.746475" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.743769" elapsed="2.002840"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:11.747336" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:11.749706" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.746781" elapsed="0.003016"/>
+</kw>
+<kw name="Get Element Count" owner="Browser">
+<msg time="2026-04-17T16:08:11.753942" level="INFO">${count} = 5</msg>
+<var>${count}</var>
+<arg>css=tr[data-testid^="monitoring-log-row-"]</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the count of elements found with ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.749953" elapsed="0.004024"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &gt;= 5</arg>
+<arg>Expected ≥5 seeded log rows, got ${count}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.754107" elapsed="0.000412"/>
+</kw>
+<doc>Navigate to /monitoring/logs (Explorer tab), wait for rows to appear.
+At least one log row must be visible; confirms OTLP pipeline + UI query.</doc>
+<status status="PASS" start="2026-04-17T16:08:09.090611" elapsed="2.664016"/>
+</test>
+<test id="s1-s1-t2" name="Severity Filter Info Shows Info Rows" line="55">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:11.775865" level="INFO">Successfully opened URL http://localhost:51735/monitoring/logs</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.760279" elapsed="0.015680"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:11.776399" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:12.340725" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.776071" elapsed="0.565108"/>
+</kw>
+<arg>/monitoring/logs</arg>
+<status status="PASS" start="2026-04-17T16:08:11.760066" elapsed="0.581304"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:12.357734" level="INFO">Waited for Element with selector [data-testid="monitoring-log-explorer"] at state visible</msg>
+<arg>[data-testid="monitoring-log-explorer"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:12.341570" elapsed="0.016307"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:12.358508" level="INFO">Fills the text 'e2e-logs-1776422281' in the given field.</msg>
+<arg>[data-testid="monitoring-log-body-search"]</arg>
+<arg>${SVC_NAME}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:12.358050" elapsed="0.007809"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:12.867817" level="INFO">Slept 500 milliseconds.</msg>
+<arg>500ms</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:12.365994" elapsed="0.501975"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:12.868831" level="INFO">Clicks the element '[data-testid="monitoring-log-sev-info"]'.</msg>
+<arg>[data-testid="monitoring-log-sev-info"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:12.868192" elapsed="0.038509"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:14.907998" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:12.906866" elapsed="2.001240"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:14.908751" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:14.911159" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.908270" elapsed="0.002997"/>
+</kw>
+<kw name="Get Element Count" owner="Browser">
+<msg time="2026-04-17T16:08:14.914297" level="INFO">${count} = 5</msg>
+<var>${count}</var>
+<arg>css=tr[data-testid^="monitoring-log-row-"]</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the count of elements found with ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.911417" elapsed="0.002910"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &gt;= 1</arg>
+<arg>Expected at least 1 row after info filter, got ${count}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.914432" elapsed="0.000324"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:14.915068" level="INFO">Clicks the element '[data-testid="monitoring-log-sev-info"]'.</msg>
+<arg>[data-testid="monitoring-log-sev-info"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.914842" elapsed="0.019888"/>
+</kw>
+<doc>Click the INFO severity button — the explorer sends severity_min=9.
+Rows matching our service must include the info entries.</doc>
+<status status="PASS" start="2026-04-17T16:08:11.757996" elapsed="3.176878"/>
+</test>
+<test id="s1-s1-t3" name="Severity Filter Error Narrows To Error Rows" line="70">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:14.957788" level="INFO">Successfully opened URL http://localhost:51735/monitoring/logs</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.939579" elapsed="0.018394"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:14.958473" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:15.521300" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.958097" elapsed="0.563341"/>
+</kw>
+<arg>/monitoring/logs</arg>
+<status status="PASS" start="2026-04-17T16:08:14.939366" elapsed="0.582175"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:15.533862" level="INFO">Waited for Element with selector [data-testid="monitoring-log-explorer"] at state visible</msg>
+<arg>[data-testid="monitoring-log-explorer"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:15.521676" elapsed="0.012286"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:15.534448" level="INFO">Fills the text 'e2e-logs-1776422281' in the given field.</msg>
+<arg>[data-testid="monitoring-log-body-search"]</arg>
+<arg>${SVC_NAME}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:15.534091" elapsed="0.006593"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:16.043751" level="INFO">Slept 500 milliseconds.</msg>
+<arg>500ms</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:15.540824" elapsed="0.503293"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:16.044847" level="INFO">Clicks the element '[data-testid="monitoring-log-sev-error"]'.</msg>
+<arg>[data-testid="monitoring-log-sev-error"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:16.044310" elapsed="0.044886"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:18.089913" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:16.089367" elapsed="2.000849"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:18.091916" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:18.095714" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.090703" elapsed="0.005162"/>
+</kw>
+<kw name="Get Element Count" owner="Browser">
+<msg time="2026-04-17T16:08:18.100064" level="INFO">${count} = 2</msg>
+<var>${count}</var>
+<arg>css=tr[data-testid^="monitoring-log-row-"]</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the count of elements found with ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.096076" elapsed="0.004026"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &gt;= 1</arg>
+<arg>Expected at least 1 error row, got ${count}</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.100243" elapsed="0.000439"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &lt;= 50</arg>
+<arg>Unexpectedly huge result with error filter</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.100786" elapsed="0.000284"/>
+</kw>
+<doc>Click ERROR severity — should reduce to only error-level rows.</doc>
+<status status="PASS" start="2026-04-17T16:08:14.937584" elapsed="3.163587"/>
+</test>
+<test id="s1-s1-t4" name="Live Tail Tab Is Reachable And Shows Component" line="85">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:18.125564" level="INFO">Successfully opened URL http://localhost:51735/monitoring/logs</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.106560" elapsed="0.019116"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:18.126166" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:18.689159" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.125794" elapsed="0.563488"/>
+</kw>
+<arg>/monitoring/logs</arg>
+<status status="PASS" start="2026-04-17T16:08:18.106313" elapsed="0.583074"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:18.700836" level="INFO">Waited for Element with selector [data-testid="monitoring-logs-tab-live"] at state visible</msg>
+<arg>[data-testid="monitoring-logs-tab-live"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.689511" elapsed="0.011433"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:18.701441" level="INFO">Clicks the element '[data-testid="monitoring-logs-tab-live"]'.</msg>
+<arg>[data-testid="monitoring-logs-tab-live"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.701080" elapsed="0.036754"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:18.738344" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:18.739781" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.737980" elapsed="0.001943"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:18.742815" level="INFO">Waited for Element with selector [data-testid="monitoring-log-live-tail"] at state visible</msg>
+<arg>[data-testid="monitoring-log-live-tail"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.740047" elapsed="0.002841"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:18.747603" level="INFO">Waited for Element with selector [data-testid="monitoring-livetail-pause"] at state visible</msg>
+<arg>[data-testid="monitoring-livetail-pause"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.742987" elapsed="0.004696"/>
+</kw>
+<doc>Switch to Live Tail tab — confirms the tab renders the live tail component.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.104363" elapsed="0.643421"/>
+</test>
+<test id="s1-s1-t5" name="Live Tail Streams New Log Entry" line="95">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:18.766306" level="INFO">Successfully opened URL http://localhost:51735/monitoring/logs</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.753205" elapsed="0.013195"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:18.766854" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:19.322061" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.766506" elapsed="0.555718"/>
+</kw>
+<arg>/monitoring/logs</arg>
+<status status="PASS" start="2026-04-17T16:08:18.752989" elapsed="0.569340"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:19.333009" level="INFO">Waited for Element with selector [data-testid="monitoring-logs-tab-live"] at state visible</msg>
+<arg>[data-testid="monitoring-logs-tab-live"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.322460" elapsed="0.010659"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:19.333603" level="INFO">Clicks the element '[data-testid="monitoring-logs-tab-live"]'.</msg>
+<arg>[data-testid="monitoring-logs-tab-live"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.333250" elapsed="0.035348"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:19.369005" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:19.370062" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.368720" elapsed="0.001399"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:19.372369" level="INFO">Waited for Element with selector [data-testid="monitoring-log-live-tail"] at state visible</msg>
+<arg>[data-testid="monitoring-log-live-tail"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.370196" elapsed="0.002233"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:19.375182" level="INFO">Waited for Element with selector [data-testid="monitoring-livetail-pause"] at state visible</msg>
+<arg>[data-testid="monitoring-livetail-pause"]</arg>
+<arg>visible</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.372514" elapsed="0.002738"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.375856" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:19.375342" elapsed="2.000583"/>
+</kw>
+<kw name="Get Time" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.376313" level="INFO">${ts_now} = 1776422301</msg>
+<var>${ts_now}</var>
+<arg>epoch</arg>
+<doc>Returns the given time in the requested format.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.376027" elapsed="0.000310"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.376623" level="INFO">${unique_marker} = LIVETAIL-1776422301</msg>
+<var>${unique_marker}</var>
+<arg>LIVETAIL-${ts_now}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.376425" elapsed="0.000213"/>
+</kw>
+<kw name="Post OTLP Log" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.377461" level="INFO">${sess_name} = mon_otlp_94605</msg>
+<var>${sess_name}</var>
+<arg>'mon_otlp_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.377231" elapsed="0.000247"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:21.377647" level="INFO">Creating Session using : alias=mon_otlp_94605, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:21.377548" elapsed="0.000201"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.378032" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.377820" elapsed="0.000229"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.378316" level="INFO">${now_ns} = 1776422301378274048</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.378111" elapsed="0.000227"/>
+</kw>
+<kw name="Set Variable If" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.378930" level="INFO">${trace_field} = </msg>
+<var>${trace_field}</var>
+<arg>'${trace_id}' != ''</arg>
+<arg>,"traceId":"${trace_id}"</arg>
+<arg>${EMPTY}</arg>
+<doc>Sets variable based on the given condition.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.378426" elapsed="0.000527"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:21.379358" level="INFO">${payload} = {'resourceLogs': [{'resource': {'attributes': [{'key': 'service.name', 'value': {'stringValue': 'e2e-logs-1776422281'}}]}, 'scopeLogs': [{'scope': {'name': 'e2e'}, 'logRecords': [{'timeUnixNano': '177...</msg>
+<var>${payload}</var>
+<arg>{"resourceLogs":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeLogs":[{"scope":{"name":"e2e"},"logRecords":[{"timeUnixNano":"${now_ns}","severityNumber":${severity},"severityText":"SEV${severity}","body":{"stringValue":"${body_text}"}${trace_field}}]}]}]}</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.379039" elapsed="0.000329"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:21.383116" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ path_url=/v1/monitoring/otlp/v1/logs 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b04-e269-7d73-a1c0-efccc4343197', 'Content-Length': '317'} 
+ body=b'{"resourceLogs": [{"resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "e2e-logs-1776422281"}}]}, "scopeLogs": [{"scope": {"name": "e2e"}, "logRecords": [{"timeUnixNano": "1776422301378274048", "severityNumber": 9, "severityText": "SEV9", "body": {"stringValue": "LIVETAIL-1776422301"}}]}]}]}' 
+ </msg>
+<msg time="2026-04-17T16:08:21.383156" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/otlp/v1/logs 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:20 GMT', 'server': 'uvicorn', 'content-length': '2', 'content-type': 'application/json', 'x-request-id': '019d9b05-2ec5-7681-809e-82d9e012985f'} 
+ body={} 
+ </msg>
+<msg time="2026-04-17T16:08:21.383217" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/otlp/v1/logs</arg>
+<arg>json=${payload}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.379414" elapsed="0.003816"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:21.383274" elapsed="0.000054"/>
+</return>
+<arg>${SVC_NAME}</arg>
+<arg>9</arg>
+<arg>${unique_marker}</arg>
+<arg>org_id=${ORG_ID}</arg>
+<arg>user_id=${USER_ID}</arg>
+<doc>POST a single log record via OTLP endpoint.
+severity: 9=INFO, 13=WARN, 17=ERROR</doc>
+<status status="PASS" start="2026-04-17T16:08:21.376751" elapsed="0.006773"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:22.671626" level="INFO">Waited for Element with selector text=LIVETAIL-1776422301 at state visible</msg>
+<arg>text=${unique_marker}</arg>
+<arg>visible</arg>
+<arg>timeout=30s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:21.383590" elapsed="1.288139"/>
+</kw>
+<doc>With live tail open, push a fresh log via OTLP and verify it appears.</doc>
+<status status="PASS" start="2026-04-17T16:08:18.751035" elapsed="3.920793"/>
+</test>
+<kw name="Close Browser" owner="Browser" type="TEARDOWN">
+<msg time="2026-04-17T16:08:22.693400" level="INFO">Closed all browsers</msg>
+<arg>ALL</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.674226" elapsed="0.019268"/>
+</kw>
+<doc>Monitoring Logs — Explorer tab filtering + Live Tail streaming.
+Seeds logs via OTLP API, signs in via UI, asserts rows visible,
+severity filter works, and live tail streams new events.</doc>
+<status status="PASS" start="2026-04-17T16:08:01.739991" elapsed="20.953576"/>
+</suite>
+<suite id="s1-s2" name="02 Metrics Dashboard" source="/Users/sri/Documents/tennetctl/tests/e2e/monitoring/02_metrics_dashboard.robot">
+<kw name="Launch Metrics Suite" type="SETUP">
+<kw name="Get Time" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.698919" level="INFO">${ts} = 1776422302</msg>
+<var>${ts}</var>
+<arg>epoch</arg>
+<doc>Returns the given time in the requested format.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.698761" elapsed="0.000172"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.699115" level="INFO">${TS} = 1776422302</msg>
+<arg>${TS}</arg>
+<arg>${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.698990" elapsed="0.000142"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.699289" level="INFO">${METRIC_KEY} = e2ectr1776422302</msg>
+<arg>${METRIC_KEY}</arg>
+<arg>e2ectr${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.699177" elapsed="0.000129"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.699454" level="INFO">${TEST_EMAIL} = e2e-metrics-1776422302@tennetctl.test</msg>
+<arg>${TEST_EMAIL}</arg>
+<arg>e2e-metrics-${ts}@tennetctl.test</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.699347" elapsed="0.000122"/>
+</kw>
+<kw name="API Create Monitoring User" owner="monitoring_keywords">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.699800" level="INFO">${body} = {'email': 'e2e-metrics-1776422302@tennetctl.test', 'password': 'pass-mon-metrics-E2E!1', 'display_name': 'Metrics E2E'}</msg>
+<var>${body}</var>
+<arg>email=${email}</arg>
+<arg>password=${password}</arg>
+<arg>display_name=${display_name}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.699641" elapsed="0.000170"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.699917" level="INFO">Creating Session using : alias=mon_auth, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<msg time="2026-04-17T16:08:22.699988" level="INFO">${session} = &lt;requests.sessions.Session object at 0x102320f30&gt;</msg>
+<var>${session}</var>
+<arg>mon_auth</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.699856" elapsed="0.000143"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.868186" level="INFO">POST Request : url=http://localhost:51734/v1/auth/signup 
+ path_url=/v1/auth/signup 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '119', 'Content-Type': 'application/json'} 
+ body=b'{"email": "e2e-metrics-1776422302@tennetctl.test", "password": "pass-mon-metrics-E2E!1", "display_name": "Metrics E2E"}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.868226" level="INFO">POST Response : url=http://localhost:51734/v1/auth/signup 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '695', 'content-type': 'application/json', 'set-cookie': 'tennetctl_session=019d9b05-3475-7dc1-b49e-fe0dd9d5bedd.BLYBBezcVaGSCTPzy5HOr41rAo9pxef4Dw4PBeTK50k; HttpOnly; Max-Age=604799; Path=/; SameSite=lax', 'x-request-id': '019d9b05-33ed-7f63-b64c-035e81794a02'} 
+ body={"ok":true,"data":{"token":"019d9b05-3475-7dc1-b49e-fe0dd9d5bedd.BLYBBezcVaGSCTPzy5HOr41rAo9pxef4Dw4PBeTK50k","user":{"id":"019d9b05-33f2-7d41-87b6-dfab602691cd","account_type":"email_password","email":"e2e-metrics-1776422302@tennetctl.test","display_name":"Metrics E2E","avatar_url":null,"is_active":true,"is_test":false,"created_by":"sys","updated_by":"sys","created_at":"2026-04-17T10:38:22.701810","updated_at":"2026-04-17T10:38:22.701810"},"session":{"id":"019d9b05-3475-7dc1-b49e-fe0dd9d5bedd","user_id":"019d9b05-33f2-7d41-87b6-dfab602691cd","org_id":"019d9660-8b03-7370-b4ac-c54b2b1d9986","workspace_id":null,"expires_at":"2026-04-24T10:38:22.838365","revoked_at":null,"is_valid":true}}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.868292" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>mon_auth</arg>
+<arg>/v1/auth/signup</arg>
+<arg>json=${body}</arg>
+<arg>expected_status=201</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.700039" elapsed="0.168263"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.868686" level="INFO">${d} = {'token': '019d9b05-3475-7dc1-b49e-fe0dd9d5bedd.BLYBBezcVaGSCTPzy5HOr41rAo9pxef4Dw4PBeTK50k', 'user': {'id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'account_type': 'email_password', 'email': 'e2e-met...</msg>
+<var>${d}</var>
+<arg>${resp.json()['data']}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.868381" elapsed="0.000316"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.868897" level="INFO">${result} = {'token': '019d9b05-3475-7dc1-b49e-fe0dd9d5bedd.BLYBBezcVaGSCTPzy5HOr41rAo9pxef4Dw4PBeTK50k', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${result}</var>
+<arg>token=${d}[token]</arg>
+<arg>org_id=${d}[session][org_id]</arg>
+<arg>user_id=${d}[session][user_id]</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.868744" elapsed="0.000164"/>
+</kw>
+<return>
+<value>${result}</value>
+<status status="PASS" start="2026-04-17T16:08:22.868931" elapsed="0.000029"/>
+</return>
+<msg time="2026-04-17T16:08:22.869007" level="INFO">${signup} = {'token': '019d9b05-3475-7dc1-b49e-fe0dd9d5bedd.BLYBBezcVaGSCTPzy5HOr41rAo9pxef4Dw4PBeTK50k', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${signup}</var>
+<arg>${TEST_EMAIL}</arg>
+<arg>${TEST_PASS}</arg>
+<arg>Metrics E2E</arg>
+<doc>Sign up and return a dict with keys: token, org_id, user_id.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.699534" elapsed="0.169481"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.869246" level="INFO">${ORG_ID} = 019d9660-8b03-7370-b4ac-c54b2b1d9986</msg>
+<arg>${ORG_ID}</arg>
+<arg>${signup['org_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.869056" elapsed="0.000206"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.869467" level="INFO">${USER_ID} = 019d9b05-33f2-7d41-87b6-dfab602691cd</msg>
+<arg>${USER_ID}</arg>
+<arg>${signup['user_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.869299" elapsed="0.000182"/>
+</kw>
+<kw name="API Create Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.869758" level="INFO">${sess_name} = mon_metric_99641</msg>
+<var>${sess_name}</var>
+<arg>'mon_metric_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.869647" elapsed="0.000120"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.869861" level="INFO">Creating Session using : alias=mon_metric_99641, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.869804" elapsed="0.000139"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.870103" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.869979" elapsed="0.000133"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.870259" level="INFO">${body} = {'key': 'e2ectr1776422302', 'kind': 'counter', 'description': 'E2E test metric'}</msg>
+<var>${body}</var>
+<arg>key=${key}</arg>
+<arg>kind=${kind}</arg>
+<arg>description=E2E test metric</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.870148" elapsed="0.000120"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.901355" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics 
+ path_url=/v1/monitoring/metrics 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '80'} 
+ body=b'{"key": "e2ectr1776422302", "kind": "counter", "description": "E2E test metric"}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.901400" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '310', 'content-type': 'application/json', 'x-request-id': '019d9b05-3497-7121-98d4-aa254c727536'} 
+ body={"ok":true,"data":{"id":2717,"org_id":"019d9660-8b03-7370-b4ac-c54b2b1d9986","key":"e2ectr1776422302","kind":"counter","label_keys":[],"histogram_buckets":null,"description":"E2E test metric","unit":"","max_cardinality":1000,"created_at":"2026-04-17T10:38:22.871268","updated_at":"2026-04-17T10:38:22.871268"}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.901458" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.870303" elapsed="0.031165"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.901512" elapsed="0.000051"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>counter</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.869542" elapsed="0.032196"/>
+</kw>
+<for flavor="IN RANGE">
+<iter>
+<kw name="API Increment Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.902225" level="INFO">${sess_name} = mon_inc_43459</msg>
+<var>${sess_name}</var>
+<arg>'mon_inc_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.902083" elapsed="0.000153"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.902336" level="INFO">Creating Session using : alias=mon_inc_43459, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.902277" elapsed="0.000107"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.902553" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.902424" elapsed="0.000138"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.902782" level="INFO">${body} = {'value': '1', 'labels': {}}</msg>
+<var>${body}</var>
+<arg>value=${value}</arg>
+<arg>labels=${{{}}}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.902599" elapsed="0.000192"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.910116" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ path_url=/v1/monitoring/metrics/e2ectr1776422302/increment 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '28'} 
+ body=b'{"value": "1", "labels": {}}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.910151" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '53', 'content-type': 'application/json', 'x-request-id': '019d9b05-34b7-7cb1-9126-a30ba34aa600'} 
+ body={"ok":true,"data":{"metric_id":2717,"accepted":true}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.910208" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics/${key}/increment</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.902826" elapsed="0.007393"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.910260" elapsed="0.000052"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>1</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.901957" elapsed="0.008520"/>
+</kw>
+<var name="${i}">0</var>
+<status status="PASS" start="2026-04-17T16:08:22.901878" elapsed="0.008622"/>
+</iter>
+<iter>
+<kw name="API Increment Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.910920" level="INFO">${sess_name} = mon_inc_66107</msg>
+<var>${sess_name}</var>
+<arg>'mon_inc_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.910773" elapsed="0.000157"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.911026" level="INFO">Creating Session using : alias=mon_inc_66107, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.910969" elapsed="0.000102"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.911235" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.911108" elapsed="0.000160"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.911513" level="INFO">${body} = {'value': '1', 'labels': {}}</msg>
+<var>${body}</var>
+<arg>value=${value}</arg>
+<arg>labels=${{{}}}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.911306" elapsed="0.000216"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.917677" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ path_url=/v1/monitoring/metrics/e2ectr1776422302/increment 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '28'} 
+ body=b'{"value": "1", "labels": {}}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.917698" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '53', 'content-type': 'application/json', 'x-request-id': '019d9b05-34c0-7740-84a1-c1319af39901'} 
+ body={"ok":true,"data":{"metric_id":2717,"accepted":true}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.917730" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics/${key}/increment</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.911557" elapsed="0.006182"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.917764" elapsed="0.000028"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>1</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.910632" elapsed="0.007289"/>
+</kw>
+<var name="${i}">1</var>
+<status status="PASS" start="2026-04-17T16:08:22.910549" elapsed="0.007391"/>
+</iter>
+<iter>
+<kw name="API Increment Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.918256" level="INFO">${sess_name} = mon_inc_98096</msg>
+<var>${sess_name}</var>
+<arg>'mon_inc_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.918140" elapsed="0.000126"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.918356" level="INFO">Creating Session using : alias=mon_inc_98096, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.918302" elapsed="0.000095"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.918549" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.918433" elapsed="0.000125"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.918786" level="INFO">${body} = {'value': '1', 'labels': {}}</msg>
+<var>${body}</var>
+<arg>value=${value}</arg>
+<arg>labels=${{{}}}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.918593" elapsed="0.000203"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.923181" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ path_url=/v1/monitoring/metrics/e2ectr1776422302/increment 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '28'} 
+ body=b'{"value": "1", "labels": {}}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.923206" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '53', 'content-type': 'application/json', 'x-request-id': '019d9b05-34c7-7372-8a7c-b1026bba93d5'} 
+ body={"ok":true,"data":{"metric_id":2717,"accepted":true}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.923242" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics/${key}/increment</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.918834" elapsed="0.004417"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.923279" elapsed="0.000037"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>1</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.918036" elapsed="0.005424"/>
+</kw>
+<var name="${i}">2</var>
+<status status="PASS" start="2026-04-17T16:08:22.917977" elapsed="0.005503"/>
+</iter>
+<iter>
+<kw name="API Increment Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.923853" level="INFO">${sess_name} = mon_inc_32350</msg>
+<var>${sess_name}</var>
+<arg>'mon_inc_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.923715" elapsed="0.000149"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.923960" level="INFO">Creating Session using : alias=mon_inc_32350, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.923903" elapsed="0.000097"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.924158" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.924037" elapsed="0.000130"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.924388" level="INFO">${body} = {'value': '1', 'labels': {}}</msg>
+<var>${body}</var>
+<arg>value=${value}</arg>
+<arg>labels=${{{}}}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.924204" elapsed="0.000193"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.928676" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ path_url=/v1/monitoring/metrics/e2ectr1776422302/increment 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '28'} 
+ body=b'{"value": "1", "labels": {}}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.928710" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '53', 'content-type': 'application/json', 'x-request-id': '019d9b05-34cd-7451-8c1d-4626fbf114af'} 
+ body={"ok":true,"data":{"metric_id":2717,"accepted":true}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.928752" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics/${key}/increment</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.924448" elapsed="0.004314"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.928796" elapsed="0.000050"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>1</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.923590" elapsed="0.005416"/>
+</kw>
+<var name="${i}">3</var>
+<status status="PASS" start="2026-04-17T16:08:22.923518" elapsed="0.005509"/>
+</iter>
+<iter>
+<kw name="API Increment Metric" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.929377" level="INFO">${sess_name} = mon_inc_14908</msg>
+<var>${sess_name}</var>
+<arg>'mon_inc_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.929255" elapsed="0.000131"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.929480" level="INFO">Creating Session using : alias=mon_inc_14908, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:22.929422" elapsed="0.000099"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.929679" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.929557" elapsed="0.000131"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:22.929920" level="INFO">${body} = {'value': '1', 'labels': {}}</msg>
+<var>${body}</var>
+<arg>value=${value}</arg>
+<arg>labels=${{{}}}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.929723" elapsed="0.000207"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:22.935755" level="INFO">POST Request : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ path_url=/v1/monitoring/metrics/e2ectr1776422302/increment 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'Content-Length': '28'} 
+ body=b'{"value": "1", "labels": {}}' 
+ </msg>
+<msg time="2026-04-17T16:08:22.935791" level="INFO">POST Response : url=http://localhost:51734/v1/monitoring/metrics/e2ectr1776422302/increment 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:21 GMT', 'server': 'uvicorn', 'content-length': '53', 'content-type': 'application/json', 'x-request-id': '019d9b05-34d3-71b3-9a12-0fb4adec04a4'} 
+ body={"ok":true,"data":{"metric_id":2717,"accepted":true}} 
+ </msg>
+<msg time="2026-04-17T16:08:22.935837" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/metrics/${key}/increment</arg>
+<arg>json=${body}</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=any</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.929967" elapsed="0.005879"/>
+</kw>
+<return>
+<value>${resp.status_code}</value>
+<status status="PASS" start="2026-04-17T16:08:22.935881" elapsed="0.000045"/>
+</return>
+<arg>${METRIC_KEY}</arg>
+<arg>1</arg>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:22.929139" elapsed="0.006944"/>
+</kw>
+<var name="${i}">4</var>
+<status status="PASS" start="2026-04-17T16:08:22.929066" elapsed="0.007039"/>
+</iter>
+<var>${i}</var>
+<value>5</value>
+<status status="PASS" start="2026-04-17T16:08:22.901786" elapsed="0.034339"/>
+</for>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:24.937223" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.936180" elapsed="2.001244"/>
+</kw>
+<kw name="New Browser" owner="Browser">
+<msg time="2026-04-17T16:08:24.938891" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/Users/sri/Documents/tennetctl/artifacts/13_monitoring_e2e/browser/traces/temp/9b757a1b-10c7-4187-9042-5c1dd3dee273"}</msg>
+<msg time="2026-04-17T16:08:25.036883" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/Users/sri/Documents/tennetctl/artifacts/13_monitoring_e2e/browser/traces/temp/9b757a1b-10c7-4187-9042-5c1dd3dee273"}</msg>
+<arg>chromium</arg>
+<arg>headless=true</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-04-17T16:08:24.937770" elapsed="0.099221"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-04-17T16:08:25.037793" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}</msg>
+<msg time="2026-04-17T16:08:25.040242" level="INFO">Successfully created context. </msg>
+<msg time="2026-04-17T16:08:25.040273" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 900}}</msg>
+<arg>viewport={'width': 1280, 'height': 900}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.037105" elapsed="0.003201"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-04-17T16:08:25.070287" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<arg>about:blank</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.040390" elapsed="0.030030"/>
+</kw>
+<kw name="Sign In Monitoring User" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:25.103118" level="INFO">Successfully opened URL http://localhost:51735/auth/signin</msg>
+<arg>${MONITORING_FRONTEND}/auth/signin</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.070738" elapsed="0.032469"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:25.116875" level="INFO">Waited for Element with selector [data-testid="signin-form"] at state visible</msg>
+<arg>[data-testid="signin-form"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.103303" elapsed="0.013664"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:25.117336" level="INFO">Fills the text 'e2e-metrics-1776422302@tennetctl.test' in the given field.</msg>
+<arg>[data-testid="signin-email"]</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.117063" elapsed="0.014719"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:25.132148" level="INFO">Fills the text 'pass-mon-metrics-E2E!1' in the given field.</msg>
+<arg>[data-testid="signin-password"]</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.131889" elapsed="0.025248"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:25.157494" level="INFO">Clicks the element '[data-testid="signin-submit"]'.</msg>
+<arg>[data-testid="signin-submit"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.157246" elapsed="0.029254"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:25.186885" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:25.753812" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.186600" elapsed="0.567358"/>
+</kw>
+<arg>${TEST_EMAIL}</arg>
+<arg>${TEST_PASS}</arg>
+<status status="PASS" start="2026-04-17T16:08:25.070544" elapsed="0.683527"/>
+</kw>
+<status status="PASS" start="2026-04-17T16:08:22.698618" elapsed="3.055500"/>
+</kw>
+<test id="s1-s2-t1" name="Metric Picker Renders And Shows Seeded Metric" line="40">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:25.792352" level="INFO">Successfully opened URL http://localhost:51735/monitoring/metrics</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.757067" elapsed="0.035389"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:25.792894" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:26.342725" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.792561" elapsed="0.550356"/>
+</kw>
+<arg>/monitoring/metrics</arg>
+<status status="PASS" start="2026-04-17T16:08:25.756773" elapsed="0.586280"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:26.356090" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-picker"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-picker"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:26.343220" elapsed="0.013017"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:26.356866" level="INFO">Fills the text 'e2ectr1776422302' in the given field.</msg>
+<arg>[data-testid="monitoring-metric-search"]</arg>
+<arg>${METRIC_KEY}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:26.356406" elapsed="0.005875"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:27.364498" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:26.362424" elapsed="1.002530"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:27.375854" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-e2ectr1776422302"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-${METRIC_KEY}"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.365449" elapsed="0.010595"/>
+</kw>
+<doc>Open /monitoring/metrics — metric picker sidebar renders,
+searching for our key shows it in the list.</doc>
+<status status="PASS" start="2026-04-17T16:08:25.754172" elapsed="1.622085"/>
+</test>
+<test id="s1-s2-t2" name="Select Metric Renders Chart" line="49">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:27.407058" level="INFO">Successfully opened URL http://localhost:51735/monitoring/metrics</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.383004" elapsed="0.024193"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:27.407698" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:27.966731" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.407326" elapsed="0.559534"/>
+</kw>
+<arg>/monitoring/metrics</arg>
+<status status="PASS" start="2026-04-17T16:08:27.382418" elapsed="0.584531"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:27.976467" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-picker"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-picker"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.967061" elapsed="0.009516"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:27.977042" level="INFO">Fills the text 'e2ectr1776422302' in the given field.</msg>
+<arg>[data-testid="monitoring-metric-search"]</arg>
+<arg>${METRIC_KEY}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.976705" elapsed="0.004601"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:28.982367" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.981469" elapsed="1.001176"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:28.990902" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-e2ectr1776422302"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-${METRIC_KEY}"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:28.983461" elapsed="0.007619"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:28.991858" level="INFO">Clicks the element '[data-testid="monitoring-metric-e2ectr1776422302"]'.</msg>
+<arg>[data-testid="monitoring-metric-${METRIC_KEY}"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:28.991291" elapsed="0.033105"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:29.069436" level="INFO">Waited for Element with selector [data-testid="monitoring-metrics-chart"] at state visible</msg>
+<arg>[data-testid="monitoring-metrics-chart"]</arg>
+<arg>visible</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.024563" elapsed="0.044975"/>
+</kw>
+<doc>Click the seeded metric row — MetricsChart component should render.</doc>
+<status status="PASS" start="2026-04-17T16:08:27.379830" elapsed="1.689810"/>
+</test>
+<test id="s1-s2-t3" name="Bucket Toggle Re-renders Chart" line="60">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:29.087946" level="INFO">Successfully opened URL http://localhost:51735/monitoring/metrics</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.073068" elapsed="0.014965"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:29.088447" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:29.636327" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.088131" elapsed="0.548461"/>
+</kw>
+<arg>/monitoring/metrics</arg>
+<status status="PASS" start="2026-04-17T16:08:29.072852" elapsed="0.563917"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:29.650298" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-picker"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-picker"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.636976" elapsed="0.013445"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:29.650944" level="INFO">Fills the text 'e2ectr1776422302' in the given field.</msg>
+<arg>[data-testid="monitoring-metric-search"]</arg>
+<arg>${METRIC_KEY}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.650560" elapsed="0.005597"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:30.658320" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:29.656284" elapsed="1.002152"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:30.659067" level="INFO">Clicks the element '[data-testid="monitoring-metric-e2ectr1776422302"]'.</msg>
+<arg>[data-testid="monitoring-metric-${METRIC_KEY}"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:30.658594" elapsed="0.030200"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:30.717880" level="INFO">Waited for Element with selector [data-testid="monitoring-metrics-chart"] at state visible</msg>
+<arg>[data-testid="monitoring-metrics-chart"]</arg>
+<arg>visible</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:30.688936" elapsed="0.029074"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<msg time="2026-04-17T16:08:30.718463" level="INFO">Selects the option(s) 1m by attribute SelectAttribute.value from element [data-testid="monitoring-metrics-bucket"].</msg>
+<arg>[data-testid="monitoring-metrics-bucket"]</arg>
+<arg>value</arg>
+<arg>1m</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:30.718130" elapsed="0.018057"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:31.737144" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:30.736338" elapsed="1.000961"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:31.738123" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:31.741031" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:31.737518" elapsed="0.003637"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:31.744730" level="INFO">Waited for Element with selector [data-testid="monitoring-metrics-chart"] at state visible</msg>
+<arg>[data-testid="monitoring-metrics-chart"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:31.741318" elapsed="0.003488"/>
+</kw>
+<doc>With metric selected, change bucket via select — chart re-renders
+(the element detaches briefly then reappears with new data).</doc>
+<status status="PASS" start="2026-04-17T16:08:29.071640" elapsed="2.673274"/>
+</test>
+<test id="s1-s2-t4" name="Add To Dashboard Creates Panel On New Dashboard" line="76">
+<kw name="Open Monitoring Page" owner="monitoring_keywords">
+<kw name="Go To" owner="Browser">
+<msg time="2026-04-17T16:08:31.765393" level="INFO">Successfully opened URL http://localhost:51735/monitoring/metrics</msg>
+<arg>${MONITORING_FRONTEND}${path}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-04-17T16:08:31.749772" elapsed="0.015733"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:31.765994" level="INFO">Waiting page load to state to receive networkidle in 15000.0</msg>
+<msg time="2026-04-17T16:08:32.315277" level="INFO">Load state networkidle got in 15000</msg>
+<arg>networkidle</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:31.765629" elapsed="0.549878"/>
+</kw>
+<arg>/monitoring/metrics</arg>
+<status status="PASS" start="2026-04-17T16:08:31.749515" elapsed="0.566144"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:32.330004" level="INFO">Waited for Element with selector [data-testid="monitoring-metric-picker"] at state visible</msg>
+<arg>[data-testid="monitoring-metric-picker"]</arg>
+<arg>visible</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:32.315854" elapsed="0.014327"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:32.331149" level="INFO">Fills the text 'e2ectr1776422302' in the given field.</msg>
+<arg>[data-testid="monitoring-metric-search"]</arg>
+<arg>${METRIC_KEY}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:32.330623" elapsed="0.006453"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.338097" level="INFO">Slept 1 second.</msg>
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-04-17T16:08:32.337199" elapsed="1.001069"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:33.339146" level="INFO">Clicks the element '[data-testid="monitoring-metric-e2ectr1776422302"]'.</msg>
+<arg>[data-testid="monitoring-metric-${METRIC_KEY}"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.338493" elapsed="0.038110"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:33.383284" level="INFO">Waited for Element with selector [data-testid="monitoring-metrics-add-to-dash"] at state visible</msg>
+<arg>[data-testid="monitoring-metrics-add-to-dash"]</arg>
+<arg>visible</arg>
+<arg>timeout=15s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.376793" elapsed="0.006705"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:33.384430" level="INFO">Clicks the element '[data-testid="monitoring-metrics-add-to-dash"]'.</msg>
+<arg>[data-testid="monitoring-metrics-add-to-dash"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.383937" elapsed="0.075484"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<msg time="2026-04-17T16:08:33.463271" level="INFO">Waited for Element with selector text=Add panel to dashboard at state visible</msg>
+<arg>text=Add panel to dashboard</arg>
+<arg>visible</arg>
+<arg>timeout=5s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.459536" elapsed="0.003815"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.463683" level="INFO">${dash_name} = E2E-Dash-1776422302</msg>
+<var>${dash_name}</var>
+<arg>E2E-Dash-${TS}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.463450" elapsed="0.000247"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-04-17T16:08:33.463943" level="INFO">Fills the text 'E2E-Dash-1776422302' in the given field.</msg>
+<arg>id=dash-new</arg>
+<arg>${dash_name}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.463750" elapsed="0.006265"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-04-17T16:08:33.470400" level="INFO">Clicks the element 'xpath=//button[normalize-space(text())="Add panel"]'.</msg>
+<arg>xpath=//button[normalize-space(text())="Add panel"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.470140" elapsed="0.248367"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<msg time="2026-04-17T16:08:33.719020" level="INFO">Waiting page load to state to receive networkidle in 10000.0</msg>
+<msg time="2026-04-17T16:08:33.720152" level="INFO">Load state networkidle got in 10000</msg>
+<arg>networkidle</arg>
+<arg>timeout=10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits that the page reaches the required load state.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.718642" elapsed="0.001593"/>
+</kw>
+<kw name="API List Dashboards" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.720839" level="INFO">${sess_name} = mon_dash_list_17482</msg>
+<var>${sess_name}</var>
+<arg>'mon_dash_list_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.720603" elapsed="0.000253"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:33.721014" level="INFO">Creating Session using : alias=mon_dash_list_17482, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:33.720920" elapsed="0.000169"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.721340" level="INFO">${headers} = {'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'}</msg>
+<var>${headers}</var>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.721147" elapsed="0.000207"/>
+</kw>
+<kw name="GET On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:33.760174" level="INFO">GET Request : url=http://localhost:51734/v1/monitoring/dashboards 
+ path_url=/v1/monitoring/dashboards 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-33f2-7d41-87b6-dfab602691cd'} 
+ body=None 
+ </msg>
+<msg time="2026-04-17T16:08:33.760223" level="INFO">GET Response : url=http://localhost:51734/v1/monitoring/dashboards 
+ status=200, reason=OK 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:33 GMT', 'server': 'uvicorn', 'content-length': '381', 'content-type': 'application/json', 'x-request-id': '019d9b05-5efb-74c1-9414-8196006731e3'} 
+ body={"ok":true,"data":{"items":[{"id":"019d9b05-5ef9-7523-93fb-8cd9ae6507e4","org_id":"019d9660-8b03-7370-b4ac-c54b2b1d9986","owner_user_id":"019d9b05-33f2-7d41-87b6-dfab602691cd","name":"E2E-Dash-1776422302","description":null,"layout":{},"shared":false,"is_active":true,"panel_count":0,"created_at":"2026-04-17T10:38:33.721332","updated_at":"2026-04-17T10:38:33.721332"}],"total":1}} 
+ </msg>
+<msg time="2026-04-17T16:08:33.760439" level="INFO">${resp} = &lt;Response [200]&gt;</msg>
+<var>${resp}</var>
+<arg>${sess_name}</arg>
+<arg>/v1/monitoring/dashboards</arg>
+<arg>headers=${headers}</arg>
+<arg>expected_status=200</arg>
+<doc>Sends a GET request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.721408" elapsed="0.039093"/>
+</kw>
+<return>
+<value>${resp.json()['data']}</value>
+<status status="PASS" start="2026-04-17T16:08:33.760607" elapsed="0.000085"/>
+</return>
+<msg time="2026-04-17T16:08:33.760948" level="INFO">${dashboards} = {'items': [{'id': '019d9b05-5ef9-7523-93fb-8cd9ae6507e4', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'owner_user_id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'name': 'E2E-Dash-1776422302', 'des...</msg>
+<var>${dashboards}</var>
+<arg>${ORG_ID}</arg>
+<arg>${USER_ID}</arg>
+<status status="PASS" start="2026-04-17T16:08:33.720376" elapsed="0.040587"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.761239" level="INFO">${items} = [{'id': '019d9b05-5ef9-7523-93fb-8cd9ae6507e4', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'owner_user_id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'name': 'E2E-Dash-1776422302', 'description':...</msg>
+<var>${items}</var>
+<arg>${dashboards}[items]</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.761072" elapsed="0.000179"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.761401" level="INFO">${found} = False</msg>
+<var>${found}</var>
+<arg>${False}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.761294" elapsed="0.000117"/>
+</kw>
+<for flavor="IN">
+<iter>
+<if>
+<branch type="IF" condition="'${d}[name]' == '${dash_name}'">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.761999" level="INFO">${CREATED_DASH_ID} = 019d9b05-5ef9-7523-93fb-8cd9ae6507e4</msg>
+<arg>${CREATED_DASH_ID}</arg>
+<arg>${d}[id]</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.761703" elapsed="0.000314"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.762157" level="INFO">${found} = True</msg>
+<var>${found}</var>
+<arg>${True}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.762058" elapsed="0.000108"/>
+</kw>
+<status status="PASS" start="2026-04-17T16:08:33.761601" elapsed="0.000583"/>
+</branch>
+<status status="PASS" start="2026-04-17T16:08:33.761590" elapsed="0.000612"/>
+</if>
+<var name="${d}">{'id': '019d9b05-5ef9-7523-93fb-8cd9ae6507e4', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'owner_user_id': '019d9b05-33f2-7d41-87b6-dfab602691cd', 'name': 'E2E-Dash-1776422302', 'description': ...</var>
+<status status="PASS" start="2026-04-17T16:08:33.761548" elapsed="0.000664"/>
+</iter>
+<var>${d}</var>
+<value>@{items}</value>
+<status status="PASS" start="2026-04-17T16:08:33.761443" elapsed="0.000788"/>
+</for>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${found}</arg>
+<arg>Dashboard "${dash_name}" not found via API after creation</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.762272" elapsed="0.000122"/>
+</kw>
+<doc>Click "Add to dashboard" → modal appears → enter new dashboard name
+→ confirm → modal closes → verify via API that the panel exists.</doc>
+<status status="PASS" start="2026-04-17T16:08:31.747543" elapsed="2.014896"/>
+</test>
+<kw name="Close Browser" owner="Browser" type="TEARDOWN">
+<msg time="2026-04-17T16:08:33.781651" level="INFO">Closed all browsers</msg>
+<arg>ALL</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.765411" elapsed="0.016323"/>
+</kw>
+<doc>Monitoring Metrics — pick a metric, chart renders, bucket toggle re-renders,
+"Add to dashboard" modal creates a panel on a new dashboard.</doc>
+<status status="PASS" start="2026-04-17T16:08:22.695491" elapsed="11.086284"/>
+</suite>
+<suite id="s1-s3" name="03 Traces Waterfall" source="/Users/sri/Documents/tennetctl/tests/e2e/monitoring/03_traces_waterfall.robot">
+<kw name="Launch Traces Suite" type="SETUP">
+<kw name="Get Time" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.786599" level="INFO">${ts} = 1776422313</msg>
+<var>${ts}</var>
+<arg>epoch</arg>
+<doc>Returns the given time in the requested format.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.786467" elapsed="0.000148"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.786798" level="INFO">${TS} = 1776422313</msg>
+<arg>${TS}</arg>
+<arg>${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.786673" elapsed="0.000142"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.786971" level="INFO">${SVC_NAME} = e2e-trace-svc-1776422313</msg>
+<arg>${SVC_NAME}</arg>
+<arg>e2e-trace-svc-${ts}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.786860" elapsed="0.000126"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.787133" level="INFO">${TEST_EMAIL} = e2e-traces-1776422313@tennetctl.test</msg>
+<arg>${TEST_EMAIL}</arg>
+<arg>e2e-traces-${ts}@tennetctl.test</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.787026" elapsed="0.000122"/>
+</kw>
+<kw name="API Create Monitoring User" owner="monitoring_keywords">
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.787474" level="INFO">${body} = {'email': 'e2e-traces-1776422313@tennetctl.test', 'password': 'pass-mon-traces-E2E!1', 'display_name': 'Traces E2E'}</msg>
+<var>${body}</var>
+<arg>email=${email}</arg>
+<arg>password=${password}</arg>
+<arg>display_name=${display_name}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.787317" elapsed="0.000167"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:33.787587" level="INFO">Creating Session using : alias=mon_auth, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<msg time="2026-04-17T16:08:33.787659" level="INFO">${session} = &lt;requests.sessions.Session object at 0x10c25ed50&gt;</msg>
+<var>${session}</var>
+<arg>mon_auth</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:33.787528" elapsed="0.000141"/>
+</kw>
+<kw name="POST On Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:33.958617" level="INFO">POST Request : url=http://localhost:51734/v1/auth/signup 
+ path_url=/v1/auth/signup 
+ headers={'User-Agent': 'python-requests/2.33.1', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '116', 'Content-Type': 'application/json'} 
+ body=b'{"email": "e2e-traces-1776422313@tennetctl.test", "password": "pass-mon-traces-E2E!1", "display_name": "Traces E2E"}' 
+ </msg>
+<msg time="2026-04-17T16:08:33.958657" level="INFO">POST Response : url=http://localhost:51734/v1/auth/signup 
+ status=201, reason=Created 
+ headers={'date': 'Fri, 17 Apr 2026 10:38:33 GMT', 'server': 'uvicorn', 'content-length': '693', 'content-type': 'application/json', 'set-cookie': 'tennetctl_session=019d9b05-5fc7-7b13-8086-b35d798531cb.nvAxarkDRPNC-esLy1czimCu8ZClok-KlsLVE5iJE0c; HttpOnly; Max-Age=604799; Path=/; SameSite=lax', 'x-request-id': '019d9b05-5f3c-7232-8ccb-fbf3a3820f5a'} 
+ body={"ok":true,"data":{"token":"019d9b05-5fc7-7b13-8086-b35d798531cb.nvAxarkDRPNC-esLy1czimCu8ZClok-KlsLVE5iJE0c","user":{"id":"019d9b05-5f41-7900-8f92-41dabd42859b","account_type":"email_password","email":"e2e-traces-1776422313@tennetctl.test","display_name":"Traces E2E","avatar_url":null,"is_active":true,"is_test":false,"created_by":"sys","updated_by":"sys","created_at":"2026-04-17T10:38:33.789013","updated_at":"2026-04-17T10:38:33.789013"},"session":{"id":"019d9b05-5fc7-7b13-8086-b35d798531cb","user_id":"019d9b05-5f41-7900-8f92-41dabd42859b","org_id":"019d9660-8b03-7370-b4ac-c54b2b1d9986","workspace_id":null,"expires_at":"2026-04-24T10:38:33.929721","revoked_at":null,"is_valid":true}}} 
+ </msg>
+<msg time="2026-04-17T16:08:33.958721" level="INFO">${resp} = &lt;Response [201]&gt;</msg>
+<var>${resp}</var>
+<arg>mon_auth</arg>
+<arg>/v1/auth/signup</arg>
+<arg>json=${body}</arg>
+<arg>expected_status=201</arg>
+<doc>Sends a POST request on a previously created HTTP Session.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.787708" elapsed="0.171024"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.959148" level="INFO">${d} = {'token': '019d9b05-5fc7-7b13-8086-b35d798531cb.nvAxarkDRPNC-esLy1czimCu8ZClok-KlsLVE5iJE0c', 'user': {'id': '019d9b05-5f41-7900-8f92-41dabd42859b', 'account_type': 'email_password', 'email': 'e2e-tra...</msg>
+<var>${d}</var>
+<arg>${resp.json()['data']}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.958839" elapsed="0.000321"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.959361" level="INFO">${result} = {'token': '019d9b05-5fc7-7b13-8086-b35d798531cb.nvAxarkDRPNC-esLy1czimCu8ZClok-KlsLVE5iJE0c', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b05-5f41-7900-8f92-41dabd42859b'}</msg>
+<var>${result}</var>
+<arg>token=${d}[token]</arg>
+<arg>org_id=${d}[session][org_id]</arg>
+<arg>user_id=${d}[session][user_id]</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.959203" elapsed="0.000168"/>
+</kw>
+<return>
+<value>${result}</value>
+<status status="PASS" start="2026-04-17T16:08:33.959394" elapsed="0.000028"/>
+</return>
+<msg time="2026-04-17T16:08:33.959469" level="INFO">${signup} = {'token': '019d9b05-5fc7-7b13-8086-b35d798531cb.nvAxarkDRPNC-esLy1czimCu8ZClok-KlsLVE5iJE0c', 'org_id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'user_id': '019d9b05-5f41-7900-8f92-41dabd42859b'}</msg>
+<var>${signup}</var>
+<arg>${TEST_EMAIL}</arg>
+<arg>${TEST_PASS}</arg>
+<arg>Traces E2E</arg>
+<doc>Sign up and return a dict with keys: token, org_id, user_id.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.787213" elapsed="0.172264"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.959705" level="INFO">${ORG_ID} = 019d9660-8b03-7370-b4ac-c54b2b1d9986</msg>
+<arg>${ORG_ID}</arg>
+<arg>${signup['org_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.959522" elapsed="0.000198"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.959927" level="INFO">${USER_ID} = 019d9b05-5f41-7900-8f92-41dabd42859b</msg>
+<arg>${USER_ID}</arg>
+<arg>${signup['user_id']}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.959756" elapsed="0.000185"/>
+</kw>
+<kw name="Post OTLP Parent Child Trace" owner="monitoring_keywords">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.960243" level="INFO">${sess_name} = mon_trace_77226</msg>
+<var>${sess_name}</var>
+<arg>'mon_trace_' + str(__import__('random').randint(10000,99999))</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960135" elapsed="0.000116"/>
+</kw>
+<kw name="Create Session" owner="RequestsLibrary">
+<msg time="2026-04-17T16:08:33.960348" level="INFO">Creating Session using : alias=mon_trace_77226, url=http://localhost:51734, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<arg>${sess_name}</arg>
+<arg>${MONITORING_BACKEND}</arg>
+<doc>Create Session: create a HTTP session to a server</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960288" elapsed="0.000107"/>
+</kw>
+<kw name="Create Dictionary" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.960547" level="INFO">${headers} = {'Content-Type': 'application/json', 'x-org-id': '019d9660-8b03-7370-b4ac-c54b2b1d9986', 'x-user-id': '019d9b05-5f41-7900-8f92-41dabd42859b'}</msg>
+<var>${headers}</var>
+<arg>Content-Type=application/json</arg>
+<arg>x-org-id=${org_id}</arg>
+<arg>x-user-id=${user_id}</arg>
+<doc>Creates and returns a dictionary based on the given ``items``.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960429" elapsed="0.000127"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.960683" level="INFO">${trace_hex} = 6d48ff22c0733ce8ec6735d6a2d1faed</msg>
+<var>${trace_hex}</var>
+<arg>__import__('os').urandom(16).hex()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960590" elapsed="0.000101"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.960808" level="INFO">${parent_hex} = 22a03a8f1acf010d</msg>
+<var>${parent_hex}</var>
+<arg>__import__('os').urandom(8).hex()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960722" elapsed="0.000095"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.960935" level="INFO">${child_hex} = 1bf98c97d44321e5</msg>
+<var>${child_hex}</var>
+<arg>__import__('os').urandom(8).hex()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960852" elapsed="0.000091"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961090" level="INFO">${trace_b64} = bUj/IsBzPOjsZzXWotH67Q==</msg>
+<var>${trace_b64}</var>
+<arg>__import__('base64').b64encode(bytes.fromhex('${trace_hex}')).decode()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.960974" elapsed="0.000124"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961232" level="INFO">${parent_b64} = IqA6jxrPAQ0=</msg>
+<var>${parent_b64}</var>
+<arg>__import__('base64').b64encode(bytes.fromhex('${parent_hex}')).decode()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961129" elapsed="0.000111"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961370" level="INFO">${child_b64} = G/mMl9RDIeU=</msg>
+<var>${child_b64}</var>
+<arg>__import__('base64').b64encode(bytes.fromhex('${child_hex}')).decode()</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961272" elapsed="0.000106"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961496" level="INFO">${now_ns} = 1776422313961480960</msg>
+<var>${now_ns}</var>
+<arg>int(__import__('time').time() * 1e9)</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961410" elapsed="0.000095"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961627" level="INFO">${end_ns} = 1776422314061480960</msg>
+<var>${end_ns}</var>
+<arg>${now_ns} + 100000000</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961535" elapsed="0.000101"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961755" level="INFO">${child_start} = 1776422313971480960</msg>
+<var>${child_start}</var>
+<arg>${now_ns} + 10000000</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961667" elapsed="0.000096"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.961884" level="INFO">${child_end} = 1776422314051480960</msg>
+<var>${child_end}</var>
+<arg>${now_ns} + 90000000</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-17T16:08:33.961794" elapsed="0.000098"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-17T16:08:33.962073" level="INFO">${payload_str} = {"resourceSpans":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"e2e-trace-svc-1776422313"}}]},"scopeSpans":[{"scope":{"name":"e2e"},"spans":[{"traceId":"bUj/IsBzPOjsZzXWotH6...</msg>
+<var>${payload_str}</var>
+<arg>{"resourceSpans":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"${service}"}}]},"scopeSpans":[{"scope":{"name":"e2e"},"spans":[{"traceId":"${trace_b64}","spanId":"${parent_b64}","parentSpanId":"","name":"${parent_name}","kind":2,"startTimeUnixNano":"${now_ns}","endTimeUnixNano":"${end_ns}","status":{"code":1}},{"traceId":"${trace_b64}","spanId":"${child_b64}","parentSpanId":"${parent_b64}","name":"${child_name}","kind":2,"startTimeUnixNano":"${child_start}","endTimeUnixNano":"${child_end}","status":{"code":1}}]}]}]}

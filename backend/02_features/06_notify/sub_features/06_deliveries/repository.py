@@ -57,25 +57,44 @@ async def create_delivery(
     priority_id: int,
     resolved_variables: dict,
     audit_outbox_id: int | None = None,
-    campaign_id: str | None = None,
+    deep_link: str | None = None,
+    idempotency_key: str | None = None,
+    scheduled_at: Any = None,
 ) -> dict | None:
-    """Insert a delivery row. Returns None if duplicate (idempotency guard)."""
+    """Insert a delivery row. Returns None when the subscription-level idempotency
+    guard (subscription_id, audit_outbox_id, channel_id) hits an existing row.
+
+    When `idempotency_key` is provided, first checks for an existing row with
+    the same (org_id, idempotency_key) and returns it as-is — Send API
+    idempotency. This sidesteps the INSERT entirely so no wasted uuid7 is
+    burned and callers always see the original row.
+    """
+    if idempotency_key is not None:
+        existing = await conn.fetchrow(
+            f"SELECT * FROM {_VIEW} WHERE org_id = $1 AND idempotency_key = $2",
+            org_id, idempotency_key,
+        )
+        if existing is not None:
+            return dict(existing)
+
     row = await conn.fetchrow(
         f"""
         INSERT INTO {_FCT}
-            (id, org_id, subscription_id, campaign_id, template_id, recipient_user_id,
-             channel_id, priority_id, resolved_variables, audit_outbox_id)
-        VALUES ($1, $2, $3, $10, $4, $5, $6, $7, $8, $9)
+            (id, org_id, subscription_id, template_id, recipient_user_id,
+             channel_id, priority_id, resolved_variables, audit_outbox_id,
+             deep_link, idempotency_key, scheduled_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         ON CONFLICT (subscription_id, audit_outbox_id, channel_id)
             WHERE subscription_id IS NOT NULL AND audit_outbox_id IS NOT NULL
         DO NOTHING
         RETURNING id
         """,
         delivery_id, org_id, subscription_id, template_id, recipient_user_id,
-        channel_id, priority_id, resolved_variables, audit_outbox_id, campaign_id,
+        channel_id, priority_id, resolved_variables, audit_outbox_id,
+        deep_link, idempotency_key, scheduled_at,
     )
     if row is None:
-        # Duplicate — already processed this (subscription, outbox_event) pair.
+        # Duplicate subscription/outbox/channel tuple.
         return None
     view_row = await conn.fetchrow(f"SELECT * FROM {_VIEW} WHERE id = $1", delivery_id)
     return dict(view_row)
@@ -105,20 +124,46 @@ async def update_delivery_status(
     return await get_delivery(conn, delivery_id)
 
 
-async def campaign_stats(conn: Any, *, campaign_id: str) -> dict:
-    """Return delivery counts grouped by status_code for a campaign."""
-    rows = await conn.fetch(
+async def mark_retryable_error(
+    conn: Any,
+    *,
+    delivery_id: str,
+    reason: str,
+    backoff_seconds: int,
+) -> dict:
+    """Record a retryable send error.
+
+    Increments attempt_count. If the new count reaches max_attempts, marks the
+    delivery failed (status=8). Otherwise keeps status=queued and schedules
+    the next attempt at NOW() + backoff_seconds.
+
+    Returns the updated row from the view.
+    """
+    await conn.execute(
         f"""
-        SELECT status_code, COUNT(*) AS cnt
-        FROM {_VIEW}
-        WHERE campaign_id = $1
-        GROUP BY status_code
+        UPDATE {_FCT}
+        SET attempt_count = attempt_count + 1,
+            failure_reason = $2,
+            status_id = CASE
+                WHEN attempt_count + 1 >= max_attempts THEN 8  -- failed
+                ELSE 2                                         -- queued (retry)
+            END,
+            next_retry_at = CASE
+                WHEN attempt_count + 1 >= max_attempts THEN NULL
+                ELSE CURRENT_TIMESTAMP + make_interval(secs => $3)
+            END,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
         """,
-        campaign_id,
+        delivery_id, reason, backoff_seconds,
     )
-    counts: dict[str, int] = {r["status_code"]: r["cnt"] for r in rows}
-    total = sum(counts.values())
-    return {"total": total, "by_status": counts}
+    row = await conn.fetchrow(f"SELECT * FROM {_VIEW} WHERE id = $1", delivery_id)
+    return dict(row)
+
+
+def backoff_seconds_for_attempt(attempt_count: int) -> int:
+    """Exponential backoff: 60s, 120s, 240s, 480s, ..."""
+    return 60 * (2 ** max(0, attempt_count))
 
 
 async def create_delivery_event(

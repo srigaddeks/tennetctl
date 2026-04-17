@@ -790,6 +790,7 @@ export type InAppDelivery = {
   status_code: DeliveryStatusCode;
   status_label: string;
   resolved_variables: Record<string, unknown>;
+  deep_link: string | null;
   audit_outbox_id: number | null;
   failure_reason: string | null;
   scheduled_at: string | null;
@@ -803,6 +804,8 @@ export type InAppDeliveryListResponse = {
   items: InAppDelivery[];
   total: number;
 };
+
+export type UnreadCountResponse = { count: number };
 
 // ─── Notify: User Preferences ────────────────────────────────────
 
@@ -824,66 +827,6 @@ export type NotifyPreferencePatchItem = {
   channel_code: NotifyChannelCode;
   category_code: NotifyCategoryCode;
   is_opted_in: boolean;
-};
-
-// ─── Notify: Campaigns ───────────────────────────────────────────
-
-export type CampaignStatusCode =
-  | "draft"
-  | "scheduled"
-  | "running"
-  | "paused"
-  | "completed"
-  | "cancelled"
-  | "failed";
-
-export type AudienceQuery = {
-  account_type_codes?: string[];
-};
-
-export type Campaign = {
-  id: string;
-  org_id: string;
-  name: string;
-  template_id: string;
-  channel_id: number;
-  channel_code: NotifyChannelCode;
-  channel_label: string;
-  audience_query: AudienceQuery;
-  scheduled_at: string | null;
-  throttle_per_minute: number;
-  status_id: number;
-  status_code: CampaignStatusCode;
-  status_label: string;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
-};
-
-export type CampaignListResponse = {
-  items: Campaign[];
-  total: number;
-};
-
-export type CampaignCreate = {
-  org_id: string;
-  name: string;
-  template_id: string;
-  channel_code: NotifyChannelCode;
-  audience_query?: AudienceQuery;
-  scheduled_at?: string | null;
-  throttle_per_minute?: number;
-};
-
-export type CampaignPatch = {
-  name?: string;
-  template_id?: string;
-  channel_code?: NotifyChannelCode;
-  audience_query?: AudienceQuery;
-  scheduled_at?: string | null;
-  throttle_per_minute?: number;
-  status?: "scheduled" | "cancelled";
 };
 
 // ─── Notify: Templates ───────────────────────────────────────────
@@ -997,13 +940,92 @@ export type NotifyTemplateGroupListResponse = {
   total: number;
 };
 
+// ─── Notify: SMTP Configs ───────────────────────────────────────
+
+export type NotifySMTPConfig = {
+  id: string;
+  org_id: string;
+  key: string;
+  label: string;
+  host: string;
+  port: number;
+  tls: boolean;
+  username: string;
+  auth_vault_key: string;
+  from_email: string | null;
+  from_name: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NotifySMTPConfigListResponse = {
+  items: NotifySMTPConfig[];
+  total: number;
+};
+
+export type NotifySMTPConfigCreate = {
+  org_id: string;
+  key: string;
+  label: string;
+  host: string;
+  port: number;
+  tls: boolean;
+  username: string;
+  auth_vault_key: string;
+  from_email?: string | null;
+  from_name?: string | null;
+};
+
+// ─── Notify: Subscriptions ──────────────────────────────────────
+
+export type NotifySubscriptionRecipientMode = "actor" | "users" | "roles";
+
+export type NotifySubscription = {
+  id: string;
+  org_id: string;
+  name: string;
+  event_key_pattern: string;
+  template_id: string;
+  channel_id: number;
+  channel_code: NotifyChannelCode;
+  channel_label: string;
+  recipient_mode: NotifySubscriptionRecipientMode;
+  recipient_filter: Record<string, unknown>;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NotifySubscriptionCreate = {
+  org_id: string;
+  name: string;
+  event_key_pattern: string;
+  template_id: string;
+  channel_id: number;
+  recipient_mode?: NotifySubscriptionRecipientMode;
+  recipient_filter?: Record<string, unknown>;
+};
+
+export type NotifySubscriptionListResponse = {
+  items: NotifySubscription[];
+  total: number;
+};
+
+export type NotifyTemplateGroupCreate = {
+  org_id: string;
+  key: string;
+  label: string;
+  category_id: number;
+  smtp_config_id?: string | null;
+};
+
 // ─── Notify: Deliveries ──────────────────────────────────────────
 
 export type NotifyDelivery = {
   id: string;
   org_id: string;
   subscription_id: string | null;
-  campaign_id: string | null;
   template_id: string;
   recipient_user_id: string;
   channel_id: number;
@@ -1029,11 +1051,44 @@ export type NotifyDeliveryListResponse = {
   total: number;
 };
 
-// ─── Notify: Campaign Stats ──────────────────────────────────────
+// ─── Notify: Template Analytics ─────────────────────────────────
 
-export type NotifyCampaignStats = {
-  total: number;
+export type NotifyTemplateAnalytics = {
   by_status: Record<string, number>;
+  by_event_type: Record<string, number>;
+  total_deliveries: number;
+};
+
+// ─── IAM: API Keys ───────────────────────────────────────────────
+
+export type ApiKeyScope = "notify:send" | "notify:read" | "audit:read";
+
+export type ApiKey = {
+  id: string;
+  org_id: string;
+  user_id: string;
+  key_id: string;
+  label: string;
+  scopes: string[];
+  last_used_at: string | null;
+  expires_at: string | null;
+  revoked_at: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ApiKeyCreate = {
+  label: string;
+  scopes: string[];
+  expires_at?: string | null;
+};
+
+export type ApiKeyCreatedResponse = ApiKey & { token: string };
+
+export type ApiKeyListResponse = {
+  items: ApiKey[];
+  total: number;
 };
 
 // ─── IAM: OTP ────────────────────────────────────────────────────
@@ -1112,5 +1167,399 @@ export type PasswordResetRequestBody = {
 export type PasswordResetCompleteBody = {
   token: string;
   new_password: string;
+};
+
+// ─── Monitoring: Metrics ─────────────────────────────────────────────────────
+
+export type MetricKind = 'counter' | 'gauge' | 'histogram';
+
+export type ResourceIdentity = {
+  service_name: string;
+  service_instance_id?: string | null;
+  service_version?: string | null;
+  attributes?: Record<string, string>;
+};
+
+export type MetricRegisterRequest = {
+  key: string;
+  kind: MetricKind;
+  label_keys?: string[];
+  description?: string;
+  unit?: string;
+  histogram_buckets?: number[] | null;
+  max_cardinality?: number;
+};
+
+export type MetricIncrementRequest = {
+  labels?: Record<string, string>;
+  value?: number;
+  resource?: ResourceIdentity | null;
+};
+
+export type MetricSetRequest = {
+  labels?: Record<string, string>;
+  value: number;
+  resource?: ResourceIdentity | null;
+};
+
+export type MetricObserveRequest = {
+  labels?: Record<string, string>;
+  value: number;
+  resource?: ResourceIdentity | null;
+};
+
+export type Metric = {
+  id: number;
+  org_id: string;
+  key: string;
+  kind: MetricKind;
+  label_keys: string[];
+  histogram_buckets: number[] | null;
+  description: string;
+  unit: string;
+  max_cardinality: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MetricResponse = Metric;
+
+export type MetricListResponse = {
+  items: Metric[];
+  total: number;
+};
+
+export type MetricIngestResponse = {
+  metric_id: number;
+  accepted: boolean;
+};
+
+// ── Monitoring Query DSL (ADR-029) ─────────────────────────────────────
+// Mirrors backend/02_features/05_monitoring/query_dsl/types.py.
+
+export type QueryTarget = "logs" | "metrics" | "traces";
+
+export type LastToken = "15m" | "1h" | "24h" | "7d" | "30d" | "90d";
+
+export type Timerange =
+  | { last: LastToken; from_ts?: never; to_ts?: never }
+  | { from_ts: string; to_ts: string; last?: never };
+
+export type FieldValue = { field: string; value: unknown };
+export type FieldValues = { field: string; values: unknown[] };
+
+export type Filter =
+  | { and: Filter[] }
+  | { or: Filter[] }
+  | { not: Filter }
+  | { eq: FieldValue }
+  | { ne: FieldValue }
+  | { in: FieldValues }
+  | { nin: FieldValues }
+  | { lt: FieldValue }
+  | { lte: FieldValue }
+  | { gt: FieldValue }
+  | { gte: FieldValue }
+  | { contains: FieldValue }
+  | { jsonb_path: FieldValue }
+  | { regex_limited: FieldValue };
+
+export type LogsQuery = {
+  target: "logs";
+  filter?: Filter;
+  timerange: Timerange;
+  severity_min?: number;
+  body_contains?: string;
+  trace_id?: string;
+  limit?: number;
+  cursor?: string | null;
+};
+
+export type MetricAggregate =
+  | "sum" | "avg" | "min" | "max" | "count" | "rate"
+  | "p50" | "p95" | "p99";
+
+export type MetricBucket = "1m" | "5m" | "1h" | "1d";
+
+export type MetricsQuery = {
+  target: "metrics";
+  metric_key: string;
+  labels?: Record<string, string>;
+  filter?: Filter;
+  timerange: Timerange;
+  aggregate?: MetricAggregate;
+  bucket?: MetricBucket;
+  groupby?: string[];
+  limit?: number;
+};
+
+export type TracesQuery = {
+  target: "traces";
+  filter?: Filter;
+  timerange: Timerange;
+  service_name?: string;
+  span_name_contains?: string;
+  duration_min_ms?: number;
+  duration_max_ms?: number;
+  has_error?: boolean;
+  trace_id?: string;
+  limit?: number;
+  cursor?: string | null;
+};
+
+export type LogRow = {
+  id: string;
+  recorded_at: string;
+  severity_id: number;
+  severity_code?: string | null;
+  body: string;
+  service_name?: string | null;
+  trace_id?: string | null;
+  span_id?: string | null;
+  attributes?: Record<string, unknown> | unknown[] | null;
+};
+
+export type TimeseriesPoint = {
+  bucket_ts: string;
+  value: number | null;
+  group?: Record<string, unknown> | null;
+};
+
+export type SpanRow = {
+  trace_id: string;
+  span_id: string;
+  parent_span_id: string | null;
+  recorded_at: string;
+  name: string;
+  kind_code?: string | null;
+  status_code?: string | null;
+  duration_ns?: number | null;
+  service_name?: string | null;
+};
+
+export type TraceSpanNode = SpanRow & { children?: TraceSpanNode[] };
+
+export type QueryResult<T> = {
+  items: T[];
+  next_cursor?: string | null;
+};
+
+export type SavedQuery = {
+  id: string;
+  org_id: string;
+  owner_user_id: string;
+  name: string;
+  description?: string | null;
+  target: QueryTarget;
+  dsl: LogsQuery | MetricsQuery | TracesQuery;
+  shared: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SavedQueryListResponse = {
+  items: SavedQuery[];
+  total: number;
+};
+
+// ─── Monitoring: Traces ─────────────────────────────────────────────────────
+
+export type TraceDetailResponse = {
+  trace_id: string;
+  spans: SpanRow[];
+};
+
+// ─── Monitoring: Dashboards (Plan 13-06) ────────────────────────────────────
+
+export type PanelType =
+  | "timeseries"
+  | "stat"
+  | "table"
+  | "log_stream"
+  | "trace_list";
+
+export type GridPos = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+export type Panel = {
+  id: string;
+  dashboard_id: string;
+  title: string;
+  panel_type: PanelType;
+  dsl: Record<string, unknown>;
+  grid_pos: GridPos;
+  display_opts: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Dashboard = {
+  id: string;
+  org_id: string;
+  owner_user_id: string;
+  name: string;
+  description: string | null;
+  layout: Record<string, unknown>;
+  shared: boolean;
+  panel_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DashboardDetail = Dashboard & {
+  panels: Panel[];
+};
+
+export type DashboardListResponse = {
+  items: Dashboard[];
+  total: number;
+};
+
+export type DashboardCreateRequest = {
+  name: string;
+  description?: string | null;
+  shared?: boolean;
+  layout?: Record<string, unknown>;
+};
+
+export type DashboardUpdateRequest = {
+  name?: string;
+  description?: string | null;
+  shared?: boolean;
+  layout?: Record<string, unknown>;
+};
+
+export type PanelCreateRequest = {
+  title: string;
+  panel_type: PanelType;
+  dsl: Record<string, unknown>;
+  grid_pos?: GridPos;
+  display_opts?: Record<string, unknown>;
+};
+
+export type PanelUpdateRequest = {
+  title?: string;
+  panel_type?: PanelType;
+  dsl?: Record<string, unknown>;
+  grid_pos?: GridPos;
+  display_opts?: Record<string, unknown>;
+};
+
+// ─── Monitoring Alerts ─────────────────────────────────────────────────────
+export type AlertSeverity = "info" | "warn" | "error" | "critical";
+export type AlertTarget = "metrics" | "logs";
+export type AlertConditionOp = "gt" | "gte" | "lt" | "lte" | "eq" | "ne";
+export type AlertState = "firing" | "resolved";
+
+export type AlertCondition = {
+  op: AlertConditionOp;
+  threshold: number;
+  for_duration_seconds: number;
+};
+
+export type AlertRule = {
+  id: string;
+  org_id: string;
+  name: string;
+  description: string | null;
+  target: AlertTarget;
+  dsl: Record<string, unknown>;
+  condition: AlertCondition;
+  severity: AlertSeverity;
+  severity_label: string;
+  notify_template_key: string;
+  labels: Record<string, string>;
+  is_active: boolean;
+  paused_until: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AlertRuleCreateRequest = {
+  name: string;
+  description?: string | null;
+  target: AlertTarget;
+  dsl: Record<string, unknown>;
+  condition: AlertCondition;
+  severity: AlertSeverity;
+  notify_template_key: string;
+  labels?: Record<string, string>;
+};
+
+export type AlertRuleUpdateRequest = Partial<AlertRuleCreateRequest> & {
+  is_active?: boolean;
+  paused_until?: string | null;
+};
+
+export type AlertRuleListResponse = {
+  items: AlertRule[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type SilenceMatcher = {
+  rule_id?: string | null;
+  labels?: Record<string, string> | null;
+};
+
+export type Silence = {
+  id: string;
+  org_id: string;
+  matcher: SilenceMatcher;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+  created_by: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SilenceCreateRequest = {
+  matcher: SilenceMatcher;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+};
+
+export type SilenceListResponse = {
+  items: Silence[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type AlertEvent = {
+  id: string;
+  rule_id: string;
+  rule_name: string | null;
+  severity: AlertSeverity | null;
+  severity_label: string | null;
+  fingerprint: string;
+  state: AlertState;
+  value: number | null;
+  threshold: number | null;
+  org_id: string;
+  started_at: string;
+  resolved_at: string | null;
+  last_notified_at: string | null;
+  notification_count: number;
+  silenced: boolean;
+  silence_id: string | null;
+  labels: Record<string, unknown>;
+  annotations: Record<string, unknown>;
+};
+
+export type AlertEventListResponse = {
+  items: AlertEvent[];
+  total: number;
+  limit: number;
+  offset: number;
 };
 

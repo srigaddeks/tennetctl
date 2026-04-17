@@ -118,6 +118,68 @@ async def touch_application(conn: Any, *, id: str, updated_by: str) -> bool:
     return result.endswith(" 1")
 
 
+async def list_scope_ids(conn: Any, application_id: str) -> list[int]:
+    rows = await conn.fetch(
+        'SELECT scope_id FROM "03_iam"."45_lnk_application_scopes" '
+        'WHERE application_id = $1 ORDER BY scope_id',
+        application_id,
+    )
+    return [int(r["scope_id"]) for r in rows]
+
+
+async def list_scope_ids_many(conn: Any, application_ids: list[str]) -> dict[str, list[int]]:
+    if not application_ids:
+        return {}
+    rows = await conn.fetch(
+        'SELECT application_id, scope_id '
+        'FROM "03_iam"."45_lnk_application_scopes" '
+        'WHERE application_id = ANY($1::varchar[]) '
+        'ORDER BY application_id, scope_id',
+        application_ids,
+    )
+    out: dict[str, list[int]] = {aid: [] for aid in application_ids}
+    for r in rows:
+        out[r["application_id"]].append(int(r["scope_id"]))
+    return out
+
+
+async def replace_application_scopes(
+    conn: Any, *,
+    application_id: str, org_id: str, scope_ids: list[int], created_by: str,
+) -> None:
+    """Atomic REPLACE: delete existing rows + insert the new set. Caller must hold a tx."""
+    await conn.execute(
+        'DELETE FROM "03_iam"."45_lnk_application_scopes" WHERE application_id = $1',
+        application_id,
+    )
+    if not scope_ids:
+        return
+    # Deduplicate defensively — service validates, but belt-and-suspenders keeps the
+    # UNIQUE constraint from firing on caller typos.
+    unique_ids = sorted(set(scope_ids))
+    _core_id: Any = __import__("importlib").import_module("backend.01_core.id")
+    records = [
+        (_core_id.uuid7(), org_id, application_id, sid, created_by)
+        for sid in unique_ids
+    ]
+    await conn.executemany(
+        'INSERT INTO "03_iam"."45_lnk_application_scopes" '
+        '    (id, org_id, application_id, scope_id, created_by) '
+        'VALUES ($1, $2, $3, $4, $5)',
+        records,
+    )
+
+
+async def dim_scope_ids_exist(conn: Any, scope_ids: list[int]) -> set[int]:
+    if not scope_ids:
+        return set()
+    rows = await conn.fetch(
+        'SELECT id FROM "03_iam"."03_dim_scopes" WHERE id = ANY($1::smallint[])',
+        scope_ids,
+    )
+    return {int(r["id"]) for r in rows}
+
+
 async def soft_delete_application(conn: Any, *, id: str, updated_by: str) -> bool:
     result = await conn.execute(
         'UPDATE "03_iam"."15_fct_applications" '

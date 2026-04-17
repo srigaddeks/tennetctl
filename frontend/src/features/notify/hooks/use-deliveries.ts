@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
-import type { NotifyCampaignStats, NotifyDeliveryListResponse } from "@/types/api";
+import type { NotifyDeliveryListResponse } from "@/types/api";
 
 export function useDeliveries(
   orgId: string | null,
@@ -19,14 +19,5 @@ export function useDeliveries(
       if (filters.recipient_user_id) params.set("recipient_user_id", filters.recipient_user_id);
       return apiFetch<NotifyDeliveryListResponse>(`/v1/notify/deliveries?${params}`);
     },
-  });
-}
-
-export function useCampaignStats(campaignId: string | null) {
-  return useQuery({
-    queryKey: ["notify-campaign-stats", campaignId],
-    enabled: !!campaignId,
-    queryFn: () =>
-      apiFetch<NotifyCampaignStats>(`/v1/notify/campaigns/${campaignId}/stats`),
   });
 }

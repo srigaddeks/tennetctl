@@ -1,0 +1,448 @@
+---
+type: community
+cohesion: 0.01
+members: 403
+---
+
+# Node Catalog & Feature Implementations
+
+**Cohesion:** 0.01 - loosely connected
+**Members:** 403 nodes
+
+## Members
+- [[.run()_53]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[.run()_52]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[.run()_56]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[.run()_54]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[.run()_55]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[.run()_57]] - code - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[.run()_10]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[.run()_9]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[.run()_19]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[.run()_17]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[.run()_18]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[.run()_21]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[.run()_22]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[.run()_14]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[.run()_13]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[.run()_12]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[.run()_11]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[.run()_8]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[.run()_7]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[.run()_3]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[.run()_4]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[.run()_15]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[.run()_16]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[.run()_6]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[.run()_5]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[.run()_25]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[.run()]] - code - backend/01_catalog/node.py
+- [[.run()_27]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[.run()_24]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[.run()_62]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[.run()_59]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+- [[AlertCondition]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[AlertEventResponse]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[AlertRuleCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[AlertRulePauseRequest]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[AlertRuleResponse]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[AlertRuleUpdateRequest]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[ApiKeyCreate]] - code - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[ApiKeyCreatedResponse]] - code - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[ApiKeyRow]] - code - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[ApplicationCreate]] - code - backend/02_features/03_iam/sub_features/06_applications/schemas.py
+- [[ApplicationUpdate]] - code - backend/02_features/03_iam/sub_features/06_applications/schemas.py
+- [[ApplicationsCreate]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[ApplicationsGet]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[AuditEventFilter]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventKeyListResponse]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventKeyRow]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventListQuery]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventListResponse]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventRow]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventRowSlim]] - code - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[AuditEventStatsCountByCategory]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventStatsCountByKey]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventStatsCountByOutcome]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventStatsQuery]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventStatsResponse]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditEventStatsTimePoint]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[AuditOutboxCursorResponse]] - code - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[AuditSavedViewCreate]] - code - backend/02_features/04_audit/sub_features/02_saved_views/schemas.py
+- [[AuditSavedViewListResponse]] - code - backend/02_features/04_audit/sub_features/02_saved_views/schemas.py
+- [[AuditTailResponse]] - code - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[AuthResponse]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[AuthRevokeSession]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[AuthSignin]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[AuthSignup]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[Base class for all node handlers.]] - rationale - backend/01_catalog/node.py
+- [[BaseModel]] - code
+- [[BounceWebhookPayload]] - code - backend/02_features/06_notify/sub_features/07_email/schemas.py
+- [[DashboardCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[DashboardDetailResponse]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[DashboardResponse]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[DashboardUpdateRequest]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[Either an absolute (from_ts, to_ts) range or a `last` token.]] - rationale - backend/02_features/05_monitoring/query_dsl/types.py
+- [[EvalContext]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/schemas.py
+- [[EvaluateRequest]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/schemas.py
+- [[EvaluateResponse]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/schemas.py
+- [[Execute the node. Override in subclasses.          ctx NodeContext — audit + tr]] - rationale - backend/01_catalog/node.py
+- [[FieldValue]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[FieldValues]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[FlagCreate]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[FlagStateUpdate]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[FlagUpdate]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[FlagsCreate]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[FlagsGet]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[Funnel analysis given an ordered list of event_key steps,     return how many d]] - rationale - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[FunnelRequest]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[FunnelResponse]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[FunnelStep]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[GridPos]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[GroupCreate]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[GroupUpdate]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[GroupsCreate]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[GroupsGet]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[IncrementMetric]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[Input_50]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[Input_49]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[Input_53]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[Input_51]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[Input_52]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[Input_54]] - code - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[Input_10]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[Input_9]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[Input_19]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[Input_17]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[Input_18]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[Input_21]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[Input_22]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[Input_14]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[Input_13]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[Input_12]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[Input_11]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[Input_8]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[Input_7]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[Input_3]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[Input_4]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[Input_15]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[Input_16]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[Input_6]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[Input_5]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[Input_25]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[Input]] - code - backend/01_catalog/node.py
+- [[Input_27]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[Input_24]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[Input_59]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[Input_56]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+- [[JSON mirror of ExportLogsServiceResponse.]] - rationale - backend/02_features/05_monitoring/sub_features/01_logs/schemas.py
+- [[JSON mirror of ExportTraceServiceResponse.]] - rationale - backend/02_features/05_monitoring/sub_features/03_traces/schemas.py
+- [[JSON mirror of OTLP ExportLogsPartialSuccess.]] - rationale - backend/02_features/05_monitoring/sub_features/01_logs/schemas.py
+- [[JSON mirror of OTLP ExportTracePartialSuccess.]] - rationale - backend/02_features/05_monitoring/sub_features/03_traces/schemas.py
+- [[Leaf operator payload for `in``nin` {field, values}.]] - rationale - backend/02_features/05_monitoring/query_dsl/types.py
+- [[Leaf operator payload {field, value}.]] - rationale - backend/02_features/05_monitoring/query_dsl/types.py
+- [[LogRow]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[LogsQuery]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[MagicLinkConsume]] - code - backend/02_features/03_iam/sub_features/11_magic_link/schemas.py
+- [[MagicLinkRequest]] - code - backend/02_features/03_iam/sub_features/11_magic_link/schemas.py
+- [[MagicLinkRequestResponse]] - code - backend/02_features/03_iam/sub_features/11_magic_link/schemas.py
+- [[MembershipsOrgAssign]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[MembershipsOrgRevoke]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[MembershipsWorkspaceAssign]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[MembershipsWorkspaceRevoke]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[MetricIncrementRequest]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/schemas.py
+- [[MetricObserveRequest]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/schemas.py
+- [[MetricRegisterRequest]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/schemas.py
+- [[MetricsQuery]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[Minimal event row returned from the tail endpoint (subset of full AuditEventRow)]] - rationale - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[Node]] - code - backend/01_catalog/node.py
+- [[Node base class — the contract every handler class must implement (NCP v1 §4).]] - rationale - backend/01_catalog/node.py
+- [[OAuthCallbackBody]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[OTLPLogsResponseJSON]] - code - backend/02_features/05_monitoring/sub_features/01_logs/schemas.py
+- [[OTLPTracesResponseJSON]] - code - backend/02_features/05_monitoring/sub_features/03_traces/schemas.py
+- [[ObserveHistogram]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[One-time response on creation. `token` appears here once and NEVER again.]] - rationale - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[OrgCreate]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[OrgListResponse]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[OrgMembershipCreate]] - code - backend/02_features/03_iam/sub_features/07_memberships/schemas.py
+- [[OrgUpdate]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[OrgsCreate]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[OrgsGet]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[OtpRequest]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[OtpVerify]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[Output_50]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[Output_49]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[Output_53]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[Output_51]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[Output_52]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[Output_54]] - code - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[Output_10]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[Output_9]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[Output_19]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[Output_17]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[Output_18]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[Output_21]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[Output_22]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[Output_14]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[Output_13]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[Output_12]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[Output_11]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[Output_8]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[Output_7]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[Output_3]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[Output_4]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[Output_15]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[Output_16]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[Output_6]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[Output_5]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[Output_25]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[Output]] - code - backend/01_catalog/node.py
+- [[Output_27]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[Output_24]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[Output_59]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[Output_56]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+- [[OverrideCreate]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/schemas.py
+- [[OverrideUpdate]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/schemas.py
+- [[OverridesSet]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[PATCH body — only provided fields change. org_id is frozen after create.]] - rationale - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[PATCH body — scopeflag_keyvalue_typeorgapp are frozen after create.]] - rationale - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[PATCH body. Today only `extend=true` is supported — pushes expires_at out by]] - rationale - backend/02_features/03_iam/sub_features/09_sessions/schemas.py
+- [[PanelCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[PanelResponse]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[PanelUpdateRequest]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[PartialSuccessJSON]] - code - backend/02_features/05_monitoring/sub_features/03_traces/schemas.py
+- [[PasskeyAuthBeginRequest]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyAuthBeginResponse]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyAuthCompleteRequest]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyCredentialRow]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyRegisterBeginRequest]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyRegisterBeginResponse]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PasskeyRegisterCompleteRequest]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[PermissionsGrant]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[PermissionsRevoke]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[Poll the outbox for events newer than `since_id`. Returns items + new cursor.]] - rationale - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[PreferencePatchBody]] - code - backend/02_features/06_notify/sub_features/09_preferences/schemas.py
+- [[PreferencePatchItem]] - code - backend/02_features/06_notify/sub_features/09_preferences/schemas.py
+- [[PreferenceRow]] - code - backend/02_features/06_notify/sub_features/09_preferences/schemas.py
+- [[QueryResult]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[RegisterMetric]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[ResolveRequest]] - code - backend/02_features/06_notify/sub_features/04_variables/schemas.py
+- [[RetentionCohort]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[RetentionResponse]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[RetentionRetained]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[Return the current max outbox id — use as `since_id` to start live tail from now]] - rationale - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[Returned by signup  signin  oauth — the token + user + session.]] - rationale - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[RoleCreate]] - code - backend/02_features/03_iam/sub_features/04_roles/schemas.py
+- [[RoleFlagPermissionCreate]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/schemas.py
+- [[RoleUpdate]] - code - backend/02_features/03_iam/sub_features/04_roles/schemas.py
+- [[RolesCreate]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[RolesGet]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[RuleCreate_1]] - code - backend/02_features/09_featureflags/sub_features/03_rules/schemas.py
+- [[RuleUpdate_1]] - code - backend/02_features/09_featureflags/sub_features/03_rules/schemas.py
+- [[RulesCreate]] - code - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[Sanitized key row — secret_hash never leaves the server.]] - rationale - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[SavedQueryCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/schemas.py
+- [[SavedQueryListResponse]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/schemas.py
+- [[SavedQueryResponse]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/schemas.py
+- [[SavedQueryUpdateRequest]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/schemas.py
+- [[SessionPatchBody]] - code - backend/02_features/03_iam/sub_features/09_sessions/schemas.py
+- [[Shared filter predicates for list + stats endpoints.]] - rationale - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[SigninBody]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[SignupBody]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[SilenceCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[SilenceMatcher]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[SilenceResponse]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[SmtpConfigCreate]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/schemas.py
+- [[SmtpConfigUpdate]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/schemas.py
+- [[SpanRow]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[SuppressionAdd]] - code - backend/02_features/06_notify/sub_features/16_suppression/schemas.py
+- [[SuppressionRow]] - code - backend/02_features/06_notify/sub_features/16_suppression/schemas.py
+- [[SyntheticCheckCreateRequest]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/schemas.py
+- [[SyntheticCheckResponse]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/schemas.py
+- [[SyntheticCheckUpdateRequest]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/schemas.py
+- [[TemplateBodiesUpsert]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateBodyInput]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateBodyRow]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateCreate]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateGroupCreate]] - code - backend/02_features/06_notify/sub_features/02_template_groups/schemas.py
+- [[TemplateGroupUpdate]] - code - backend/02_features/06_notify/sub_features/02_template_groups/schemas.py
+- [[TemplateUpdate]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[TemplateVariableCreate]] - code - backend/02_features/06_notify/sub_features/04_variables/schemas.py
+- [[TemplateVariableUpdate]] - code - backend/02_features/06_notify/sub_features/04_variables/schemas.py
+- [[TestSendRequest]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[Timerange]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[TotpCredentialRow]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[TotpSetupRequest]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[TotpSetupResponse]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[TotpVerify]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[TracesQuery]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[TransactionalSendRequest]] - code - backend/02_features/06_notify/sub_features/11_send/schemas.py
+- [[TransactionalSendResponse]] - code - backend/02_features/06_notify/sub_features/11_send/schemas.py
+- [[UserCreate]] - code - backend/02_features/03_iam/sub_features/03_users/schemas.py
+- [[UserListResponse]] - code - backend/02_features/03_iam/sub_features/03_users/schemas.py
+- [[UserUpdate]] - code - backend/02_features/03_iam/sub_features/03_users/schemas.py
+- [[UsersCreate]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[UsersGet]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[VapidPublicKeyOut]] - code - backend/02_features/06_notify/sub_features/08_webpush/schemas.py
+- [[VaultConfigsDelete]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[VaultConfigsGet]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+- [[WebpushSubscriptionCreate]] - code - backend/02_features/06_notify/sub_features/08_webpush/schemas.py
+- [[WebpushSubscriptionOut]] - code - backend/02_features/06_notify/sub_features/08_webpush/schemas.py
+- [[WorkspaceCreate]] - code - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[WorkspaceListResponse]] - code - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[WorkspaceMembershipCreate]] - code - backend/02_features/03_iam/sub_features/07_memberships/schemas.py
+- [[WorkspaceUpdate]] - code - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[WorkspacesCreate]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[WorkspacesGet]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[_c()]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[_check_shape()]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[_coerce_timestamp()]] - code - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[_coerce_ts()]] - code - backend/02_features/03_iam/sub_features/09_sessions/schemas.py
+- [[_email_shape()]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[_fk()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[_one_schedule_only()]] - code - backend/02_features/06_notify/sub_features/11_send/schemas.py
+- [[_scope_targets()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[_slug_shape()]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[_ts()]] - code - backend/02_features/09_featureflags/sub_features/03_rules/schemas.py
+- [[_validate_code()]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[_validate_email()]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[_validate_flag_key()]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[_validate_slug()]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[audit.outbox — Pydantic v2 models for the tail endpoint.]] - rationale - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[evaluate_route()]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/routes.py
+- [[featureflags.flags.create — effect node.]] - rationale - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[featureflags.flags.get — control node.]] - rationale - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[featureflags.overrides.set — effect node.]] - rationale - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[featureflags.permissions.grant — effect node.]] - rationale - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[featureflags.permissions.revoke — effect node.]] - rationale - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[featureflags.rules.create — effect node.]] - rationale - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[featureflags_flags_create.py]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_create.py
+- [[featureflags_flags_get.py]] - code - backend/02_features/09_featureflags/sub_features/01_flags/nodes/featureflags_flags_get.py
+- [[featureflags_overrides_set.py]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/nodes/featureflags_overrides_set.py
+- [[featureflags_permissions_grant.py]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_grant.py
+- [[featureflags_permissions_revoke.py]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/nodes/featureflags_permissions_revoke.py
+- [[featureflags_rules_create.py]] - code - backend/02_features/09_featureflags/sub_features/03_rules/nodes/featureflags_rules_create.py
+- [[funnel_route()]] - code - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[iam.applications.create — effect node.]] - rationale - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[iam.applications.get — control node.]] - rationale - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[iam.auth.revoke_session — effect node.  Marks the session row revoked + emits au]] - rationale - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[iam.auth.signin — effect node.  Wraps the signin service verify credential + mi]] - rationale - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[iam.auth.signup — effect node.  Wraps the signup service create email_password]] - rationale - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[iam.groups.create — effect node.]] - rationale - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[iam.groups.get — control node.]] - rationale - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[iam.memberships.org.assign — effect node.]] - rationale - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[iam.memberships.org.revoke — effect node.]] - rationale - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[iam.memberships.workspace.assign — effect node. org_id auto-derived from workspa]] - rationale - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[iam.memberships.workspace.revoke — effect node.]] - rationale - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[iam.orgs.create — effect node.  Creates an org (fct_orgs row + display_name attr]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[iam.orgs.get — control node (read-only cross-sub-feature lookup).  Returns the f]] - rationale - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[iam.roles.create — effect node.]] - rationale - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[iam.roles.get — control node.]] - rationale - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[iam.users.create — effect node.  Creates a user (fct + 3 dtl attrs) and emits au]] - rationale - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[iam.users.get — control node (read-only cross-sub-feature lookup).  Phase 6 role]] - rationale - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[iam.workspaces.create — effect node.  Validates parent org exists, creates a wor]] - rationale - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[iam.workspaces.get — control node (read-only cross-sub-feature lookup).  Returns]] - rationale - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[iam_applications_create.py]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_create.py
+- [[iam_applications_get.py]] - code - backend/02_features/03_iam/sub_features/06_applications/nodes/iam_applications_get.py
+- [[iam_auth_revoke_session.py]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_revoke_session.py
+- [[iam_auth_signin.py]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signin.py
+- [[iam_auth_signup.py]] - code - backend/02_features/03_iam/sub_features/10_auth/nodes/iam_auth_signup.py
+- [[iam_groups_create.py]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_create.py
+- [[iam_groups_get.py]] - code - backend/02_features/03_iam/sub_features/05_groups/nodes/iam_groups_get.py
+- [[iam_memberships_org_assign.py]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_assign.py
+- [[iam_memberships_org_revoke.py]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_org_revoke.py
+- [[iam_memberships_workspace_assign.py]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_assign.py
+- [[iam_memberships_workspace_revoke.py]] - code - backend/02_features/03_iam/sub_features/07_memberships/nodes/iam_memberships_workspace_revoke.py
+- [[iam_orgs_create.py]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_create.py
+- [[iam_orgs_get.py]] - code - backend/02_features/03_iam/sub_features/01_orgs/nodes/iam_orgs_get.py
+- [[iam_roles_create.py]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_create.py
+- [[iam_roles_get.py]] - code - backend/02_features/03_iam/sub_features/04_roles/nodes/iam_roles_get.py
+- [[iam_users_create.py]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_create.py
+- [[iam_users_get.py]] - code - backend/02_features/03_iam/sub_features/03_users/nodes/iam_users_get.py
+- [[iam_workspaces_create.py]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_create.py
+- [[iam_workspaces_get.py]] - code - backend/02_features/03_iam/sub_features/02_workspaces/nodes/iam_workspaces_get.py
+- [[increment.py]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[monitoring.metrics.increment — append a counter increment.  Effect node, tx=call]] - rationale - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/increment.py
+- [[monitoring.metrics.observe_histogram — record a histogram observation.  Effect n]] - rationale - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[monitoring.metrics.register — upsert a metric into the registry.  Effect node, t]] - rationale - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[node.py]] - code - backend/01_catalog/node.py
+- [[observe.py]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/observe.py
+- [[outbox_cursor_route()]] - code - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[register.py]] - code - backend/02_features/05_monitoring/sub_features/02_metrics/nodes/register.py
+- [[routes.py_40]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/routes.py
+- [[schemas.py_16]] - code - backend/02_features/03_iam/sub_features/01_orgs/schemas.py
+- [[schemas.py_15]] - code - backend/02_features/03_iam/sub_features/02_workspaces/schemas.py
+- [[schemas.py_19]] - code - backend/02_features/03_iam/sub_features/03_users/schemas.py
+- [[schemas.py_11]] - code - backend/02_features/03_iam/sub_features/04_roles/schemas.py
+- [[schemas.py_22]] - code - backend/02_features/03_iam/sub_features/05_groups/schemas.py
+- [[schemas.py_17]] - code - backend/02_features/03_iam/sub_features/06_applications/schemas.py
+- [[schemas.py_18]] - code - backend/02_features/03_iam/sub_features/07_memberships/schemas.py
+- [[schemas.py_23]] - code - backend/02_features/03_iam/sub_features/09_sessions/schemas.py
+- [[schemas.py_21]] - code - backend/02_features/03_iam/sub_features/10_auth/schemas.py
+- [[schemas.py_12]] - code - backend/02_features/03_iam/sub_features/11_magic_link/schemas.py
+- [[schemas.py_20]] - code - backend/02_features/03_iam/sub_features/12_otp/schemas.py
+- [[schemas.py_13]] - code - backend/02_features/03_iam/sub_features/13_passkeys/schemas.py
+- [[schemas.py_14]] - code - backend/02_features/03_iam/sub_features/15_api_keys/schemas.py
+- [[schemas.py_37]] - code - backend/02_features/04_audit/sub_features/01_events/schemas.py
+- [[schemas.py_38]] - code - backend/02_features/04_audit/sub_features/02_saved_views/schemas.py
+- [[schemas.py_39]] - code - backend/02_features/04_audit/sub_features/03_outbox/schemas.py
+- [[schemas.py_26]] - code - backend/02_features/05_monitoring/sub_features/01_logs/schemas.py
+- [[schemas.py_29]] - code - backend/02_features/05_monitoring/sub_features/03_traces/schemas.py
+- [[schemas.py_27]] - code - backend/02_features/05_monitoring/sub_features/04_saved_queries/schemas.py
+- [[schemas.py_30]] - code - backend/02_features/05_monitoring/sub_features/05_dashboards/schemas.py
+- [[schemas.py_28]] - code - backend/02_features/05_monitoring/sub_features/06_synthetic/schemas.py
+- [[schemas.py_25]] - code - backend/02_features/05_monitoring/sub_features/07_alerts/schemas.py
+- [[schemas.py_6]] - code - backend/02_features/06_notify/sub_features/01_smtp_configs/schemas.py
+- [[schemas.py]] - code - backend/02_features/06_notify/sub_features/02_template_groups/schemas.py
+- [[schemas.py_4]] - code - backend/02_features/06_notify/sub_features/03_templates/schemas.py
+- [[schemas.py_3]] - code - backend/02_features/06_notify/sub_features/04_variables/schemas.py
+- [[schemas.py_5]] - code - backend/02_features/06_notify/sub_features/06_deliveries/schemas.py
+- [[schemas.py_8]] - code - backend/02_features/06_notify/sub_features/07_email/schemas.py
+- [[schemas.py_2]] - code - backend/02_features/06_notify/sub_features/08_webpush/schemas.py
+- [[schemas.py_10]] - code - backend/02_features/06_notify/sub_features/09_preferences/schemas.py
+- [[schemas.py_7]] - code - backend/02_features/06_notify/sub_features/11_send/schemas.py
+- [[schemas.py_1]] - code - backend/02_features/06_notify/sub_features/16_suppression/schemas.py
+- [[schemas.py_31]] - code - backend/02_features/09_featureflags/sub_features/01_flags/schemas.py
+- [[schemas.py_32]] - code - backend/02_features/09_featureflags/sub_features/02_permissions/schemas.py
+- [[schemas.py_34]] - code - backend/02_features/09_featureflags/sub_features/03_rules/schemas.py
+- [[schemas.py_33]] - code - backend/02_features/09_featureflags/sub_features/04_overrides/schemas.py
+- [[schemas.py_35]] - code - backend/02_features/09_featureflags/sub_features/05_evaluations/schemas.py
+- [[tail_route()]] - code - backend/02_features/04_audit/sub_features/01_events/routes.py
+- [[types.py_1]] - code - backend/02_features/05_monitoring/query_dsl/types.py
+- [[vault.configs.delete — effect node. Soft-delete by id.]] - rationale - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[vault.configs.get — control node. Read-only lookup for cross-sub-feature callers]] - rationale - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+- [[vault_configs_delete.py]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_delete.py
+- [[vault_configs_get.py]] - code - backend/02_features/02_vault/sub_features/02_configs/nodes/vault_configs_get.py
+
+## Live Query (requires Dataview plugin)
+
+```dataview
+TABLE source_file, type FROM #community/Node_Catalog_&_Feature_Implementations
+SORT file.name ASC
+```
+
+## Connections to other communities
+- 52 edges to [[_COMMUNITY_API Routes & Response Handling]]
+- 48 edges to [[_COMMUNITY_Service & Repository Layer]]
+- 40 edges to [[_COMMUNITY_Monitoring Query DSL]]
+- 36 edges to [[_COMMUNITY_Audit Emit Pipeline]]
+- 11 edges to [[_COMMUNITY_Audit Events & Saved Views]]
+- 9 edges to [[_COMMUNITY_Auth & Error Handling]]
+- 8 edges to [[_COMMUNITY_Monitoring Dashboards Backend]]
+- 5 edges to [[_COMMUNITY_Alert Evaluator Worker]]
+- 4 edges to [[_COMMUNITY_Session Auth & Middleware]]
+- 4 edges to [[_COMMUNITY_Audit Outbox]]
+- 3 edges to [[_COMMUNITY_Admin Routes & DLQ]]
+- 3 edges to [[_COMMUNITY_Frontend API Client]]
+- 3 edges to [[_COMMUNITY_Monitoring Stores & Workers]]
+- 3 edges to [[_COMMUNITY_Feature Flag Evaluations Node]]
+- 2 edges to [[_COMMUNITY_Notify Templates & Email Delivery]]
+- 2 edges to [[_COMMUNITY_Vault Config Update Node]]
+- 2 edges to [[_COMMUNITY_Core Infrastructure]]
+
+## Top bridge nodes
+- [[BaseModel]] - degree 305, connects to 16 communities
+- [[tail_route()]] - degree 7, connects to 3 communities
+- [[outbox_cursor_route()]] - degree 5, connects to 3 communities
+- [[types.py_1]] - degree 14, connects to 2 communities
+- [[schemas.py_3]] - degree 7, connects to 2 communities

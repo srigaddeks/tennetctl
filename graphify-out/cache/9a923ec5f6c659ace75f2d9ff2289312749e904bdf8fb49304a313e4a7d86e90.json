@@ -1,0 +1,1 @@
+{"nodes": [{"id": "catalog_context", "label": "01_catalog/context.py \u2014 NodeContext frozen dataclass; carries user/session/trace/conn through run_node", "file_type": "code", "source_file": "backend/01_catalog/context.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

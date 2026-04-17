@@ -101,6 +101,30 @@ async def _send_one(conn: Any, delivery: dict, vault: Any) -> None:
     delivery_id = delivery["id"]
     recipient_user_id = delivery["recipient_user_id"]
 
+    # Fallback supersession: another delivery for this (org,template,user)
+    # already reached opened/clicked — skip this channel.
+    superseded = await conn.fetchval(
+        '''
+        SELECT 1 FROM "06_notify"."v_notify_deliveries"
+        WHERE org_id = $1 AND template_id = $2 AND recipient_user_id = $3
+          AND id <> $4 AND status_code IN ('opened','clicked')
+        LIMIT 1
+        ''',
+        delivery["org_id"], delivery["template_id"], recipient_user_id, delivery_id,
+    )
+    if superseded:
+        await conn.execute(
+            '''UPDATE "06_notify"."15_fct_notify_deliveries"
+               SET status_id = 9,
+                   failure_reason = 'superseded_by_primary',
+                   attempt_count = attempt_count + 1,
+                   next_retry_at = NULL,
+                   updated_at = CURRENT_TIMESTAMP
+               WHERE id = $1''',
+            delivery_id,
+        )
+        return
+
     # Resolve all active browser subscriptions for this user
     subs = await _repo.get_user_webpush_subscriptions(conn, user_id=recipient_user_id)
     if not subs:
@@ -109,11 +133,17 @@ async def _send_one(conn: Any, delivery: dict, vault: Any) -> None:
         )
         return
 
-    # Build notification payload from resolved variables
+    # Build notification payload from resolved variables + deep_link
     resolved_vars = delivery.get("resolved_variables") or {}
     title = resolved_vars.get("subject") or resolved_vars.get("title") or "Notification"
     body = resolved_vars.get("body") or resolved_vars.get("message") or ""
-    payload = json.dumps({"title": title, "body": body, "delivery_id": delivery_id})
+    url = delivery.get("deep_link") or resolved_vars.get("url") or "/"
+    payload = json.dumps({
+        "title": title,
+        "body": body,
+        "delivery_id": delivery_id,
+        "url": url,
+    })
 
     # Load VAPID private key (PEM) from vault
     priv_pem = await vault.get(_VAPID_PRIVATE_KEY)
@@ -141,8 +171,17 @@ async def _send_one(conn: Any, delivery: dict, vault: Any) -> None:
             errors.append(f"sub={sub['id'][:8]} err={exc}")
 
     if errors:
-        await _repo.mark_delivery_failed(
-            conn, delivery_id=delivery_id, reason="; ".join(errors[:3])
+        _del_repo: Any = import_module(
+            "backend.02_features.06_notify.sub_features.06_deliveries.repository"
+        )
+        backoff = _del_repo.backoff_seconds_for_attempt(
+            int(delivery.get("attempt_count") or 0)
+        )
+        await _del_repo.mark_retryable_error(
+            conn,
+            delivery_id=delivery_id,
+            reason="; ".join(errors[:3])[:500],
+            backoff_seconds=backoff,
         )
     else:
         await _repo.mark_delivery_sent(conn, delivery_id=delivery_id)
@@ -166,8 +205,17 @@ async def process_queued_webpush_deliveries(
                     "webpush send error delivery=%s: %s", delivery["id"], exc
                 )
                 try:
-                    await _repo.mark_delivery_failed(
-                        conn, delivery_id=delivery["id"], reason=str(exc)
+                    _del_repo: Any = import_module(
+                        "backend.02_features.06_notify.sub_features.06_deliveries.repository"
+                    )
+                    backoff = _del_repo.backoff_seconds_for_attempt(
+                        int(delivery.get("attempt_count") or 0)
+                    )
+                    await _del_repo.mark_retryable_error(
+                        conn,
+                        delivery_id=delivery["id"],
+                        reason=str(exc)[:500],
+                        backoff_seconds=backoff,
                     )
                 except Exception:
                     pass

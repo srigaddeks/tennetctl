@@ -34,6 +34,12 @@ _group_repo: Any = import_module(
 _smtp_repo: Any = import_module(
     "backend.02_features.06_notify.sub_features.01_smtp_configs.repository"
 )
+_suppression_repo: Any = import_module(
+    "backend.02_features.06_notify.sub_features.16_suppression.repository"
+)
+_suppression_svc: Any = import_module(
+    "backend.02_features.06_notify.sub_features.16_suppression.service"
+)
 
 logger = logging.getLogger("tennetctl.notify.email")
 
@@ -96,6 +102,58 @@ async def _send_one(
     # 1. Resolve recipient email
     recipient_email = await _get_recipient_email(conn, delivery["recipient_user_id"])
 
+    # 1a-pre. Fallback supersession: if another delivery for the same
+    # (org_id, template_id, recipient_user_id) reached opened/clicked,
+    # this is a losing fallback — skip without sending.
+    superseded = await conn.fetchval(
+        '''
+        SELECT 1 FROM "06_notify"."v_notify_deliveries"
+        WHERE org_id = $1 AND template_id = $2 AND recipient_user_id = $3
+          AND id <> $4 AND status_code IN ('opened','clicked')
+        LIMIT 1
+        ''',
+        delivery["org_id"], delivery["template_id"], delivery["recipient_user_id"],
+        delivery["id"],
+    )
+    if superseded:
+        await conn.execute(
+            '''UPDATE "06_notify"."15_fct_notify_deliveries"
+               SET status_id = 9,
+                   failure_reason = 'superseded_by_primary',
+                   attempt_count = attempt_count + 1,
+                   next_retry_at = NULL,
+                   updated_at = CURRENT_TIMESTAMP
+               WHERE id = $1''',
+            delivery["id"],
+        )
+        return
+
+    # 1a. Suppression check — short-circuit before any SMTP work.
+    suppressed = await _suppression_repo.is_suppressed(
+        conn, org_id=delivery["org_id"], email=recipient_email,
+    )
+    if suppressed:
+        reason = await _suppression_repo.get_reason(
+            conn, org_id=delivery["org_id"], email=recipient_email,
+        )
+        _del_repo_local: Any = import_module(
+            "backend.02_features.06_notify.sub_features.06_deliveries.repository"
+        )
+        await conn.execute(
+            '''UPDATE "06_notify"."15_fct_notify_deliveries"
+               SET status_id = 9,
+                   failure_reason = $2,
+                   attempt_count = attempt_count + 1,
+                   next_retry_at = NULL,
+                   updated_at = CURRENT_TIMESTAMP
+               WHERE id = $1''',
+            delivery["id"], f"suppressed:{reason or 'unknown'}",
+        )
+        # Silence unused-import warning — _del_repo_local is kept so this
+        # status update stays consistent with repository semantics on reuse.
+        _ = _del_repo_local
+        return
+
     # 2. Fetch template with bodies
     template = await _tmpl_repo.get_template(conn, template_id=delivery["template_id"])
     if template is None:
@@ -133,11 +191,41 @@ async def _send_one(
 
     # 8. Build MIME message
     msg = email.message.EmailMessage()
-    msg["From"] = smtp_config["username"]
+    # Envelope From: explicit from_email if provided (required for providers
+    # where the SMTP username is an API key, e.g. SendGrid/Postmark/Mailgun);
+    # optionally prefix with a display name.
+    sender_addr = smtp_config.get("from_email") or smtp_config["username"]
+    sender_name = smtp_config.get("from_name")
+    msg["From"] = f"{sender_name} <{sender_addr}>" if sender_name else sender_addr
     msg["To"] = recipient_email
     msg["Subject"] = rendered_subject
     if template.get("reply_to"):
         msg["Reply-To"] = template["reply_to"]
+
+    # RFC 8058 one-click unsubscribe. Signed token is cookie-less + stable;
+    # includes org_id, email, and the template's category for per-category
+    # opt-out granularity.
+    try:
+        signing_key = await _suppression_svc._signing_key_bytes(vault)
+        unsub_token = _suppression_svc.make_unsubscribe_token(
+            org_id=delivery["org_id"],
+            email=recipient_email,
+            category_code=template.get("category_code"),
+            signing_key=signing_key,
+        )
+        unsub_url = f"{base_tracking_url}/v1/notify/unsubscribe?token={unsub_token}"
+        # mailto: fallback first, then HTTPS per RFC 8058 ordering.
+        mailto_domain = (sender_addr.split("@", 1)[1] if "@" in sender_addr else "example.com")
+        msg["List-Unsubscribe"] = (
+            f"<mailto:unsubscribe@{mailto_domain}>, <{unsub_url}>"
+        )
+        msg["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+    except Exception as exc:
+        logger.warning(
+            "Could not attach List-Unsubscribe header for delivery=%s: %s",
+            delivery["id"], exc,
+        )
+
     msg.set_content(rendered_text or "")
     msg.add_alternative(tracked_html, subtype="html")
 
@@ -152,12 +240,18 @@ async def _send_one(
         validate_certs=False,
     )
 
-    # 10. Mark delivery as sent
-    await _del_repo.update_delivery_status(
-        conn,
-        delivery_id=delivery["id"],
-        status_id=3,  # sent
-        delivered_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+    # 10. Mark delivery as sent (increments attempt_count, resets next_retry_at)
+    await conn.execute(
+        '''
+        UPDATE "06_notify"."15_fct_notify_deliveries"
+        SET status_id = 3,
+            delivered_at = CURRENT_TIMESTAMP,
+            next_retry_at = NULL,
+            attempt_count = attempt_count + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        ''',
+        delivery["id"],
     )
 
 
@@ -189,14 +283,18 @@ async def process_queued_email_deliveries(
                 )
                 sent += 1
             except Exception as exc:
-                logger.warning(
-                    "email send failed delivery=%s: %s", delivery["id"], exc
+                backoff = _del_repo.backoff_seconds_for_attempt(
+                    int(delivery.get("attempt_count") or 0)
                 )
-                await _del_repo.update_delivery_status(
+                logger.warning(
+                    "email send failed delivery=%s attempt=%d backoff=%ds: %s",
+                    delivery["id"], delivery.get("attempt_count") or 0, backoff, exc,
+                )
+                await _del_repo.mark_retryable_error(
                     conn,
                     delivery_id=delivery["id"],
-                    status_id=8,  # failed
-                    failure_reason=str(exc)[:500],
+                    reason=str(exc)[:500],
+                    backoff_seconds=backoff,
                 )
     return sent
 

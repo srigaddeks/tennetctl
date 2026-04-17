@@ -1,0 +1,131 @@
+# Global default redaction rules. org_id = NULL → applies to all orgs.
+# Rules are executed in priority order (lower first). Regex rules use Python
+# `re` syntax. Denylist rules match attribute keys case-insensitively.
+schema: "05_monitoring"
+table: "12_fct_monitoring_redaction_rules"
+rows:
+  - code: credit_card
+    org_id: null
+    pattern: "\\b(?:\\d[ -]*?){13,19}\\b"
+    applies_to: both
+    kind: regex
+    replacement: "[REDACTED_CC]"
+    is_active: true
+    priority: 10
+
+  - code: aws_access_key
+    org_id: null
+    pattern: "AKIA[A-Z0-9]{16}"
+    applies_to: both
+    kind: regex
+    replacement: "[REDACTED_AWS_KEY]"
+    is_active: true
+    priority: 20
+
+  - code: jwt_token
+    org_id: null
+    pattern: "eyJ[A-Za-z0-9\\-_=]+\\.eyJ[A-Za-z0-9\\-_=]+\\.[A-Za-z0-9\\-_.+/=]*"
+    applies_to: both
+    kind: regex
+    replacement: "[REDACTED_JWT]"
+    is_active: true
+    priority: 30
+
+  - code: bearer_token
+    org_id: null
+    pattern: "Bearer [A-Za-z0-9\\-._~+/]+=*"
+    applies_to: both
+    kind: regex
+    replacement: "Bearer [REDACTED]"
+    is_active: true
+    priority: 40
+
+  - code: password_kv
+    org_id: null
+    pattern: "(?i)password\\s*=\\s*\\S+"
+    applies_to: body
+    kind: regex
+    replacement: "password=[REDACTED]"
+    is_active: true
+    priority: 50
+
+  - code: deny_password
+    org_id: null
+    pattern: password
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 100
+
+  - code: deny_token
+    org_id: null
+    pattern: token
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 101
+
+  - code: deny_authorization
+    org_id: null
+    pattern: authorization
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 102
+
+  - code: deny_cookie
+    org_id: null
+    pattern: cookie
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 103
+
+  - code: deny_set_cookie
+    org_id: null
+    pattern: set-cookie
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 104
+
+  - code: deny_api_key
+    org_id: null
+    pattern: api_key
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 105
+
+  - code: deny_secret
+    org_id: null
+    pattern: secret
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 106
+
+  - code: deny_ssn
+    org_id: null
+    pattern: ssn
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 107
+
+  - code: deny_credit_card
+    org_id: null
+    pattern: credit_card
+    applies_to: attribute
+    kind: denylist
+    replacement: "[REDACTED]"
+    is_active: true
+    priority: 108

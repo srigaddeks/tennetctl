@@ -23,7 +23,11 @@ class DeliveryRow(BaseModel):
     status_code: str
     status_label: str
     resolved_variables: dict
+    deep_link: str | None = None
     audit_outbox_id: int | None
+    attempt_count: int = 0
+    max_attempts: int = 3
+    next_retry_at: Any = None
     failure_reason: str | None
     scheduled_at: Any = None
     attempted_at: Any = None

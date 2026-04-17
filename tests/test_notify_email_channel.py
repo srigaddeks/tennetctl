@@ -288,8 +288,8 @@ async def test_email_sent_updates_status_to_sent(live_app):
 
 
 @pytest.mark.asyncio
-async def test_email_send_failure_marks_failed(live_app):
-    """SMTP error updates delivery status to 'failed' with failure_reason."""
+async def test_email_send_failure_retries_then_fails(live_app):
+    """SMTP error schedules retry; only marks 'failed' after max_attempts (3)."""
     pool, _ = live_app
     async with pool.acquire() as conn:
         await _insert_iam_user(conn)
@@ -304,15 +304,50 @@ async def test_email_send_failure_marks_failed(live_app):
         new_callable=AsyncMock,
         side_effect=Exception("Connection refused"),
     ):
+        # First attempt → retry (status stays queued, next_retry_at set)
         count = await _email_svc.process_queued_email_deliveries(
             pool, vault, _BASE_TRACKING_URL
         )
+        assert count == 0
 
-    assert count == 0
+    async with pool.acquire() as conn:
+        d = await _del_repo.get_delivery(conn, delivery["id"])
+    assert d["status_code"] == "queued"
+    assert d["attempt_count"] == 1
+    assert d["next_retry_at"] is not None
+    assert "Connection refused" in (d["failure_reason"] or "")
+
+    # Bypass backoff window to simulate retries 2 and 3.
+    async with pool.acquire() as conn:
+        await conn.execute(
+            '''UPDATE "06_notify"."15_fct_notify_deliveries"
+               SET next_retry_at = NULL WHERE id = $1''',
+            delivery["id"],
+        )
+    with patch(
+        "aiosmtplib.send",
+        new_callable=AsyncMock,
+        side_effect=Exception("Connection refused"),
+    ):
+        await _email_svc.process_queued_email_deliveries(pool, vault, _BASE_TRACKING_URL)
+
+    async with pool.acquire() as conn:
+        await conn.execute(
+            '''UPDATE "06_notify"."15_fct_notify_deliveries"
+               SET next_retry_at = NULL WHERE id = $1''',
+            delivery["id"],
+        )
+    with patch(
+        "aiosmtplib.send",
+        new_callable=AsyncMock,
+        side_effect=Exception("Connection refused"),
+    ):
+        await _email_svc.process_queued_email_deliveries(pool, vault, _BASE_TRACKING_URL)
+
     async with pool.acquire() as conn:
         d = await _del_repo.get_delivery(conn, delivery["id"])
     assert d["status_code"] == "failed"
-    assert "Connection refused" in (d["failure_reason"] or "")
+    assert d["attempt_count"] == 3
 
 
 @pytest.mark.asyncio
@@ -344,8 +379,8 @@ async def test_direct_email_address_as_recipient(live_app):
 
 
 @pytest.mark.asyncio
-async def test_no_smtp_config_marks_failed(live_app):
-    """Template group without smtp_config_id causes delivery to fail gracefully."""
+async def test_no_smtp_config_schedules_retry(live_app):
+    """Template group without smtp_config_id triggers the retryable error path."""
     pool, _ = live_app
     async with pool.acquire() as conn:
         group = await _insert_template_group(conn, smtp_config_id=None)
@@ -361,7 +396,10 @@ async def test_no_smtp_config_marks_failed(live_app):
     assert count == 0
     async with pool.acquire() as conn:
         d = await _del_repo.get_delivery(conn, delivery["id"])
-    assert d["status_code"] == "failed"
+    # First attempt leaves delivery queued with a scheduled retry.
+    assert d["status_code"] == "queued"
+    assert d["attempt_count"] == 1
+    assert d["next_retry_at"] is not None
 
 
 @pytest.mark.asyncio

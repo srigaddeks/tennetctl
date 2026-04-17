@@ -23,7 +23,8 @@ async def poll_and_claim_email_deliveries(conn: Any, *, limit: int = 10) -> list
             SELECT id FROM {_FCT}
             WHERE status_id  = 2        -- queued
               AND channel_id = 1        -- email
-              AND attempted_at IS NULL
+              AND (next_retry_at IS NULL OR next_retry_at <= CURRENT_TIMESTAMP)
+              AND (scheduled_at IS NULL OR scheduled_at <= CURRENT_TIMESTAMP)
             ORDER BY created_at ASC
             LIMIT $1
             FOR UPDATE SKIP LOCKED

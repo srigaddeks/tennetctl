@@ -1,0 +1,11 @@
+schema: "05_monitoring"
+table: "01_dim_monitoring_severity"
+rows:
+  - {id: 0,  code: unspecified, label: Unspecified, description: "OTLP SeverityNumber UNSPECIFIED.",                        deprecated_at: null}
+  - {id: 1,  code: trace,       label: Trace,       description: "OTLP SeverityNumber TRACE. Extremely verbose.",            deprecated_at: null}
+  - {id: 5,  code: debug,       label: Debug,       description: "OTLP SeverityNumber DEBUG. Developer diagnostics.",        deprecated_at: null}
+  - {id: 9,  code: info,        label: Info,        description: "OTLP SeverityNumber INFO. Operational events.",            deprecated_at: null}
+  - {id: 10, code: info2,       label: Info2,       description: "OTLP SeverityNumber INFO2. Less common INFO variant.",     deprecated_at: null}
+  - {id: 13, code: warn,        label: Warn,        description: "OTLP SeverityNumber WARN. Unexpected but non-fatal.",      deprecated_at: null}
+  - {id: 17, code: error,       label: Error,       description: "OTLP SeverityNumber ERROR. Actionable failure.",           deprecated_at: null}
+  - {id: 21, code: fatal,       label: Fatal,       description: "OTLP SeverityNumber FATAL. Process-level termination.",    deprecated_at: null}

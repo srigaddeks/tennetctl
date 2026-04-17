@@ -26,6 +26,28 @@ class DeliveryPatchBody(BaseModel):
     status: str  # "opened" is the only supported value for now (mark-read)
 
 
+@router.get("/v1/notify/unread-count", status_code=200)
+async def unread_count_route(request: Request) -> dict:
+    """Server-computed unread notification count for the current user.
+
+    Unread = status NOT IN (opened, clicked, failed, unsubscribed, bounced).
+    Scoped to the recipient_user_id query param OR the session user.
+    """
+    user_id = request.query_params.get("recipient_user_id") or getattr(request.state, "user_id", None)
+    if not user_id:
+        raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
+    org_id = request.query_params.get("org_id") or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    if not org_id:
+        raise _errors.ValidationError("org_id is required")
+
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        count = await _service.unread_count(
+            conn, org_id=org_id, recipient_user_id=user_id,
+        )
+    return _response.success({"count": count})
+
+
 @router.get("/v1/notify/deliveries", status_code=200)
 async def list_deliveries_route(request: Request) -> dict:
     org_id = request.query_params.get("org_id") or request.headers.get("x-org-id")
@@ -69,7 +91,7 @@ async def get_delivery_route(request: Request, delivery_id: str) -> dict:
 async def patch_delivery_route(
     delivery_id: str, body: DeliveryPatchBody, request: Request
 ) -> dict:
-    """Mark an in-app delivery as read.
+    """Mark a delivery as read, across any channel.
 
     Only `status: "opened"` is supported. Caller must be the recipient.
     Requires authentication.
@@ -85,7 +107,7 @@ async def patch_delivery_route(
 
     pool = request.app.state.pool
     async with pool.acquire() as conn:
-        updated = await _service.mark_in_app_read(
+        updated = await _service.mark_read(
             conn, delivery_id=delivery_id, user_id=user_id
         )
     return _response.success(DeliveryRow(**updated).model_dump())

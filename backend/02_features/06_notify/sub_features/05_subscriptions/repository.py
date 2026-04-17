@@ -42,14 +42,18 @@ async def create_subscription(
     template_id: str,
     channel_id: int,
     created_by: str,
+    recipient_mode: str = "actor",
+    recipient_filter: dict | None = None,
 ) -> dict:
     await conn.execute(
         f"""
         INSERT INTO {_FCT}
-            (id, org_id, name, event_key_pattern, template_id, channel_id, created_by, updated_by)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
+            (id, org_id, name, event_key_pattern, template_id, channel_id,
+             recipient_mode, recipient_filter, created_by, updated_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)
         """,
-        sub_id, org_id, name, event_key_pattern, template_id, channel_id, created_by,
+        sub_id, org_id, name, event_key_pattern, template_id, channel_id,
+        recipient_mode, recipient_filter or {}, created_by,
     )
     row = await conn.fetchrow(f'SELECT * FROM {_VIEW} WHERE id = $1', sub_id)
     return dict(row)
@@ -58,7 +62,8 @@ async def create_subscription(
 async def update_subscription(
     conn: Any, *, sub_id: str, updated_by: str, **fields: Any
 ) -> dict | None:
-    allowed = {"name", "event_key_pattern", "template_id", "channel_id", "is_active"}
+    allowed = {"name", "event_key_pattern", "template_id", "channel_id",
+               "recipient_mode", "recipient_filter", "is_active"}
     updates = {k: v for k, v in fields.items() if k in allowed and v is not None}
     if not updates:
         return await get_subscription(conn, sub_id)

@@ -1,0 +1,628 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: monitoring
+  number: 5
+  module: monitoring
+  always_on: false
+  label: Monitoring
+  description: OTel-aligned logs + metrics + traces. Ingest via NATS JetStream (logs + spans) and direct Postgres writes (metrics). Storage seam swaps Postgres → ClickHouse in v0.2 with zero caller code changes. 13-01 lays foundation; 13-02 ships metrics; 13-03+ add logs/traces ingest.
+  manifest_version: 1
+
+spec:
+  depends_on_modules:
+    - iam
+    - audit
+
+  sub_features:
+    - key: monitoring.logs
+      number: 1
+      label: Logs
+      description: OTel logs pillar. Durable ingest via NATS JetStream; daily-partitioned evt_monitoring_logs. 13-01 creates schema + store seam; 13-03 adds OTLP/HTTP receiver.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "60_evt_monitoring_logs"
+        views:
+          - "v_monitoring_logs"
+      nodes:
+        - key: monitoring.logs.otlp_ingest
+          kind: request
+          handler: sub_features.01_logs.nodes.otlp_ingest.OtlpLogsIngest
+          label: OTLP Logs Ingest
+          description: Decode OTLP/HTTP logs body (protobuf or JSON) and publish each ResourceLogs batch to JetStream subject monitoring.logs.otel.{service_name}. Hot path — audit skipped.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, logs, ingest, hot_path]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: none
+        - key: monitoring.logs.query
+          kind: request
+          handler: sub_features.01_logs.nodes.query.LogsQueryNode
+          label: Logs DSL Query
+          description: Read-only DSL query over v_monitoring_logs. Org-scoped via NodeContext. Hot-path audit skipped.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, logs, query]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/monitoring/otlp/v1/logs
+          handler: sub_features.01_logs.routes.otlp_logs
+        - method: POST
+          path: /v1/monitoring/logs/query
+          handler: sub_features.01_logs.routes.logs_query_route
+        - method: GET
+          path: /v1/monitoring/logs/tail
+          handler: sub_features.01_logs.routes.logs_tail_route
+      ui_pages: []
+
+    - key: monitoring.metrics
+      number: 2
+      label: Metrics
+      description: Counter / gauge / histogram metrics. Registry enforces label-key allowlist + max cardinality. 1m/5m/1h rollup tables populated by pg_cron in 13-07.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "10_fct_monitoring_metrics"
+          - "61_evt_monitoring_metric_points"
+          - "70_evt_monitoring_metric_points_1m"
+          - "71_evt_monitoring_metric_points_5m"
+          - "72_evt_monitoring_metric_points_1h"
+        views:
+          - "v_monitoring_metrics"
+      nodes:
+        - key: monitoring.metrics.register
+          kind: effect
+          handler: sub_features.02_metrics.nodes.register.RegisterMetric
+          label: Register Metric
+          description: Upsert a metric into the registry (org_id, key). Idempotent. Validates kind + histogram_buckets pairing. Emits monitoring.metrics.registered audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, metrics, registry]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.metrics.increment
+          kind: effect
+          handler: sub_features.02_metrics.nodes.increment.IncrementMetric
+          label: Increment Counter
+          description: Append a counter increment point. Hot-path — audit skipped per 13-01 carve-out (ingest-path audit bypass). Cardinality reject raises DomainError + emits failure audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, metrics, ingest, hot_path]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+        - key: monitoring.metrics.set_gauge
+          kind: effect
+          handler: sub_features.02_metrics.nodes.set_gauge.SetGauge
+          label: Set Gauge
+          description: Append a gauge observation. Hot-path — audit skipped per 13-01 carve-out. Cardinality reject raises DomainError + emits failure audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, metrics, ingest, hot_path]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+        - key: monitoring.metrics.observe_histogram
+          kind: effect
+          handler: sub_features.02_metrics.nodes.observe.ObserveHistogram
+          label: Observe Histogram
+          description: Append a histogram observation (bucketised against the metric's histogram_buckets). Hot-path — audit skipped per 13-01 carve-out. Cardinality reject raises DomainError + emits failure audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, metrics, ingest, hot_path]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+        - key: monitoring.metrics.query
+          kind: request
+          handler: sub_features.02_metrics.nodes.query.MetricsQueryNode
+          label: Metrics DSL Query
+          description: Read-only DSL timeseries over evt_monitoring_metric_points. Rollup-aware in 13-07.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, metrics, query]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/monitoring/metrics
+          handler: sub_features.02_metrics.routes.register_metric_route
+        - method: GET
+          path: /v1/monitoring/metrics
+          handler: sub_features.02_metrics.routes.list_metrics_route
+        - method: GET
+          path: "/v1/monitoring/metrics/{key}"
+          handler: sub_features.02_metrics.routes.get_metric_route
+        - method: POST
+          path: "/v1/monitoring/metrics/{key}/increment"
+          handler: sub_features.02_metrics.routes.increment_metric_route
+        - method: POST
+          path: "/v1/monitoring/metrics/{key}/set"
+          handler: sub_features.02_metrics.routes.set_gauge_route
+        - method: POST
+          path: "/v1/monitoring/metrics/{key}/observe"
+          handler: sub_features.02_metrics.routes.observe_histogram_route
+        - method: POST
+          path: /v1/monitoring/metrics/query
+          handler: sub_features.02_metrics.routes.metrics_query_route
+      ui_pages: []
+
+    - key: monitoring.traces
+      number: 3
+      label: Traces
+      description: OTel spans pillar. Generated-stored duration_ns; partition on recorded_at. JetStream-backed ingest wired in 13-03.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "62_evt_monitoring_spans"
+        views:
+          - "v_monitoring_spans"
+      nodes:
+        - key: monitoring.traces.otlp_ingest
+          kind: request
+          handler: sub_features.03_traces.nodes.otlp_ingest.OtlpTracesIngest
+          label: OTLP Traces Ingest
+          description: Decode OTLP/HTTP traces body (protobuf or JSON) and publish each ResourceSpans batch to JetStream subject monitoring.traces.otel.{service_name}. Hot path — audit skipped.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, traces, ingest, hot_path]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: none
+        - key: monitoring.traces.query
+          kind: request
+          handler: sub_features.03_traces.nodes.query.TracesQueryNode
+          label: Traces DSL Query
+          description: Read-only DSL query over v_monitoring_spans. Org-scoped.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, traces, query]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/monitoring/otlp/v1/traces
+          handler: sub_features.03_traces.routes.otlp_traces
+        - method: POST
+          path: /v1/monitoring/traces/query
+          handler: sub_features.03_traces.routes.traces_query_route
+        - method: GET
+          path: "/v1/monitoring/traces/{trace_id}"
+          handler: sub_features.03_traces.routes.trace_detail_route
+      ui_pages: []
+
+    - key: monitoring.saved_queries
+      number: 4
+      label: Saved Queries
+      description: Persisted DSL queries (owned + shared) + run endpoint. Backed by fct_monitoring_saved_queries.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "10_fct_monitoring_saved_queries"
+        views:
+          - "v_monitoring_saved_queries"
+      nodes:
+        - key: monitoring.saved_queries.run
+          kind: request
+          handler: sub_features.04_saved_queries.nodes.run_saved_query.RunSavedQuery
+          label: Run Saved Query
+          description: Load a saved DSL by id and execute it against the appropriate target. Read-only.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, saved_queries, query]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/monitoring/saved-queries
+          handler: sub_features.04_saved_queries.routes.create_saved_query_route
+        - method: GET
+          path: /v1/monitoring/saved-queries
+          handler: sub_features.04_saved_queries.routes.list_saved_queries_route
+        - method: GET
+          path: "/v1/monitoring/saved-queries/{id}"
+          handler: sub_features.04_saved_queries.routes.get_saved_query_route
+        - method: PATCH
+          path: "/v1/monitoring/saved-queries/{id}"
+          handler: sub_features.04_saved_queries.routes.update_saved_query_route
+        - method: DELETE
+          path: "/v1/monitoring/saved-queries/{id}"
+          handler: sub_features.04_saved_queries.routes.delete_saved_query_route
+        - method: POST
+          path: "/v1/monitoring/saved-queries/{id}/run"
+          handler: sub_features.04_saved_queries.routes.run_saved_query_route
+        - method: GET
+          path: /health/monitoring
+          handler: sub_features.04_saved_queries.admin_routes.monitoring_health
+        - method: POST
+          path: /v1/monitoring/dlq/replay
+          handler: sub_features.04_saved_queries.admin_routes.dlq_replay
+      ui_pages: []
+
+    - key: monitoring.dashboards
+      number: 5
+      label: Dashboards
+      description: User/org-scoped dashboards containing visualization panels. Backed by fct_monitoring_dashboards + fct_monitoring_panels. Panels cascade-delete with parent dashboard.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "10_fct_monitoring_dashboards"
+          - "11_fct_monitoring_panels"
+        views:
+          - "v_monitoring_dashboards"
+          - "v_monitoring_panels"
+      nodes:
+        - key: monitoring.dashboards.create
+          kind: effect
+          handler: sub_features.05_dashboards.nodes.create_dashboard.CreateDashboard
+          label: Create Dashboard
+          description: Create a new dashboard owned by the caller. Emits monitoring.dashboards.created audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, dashboards]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.dashboards.update
+          kind: effect
+          handler: sub_features.05_dashboards.nodes.update_dashboard.UpdateDashboard
+          label: Update Dashboard
+          description: Update dashboard fields (owner-only). Emits monitoring.dashboards.updated audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, dashboards]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.dashboards.delete
+          kind: effect
+          handler: sub_features.05_dashboards.nodes.delete_dashboard.DeleteDashboard
+          label: Delete Dashboard
+          description: Soft-delete a dashboard (owner-only). Emits monitoring.dashboards.deleted audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, dashboards]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.dashboards.get
+          kind: request
+          handler: sub_features.05_dashboards.nodes.get_dashboard.GetDashboard
+          label: Get Dashboard
+          description: Read a single dashboard. Respects owner + shared visibility.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, dashboards]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.dashboards.list
+          kind: request
+          handler: sub_features.05_dashboards.nodes.list_dashboards.ListDashboards
+          label: List Dashboards
+          description: List dashboards visible to the caller (owned + shared in same org).
+          emits_audit: false
+          version: 1
+          tags: [monitoring, dashboards]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/monitoring/dashboards
+          handler: sub_features.05_dashboards.routes.list_dashboards_route
+        - method: POST
+          path: /v1/monitoring/dashboards
+          handler: sub_features.05_dashboards.routes.create_dashboard_route
+        - method: GET
+          path: "/v1/monitoring/dashboards/{id}"
+          handler: sub_features.05_dashboards.routes.get_dashboard_route
+        - method: PATCH
+          path: "/v1/monitoring/dashboards/{id}"
+          handler: sub_features.05_dashboards.routes.update_dashboard_route
+        - method: DELETE
+          path: "/v1/monitoring/dashboards/{id}"
+          handler: sub_features.05_dashboards.routes.delete_dashboard_route
+        - method: GET
+          path: "/v1/monitoring/dashboards/{id}/panels"
+          handler: sub_features.05_dashboards.routes.list_panels_route
+        - method: POST
+          path: "/v1/monitoring/dashboards/{id}/panels"
+          handler: sub_features.05_dashboards.routes.create_panel_route
+        - method: GET
+          path: "/v1/monitoring/dashboards/{id}/panels/{panel_id}"
+          handler: sub_features.05_dashboards.routes.get_panel_route
+        - method: PATCH
+          path: "/v1/monitoring/dashboards/{id}/panels/{panel_id}"
+          handler: sub_features.05_dashboards.routes.update_panel_route
+        - method: DELETE
+          path: "/v1/monitoring/dashboards/{id}/panels/{panel_id}"
+          handler: sub_features.05_dashboards.routes.delete_panel_route
+      ui_pages: []
+
+    - key: monitoring.synthetic
+      number: 6
+      label: Synthetic Checks
+      description: HTTP synthetic checks — periodic blackbox probes against configured URLs. Emits monitoring.synthetic.up (gauge) and monitoring.synthetic.duration_ms (histogram). On 3 consecutive failures emits monitoring.synthetic.down audit event.
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "10_fct_monitoring_synthetic_checks"
+          - "20_dtl_monitoring_synthetic_state"
+        views:
+          - "v_monitoring_synthetic_checks"
+      nodes:
+        - key: monitoring.synthetic.create
+          kind: effect
+          handler: sub_features.06_synthetic.nodes.create_check.CreateSyntheticCheck
+          label: Create Synthetic Check
+          description: Create a new synthetic HTTP check. Emits monitoring.synthetic.created audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, synthetic]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.synthetic.update
+          kind: effect
+          handler: sub_features.06_synthetic.nodes.update_check.UpdateSyntheticCheck
+          label: Update Synthetic Check
+          description: Update synthetic check fields. Emits monitoring.synthetic.updated audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, synthetic]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.synthetic.delete
+          kind: effect
+          handler: sub_features.06_synthetic.nodes.delete_check.DeleteSyntheticCheck
+          label: Delete Synthetic Check
+          description: Soft-delete a synthetic check. Emits monitoring.synthetic.deleted audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, synthetic]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.synthetic.get
+          kind: request
+          handler: sub_features.06_synthetic.nodes.get_check.GetSyntheticCheck
+          label: Get Synthetic Check
+          description: Fetch a single synthetic check by id.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, synthetic]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.synthetic.list
+          kind: request
+          handler: sub_features.06_synthetic.nodes.list_checks.ListSyntheticChecks
+          label: List Synthetic Checks
+          description: List synthetic checks for the caller's org.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, synthetic]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/monitoring/synthetic-checks
+          handler: sub_features.06_synthetic.routes.create_synthetic_check_route
+        - method: GET
+          path: /v1/monitoring/synthetic-checks
+          handler: sub_features.06_synthetic.routes.list_synthetic_checks_route
+        - method: GET
+          path: "/v1/monitoring/synthetic-checks/{id}"
+          handler: sub_features.06_synthetic.routes.get_synthetic_check_route
+        - method: PATCH
+          path: "/v1/monitoring/synthetic-checks/{id}"
+          handler: sub_features.06_synthetic.routes.update_synthetic_check_route
+        - method: DELETE
+          path: "/v1/monitoring/synthetic-checks/{id}"
+          handler: sub_features.06_synthetic.routes.delete_synthetic_check_route
+      ui_pages: []
+      # Workers owned by this sub-feature (asyncio fallback for pg_cron):
+      #   monitoring.rollup_scheduler   — calls monitoring_rollup_1m/5m/1h every 60/300/3600s
+      #   monitoring.partition_manager  — runs monitoring_partition_manager() daily at 03:00 UTC
+      #   monitoring.synthetic_runner   — periodic HTTP checks + metrics + audit
+      #   monitoring.notify_listener    — LISTEN monitoring_logs_new, SSE broadcaster
+
+    - key: monitoring.alerts
+      number: 7
+      label: Alerts
+      description: "Threshold-based alert rules with for-duration gating + silences. CRUD only in 13-08a; evaluator worker lands in 13-08b; UI in 13-08c."
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "01_dim_monitoring_alert_severity"
+          - "12_fct_monitoring_alert_rules"
+          - "13_fct_monitoring_silences"
+          - "20_dtl_monitoring_rule_state"
+          - "60_evt_monitoring_alert_events"
+        views:
+          - "v_monitoring_alert_rules"
+          - "v_monitoring_silences"
+          - "v_monitoring_alert_events"
+      nodes:
+        - key: monitoring.alerts.rule_create
+          kind: effect
+          handler: sub_features.07_alerts.nodes.rule_create.RuleCreate
+          label: Create Alert Rule
+          description: Creates an alert rule with DSL + condition + severity + notify template. Validates DSL via 13-05.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, alerts, rules]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.rule_update
+          kind: effect
+          handler: sub_features.07_alerts.nodes.rule_update.RuleUpdate
+          label: Update Alert Rule
+          description: Partial update of an alert rule. Revalidates DSL when changed. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, alerts, rules]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.rule_delete
+          kind: effect
+          handler: sub_features.07_alerts.nodes.rule_delete.RuleDelete
+          label: Delete Alert Rule
+          description: Soft-deletes an alert rule.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, alerts, rules]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.rule_get
+          kind: request
+          handler: sub_features.07_alerts.nodes.rule_get.RuleGet
+          label: Get Alert Rule
+          description: Fetches a single alert rule by id.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, alerts, rules]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.rule_list
+          kind: request
+          handler: sub_features.07_alerts.nodes.rule_list.RuleList
+          label: List Alert Rules
+          description: Lists alert rules for the caller's org.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, alerts, rules]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.silence_add
+          kind: effect
+          handler: sub_features.07_alerts.nodes.silence_add.SilenceAdd
+          label: Add Silence
+          description: Creates a silence window suppressing Notify fan-out for matching alerts.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, alerts, silences]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.event_list
+          kind: request
+          handler: sub_features.07_alerts.nodes.event_list.EventList
+          label: List Alert Events
+          description: Lists alert events with filters (rule_id/state/severity/since).
+          emits_audit: false
+          version: 1
+          tags: [monitoring, alerts, events]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.event_get
+          kind: request
+          handler: sub_features.07_alerts.nodes.event_get.EventGet
+          label: Get Alert Event
+          description: Fetches one alert event by id + started_at.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, alerts, events]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.alerts.evaluate
+          kind: effect
+          handler: sub_features.07_alerts.nodes.evaluate.EvaluateRule
+          label: Evaluate Alert Rule
+          description: Runs a single rule's DSL, detects transitions, updates pending state. Worker-owned; callable for dry-run/force-eval.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, alerts, worker]
+          execution:
+            timeout_ms: 15000
+            retries: 0
+            tx: own
+      routes:
+        - method: GET
+          path: /v1/monitoring/alert-rules
+          handler: sub_features.07_alerts.routes.list_alert_rules_route
+        - method: POST
+          path: /v1/monitoring/alert-rules
+          handler: sub_features.07_alerts.routes.create_alert_rule_route
+        - method: GET
+          path: "/v1/monitoring/alert-rules/{id}"
+          handler: sub_features.07_alerts.routes.get_alert_rule_route
+        - method: PATCH
+          path: "/v1/monitoring/alert-rules/{id}"
+          handler: sub_features.07_alerts.routes.update_alert_rule_route
+        - method: DELETE
+          path: "/v1/monitoring/alert-rules/{id}"
+          handler: sub_features.07_alerts.routes.delete_alert_rule_route
+        - method: POST
+          path: "/v1/monitoring/alert-rules/{id}/pause"
+          handler: sub_features.07_alerts.routes.pause_alert_rule_route
+        - method: POST
+          path: "/v1/monitoring/alert-rules/{id}/unpause"
+          handler: sub_features.07_alerts.routes.unpause_alert_rule_route
+        - method: GET
+          path: /v1/monitoring/silences
+          handler: sub_features.07_alerts.routes.list_silences_route
+        - method: POST
+          path: /v1/monitoring/silences
+          handler: sub_features.07_alerts.routes.create_silence_route
+        - method: DELETE
+          path: "/v1/monitoring/silences/{id}"
+          handler: sub_features.07_alerts.routes.delete_silence_route
+        - method: GET
+          path: /v1/monitoring/alerts
+          handler: sub_features.07_alerts.routes.list_alerts_route
+        - method: GET
+          path: "/v1/monitoring/alerts/{id}"
+          handler: sub_features.07_alerts.routes.get_alert_route
+        - method: POST
+          path: "/v1/monitoring/alerts/{id}/silence"
+          handler: sub_features.07_alerts.routes.silence_alert_route
+      ui_pages: []

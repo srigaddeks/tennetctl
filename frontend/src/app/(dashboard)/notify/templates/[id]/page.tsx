@@ -15,7 +15,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import { useMe } from "@/features/auth/hooks/use-auth";
-import { useTemplateGroups, usePatchTemplate, useTemplate, useTestSend, useUpsertBodies } from "@/features/notify/hooks/use-templates";
+import { useTemplateAnalytics, useTemplateGroups, usePatchTemplate, useTemplate, useTestSend, useUpsertBodies } from "@/features/notify/hooks/use-templates";
 import { useCreateTemplateVariable, useResolveVariables, useTemplateVariables } from "@/features/notify/hooks/use-template-variables";
 import type { NotifyTemplateVariable, NotifyVarType } from "@/types/api";
 
@@ -25,6 +25,21 @@ const PRIORITY_OPTIONS: Array<{ id: number; label: string }> = [
   { id: 3, label: "High" },
   { id: 4, label: "Critical" },
 ];
+
+function AnalyticsCard({ label, value, tone }: { label: string; value: number; tone?: "red" }) {
+  return (
+    <div
+      className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900"
+      data-testid={`analytics-${label.toLowerCase()}`}
+    >
+      <div className="text-[10px] uppercase tracking-wide text-zinc-500">{label}</div>
+      <div className={tone === "red" ? "text-sm font-semibold text-red-600" : "text-sm font-semibold"}>
+        {value.toLocaleString()}
+      </div>
+    </div>
+  );
+}
+
 
 function varTypeTone(t: NotifyVarType): "zinc" | "blue" {
   return t === "static" ? "zinc" : "blue";
@@ -197,10 +212,24 @@ export default function TemplateDesignerPage({
   const patch = usePatchTemplate(orgId);
   const upsertBodies = useUpsertBodies();
   const resolve = useResolveVariables();
+  const analytics = useTemplateAnalytics(id);
 
-  // Body state — initialized from template on load
-  const [bodyHtml, setBodyHtml] = useState("");
-  const [bodyText, setBodyText] = useState("");
+  // Channel selector — which channel's body the editor is currently authoring.
+  // 1 = email (html + text + preheader), 2 = webpush (text only), 3 = in-app (text only).
+  const [channelId, setChannelId] = useState<number>(1);
+
+  // Per-channel body state. Switching tabs preserves in-progress edits.
+  const [bodiesByChannel, setBodiesByChannel] = useState<
+    Record<number, { body_html: string; body_text: string }>
+  >({ 1: { body_html: "", body_text: "" }, 2: { body_html: "", body_text: "" }, 3: { body_html: "", body_text: "" } });
+
+  const bodyHtml = bodiesByChannel[channelId]?.body_html ?? "";
+  const bodyText = bodiesByChannel[channelId]?.body_text ?? "";
+  const setBodyHtml = (v: string) =>
+    setBodiesByChannel((m) => ({ ...m, [channelId]: { ...m[channelId], body_html: v } }));
+  const setBodyText = (v: string) =>
+    setBodiesByChannel((m) => ({ ...m, [channelId]: { ...m[channelId], body_text: v } }));
+
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   const [showVars, setShowVars] = useState(false);
   const [addingVar, setAddingVar] = useState(false);
@@ -212,11 +241,15 @@ export default function TemplateDesignerPage({
 
   useEffect(() => {
     if (!template) return;
-    const email = template.bodies?.find((b) => b.channel_id === 1);
-    if (email) {
-      setBodyHtml(email.body_html);
-      setBodyText(email.body_text ?? "");
+    const next: Record<number, { body_html: string; body_text: string }> = {
+      1: { body_html: "", body_text: "" },
+      2: { body_html: "", body_text: "" },
+      3: { body_html: "", body_text: "" },
+    };
+    for (const b of template.bodies ?? []) {
+      next[b.channel_id] = { body_html: b.body_html ?? "", body_text: b.body_text ?? "" };
     }
+    setBodiesByChannel(next);
   }, [template]);
 
   function insertVariable(name: string) {
@@ -235,10 +268,18 @@ export default function TemplateDesignerPage({
   }
 
   function handleSaveBody() {
+    // Save all authored bodies (only channels with any content).
+    const authored = Object.entries(bodiesByChannel)
+      .filter(([, body]) => body.body_html || body.body_text)
+      .map(([chId, body]) => ({
+        channel_id: Number(chId),
+        body_html: body.body_html,
+        body_text: body.body_text,
+      }));
     upsertBodies.mutate(
-      { id, bodies: [{ channel_id: 1, body_html: bodyHtml, body_text: bodyText }] },
+      { id, bodies: authored },
       {
-        onSuccess: () => toast.toast("Body saved", "success"),
+        onSuccess: () => toast.toast("Bodies saved", "success"),
         onError: (e) => toast.toast(e.message, "error"),
       },
     );
@@ -315,6 +356,20 @@ export default function TemplateDesignerPage({
         </div>
       </div>
 
+      {/* Analytics summary — counts across the template's deliveries */}
+      {analytics.data && analytics.data.total_deliveries > 0 && (
+        <div className="flex flex-wrap items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900/50" data-testid="template-analytics">
+          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Analytics</span>
+          <AnalyticsCard label="Total" value={analytics.data.total_deliveries} />
+          <AnalyticsCard label="Sent" value={analytics.data.by_status.sent ?? 0} />
+          <AnalyticsCard label="Delivered" value={analytics.data.by_status.delivered ?? 0} />
+          <AnalyticsCard label="Opened" value={(analytics.data.by_status.opened ?? 0) + (analytics.data.by_event_type.open ?? 0)} />
+          <AnalyticsCard label="Clicked" value={(analytics.data.by_status.clicked ?? 0) + (analytics.data.by_event_type.click ?? 0)} />
+          <AnalyticsCard label="Bounced" value={analytics.data.by_status.bounced ?? 0} tone="red" />
+          <AnalyticsCard label="Failed" value={analytics.data.by_status.failed ?? 0} tone="red" />
+        </div>
+      )}
+
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left — editor */}
@@ -359,53 +414,60 @@ export default function TemplateDesignerPage({
             </Field>
           </div>
 
-          {/* Email body tabs (only email shown; others disabled) */}
+          {/* Channel tabs — Email (HTML + text), Web Push (text), In-app (text). */}
           <div className="flex border-b border-zinc-200 dark:border-zinc-800">
-            <button
-              type="button"
-              className="border-b-2 border-zinc-900 px-5 py-2 text-sm font-medium dark:border-zinc-50"
-            >
-              Email
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Coming soon"
-              className="cursor-not-allowed px-5 py-2 text-sm text-zinc-400"
-            >
-              Web Push
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Coming soon"
-              className="cursor-not-allowed px-5 py-2 text-sm text-zinc-400"
-            >
-              In-app
-            </button>
+            {[
+              { id: 1, label: "Email" },
+              { id: 2, label: "Web Push" },
+              { id: 3, label: "In-app" },
+            ].map((ch) => (
+              <button
+                key={ch.id}
+                type="button"
+                data-testid={`channel-tab-${ch.id}`}
+                onClick={() => setChannelId(ch.id)}
+                className={
+                  channelId === ch.id
+                    ? "border-b-2 border-zinc-900 px-5 py-2 text-sm font-medium dark:border-zinc-50"
+                    : "px-5 py-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
+                }
+              >
+                {ch.label}
+              </button>
+            ))}
           </div>
 
           <div className="flex flex-1 flex-col gap-3 p-5">
+            {channelId === 1 && (
+              <div>
+                <label className="mb-1 block text-xs font-medium text-zinc-500">HTML body</label>
+                <Textarea
+                  ref={htmlRef}
+                  data-testid="textarea-body-html"
+                  rows={12}
+                  className="font-mono text-xs"
+                  placeholder="<h1>Hello {{ user_name }}</h1>"
+                  value={bodyHtml}
+                  onChange={(e) => setBodyHtml(e.target.value)}
+                  onFocus={() => { activeTextareaRef.current = htmlRef.current; }}
+                />
+              </div>
+            )}
             <div>
-              <label className="mb-1 block text-xs font-medium text-zinc-500">HTML body</label>
-              <Textarea
-                ref={htmlRef}
-                data-testid="textarea-body-html"
-                rows={12}
-                className="font-mono text-xs"
-                placeholder="<h1>Hello {{ user_name }}</h1>"
-                value={bodyHtml}
-                onChange={(e) => setBodyHtml(e.target.value)}
-                onFocus={() => { activeTextareaRef.current = htmlRef.current; }}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-zinc-500">Plain text</label>
+              <label className="mb-1 block text-xs font-medium text-zinc-500">
+                {channelId === 1 ? "Plain text" : channelId === 2 ? "Push notification body" : "In-app body"}
+              </label>
               <Textarea
                 ref={textRef}
                 data-testid="textarea-body-text"
-                rows={4}
-                placeholder="Plain-text fallback"
+                rows={channelId === 1 ? 4 : 10}
+                placeholder={
+                  channelId === 1
+                    ? "Plain-text fallback"
+                    : channelId === 2
+                    ? "Short body shown in the browser push notification"
+                    : "Body shown in the notification bell"
+                }
                 value={bodyText}
                 onChange={(e) => setBodyText(e.target.value)}
                 onFocus={() => { activeTextareaRef.current = textRef.current; }}

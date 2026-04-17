@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class SubscriptionCreate(BaseModel):
@@ -13,6 +13,15 @@ class SubscriptionCreate(BaseModel):
     event_key_pattern: str
     template_id: str
     channel_id: int
+    recipient_mode: str = Field(default="actor", description="actor | users | roles")
+    recipient_filter: dict = Field(default_factory=dict, description="{user_ids:[...]} or {role_codes:[...]}")
+
+    @field_validator("recipient_mode")
+    @classmethod
+    def _valid_mode(cls, v: str) -> str:
+        if v not in {"actor", "users", "roles"}:
+            raise ValueError("recipient_mode must be one of: actor, users, roles")
+        return v
 
     @field_validator("event_key_pattern")
     @classmethod
@@ -57,6 +66,8 @@ class SubscriptionRow(BaseModel):
     channel_id: int
     channel_code: str
     channel_label: str
+    recipient_mode: str = "actor"
+    recipient_filter: dict = {}
     is_active: bool
     deleted_at: Any = None
     created_by: str

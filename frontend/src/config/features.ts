@@ -61,6 +61,23 @@ export const FEATURES: FeatureNav[] = [
     ],
   },
   {
+    key: "monitoring",
+    label: "Monitoring",
+    description: "Unified logs, metrics, traces, and dashboards over the Monitoring Query DSL.",
+    basePath: "/monitoring",
+    testId: "nav-feature-monitoring",
+    subFeatures: [
+      { href: "/monitoring", label: "Overview", testId: "nav-monitoring-overview" },
+      { href: "/monitoring/logs", label: "Logs", testId: "nav-monitoring-logs" },
+      { href: "/monitoring/metrics", label: "Metrics", testId: "nav-monitoring-metrics" },
+      { href: "/monitoring/traces", label: "Traces", testId: "nav-monitoring-traces" },
+      { href: "/monitoring/dashboards", label: "Dashboards", testId: "nav-monitoring-dashboards" },
+      { href: "/monitoring/alerts", label: "Alerts", testId: "nav-monitoring-alerts" },
+      { href: "/monitoring/alerts/rules", label: "Alert Rules", testId: "nav-monitoring-alert-rules" },
+      { href: "/monitoring/alerts/silences", label: "Silences", testId: "nav-monitoring-silences" },
+    ],
+  },
+  {
     key: "audit",
     label: "Audit",
     description: "PostHog-class event analytics over the append-only audit log. Filter by actor/org/event, inspect metadata, trace spans, aggregate.",
@@ -73,15 +90,15 @@ export const FEATURES: FeatureNav[] = [
   {
     key: "notify",
     label: "Notify",
-    description: "Multi-channel notification platform. Templates, subscriptions, delivery tracking, and user preferences.",
+    description: "Core notification primitive. Templates, subscriptions, unified delivery tracking across email / web push / in-app, transactional send API, per-user preferences.",
     basePath: "/notify",
     testId: "nav-feature-notify",
     subFeatures: [
       { href: "/notify/templates",   label: "Templates",   testId: "nav-notify-templates" },
-      { href: "/notify/campaigns",   label: "Campaigns",   testId: "nav-notify-campaigns" },
       { href: "/notify/deliveries",  label: "Deliveries",  testId: "nav-notify-deliveries" },
       { href: "/notify/send",        label: "Send API",    testId: "nav-notify-send" },
       { href: "/notify/preferences", label: "Preferences", testId: "nav-notify-preferences" },
+      { href: "/notify/settings",    label: "Settings",    testId: "nav-notify-settings" },
     ],
   },
   {

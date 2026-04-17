@@ -109,7 +109,18 @@ async def click_tracking_route(token: str, request: Request) -> RedirectResponse
 
 @router.post("/v1/notify/email/webhooks/bounce")
 async def bounce_webhook_route(payload: BouncePayload, request: Request) -> dict:
-    """Record a bounce received from an SMTP provider."""
+    """Record a bounce received from an SMTP provider.
+
+    Hard bounces (any bounce hitting this endpoint) auto-add the recipient
+    email to the org's suppression list so future sends skip it.
+    """
+    _suppression_svc: Any = import_module(
+        "backend.02_features.06_notify.sub_features.16_suppression.service"
+    )
+    _email_svc: Any = import_module(
+        "backend.02_features.06_notify.sub_features.07_email.service"
+    )
+
     async with request.app.state.pool.acquire() as conn:
         delivery = await _del_repo.get_delivery(conn, payload.delivery_id)
         if delivery is None:
@@ -131,4 +142,23 @@ async def bounce_webhook_route(payload: BouncePayload, request: Request) -> dict
             status_id=7,  # bounced
             failure_reason=payload.reason,
         )
+
+        # Suppress the recipient email so future sends skip without retrying.
+        try:
+            recipient_email = await _email_svc._get_recipient_email(
+                conn, delivery["recipient_user_id"],
+            )
+            await _suppression_svc.add_suppression(
+                conn,
+                org_id=delivery["org_id"],
+                email=recipient_email,
+                reason_code="hard_bounce",
+                created_by="bounce-webhook",
+                delivery_id=payload.delivery_id,
+                notes=(payload.reason or "")[:500],
+            )
+        except Exception:
+            # Don't fail the webhook if suppression insert races or the
+            # recipient can't be resolved; the delivery is already bounced.
+            pass
     return _resp.success({"delivery": updated})

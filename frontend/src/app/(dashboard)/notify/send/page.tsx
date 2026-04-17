@@ -24,6 +24,8 @@ export default function TransactionalSendPage() {
     template_key: "",
     recipient_user_id: "",
     channel_code: "email" as NotifyChannelCode,
+    deep_link: "",
+    send_at: "",
   });
   const [result, setResult] = useState<{ delivery_id: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,8 @@ export default function TransactionalSendPage() {
           recipient_user_id: form.recipient_user_id,
           channel_code: form.channel_code,
           variables: {},
+          deep_link: form.deep_link || undefined,
+          send_at: form.send_at ? new Date(form.send_at).toISOString() : undefined,
         }),
       });
       setResult(data);
@@ -106,6 +110,24 @@ export default function TransactionalSendPage() {
                     <option key={c.code} value={c.code}>{c.label}</option>
                   ))}
                 </Select>
+              </Field>
+              <Field label="Deep link (optional)" htmlFor="send-deep-link" hint="Where the notification click navigates. Must start with /">
+                <Input
+                  id="send-deep-link"
+                  data-testid="input-send-deep-link"
+                  placeholder="/audit"
+                  value={form.deep_link}
+                  onChange={(e) => setForm((f) => ({ ...f, deep_link: e.target.value }))}
+                />
+              </Field>
+              <Field label="Schedule for (optional)" htmlFor="send-send-at" hint="Leave empty to send immediately">
+                <Input
+                  id="send-send-at"
+                  data-testid="input-send-send-at"
+                  type="datetime-local"
+                  value={form.send_at}
+                  onChange={(e) => setForm((f) => ({ ...f, send_at: e.target.value }))}
+                />
               </Field>
               {err && <p className="text-xs text-red-500" data-testid="send-error">{err}</p>}
               {result && (

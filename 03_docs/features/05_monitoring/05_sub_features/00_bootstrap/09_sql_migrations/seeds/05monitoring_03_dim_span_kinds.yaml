@@ -1,0 +1,9 @@
+schema: "05_monitoring"
+table: "03_dim_monitoring_span_kinds"
+rows:
+  - {id: 0, code: unspecified, label: Unspecified, description: "OTLP SpanKind UNSPECIFIED.",                    deprecated_at: null}
+  - {id: 1, code: internal,    label: Internal,    description: "OTLP SpanKind INTERNAL. In-process operation.", deprecated_at: null}
+  - {id: 2, code: server,      label: Server,      description: "OTLP SpanKind SERVER. Incoming request.",       deprecated_at: null}
+  - {id: 3, code: client,      label: Client,      description: "OTLP SpanKind CLIENT. Outgoing request.",       deprecated_at: null}
+  - {id: 4, code: producer,    label: Producer,    description: "OTLP SpanKind PRODUCER. Async message produce.",deprecated_at: null}
+  - {id: 5, code: consumer,    label: Consumer,    description: "OTLP SpanKind CONSUMER. Async message consume.",deprecated_at: null}

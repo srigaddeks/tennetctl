@@ -9,6 +9,7 @@ async def list_smtp_configs(conn: Any, *, org_id: str) -> list[dict]:
     rows = await conn.fetch(
         """
         SELECT id, org_id, key, label, host, port, tls, username, auth_vault_key,
+               from_email, from_name,
                is_active, created_by, updated_by, created_at, updated_at
         FROM "06_notify"."v_notify_smtp_configs"
         WHERE org_id = $1
@@ -23,6 +24,7 @@ async def get_smtp_config(conn: Any, *, config_id: str) -> dict | None:
     row = await conn.fetchrow(
         """
         SELECT id, org_id, key, label, host, port, tls, username, auth_vault_key,
+               from_email, from_name,
                is_active, created_by, updated_by, created_at, updated_at
         FROM "06_notify"."v_notify_smtp_configs"
         WHERE id = $1
@@ -36,6 +38,7 @@ async def get_smtp_config_by_key(conn: Any, *, org_id: str, key: str) -> dict | 
     row = await conn.fetchrow(
         """
         SELECT id, org_id, key, label, host, port, tls, username, auth_vault_key,
+               from_email, from_name,
                is_active, created_by, updated_by, created_at, updated_at
         FROM "06_notify"."v_notify_smtp_configs"
         WHERE org_id = $1 AND key = $2
@@ -58,18 +61,22 @@ async def create_smtp_config(
     tls: bool,
     username: str,
     auth_vault_key: str,
+    from_email: str | None,
+    from_name: str | None,
     created_by: str,
 ) -> dict:
     row = await conn.fetchrow(
         """
         INSERT INTO "06_notify"."10_fct_notify_smtp_configs"
             (id, org_id, key, label, host, port, tls, username, auth_vault_key,
-             created_by, updated_by)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+             from_email, from_name, created_by, updated_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
         RETURNING id, org_id, key, label, host, port, tls, username, auth_vault_key,
+                  from_email, from_name,
                   is_active, created_by, updated_by, created_at, updated_at
         """,
-        config_id, org_id, key, label, host, port, tls, username, auth_vault_key, created_by,
+        config_id, org_id, key, label, host, port, tls, username, auth_vault_key,
+        from_email, from_name, created_by,
     )
     return dict(row)
 
@@ -81,7 +88,8 @@ async def update_smtp_config(
     updated_by: str,
     **fields: Any,
 ) -> dict | None:
-    allowed = {"label", "host", "port", "tls", "username", "auth_vault_key", "is_active"}
+    allowed = {"label", "host", "port", "tls", "username", "auth_vault_key",
+               "from_email", "from_name", "is_active"}
     updates = {k: v for k, v in fields.items() if k in allowed and v is not None}
     if not updates:
         return await get_smtp_config(conn, config_id=config_id)
@@ -97,6 +105,7 @@ async def update_smtp_config(
         SET {', '.join(set_clauses)}
         WHERE id = $1 AND deleted_at IS NULL
         RETURNING id, org_id, key, label, host, port, tls, username, auth_vault_key,
+                  from_email, from_name,
                   is_active, created_by, updated_by, created_at, updated_at
         """,
         *params,

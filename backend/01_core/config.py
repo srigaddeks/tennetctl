@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 _project_root = Path(__file__).resolve().parent.parent.parent
 load_dotenv(_project_root / ".env")
 
-_DEFAULT_MODULES = "core,iam,audit,featureflags,vault,notify"
+_DEFAULT_MODULES = "core,iam,audit,featureflags,vault,notify,monitoring"
 _DEFAULT_PORT = 51734
 
 _ALLOWED_TENNET_ENV = frozenset({
@@ -31,6 +31,23 @@ _ALLOWED_TENNET_ENV = frozenset({
     "TENNETCTL_SINGLE_TENANT",
     "TENNETCTL_APP_PORT",
     "TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT",
+    "TENNETCTL_NATS_URL",
+    "TENNETCTL_MONITORING_ENABLED",
+    "TENNETCTL_MONITORING_STORE_KIND",
+    "TENNETCTL_MONITORING_AUTO_INSTRUMENT",
+    "TENNETCTL_MONITORING_OTLP_AUTH_ENABLED",
+    "TENNETCTL_MONITORING_APISIX_SCRAPE_ENABLED",
+    "TENNETCTL_MONITORING_APISIX_URL",
+    "TENNETCTL_MONITORING_CONSUMER_BATCH_SIZE",
+    "TENNETCTL_MONITORING_CONSUMER_MAX_DELIVER",
+    "TENNETCTL_MONITORING_CONSUMER_ACK_WAIT_S",
+    "TENNETCTL_MONITORING_ROLLUP_ENABLED",
+    "TENNETCTL_MONITORING_PARTITION_MANAGER_ENABLED",
+    "TENNETCTL_MONITORING_SYNTHETIC_RUNNER_ENABLED",
+    "TENNETCTL_MONITORING_NOTIFY_LISTENER_ENABLED",
+    "TENNETCTL_MONITORING_ALERT_EVALUATOR_ENABLED",
+    "TENNETCTL_MONITORING_ALERT_EVAL_INTERVAL_S",
+    "TENNETCTL_MONITORING_ALERT_NOTIFY_THROTTLE_MINUTES",
 })
 
 _SECRETISH_RE = re.compile(
@@ -47,6 +64,23 @@ class Config:
     app_port: int
     debug: bool
     allow_unauthenticated_vault: bool
+    nats_url: str
+    monitoring_enabled: bool
+    monitoring_store_kind: str
+    monitoring_auto_instrument: bool
+    monitoring_otlp_auth_enabled: bool
+    monitoring_apisix_scrape_enabled: bool
+    monitoring_apisix_url: str
+    monitoring_consumer_batch_size: int
+    monitoring_consumer_max_deliver: int
+    monitoring_consumer_ack_wait_s: int
+    monitoring_rollup_enabled: bool
+    monitoring_partition_manager_enabled: bool
+    monitoring_synthetic_runner_enabled: bool
+    monitoring_notify_listener_enabled: bool
+    monitoring_alert_evaluator_enabled: bool
+    monitoring_alert_eval_interval_s: int
+    monitoring_alert_notify_throttle_minutes: int
 
 
 def _enforce_env_contract() -> None:
@@ -88,6 +122,55 @@ def load_config() -> Config:
         "TENNETCTL_ALLOW_UNAUTHENTICATED_VAULT", "false",
     ).lower() in ("true", "1", "yes")
 
+    nats_url = os.environ.get("TENNETCTL_NATS_URL", "nats://localhost:4222")
+    monitoring_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_store_kind = os.environ.get("TENNETCTL_MONITORING_STORE_KIND", "postgres")
+    monitoring_auto_instrument = os.environ.get(
+        "TENNETCTL_MONITORING_AUTO_INSTRUMENT", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_otlp_auth_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_OTLP_AUTH_ENABLED", "false",
+    ).lower() in ("true", "1", "yes")
+    monitoring_apisix_scrape_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_APISIX_SCRAPE_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_apisix_url = os.environ.get(
+        "TENNETCTL_MONITORING_APISIX_URL",
+        "http://localhost:51791/apisix/prometheus/metrics",
+    )
+    monitoring_consumer_batch_size = int(
+        os.environ.get("TENNETCTL_MONITORING_CONSUMER_BATCH_SIZE", "200")
+    )
+    monitoring_consumer_max_deliver = int(
+        os.environ.get("TENNETCTL_MONITORING_CONSUMER_MAX_DELIVER", "5")
+    )
+    monitoring_consumer_ack_wait_s = int(
+        os.environ.get("TENNETCTL_MONITORING_CONSUMER_ACK_WAIT_S", "30")
+    )
+    monitoring_rollup_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_ROLLUP_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_partition_manager_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_PARTITION_MANAGER_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_synthetic_runner_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_SYNTHETIC_RUNNER_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_notify_listener_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_NOTIFY_LISTENER_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_alert_evaluator_enabled = os.environ.get(
+        "TENNETCTL_MONITORING_ALERT_EVALUATOR_ENABLED", "true",
+    ).lower() in ("true", "1", "yes")
+    monitoring_alert_eval_interval_s = int(
+        os.environ.get("TENNETCTL_MONITORING_ALERT_EVAL_INTERVAL_S", "30")
+    )
+    monitoring_alert_notify_throttle_minutes = int(
+        os.environ.get("TENNETCTL_MONITORING_ALERT_NOTIFY_THROTTLE_MINUTES", "15")
+    )
+
     return Config(
         database_url=os.environ.get(
             "DATABASE_URL",
@@ -100,4 +183,21 @@ def load_config() -> Config:
         ),
         debug=os.environ.get("DEBUG", "false").lower() in ("true", "1", "yes"),
         allow_unauthenticated_vault=allow_unauth_vault,
+        nats_url=nats_url,
+        monitoring_enabled=monitoring_enabled,
+        monitoring_store_kind=monitoring_store_kind,
+        monitoring_auto_instrument=monitoring_auto_instrument,
+        monitoring_otlp_auth_enabled=monitoring_otlp_auth_enabled,
+        monitoring_apisix_scrape_enabled=monitoring_apisix_scrape_enabled,
+        monitoring_apisix_url=monitoring_apisix_url,
+        monitoring_consumer_batch_size=monitoring_consumer_batch_size,
+        monitoring_consumer_max_deliver=monitoring_consumer_max_deliver,
+        monitoring_consumer_ack_wait_s=monitoring_consumer_ack_wait_s,
+        monitoring_rollup_enabled=monitoring_rollup_enabled,
+        monitoring_partition_manager_enabled=monitoring_partition_manager_enabled,
+        monitoring_synthetic_runner_enabled=monitoring_synthetic_runner_enabled,
+        monitoring_notify_listener_enabled=monitoring_notify_listener_enabled,
+        monitoring_alert_evaluator_enabled=monitoring_alert_evaluator_enabled,
+        monitoring_alert_eval_interval_s=monitoring_alert_eval_interval_s,
+        monitoring_alert_notify_throttle_minutes=monitoring_alert_notify_throttle_minutes,
     )
