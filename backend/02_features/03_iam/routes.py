@@ -67,6 +67,9 @@ _gdpr_routes: Any = import_module(
 _invites_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.17_invites.routes"
 )
+_oidc_sso_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.20_oidc_sso.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -87,3 +90,65 @@ router.include_router(_api_keys_routes.router)
 router.include_router(_email_verification_routes.router)
 router.include_router(_gdpr_routes.router)
 router.include_router(_invites_routes.router)
+router.include_router(_oidc_sso_routes.router)
+
+# OIDC auth routes (no session required — browser-facing)
+from fastapi import Request  # noqa: E402
+from fastapi.responses import RedirectResponse  # noqa: E402
+
+_oidc_service: Any = import_module(
+    "backend.02_features.03_iam.sub_features.20_oidc_sso.service"
+)
+_catalog_ctx: Any = import_module("backend.01_catalog.context")
+_core_id_mod: Any = import_module("backend.01_core.id")
+
+_oidc_router = APIRouter(prefix="/v1/auth/oidc", tags=["iam.oidc_sso.auth"])
+
+
+@_oidc_router.get("/{org_slug}/initiate")
+async def oidc_initiate(org_slug: str, request: Request, provider: str = "default") -> Any:
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    async with pool.acquire() as conn:
+        try:
+            url = await _oidc_service.build_initiate_url(
+                pool, conn, vault, org_slug=org_slug, provider_slug=provider,
+            )
+        except Exception as exc:
+            code = getattr(exc, "code", "OIDC_ERROR")
+            return RedirectResponse(f"/auth/signin?error={code}", status_code=302)
+    return RedirectResponse(url, status_code=302)
+
+
+@_oidc_router.get("/{org_slug}/callback")
+async def oidc_callback(org_slug: str, request: Request, code: str = "", state: str = "") -> Any:
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    ctx = _catalog_ctx.NodeContext(
+        user_id=None, session_id=None, org_id=None, workspace_id=None,
+        trace_id=_core_id_mod.uuid7(), span_id=_core_id_mod.uuid7(),
+        request_id=_core_id_mod.uuid7(), audit_category="setup",
+        extras={"pool": pool},
+    )
+    if not code or not state:
+        return RedirectResponse("/auth/signin?error=oidc_failed", status_code=302)
+    async with pool.acquire() as conn:
+        try:
+            _user, token = await _oidc_service.handle_callback(
+                pool, conn, ctx, vault, org_slug=org_slug, code=code, state=state,
+            )
+        except Exception:
+            return RedirectResponse("/auth/signin?error=oidc_failed", status_code=302)
+
+    response = RedirectResponse("/", status_code=302)
+    response.set_cookie(
+        key="tennetctl_session",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=request.url.scheme == "https",
+    )
+    return response
+
+
+router.include_router(_oidc_router)

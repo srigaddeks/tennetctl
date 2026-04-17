@@ -1671,3 +1671,28 @@ export type AcceptInviteBody = {
   password: string;
   display_name: string;
 };
+
+// ── IAM OIDC SSO ─────────────────────────────────────────────────────────────
+
+export type OidcProvider = {
+  id: string;
+  org_id: string;
+  slug: string;
+  issuer: string;
+  client_id: string;
+  client_secret_vault_key: string;
+  scopes: string;
+  claim_mapping: Record<string, string>;
+  enabled: boolean;
+  created_at: string;
+  org_slug: string | null;
+};
+
+export type OidcProviderCreateBody = {
+  slug: string;
+  issuer: string;
+  client_id: string;
+  client_secret_vault_key: string;
+  scopes?: string;
+  claim_mapping?: Record<string, string>;
+};

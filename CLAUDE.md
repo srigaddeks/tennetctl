@@ -291,10 +291,7 @@ Use `git add .` — stage all. Never file-by-file.
 ## Testing
 
 - **Backend:** pytest (`tests/` dir, `test_*.py` files)
-- **E2E / Frontend:** Robot Framework + Playwright Browser library (`.robot` files)
-  - Location: `tests/e2e/{feature}/01_{sub}.robot`
-  - NEVER `@playwright/test` or `.spec.ts`
-- **Playwright MCP:** headed live browser for manual inspection — not a test runner. Use when Sri says "test with Playwright MCP".
+- **UI / E2E:** Playwright MCP — headed live browser, walk through the user flow before closing any plan. NEVER Robot Framework, NEVER `@playwright/test` or `.spec.ts`. No `.robot` files.
 
 ---
 

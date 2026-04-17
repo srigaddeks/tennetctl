@@ -8,6 +8,11 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 ## Current Milestone
 
+**v0.1.9 IAM Enterprise** (v0.1.9)
+Status: 🚧 In Progress
+Theme: Enterprise-grade federated identity (SAML/OIDC SSO), automated provisioning (SCIM 2.0), admin controls, compliance primitives — everything a mid-market SaaS team needs to pass a security review.
+Phases: 0 of 1 complete
+
 **v0.1.6 IAM Hardening for OSS** (v0.1.6)
 Status: ✅ Complete (2026-04-17)
 Theme: Make IAM production-grade before open-sourcing. Config-driven auth policy (no hardcoded thresholds), account lockout, session limits, audit coverage closure, email OTP via existing Notify templates, API key rotation, IAM metrics.
@@ -51,7 +56,7 @@ Phases: 6 of 6 complete
 | 19 | Developer Docs Pass — Integration guide, API reference, deployment, DKIM/DMARC, examples (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
 | 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
 | 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
-| 22 | IAM Enterprise — SAML/OIDC SSO, SCIM, impersonation, IP allowlist, dynamic groups, role expiry, SIEM export (v0.1.9) | 8 | 📋 Planned | - |
+| 22 | IAM Enterprise — OIDC SSO, SAML SSO, SCIM, impersonation, MFA enforcement, IP allowlist, SIEM export (v0.1.9) | 7 | 🚧 In Progress | - |
 
 ## Phase Details
 
@@ -480,32 +485,28 @@ injection and full pytest + Robot E2E verification.
 
 ### Phase 22: IAM Enterprise (v0.1.9)
 
-**Goal:** Ship the enterprise-grade IAM surface: federated identity (SAML 2.0 + OIDC SSO), automated provisioning (SCIM 2.0), admin impersonation for support teams, IP allowlisting per org, dynamic groups driven by attribute rules, time-bounded role assignments, audit log export to SIEM systems, compliance primitives (TOS tracking, password history).
-**Depends on:** Phase 20 (policy layer), Phase 21 (invite + email verification primitives reused by JIT provisioning).
-**Status:** 📋 Planned — likely its own milestone v0.1.9 given scope.
+**Goal:** Simple, elegant enterprise IAM with feature parity to Keycloak/Zitadel/Clerk/Okta on the 7 features customers actually use. Simplicity over completeness.
+**Depends on:** Phase 20 (policy layer), Phase 21 (invite + email verification reused by JIT provisioning).
+**Status:** 🚧 In Progress (v0.1.9 milestone)
+**Testing:** pytest (backend) + Playwright MCP UI verification per plan. No Robot Framework.
 
 **Scope:**
-- **SAML 2.0 SSO**: `18_saml_sso/` sub-feature. Per-org IdP config (entity_id, metadata_url_or_xml, cert, attribute mapping). `GET /v1/auth/saml/{org_slug}/metadata` serves SP metadata; `GET /auth/saml/{org_slug}/initiate` redirects to IdP; `POST /auth/saml/{org_slug}/acs` consumes SAMLResponse → JIT user create/update + session. Uses `python3-saml` library. Per-IdP signing/encryption keys in vault.
-- **OIDC SSO**: `19_oidc_sso/` sub-feature. Per-org OIDC provider config (issuer, client_id, client_secret vault_key, scopes, claim mapping). OAuth2 authorization-code flow with PKCE. Standard `/auth/oidc/{org_slug}/initiate` + `/auth/oidc/{org_slug}/callback`. Uses `authlib`.
-- **SCIM 2.0 provisioning**: `20_scim/` sub-feature. Per-org SCIM endpoint + bearer token. `/scim/v2/{org_slug}/Users`, `/Groups` per RFC 7644. Supports {list, get, create, patch, delete} for Users + Groups. Idempotent, returns 409 on duplicate externalId. Provider catalog: Okta, Azure AD, Google Workspace. Deprovisioning (DELETE) deactivates the local user + revokes sessions.
-- **Admin impersonation**: `POST /v1/admin/impersonate/{user_id}` — super-admin only + MFA re-auth required. Creates a new session with `impersonator_user_id` dtl_attr; every action during the impersonated session emits audit with both acting + impersonator IDs. Red banner in UI. Auto-ends after 30 min (configurable). `POST /v1/admin/end-impersonation` reverts.
-- **IP allowlisting per org**: `fct_org_ip_allowlist` (org_id, cidr, label, created_by). Middleware checks the session's org_id → query allowlist → if non-empty, require source IP to match. Empty allowlist = no restriction (default). Admin UI under `/iam/security/ip-allowlist`.
-- **Dynamic groups + domain auto-join**: `dtl_group_rules` (group_id, rule_jsonb like `{"kind":"email_domain","value":"company.com"}` or `{"kind":"attr_match","attr_def_id":N,"op":"eq","value":"..."}`). On user create OR attr change, re-evaluate rules and update lnk_user_group. Domain auto-join is a special case: when a user verifies email matching a configured domain, they auto-join the org + its default group.
-- **Role assignment expiry**: add `expires_at TIMESTAMP NULL` to `lnk_user_role`. Background task every 5 min revokes expired assignments + emits `iam.roles.expired` audit. UI surfaces expiry in role-assignment dialog.
-- **Admin delegation model**: formalize `system_admin`, `org_admin`, `workspace_admin` as seeded roles in `dim_scopes`. Route guards enforce scope hierarchy. `org_admin` can do anything within their org but nothing outside.
-- **Audit log SIEM export**: `21_siem_export/` sub-feature. Per-destination config (kind: `s3`, `splunk_hec`, `datadog`, `webhook`; credentials → vault). Worker reads `evt_audit_outbox`, formats per destination, POSTs. Retries + DLQ.
-- **TOS acceptance tracking**: `fct_tos_versions` (version_id, title, body_markdown, published_at, effective_at) + `lnk_user_tos_acceptance` (user_id, version_id, accepted_at, ip). New TOS version triggers mandatory re-acceptance banner before next request proceeds.
-- **Password history**: `fct_password_history` (user_id, hash, created_at). Policy key `password.history_depth` (default 5) prevents reuse of last N. Checked on `change_password` and `complete_reset`.
+- **OIDC SSO**: `18_oidc_sso/` sub-feature. Per-org OIDC provider config (issuer, client_id, client_secret vault_key, scopes, claim mapping). OAuth2 authorization-code + PKCE. `/auth/oidc/{org_slug}/initiate` + `/auth/oidc/{org_slug}/callback`. JIT user create/update on callback. Uses `authlib`. Admin UI to configure per-org IdP.
+- **SAML 2.0 SSO**: `19_saml_sso/` sub-feature. Per-org IdP config (entity_id, metadata_url_or_xml, cert, attribute mapping). SP metadata endpoint; ACS consumer → JIT user create/update + session. Uses `python3-saml`. Per-IdP keys in vault. Admin UI to configure per-org IdP.
+- **SCIM 2.0 provisioning**: `20_scim/` sub-feature. Per-org SCIM bearer token. `/scim/v2/{org_slug}/Users` + `/Groups` per RFC 7644. {list, get, create, patch, delete}. Idempotent (409 on duplicate externalId). Deprovisioning → deactivate user + revoke sessions. Okta + Azure AD tested.
+- **Admin impersonation**: `POST /v1/admin/impersonate/{user_id}` — super-admin only, MFA re-auth required. Session carries `impersonator_user_id`; every action emits dual-actor audit. Persistent red banner in UI. Auto-ends 30 min (configurable vault key). `POST /v1/admin/end-impersonation` to revert.
+- **MFA enforcement policy**: Per-org + per-role policy key (`mfa.required = true/false`) read from existing AuthPolicy service (Phase 20). On signin, if policy requires MFA and user has no TOTP/passkey enrolled, redirect to enrollment before session is created. Admin UI toggle under `/iam/security/policy`.
+- **IP allowlisting per org**: `fct_org_ip_allowlist` (org_id, cidr, label, created_by). Middleware checks session org → allowlist → reject if non-empty and IP doesn't match. Empty = unrestricted (default). Admin UI under `/iam/security/ip-allowlist`.
+- **Audit SIEM export**: `21_siem_export/` sub-feature. Per-destination config (kind: `webhook` | `s3` | `splunk_hec`; credentials → vault). Worker tails `evt_audit_outbox`, formats, delivers. Retries + simple DLQ. Admin UI to configure destinations.
 
 **Plans:**
-- [ ] 22-01: SAML 2.0 SSO (python3-saml integration + per-org IdP config + JIT user + admin UI + Robot E2E)
-- [ ] 22-02: OIDC SSO (authlib + per-org OIDC config + JIT user + admin UI + Robot E2E)
-- [ ] 22-03: SCIM 2.0 provisioning (RFC 7644 endpoints + token auth + Okta/Azure tested adapters + Robot E2E)
-- [ ] 22-04: Admin impersonation (route + dual-actor audit + red banner UI + 30-min timeout + Robot E2E)
-- [ ] 22-05: IP allowlisting per org (schema + middleware check + admin UI + Robot E2E)
-- [ ] 22-06: Dynamic groups + domain auto-join (dtl_group_rules + re-evaluator + domain-match on email-verify + admin UI + tests)
-- [ ] 22-07: Role assignment expiry + admin delegation (expires_at + background sweeper + delegation seeds + UI + tests)
-- [ ] 22-08: Audit SIEM export + TOS tracking + password history (3 mini-features bundled; each under one task module)
+- [ ] 22-01: OIDC SSO (authlib + PKCE + per-org config + JIT user + admin UI + Playwright MCP verify)
+- [ ] 22-02: SAML 2.0 SSO (python3-saml + per-org IdP config + JIT user + admin UI + Playwright MCP verify)
+- [ ] 22-03: SCIM 2.0 provisioning (RFC 7644 + bearer token + Okta/Azure + pytest)
+- [ ] 22-04: Admin impersonation (dual-actor audit + red banner UI + 30-min timeout + Playwright MCP verify)
+- [ ] 22-05: MFA enforcement policy (AuthPolicy gate on signin + enrollment redirect + admin UI toggle + pytest)
+- [ ] 22-06: IP allowlisting per org (schema + middleware + admin UI + Playwright MCP verify)
+- [ ] 22-07: Audit SIEM export (webhook/S3/Splunk destinations + outbox worker + admin UI + pytest)
 
 ---
 
@@ -540,4 +541,4 @@ Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
 
 ---
 *Roadmap created: 2026-04-12*
-*Last updated: 2026-04-17 — v0.1.6 IAM Hardening for OSS opened; Phase 20 (5 plans) drafted. Config-driven policy + audit coverage closure + OTP→Notify migration + API key rotation + IAM metrics. Deferred: passkey hardening, rate limiting, HIBP, 2FA enforcement.*
+*Last updated: 2026-04-17 — v0.1.9 IAM Enterprise milestone opened. Phase 22 (8 plans) active. Testing convention changed: Robot Framework removed, Playwright MCP for UI verification going forward.*

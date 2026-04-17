@@ -599,3 +599,31 @@ spec:
           path: "/v1/api-keys/{id}"
           handler: sub_features.15_api_keys.routes.delete_api_key_route
       ui_pages: []
+
+    - key: iam.oidc_sso
+      number: 25
+      label: OIDC SSO
+      description: Enterprise SSO via OpenID Connect with per-org provider config and PKCE flow.
+      owns:
+        schema: "03_iam"
+        tables: ["30_fct_oidc_providers"]
+        views: ["v_oidc_providers"]
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/auth/oidc/{org_slug}/initiate
+          handler: routes.oidc_initiate
+        - method: GET
+          path: /v1/auth/oidc/{org_slug}/callback
+          handler: routes.oidc_callback
+        - method: GET
+          path: /v1/iam/oidc-providers
+          handler: sub_features.20_oidc_sso.routes.list_oidc_providers
+        - method: POST
+          path: /v1/iam/oidc-providers
+          handler: sub_features.20_oidc_sso.routes.create_oidc_provider
+        - method: DELETE
+          path: "/v1/iam/oidc-providers/{provider_id}"
+          handler: sub_features.20_oidc_sso.routes.delete_oidc_provider
+      ui_pages: []

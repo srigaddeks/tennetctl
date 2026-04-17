@@ -5,14 +5,14 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.1.6 IAM Hardening for OSS — COMPLETE. Phases 20 + 21 fully shipped (12 plans, 137 tests green). Next: Phase 22 (IAM Enterprise — SAML/OIDC SSO, SCIM, impersonation) or v0.1.8 Notify (quiet-hours, timezone-aware sends).
+**Current focus:** v0.1.9 IAM Enterprise — Phase 22 (8 plans). SAML/OIDC SSO, SCIM, impersonation, IP allowlist, dynamic groups, role expiry, SIEM export. Testing: pytest + Playwright MCP (Robot Framework removed).
 
 ## Current Position
 
-Milestone: v0.1.6 IAM Hardening for OSS — ✅ Complete (2026-04-17)
-Phase: 21 of 21 (IAM OSS Completion) — all 6 plans complete
-Plan: All complete — 12/12 SUMMARYs written
-Status: Ready for next milestone. Options: Phase 22 (IAM Enterprise), v0.1.8 Notify, or Phase 9 (Feature Flags vertical).
+Milestone: v0.1.9 IAM Enterprise — 🚧 In Progress
+Phase: 22 of 22 (IAM Enterprise) — 0 of 8 plans complete
+Plan: Not started
+Status: Ready to plan 22-01 (SAML 2.0 SSO).
 Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
 Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
 Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
@@ -34,36 +34,17 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ○     [20-01 APPLY complete — 148 tests green]
+  ○        ○        ○     [Ready for first PLAN — 22-01]
 ```
 
-IAM Hardening program — 3 phases, 20 plans total, all drafted on disk:
-
-Phase 20 (v0.1.6 — IAM Hardening for OSS) — 6 plans, wave 1 ready to APPLY:
-  1. ▶ 20-01 — Auth policy backend (AuthPolicy + vault config resolver + invalidation)
-  2. 20-02 — Auth policy admin UI
-  3. 20-03 — Account lockout
-  4. 20-04 — Session limits + idle timeout
-  5. 20-05 — Password reset session revoke + audit coverage closure
-  6. 20-06 — TOTP backup codes + OTP→Notify + API key rotation + IAM metrics
-
-Phase 21 (v0.1.6 — IAM OSS Completion) — 6 plans:
-  7. 21-01 — Email verification at signup (policy-gated, notify-driven)
-  8. 21-02 — Admin invite flow (invite→accept with pre-verification)
-  9. 21-03 — First-run admin wizard (setup mode + mandatory TOTP)
- 10. 21-04 — Deactivation vs soft-delete (pseudonymization pipeline)
- 11. 21-05 — GDPR export + erasure (30-day recovery + nightly purge)
- 12. 21-06 — Session/device UI + SECURITY.md + COC + CONTRIBUTING.md
-
-Phase 22 (v0.1.9 — IAM Enterprise) — 8 plans:
- 13. 22-01 — SAML 2.0 SSO (per-org, JIT, python3-saml)
- 14. 22-02 — OIDC SSO (per-org, JIT, authlib + PKCE)
- 15. 22-03 — SCIM 2.0 provisioning (Okta/Azure compliant)
- 16. 22-04 — Admin impersonation (dual-actor audit + red banner)
- 17. 22-05 — IP allowlisting per org (CIDRs + XFF handling)
- 18. 22-06 — Dynamic groups + domain auto-join (rule engine)
- 19. 22-07 — Role assignment expiry + delegation seeds
- 20. 22-08 — SIEM export + TOS versioning + password history (bundled)
+Phase 22 (v0.1.9 — IAM Enterprise) — 7 plans (simplified for Keycloak/Zitadel/Clerk parity):
+  1. ▶ 22-01 — OIDC SSO (authlib + PKCE + per-org + JIT user)
+  2.   22-02 — SAML 2.0 SSO (python3-saml + per-org + JIT user)
+  3.   22-03 — SCIM 2.0 provisioning (RFC 7644, Okta/Azure)
+  4.   22-04 — Admin impersonation (dual-actor audit + red banner)
+  5.   22-05 — MFA enforcement policy (per-org/role require 2FA gate)
+  6.   22-06 — IP allowlisting per org (CIDRs + middleware)
+  7.   22-07 — Audit SIEM export (webhook/S3/Splunk outbox worker)
 
 ## Performance Metrics
 
@@ -188,9 +169,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-17
-Stopped at: All 6 Phase 20 PLAN.md files drafted on disk (20-01 through 20-06). Loop position PLAN ✓, awaiting APPLY for 20-01 first.
-Next action: Review 20-01-PLAN.md + run /paul:apply .paul/phases/20-iam-hardening-for-oss/20-01-PLAN.md. Subsequent plans execute in wave order (2 depends on 1; 3-6 depend only on 1 and can run in parallel after 20-01).
-Resume file: .paul/phases/20-iam-hardening-for-oss/
+Stopped at: v0.1.9 IAM Enterprise milestone created. Phase 22 directory initialized. Robot Framework removed — Playwright MCP is now the UI verification method.
+Next action: /paul:plan for 22-01 — SAML 2.0 SSO
+Resume file: .paul/phases/22-iam-enterprise/
 
 ---
 *STATE.md — Updated after every significant action*

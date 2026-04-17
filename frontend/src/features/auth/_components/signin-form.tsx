@@ -333,6 +333,14 @@ export function SignInForm() {
         <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
       </div>
       <OAuthButtons />
+
+      <div className="my-5 flex items-center gap-3 text-[11px] uppercase text-zinc-400">
+        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        Or continue with SSO
+        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      </div>
+      <SSOEntry />
+
       <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
         New here?{" "}
         <Link
@@ -344,5 +352,34 @@ export function SignInForm() {
         </Link>
       </p>
     </>
+  );
+}
+
+function SSOEntry() {
+  const [slug, setSlug] = useState("");
+  function handleSSO(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (slug.trim()) {
+      window.location.href = `/v1/auth/oidc/${encodeURIComponent(slug.trim())}/initiate`;
+    }
+  }
+  return (
+    <form onSubmit={handleSSO} className="flex gap-2">
+      <input
+        value={slug}
+        onChange={(e) => setSlug(e.target.value)}
+        placeholder="Organisation slug (e.g. acme)"
+        className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        data-testid="sso-org-slug"
+      />
+      <button
+        type="submit"
+        disabled={!slug.trim()}
+        className="rounded-md bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+        data-testid="sso-continue"
+      >
+        Continue with SSO
+      </button>
+    </form>
   );
 }
