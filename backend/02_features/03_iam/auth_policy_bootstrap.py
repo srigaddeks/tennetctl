@@ -66,11 +66,10 @@ async def ensure_policy_defaults(pool: Any) -> int:
     )
 
     inserted = 0
-    async with pool.acquire() as conn:
-        async with conn.transaction():
-            ctx_conn = replace(ctx, conn=conn)
-            for key, (value_type, default_value) in _auth_policy_mod.POLICY_KEYS.items():
-                full_key = f"iam.policy.{key}"
+    for key, (value_type, default_value) in _auth_policy_mod.POLICY_KEYS.items():
+        full_key = f"iam.policy.{key}"
+        try:
+            async with pool.acquire() as conn:
                 existing = await _configs_repo.get_by_scope_key(
                     conn,
                     scope="global",
@@ -80,6 +79,7 @@ async def ensure_policy_defaults(pool: Any) -> int:
                 )
                 if existing is not None:
                     continue
+                ctx_conn = replace(ctx, conn=conn)
                 await _configs_svc.create_config(
                     pool, conn, ctx_conn,
                     key=full_key,
@@ -91,6 +91,8 @@ async def ensure_policy_defaults(pool: Any) -> int:
                     workspace_id=None,
                 )
                 inserted += 1
+        except Exception:
+            pass
 
     if inserted == 0:
         logger.info("Auth policy bootstrap: no-op (all defaults present).")

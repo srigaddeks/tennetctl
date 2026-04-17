@@ -29,7 +29,6 @@ import {
 } from "@/features/iam/hooks/use-invites";
 import { ApiClientError } from "@/lib/api";
 
-// Use the default org — in a real app this would come from context/session
 const DEFAULT_ORG_ID = process.env.NEXT_PUBLIC_DEFAULT_ORG_ID ?? "";
 
 const STATUS_LABELS: Record<number, string> = {
@@ -39,11 +38,12 @@ const STATUS_LABELS: Record<number, string> = {
   4: "Expired",
 };
 
-const STATUS_VARIANTS: Record<number, "default" | "success" | "warning" | "danger"> = {
-  1: "warning",
-  2: "success",
-  3: "danger",
-  4: "default",
+type BadgeTone = "zinc" | "emerald" | "amber" | "red";
+const STATUS_TONES: Record<number, BadgeTone> = {
+  1: "amber",
+  2: "emerald",
+  3: "red",
+  4: "zinc",
 };
 
 const inviteSchema = z.object({
@@ -55,7 +55,7 @@ type InviteForm = z.infer<typeof inviteSchema>;
 export default function InvitesPage() {
   const [orgId] = useState<string>(DEFAULT_ORG_ID);
   const [showForm, setShowForm] = useState(false);
-  const toast = useToast();
+  const { toast } = useToast();
 
   const { data: invites, isLoading, isError, error } = useInvites(orgId || null);
   const createInvite = useCreateInvite(orgId);
@@ -67,24 +67,24 @@ export default function InvitesPage() {
     try {
       await createInvite.mutateAsync({
         email: values.email,
-        role_id: values.role_id || null,
+        role_id: values.role_id ?? null,
       });
-      toast.success(`Invite sent to ${values.email}`);
+      toast(`Invite sent to ${values.email}`, "success");
       form.reset();
       setShowForm(false);
     } catch (err) {
       const msg = err instanceof ApiClientError ? err.message : "Failed to send invite";
-      toast.error(msg);
+      toast(msg, "error");
     }
   }
 
   async function handleCancel(inviteId: string, email: string) {
     try {
       await cancelInvite.mutateAsync(inviteId);
-      toast.success(`Invite for ${email} cancelled`);
+      toast(`Invite for ${email} cancelled`, "success");
     } catch (err) {
       const msg = err instanceof ApiClientError ? err.message : "Failed to cancel invite";
-      toast.error(msg);
+      toast(msg, "error");
     }
   }
 
@@ -94,35 +94,41 @@ export default function InvitesPage() {
         title="Invites"
         description="Invite users to join your organization. Invites expire after 72 hours."
         testId="heading-invites"
-      >
-        <Button
-          variant="primary"
-          onClick={() => setShowForm((s) => !s)}
-          data-testid="btn-invite-user"
-        >
-          {showForm ? "Cancel" : "Invite User"}
-        </Button>
-      </PageHeader>
+        actions={
+          <Button
+            variant="primary"
+            onClick={() => setShowForm((s) => !s)}
+            data-testid="btn-invite-user"
+          >
+            {showForm ? "Cancel" : "Invite User"}
+          </Button>
+        }
+      />
 
       {showForm && (
         <div className="mb-6 rounded-lg border bg-white p-5 shadow-sm" data-testid="invite-form">
           <h2 className="mb-4 text-sm font-semibold text-gray-700">Send Invite</h2>
-          <form onSubmit={form.handleSubmit(handleInvite)} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <Field label="Email" className="flex-1">
-              <Input
-                {...form.register("email")}
-                type="email"
-                placeholder="colleague@example.com"
-                data-testid="input-invite-email"
-              />
+          <form
+            onSubmit={form.handleSubmit(handleInvite)}
+            className="flex flex-col gap-3 sm:flex-row sm:items-end"
+          >
+            <div className="flex-1">
+              <Field label="Email">
+                <Input
+                  {...form.register("email")}
+                  type="email"
+                  placeholder="colleague@example.com"
+                  data-testid="input-invite-email"
+                />
+              </Field>
               {form.formState.errors.email && (
                 <p className="mt-1 text-xs text-red-600">{form.formState.errors.email.message}</p>
               )}
-            </Field>
+            </div>
             <Button
               type="submit"
               variant="primary"
-              isLoading={createInvite.isPending}
+              loading={createInvite.isPending}
               data-testid="btn-send-invite"
             >
               Send Invite
@@ -142,9 +148,7 @@ export default function InvitesPage() {
       {isError && (
         <ErrorState
           message={
-            error instanceof ApiClientError
-              ? error.message
-              : "Failed to load invites"
+            error instanceof ApiClientError ? error.message : "Failed to load invites"
           }
         />
       )}
@@ -172,7 +176,7 @@ export default function InvitesPage() {
                   <TD>{invite.email}</TD>
                   <TD>{invite.inviter_display_name ?? invite.inviter_email ?? invite.invited_by}</TD>
                   <TD>
-                    <Badge variant={STATUS_VARIANTS[invite.status]}>
+                    <Badge tone={STATUS_TONES[invite.status]}>
                       {STATUS_LABELS[invite.status] ?? String(invite.status)}
                     </Badge>
                   </TD>
@@ -187,7 +191,7 @@ export default function InvitesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleCancel(invite.id, invite.email)}
-                        isLoading={cancelInvite.isPending}
+                        loading={cancelInvite.isPending}
                         data-testid={`btn-cancel-invite-${invite.id}`}
                       >
                         Cancel
