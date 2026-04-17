@@ -2,6 +2,7 @@
 iam.gdpr — asyncpg repository.
 
 Reads + writes "03_iam"."10_fct_gdpr_jobs".
+All ID columns are VARCHAR(36) for consistency with the rest of the iam schema.
 dim_gdpr_kinds: export=1, erase=2
 dim_gdpr_statuses: queued=1, processing=2, completed=3, failed=4, cancelled=5
 """

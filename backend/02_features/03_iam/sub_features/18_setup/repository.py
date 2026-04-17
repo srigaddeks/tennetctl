@@ -31,12 +31,12 @@ async def assign_global_role(
     role_id: str,
     created_by: str,
 ) -> None:
-    """Insert a global lnk_user_roles row (user ↔ system role, no org)."""
+    """Insert a global lnk_user_roles row (user ↔ system role)."""
     await conn.execute(
         '''
         INSERT INTO "03_iam"."42_lnk_user_roles"
-            (id, user_id, role_id, org_id, workspace_id, created_by, created_at)
-        VALUES ($1, $2, $3, NULL, NULL, $4, CURRENT_TIMESTAMP)
+            (id, user_id, role_id, org_id, created_by, created_at)
+        VALUES ($1, $2, $3, 'system', $4, CURRENT_TIMESTAMP)
         ON CONFLICT DO NOTHING
         ''',
         lnk_id, user_id, role_id, created_by,

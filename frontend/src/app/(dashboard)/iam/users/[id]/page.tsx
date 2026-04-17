@@ -25,7 +25,7 @@ export default function UserDetailPage() {
   const params = useParams();
   const router = useRouter();
   const userId = typeof params.id === "string" ? params.id : "";
-  const { showToast } = useToast();
+  const { toast: showToast } = useToast();
 
   const { data: user, isLoading, isError, error } = useUser(userId);
   const updateUser = useUpdateUser();
@@ -122,7 +122,7 @@ export default function UserDetailPage() {
         <section className="flex items-center gap-4" data-testid="user-status-section">
           <span className="text-sm text-zinc-500">Status</span>
           <Badge
-            variant={user.is_active ? "success" : "warning"}
+            tone={user.is_active ? "emerald" : "amber"}
             data-testid="user-status-badge"
           >
             {user.is_active ? "Active" : "Inactive"}
@@ -218,7 +218,7 @@ export default function UserDetailPage() {
               Cancel
             </Button>
             <Button
-              variant={pendingStatus === "inactive" ? "warning" : "primary"}
+              variant={pendingStatus === "inactive" ? "danger" : "primary"}
               onClick={handleStatusChange}
               loading={updateUser.isPending}
               data-testid="btn-confirm-status"

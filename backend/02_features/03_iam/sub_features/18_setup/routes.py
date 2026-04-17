@@ -99,7 +99,19 @@ async def create_initial_admin(
         request.app.state.setup_initialized = True
 
     from fastapi.responses import JSONResponse
-    content = _response.success(result)
+    import datetime as _dt
+
+    def _serialize(obj: object) -> object:
+        """Recursively convert non-JSON-native types."""
+        if isinstance(obj, dict):
+            return {k: _serialize(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_serialize(v) for v in obj]
+        if isinstance(obj, _dt.datetime):
+            return obj.isoformat()
+        return obj
+
+    content = _response.success(_serialize(result))
     response = JSONResponse(content=content, status_code=201)
 
     response.set_cookie(

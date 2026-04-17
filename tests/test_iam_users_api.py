@@ -133,22 +133,22 @@ async def test_user_crud_end_to_end(live_app) -> None:
     assert resp.json()["data"]["display_name"] == "Alice B."
     assert await _count_events(pool, "iam.users.updated", user_id) == 1
 
-    # PATCH is_active toggle
+    # PATCH is_active toggle — emits iam.users.deactivated, not iam.users.updated
     resp = await client.patch(
         f"/v1/users/{user_id}",
         json={"is_active": False},
     )
     assert resp.status_code == 200
     assert resp.json()["data"]["is_active"] is False
-    assert await _count_events(pool, "iam.users.updated", user_id) == 2
+    assert await _count_events(pool, "iam.users.deactivated", user_id) == 1
 
-    # No-op PATCH
+    # No-op PATCH — updated count stays at 1
     resp = await client.patch(
         f"/v1/users/{user_id}",
         json={"display_name": "Alice B."},
     )
     assert resp.status_code == 200
-    assert await _count_events(pool, "iam.users.updated", user_id) == 2
+    assert await _count_events(pool, "iam.users.updated", user_id) == 1
 
     # DELETE
     resp = await client.delete(f"/v1/users/{user_id}")

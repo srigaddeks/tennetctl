@@ -40,7 +40,10 @@ async def setup_test_database():
             "SELECT 1 FROM pg_database WHERE datname = $1", TEST_DB_NAME
         )
         if not exists:
-            await conn.execute(f'CREATE DATABASE "{TEST_DB_NAME}"')
+            try:
+                await conn.execute(f'CREATE DATABASE "{TEST_DB_NAME}"')
+            except asyncpg.exceptions.DuplicateDatabaseError:
+                pass
     finally:
         await conn.close()
 

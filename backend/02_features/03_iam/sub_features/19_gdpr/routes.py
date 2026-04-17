@@ -71,7 +71,7 @@ async def request_data_export(request: Request) -> Any:
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         job = await _service.request_export(pool, conn, ctx, user_id, vault)
-    return _response.success_response(job)
+    return _response.success_response(job, status_code=202)
 
 
 @router.post("/delete-me", status_code=202)
@@ -85,7 +85,7 @@ async def request_erasure(request: Request, body: EraseRequestIn) -> Any:
         job = await _service.request_erasure(
             pool, conn, ctx, user_id, vault, body.password, body.totp_code
         )
-    return _response.success_response(job)
+    return _response.success_response(job, status_code=202)
 
 
 @router.get("/gdpr/status")
@@ -94,6 +94,10 @@ async def gdpr_status(request: Request) -> Any:
     user_id = _require_auth(request)
     pool = request.app.state.pool
     async with pool.acquire() as conn:
-        export_job = await _repo.get_latest_by_user_kind(conn, user_id, "export")
-        erase_job = await _repo.get_latest_by_user_kind(conn, user_id, "erase")
+        export_job = _service.serialize_job(
+            await _repo.get_latest_by_user_kind(conn, user_id, "export")
+        )
+        erase_job = _service.serialize_job(
+            await _repo.get_latest_by_user_kind(conn, user_id, "erase")
+        )
     return _response.success_response({"export": export_job, "erase": erase_job})

@@ -153,7 +153,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
                                     auth_policy=auth_policy,
                                     org_id=row.get("org_id"),
                                 )
-                                if reason is not None:
+                                if reason is not None and reason != "not_found":
                                     row = None
                                     session_expired = True
                             except Exception:

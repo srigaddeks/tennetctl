@@ -64,6 +64,9 @@ _email_verification_routes: Any = import_module(
 _gdpr_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.19_gdpr.routes"
 )
+_invites_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.17_invites.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -83,3 +86,4 @@ router.include_router(_pw_reset_routes.router)
 router.include_router(_api_keys_routes.router)
 router.include_router(_email_verification_routes.router)
 router.include_router(_gdpr_routes.router)
+router.include_router(_invites_routes.router)

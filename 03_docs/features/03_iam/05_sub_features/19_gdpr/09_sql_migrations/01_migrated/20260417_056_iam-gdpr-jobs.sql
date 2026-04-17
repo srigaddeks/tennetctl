@@ -34,8 +34,8 @@ INSERT INTO "03_iam"."02_dim_gdpr_statuses" (code, label, description) VALUES
 
 -- ── fct: GDPR jobs ─────────────────────────────────────────────────────────────
 CREATE TABLE "03_iam"."10_fct_gdpr_jobs" (
-    id                UUID        PRIMARY KEY,
-    user_id           UUID        NOT NULL,
+    id                VARCHAR(36) PRIMARY KEY,
+    user_id           VARCHAR(36) NOT NULL,
     kind_id           SMALLINT    NOT NULL REFERENCES "03_iam"."01_dim_gdpr_kinds" (id),
     status_id         SMALLINT    NOT NULL REFERENCES "03_iam"."02_dim_gdpr_statuses" (id),
     requested_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,8 +43,8 @@ CREATE TABLE "03_iam"."10_fct_gdpr_jobs" (
     download_url_hash TEXT,       -- HMAC-SHA256 of the signed download path (never store plaintext)
     hard_erase_at     TIMESTAMP,  -- non-null for erase jobs; null for export jobs
     error_detail      TEXT,       -- last error message from worker, if any
-    created_by        UUID,
-    updated_by        UUID,
+    created_by        VARCHAR(36),
+    updated_by        VARCHAR(36),
     created_at        TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

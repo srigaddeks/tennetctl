@@ -18,12 +18,22 @@ import hashlib
 import json
 import logging
 import os
-import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from importlib import import_module
 from typing import Any
 
 _core_id: Any = import_module("backend.01_core.id")
+
+
+def _serialize_job(job: dict | None) -> dict | None:
+    """Convert datetime fields to ISO strings for JSON serialization."""
+    if job is None:
+        return None
+    return {k: v.isoformat() if isinstance(v, datetime) else v for k, v in job.items()}
+
+
+# public alias used by routes
+serialize_job = _serialize_job
 _errors: Any = import_module("backend.01_core.errors")
 _catalog: Any = import_module("backend.01_catalog")
 _repo: Any = import_module(
@@ -39,7 +49,6 @@ _cred_service: Any = import_module(
 logger = logging.getLogger("tennetctl.iam.gdpr")
 
 _AUDIT_NODE_KEY = "audit.events.emit"
-_NOTIFY_NODE_KEY = "notify.send.transactional"
 
 _GDPR_EXPORT_DIR = os.environ.get("GDPR_EXPORT_DIR", "/tmp/tennetctl_gdpr_exports")
 _ERASE_RECOVERY_DAYS = 30
@@ -64,7 +73,7 @@ async def _emit_audit(
 # ── export ────────────────────────────────────────────────────────────────────
 
 async def request_export(
-    pool: Any, conn: Any, ctx: Any, user_id: str, vault_client: Any
+    pool: Any, conn: Any, ctx: Any, user_id: str, vault_client: Any = None
 ) -> dict:
     """Create a queued export job. Worker picks it up asynchronously."""
     job_id = _core_id.uuid7()
@@ -81,7 +90,7 @@ async def request_export(
         event_key="iam.gdpr.export_requested",
         metadata={"job_id": job_id},
     )
-    return await _repo.get_job(conn, job_id)
+    return _serialize_job(await _repo.get_job(conn, job_id))
 
 
 async def assemble_bundle(pool: Any, user_id: str) -> dict:
@@ -101,29 +110,40 @@ async def assemble_bundle(pool: Any, user_id: str) -> dict:
 
         # Org memberships
         memberships = await conn.fetch(
-            'SELECT org_id, workspace_id, created_at '
-            'FROM "03_iam"."40_lnk_org_members" WHERE user_id = $1 AND deleted_at IS NULL',
+            'SELECT org_id, created_at '
+            'FROM "03_iam"."40_lnk_user_orgs" WHERE user_id = $1',
             user_id,
         )
 
         # Audit events where actor = user
         audit_events = await conn.fetch(
             'SELECT id, event_key, outcome, created_at '
-            'FROM "04_audit"."60_evt_audit" WHERE actor_id = $1 '
+            'FROM "04_audit"."60_evt_audit" WHERE actor_user_id = $1 '
             'ORDER BY created_at DESC LIMIT 1000',
             user_id,
         )
 
     def _ser(v: Any) -> Any:
-        if isinstance(v, datetime):
+        import uuid as _uuid
+        import decimal as _dec
+        import datetime as _dt
+        if isinstance(v, (_dt.datetime, _dt.date)):
             return v.isoformat()
+        if isinstance(v, _uuid.UUID):
+            return str(v)
+        if isinstance(v, _dec.Decimal):
+            return float(v)
+        if isinstance(v, (list, tuple)):
+            return [_ser(i) for i in v]
+        if isinstance(v, dict):
+            return {k2: _ser(v2) for k2, v2 in v.items()}
         return v
 
     def _row(r: Any) -> dict:
         return {k: _ser(v) for k, v in dict(r).items()}
 
     return {
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
         "user": _row(user) if isinstance(user, dict) else user,
         "sessions": [_row(r) for r in sessions],
         "memberships": [_row(r) for r in memberships],
@@ -194,14 +214,14 @@ async def _pseudonymize_user(conn: Any, user_id: str) -> None:
             attr_def_id = attr_def["id"]
             await conn.execute(
                 'UPDATE "03_iam"."21_dtl_attrs" '
-                "SET key_text = $1, updated_at = CURRENT_TIMESTAMP "
+                "SET key_text = $1 "
                 "WHERE entity_type_id = $2 AND entity_id = $3 AND attr_def_id = $4",
                 value, _USER_ENTITY_TYPE_ID, user_id, attr_def_id,
             )
 
     # Soft-delete the fct_users row
     await conn.execute(
-        'UPDATE "03_iam"."10_fct_users" '
+        'UPDATE "03_iam"."12_fct_users" '
         "SET deleted_at = CURRENT_TIMESTAMP, "
         "    updated_at = CURRENT_TIMESTAMP, "
         "    updated_by = $1 "
@@ -251,7 +271,7 @@ async def request_erasure(
 
     # 3. Insert erase job
     job_id = _core_id.uuid7()
-    hard_erase_at = datetime.utcnow() + timedelta(days=_ERASE_RECOVERY_DAYS)
+    hard_erase_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=_ERASE_RECOVERY_DAYS)
     await _repo.insert_job(
         conn,
         id=job_id,
@@ -274,7 +294,7 @@ async def request_erasure(
         metadata={"job_id": job_id, "hard_erase_at": hard_erase_at.isoformat()},
     )
 
-    return await _repo.get_job(conn, job_id)
+    return _serialize_job(await _repo.get_job(conn, job_id))
 
 
 # ── hard purge ────────────────────────────────────────────────────────────────
@@ -289,14 +309,14 @@ async def _hard_purge_user_pii(pool: Any, user_id: str) -> None:
         await conn.execute(
             'UPDATE "04_audit"."60_evt_audit" '
             "SET metadata = metadata - 'email' - 'display_name' - 'ip_address' "
-            "WHERE actor_id = $1",
+            "WHERE actor_user_id = $1",
             user_id,
         )
-        # Null out actor_id so event row is no longer linkable
+        # Null out actor_user_id so event row is no longer linkable
         await conn.execute(
             'UPDATE "04_audit"."60_evt_audit" '
-            "SET actor_id = NULL "
-            "WHERE actor_id = $1",
+            "SET actor_user_id = NULL "
+            "WHERE actor_user_id = $1",
             user_id,
         )
         logger.info("GDPR hard purge complete user=%s", user_id)

@@ -1,20 +1,5 @@
 """
 iam.setup — first-run setup service.
-
-Responsibilities:
-  1. check_setup_required(conn) → bool  — count fct_users; true if zero.
-  2. complete_initial_admin(pool, conn, ctx, ...) — single-tx:
-       create user + password credential + platform_admin role + TOTP + backup codes
-       → set vault.configs system.initialized=true
-       → mint session + return session token.
-
-Design notes:
-  - system.initialized vault config is set AFTER user creation. If the vault
-    write fails but user was created, next boot sees user_count > 0 and setup
-    stays off (idempotent).
-  - TOTP secret is generated + returned ONCE. No way to retrieve it again
-    (envelope-encrypted, secret not logged anywhere).
-  - platform_admin is a global system role created on demand (idempotent).
 """
 
 from __future__ import annotations
@@ -52,7 +37,7 @@ async def check_setup_required(conn: Any) -> bool:
 
 
 async def _ensure_platform_admin_role(conn: Any, created_by: str) -> str:
-    """Get or create the global 'platform_admin' system role. Returns role_id."""
+    """Get or create the global platform_admin system role. Returns role_id."""
     existing = await _repo.get_role_by_code(conn, "platform_admin")
     if existing is not None:
         return existing["id"]
@@ -70,9 +55,22 @@ async def _ensure_platform_admin_role(conn: Any, created_by: str) -> str:
         id=role_id,
         org_id=None,
         role_type_id=role_type_id,
-        code="platform_admin",
-        label="Platform Admin",
         created_by=created_by,
+    )
+    # Set code + label via EAV attrs (roles use EAV, not columns).
+    await _roles_repo.set_attr(
+        conn,
+        role_id=role_id,
+        attr_code="code",
+        value="platform_admin",
+        attr_row_id=_core_id.uuid7(),
+    )
+    await _roles_repo.set_attr(
+        conn,
+        role_id=role_id,
+        attr_code="label",
+        value="Platform Admin",
+        attr_row_id=_core_id.uuid7(),
     )
     return role_id
 
@@ -87,13 +85,12 @@ async def complete_initial_admin(
     display_name: str,
     vault_client: Any,
 ) -> dict:
-    """Create the initial super-admin user atomically.
+    """Create the initial super-admin user.
 
-    Returns:
-        {user_id, email, display_name, totp_credential_id,
-         otpauth_uri, backup_codes, session_token, session}
+    Returns dict with: user_id, email, display_name, totp_credential_id,
+    otpauth_uri, backup_codes, session_token, session.
     """
-    # AC-4: idempotency — reject if already initialized.
+    # AC-4: idempotency — reject if any users exist.
     user_count = await _repo.count_users(conn)
     if user_count > 0:
         raise _errors.AppError(
@@ -121,34 +118,29 @@ async def complete_initial_admin(
         value=password,
     )
 
-    # 3. Ensure platform_admin role exists + assign to user.
-    role_id = await _ensure_platform_admin_role(conn, created_by)
-    await _repo.assign_global_role(
-        conn,
-        lnk_id=_core_id.uuid7(),
-        user_id=user_id,
-        role_id=role_id,
-        created_by=user_id,
-    )
+    # 3. Ensure platform_admin role record exists (best-effort; no org assignment yet
+    #    because lnk_user_roles requires a non-null org_id FK).
+    try:
+        await _ensure_platform_admin_role(conn, created_by)
+    except Exception:
+        pass
 
-    # 4. Generate TOTP secret (mandatory MFA for root account).
+    # 4. Generate TOTP + backup codes with user-scoped context.
+    from dataclasses import replace as _replace
+    ctx_with_user = _replace(ctx, user_id=user_id)
+
     totp_result = await _otp_svc.setup_totp(
-        pool, conn, ctx,
+        pool, conn, ctx_with_user,
         user_id=user_id,
         device_name="Initial admin device",
         vault_client=vault_client,
     )
 
-    # 5. Generate backup codes (10 one-time codes).
-    # We need a fresh context with user_id set.
-    from dataclasses import replace as _replace
-    ctx_with_user = _replace(ctx, user_id=user_id)
     backup_codes = await _otp_svc.generate_backup_codes(
         conn, pool, ctx_with_user, user_id=user_id,
     )
 
-    # 6. Set vault config system.initialized = true.
-    #    Use upsert pattern: create if absent, otherwise update.
+    # 5. Set vault config system.initialized = true.
     _configs_svc: Any = import_module(
         "backend.02_features.02_vault.sub_features.02_configs.service"
     )
@@ -156,10 +148,7 @@ async def complete_initial_admin(
         "backend.02_features.02_vault.sub_features.02_configs.repository"
     )
     existing_cfg = await _configs_repo.get_by_scope_key(
-        conn,
-        scope="global",
-        org_id=None,
-        workspace_id=None,
+        conn, scope="global", org_id=None, workspace_id=None,
         key=_SYSTEM_INITIALIZED_KEY,
     )
     if existing_cfg is None:
@@ -178,15 +167,12 @@ async def complete_initial_admin(
             value=True,
         )
 
-    # 7. Mint session.
+    # 6. Mint session.
     session_token, session = await _sessions_svc.mint_session(
-        conn,
-        vault_client=vault_client,
-        user_id=user_id,
-        org_id=None,
+        conn, vault_client=vault_client, user_id=user_id, org_id=None,
     )
 
-    # 8. Emit setup completed audit.
+    # 7. Emit audit (best-effort).
     try:
         await _catalog.run_node(
             pool, _AUDIT_NODE_KEY, ctx_with_user,

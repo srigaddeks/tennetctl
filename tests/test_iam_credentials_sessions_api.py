@@ -61,6 +61,10 @@ async def _cleanup(pool: Any) -> None:
             user_ids,
         )
         await conn.execute(
+            'DELETE FROM "03_iam"."23_fct_failed_auth_attempts" WHERE email LIKE $1',
+            f"{_TEST_EMAIL_PREFIX}%",
+        )
+        await conn.execute(
             'DELETE FROM "03_iam"."21_dtl_attrs" '
             "WHERE entity_type_id = 3 AND entity_id = ANY($1::text[])",
             user_ids,

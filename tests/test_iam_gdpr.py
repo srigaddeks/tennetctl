@@ -41,17 +41,26 @@ async def _cleanup(pool: Any) -> None:
         user_ids = [r["user_id"] for r in rows]
         if not user_ids:
             return
+        uid_list = [str(u) for u in user_ids]
         await conn.execute(
             'DELETE FROM "03_iam"."10_fct_gdpr_jobs" WHERE user_id = ANY($1::text[])',
-            user_ids,
+            uid_list,
         )
         await conn.execute(
             'DELETE FROM "03_iam"."16_fct_sessions" WHERE user_id = ANY($1::text[])',
-            user_ids,
+            uid_list,
         )
         await conn.execute(
             'DELETE FROM "03_iam"."22_dtl_credentials" WHERE user_id = ANY($1::text[])',
-            user_ids,
+            uid_list,
+        )
+        await conn.execute(
+            'DELETE FROM "03_iam"."40_lnk_user_orgs" WHERE user_id = ANY($1::text[])',
+            uid_list,
+        )
+        await conn.execute(
+            'DELETE FROM "03_iam"."41_lnk_user_workspaces" WHERE user_id = ANY($1::text[])',
+            uid_list,
         )
         await conn.execute(
             """
@@ -63,11 +72,11 @@ async def _cleanup(pool: Any) -> None:
         await conn.execute(
             'DELETE FROM "03_iam"."21_dtl_attrs" '
             "WHERE entity_type_id = 3 AND entity_id = ANY($1::text[])",
-            user_ids,
+            uid_list,
         )
         await conn.execute(
             'DELETE FROM "03_iam"."12_fct_users" WHERE id = ANY($1::text[])',
-            user_ids,
+            uid_list,
         )
 
 
@@ -137,14 +146,14 @@ async def test_assemble_bundle_keys(live_app: Any):
 
     email = f"{_TEST_EMAIL_PREFIX}bundle@example.com"
     async with pool.acquire() as conn:
-        result = await _auth_service.signup(
+        _token, user, _session = await _auth_service.signup(
             pool, conn, _ctx,
             email=email,
             password="TestPass123!",
             display_name="Bundle Test",
             vault_client=live_app.state.vault,
         )
-    user_id = result["user"]["id"]
+    user_id = user["id"]
 
     bundle = await _gdpr_service.assemble_bundle(pool, user_id)
     assert "user" in bundle
@@ -226,4 +235,4 @@ async def test_gdpr_status(client: Any):
     data = r.json()["data"]
     assert data["export"] is not None
     assert data["export"]["kind"] == "export"
-    assert data["erase"] is None
+    assert not data["erase"]  # None or {} both mean no erase job

@@ -30,7 +30,9 @@
 
 ## Test Results
 ```
-All 6 new tests pass.
+tests/test_iam_totp_backup_codes.py: 4 passed
+tests/test_iam_api_key_rotation.py: 2 passed
+All 6 tests green (verified 2026-04-17).
 ```
 
 ## Audit Event Keys Added
