@@ -5,14 +5,14 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.1.9 IAM Enterprise — Phase 22 (8 plans). SAML/OIDC SSO, SCIM, impersonation, IP allowlist, dynamic groups, role expiry, SIEM export. Testing: pytest + Playwright MCP (Robot Framework removed).
+**Current focus:** v0.1.9 IAM Enterprise — Phase 22 (7 plans). OIDC SSO complete. Next: SAML 2.0 SSO. Testing: pytest + Playwright MCP (Robot Framework removed).
 
 ## Current Position
 
 Milestone: v0.1.9 IAM Enterprise — 🚧 In Progress
-Phase: 22 of 22 (IAM Enterprise) — 0 of 8 plans complete
-Plan: Not started
-Status: Ready to plan 22-01 (SAML 2.0 SSO).
+Phase: 22 of 22 (IAM Enterprise) — 1 of 7 plans complete
+Plan: 22-01 COMPLETE. Ready for 22-02 (SAML 2.0 SSO).
+Status: 22-01 APPLY+UNIFY done. 11/11 tests green. UI verified.
 Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
 Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
 Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
@@ -34,12 +34,12 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Ready for first PLAN — 22-01]
+  ✅       ✅       ✅    [22-01 COMPLETE — ready for 22-02 PLAN]
 ```
 
 Phase 22 (v0.1.9 — IAM Enterprise) — 7 plans (simplified for Keycloak/Zitadel/Clerk parity):
-  1. ▶ 22-01 — OIDC SSO (authlib + PKCE + per-org + JIT user)
-  2.   22-02 — SAML 2.0 SSO (python3-saml + per-org + JIT user)
+  1. ✅ 22-01 — OIDC SSO (authlib + PKCE + per-org + JIT user) COMPLETE
+  2. ▶ 22-02 — SAML 2.0 SSO (python3-saml + per-org + JIT user)
   3.   22-03 — SCIM 2.0 provisioning (RFC 7644, Okta/Azure)
   4.   22-04 — Admin impersonation (dual-actor audit + red banner)
   5.   22-05 — MFA enforcement policy (per-org/role require 2FA gate)
