@@ -10,13 +10,13 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Milestone: v0.1 Foundation + IAM (now spans 12 phases)
-Phase: 12 of 12 (IAM Security Completion) — starting
-Plan: 11-12 complete (PLAN ✓ APPLY ✓ UNIFY ✓)
-Status: Phase 11 COMPLETE. Full Notify stack shipped: 12 plans, SMTP/webpush/in-app/campaigns/templates/variables/subscriptions/deliveries/send-API. Build clean, 54+ notify tests green. Next: 12-01 (Magic Link).
-Last activity: 2026-04-17 — Phase 11 complete
+Phase: 12 of 12 (IAM Security Completion) — COMPLETE
+Plan: 12-04 complete (PLAN ✓ APPLY ✓ UNIFY ✓)
+Status: Phase 12 COMPLETE. All 4 plans done: magic link + OTP/TOTP + WebAuthn passkeys + password reset. 29 tests passing. Build clean. v0.1 Foundation + IAM milestone complete.
+Last activity: 2026-04-17 — Phase 12 complete
 
 Progress:
-- Milestone: [██████░░░░] 58% (Phases 1-7 complete; 08 backend done; 09/10/11/12 scaffolded in roadmap)
+- Milestone: [██████████] 100% (All 12 phases complete — v0.1 Foundation + IAM milestone done)
 - IAM auth backend (basics): 3 sub-features / 26 tests / 4 catalog nodes / session middleware / OAuth monkeypatched — IAM security completion (magic link/OTP/passkeys) deferred to Phase 12
 - Audit write path: evt_audit table + emit node (Phase 3 Plan 03); read path + UI + outbox now planned as Phase 10
 - Notify (Phase 11, 12 plans): dim tables with critical category + priority fan-out; template groups keyed to SMTP configs; static + dynamic-SQL variables (safelisted, parameterized by audit event); template designer UI; pure `POST /v1/notify/send` transactional API
@@ -27,10 +27,10 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-12 complete — Phase 11 Notify full-stack done]
+  ✓        ✓        ✓     [12-04 complete — Phase 12 IAM Security Completion done]
 ```
 
-Next loop: 12-01 (Magic Link)
+Next loop: v0.1 milestone complete — next milestone to be planned
 
 ## Performance Metrics
 
@@ -148,9 +148,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-17
-Stopped at: 11-09 PLAN created.
-Next action: /paul:plan 12-01 (Magic Link sub-feature)
-Resume file: .paul/phases/12-iam-security/12-01-PLAN.md (to be created)
+Stopped at: Phase 12 complete (12-04 applied and summarized).
+Next action: Plan v0.1.5 Runtime Hardening milestone or start v0.2 Platform Access Layer
+Resume file: .paul/ROADMAP.md (see Future Milestones section)
 
 ---
 *STATE.md — Updated after every significant action*

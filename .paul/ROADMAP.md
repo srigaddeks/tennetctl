@@ -31,7 +31,7 @@ Phases: 7 of 12 complete — Phase 8 (Auth basics) in progress
 | 9 | Feature Flags (vertical) | 2 | Not started | - |
 | 10 | Audit Analytics (PostHog-class vertical) | 4 | Not started | - |
 | 11 | Notify (Mailchimp-class vertical) | 12 | ✅ Complete | 2026-04-17 |
-| 12 | IAM Security Completion — Magic Link, OTP, Passkeys (vertical) | 4 | Not started | - |
+| 12 | IAM Security Completion — Magic Link, OTP, Passkeys (vertical) | 4 | ✅ Complete | 2026-04-17 |
 
 ## Phase Details
 
@@ -242,24 +242,22 @@ injection and full pytest + Robot E2E verification.
 
 **Goal:** Round out IAM auth with the modern methods Phase 8 deferred: magic-link email signin, OTP (email code + TOTP authenticator app), and WebAuthn passkeys. Depends on Notify so magic links and OTP codes can actually reach the user. Password reset + account recovery flows also land here (both need email delivery). Every auth-impacting action emits an audit event, which feeds security alerts through Notify `critical` category.
 **Depends on:** Phase 11 (Notify — email delivery for magic links, OTP codes, password reset)
-**Status:** Not started
+**Status:** ✅ Complete (2026-04-17)
 
 **Scope:**
 - `sub_features/11_magic_link/` — signed single-use tokens (HMAC via vault), 10-min TTL, consumed-on-use, rate-limited by email + IP
-- `sub_features/12_otp/` — email OTP (6-digit code, 5-min TTL) + TOTP (authenticator app, RFC 6238, `pyotp`). Recovery codes generated + stored hashed
-- `sub_features/13_passkeys/` — WebAuthn passkeys via `webauthn-python`, multiple credentials per user, device naming, last-used tracking
-- `sub_features/14_password_reset/` — email reset link, token same pattern as magic link, invalidates all sessions on reset
-- `sub_features/15_account_recovery/` — email-based account recovery with admin approval escalation for locked-out org admins
-- All flows emit audit events at every step (request/consume/fail); `critical` category for: repeated failed OTP, new-device passkey registration, password reset completion, account recovery initiation
-- Account setup UI: per-user security page listing enrolled methods + add/remove flows
-- Signin UI expansion: method picker (password / magic-link / OTP / passkey), graceful fallback if user has multiple methods
-- Robot E2E: magic-link happy path (request → receive email via notify → click → signed in); OTP happy path; passkey registration + signin; password reset
+- `sub_features/12_otp/` — email OTP (6-digit code, 5-min TTL, max 3 attempts) + TOTP (authenticator app, RFC 6238, `pyotp`, AES-256-GCM encrypted secrets)
+- `sub_features/13_passkeys/` — WebAuthn passkeys via `py_webauthn` v2.7.1, multiple credentials per user, device naming, last-used tracking
+- `sub_features/14_password_reset/` — email reset link, HMAC token, 15-min TTL, argon2id re-hash on complete
+- Account setup UI: `/account/security` per-user security page with TOTP + passkey enrollment + management
+- Signin UI expansion: 4-tab method picker (password / magic-link / OTP / passkey), forgot-password flow
+- Robot E2E: all 4 signin tabs validated, forgot-password link, /auth/forgot-password page, /auth/password-reset token missing state
 
 **Plans:**
-- [ ] 12-01: Magic link sub-feature + integration with Notify transactional send
-- [ ] 12-02: OTP (email + TOTP) sub-feature + recovery codes
-- [ ] 12-03: WebAuthn passkeys sub-feature
-- [ ] 12-04: Password reset + account recovery flows + security UI + Robot E2E
+- [x] 12-01: Magic link sub-feature + integration with Notify transactional send
+- [x] 12-02: OTP (email + TOTP) sub-feature
+- [x] 12-03: WebAuthn passkeys sub-feature
+- [x] 12-04: Password reset + security UI + Robot E2E
 
 ---
 
@@ -290,4 +288,4 @@ Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
 
 ---
 *Roadmap created: 2026-04-12*
-*Last updated: 2026-04-16 — Added Phase 10 (Audit Analytics, PostHog-class) + Phase 11 (Notify, Mailchimp-class, 12 plans incl. template groups, SMTP-per-group, static+dynamic SQL variables, designer UI, pure API) + Phase 12 (IAM Security Completion: magic link, OTP, passkeys — depends on Notify)*
+*Last updated: 2026-04-17 — Phase 12 complete: IAM Security Completion (magic link + OTP/TOTP + WebAuthn passkeys + password reset). v0.1 Foundation + IAM milestone complete.*

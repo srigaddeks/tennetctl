@@ -1036,3 +1036,81 @@ export type NotifyCampaignStats = {
   by_status: Record<string, number>;
 };
 
+// ─── IAM: OTP ────────────────────────────────────────────────────
+
+export type OtpRequestBody = {
+  email: string;
+};
+
+export type OtpVerifyBody = {
+  email: string;
+  code: string;
+};
+
+export type TotpSetupBody = {
+  device_name?: string;
+};
+
+export type TotpSetupResponse = {
+  credential_id: string;
+  otpauth_uri: string;
+  device_name: string;
+};
+
+export type TotpVerifyBody = {
+  credential_id: string;
+  code: string;
+};
+
+export type TotpCredential = {
+  id: string;
+  user_id: string;
+  device_name: string;
+  is_active: boolean;
+  last_used_at: string | null;
+  created_at: string;
+};
+
+export type TotpListResponse = {
+  items: TotpCredential[];
+  total: number;
+};
+
+// ─── IAM: Passkeys (WebAuthn) ─────────────────────────────────────────────────
+
+export type PasskeyRegisterBeginResponse = {
+  challenge_id: string;
+  options_json: string;
+};
+
+export type PasskeyAuthBeginResponse = {
+  challenge_id: string;
+  options_json: string;
+};
+
+export type PasskeyCredential = {
+  id: string;
+  user_id: string;
+  device_name: string;
+  aaguid: string;
+  sign_count: number;
+  last_used_at: string | null;
+  created_at: string;
+};
+
+export type PasskeyListResponse = {
+  items: PasskeyCredential[];
+  total: number;
+};
+
+// ─── IAM: Password Reset ─────────────────────────────────────────────────────
+
+export type PasswordResetRequestBody = {
+  email: string;
+};
+
+export type PasswordResetCompleteBody = {
+  token: string;
+  new_password: string;
+};
+

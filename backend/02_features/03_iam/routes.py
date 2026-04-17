@@ -43,6 +43,18 @@ _credentials_routes: Any = import_module(
 _sessions_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.09_sessions.routes"
 )
+_magic_link_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.11_magic_link.routes"
+)
+_otp_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.12_otp.routes"
+)
+_passkeys_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.13_passkeys.routes"
+)
+_pw_reset_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.14_password_reset.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -55,3 +67,7 @@ router.include_router(_applications_routes.router)
 router.include_router(_credentials_routes.router)
 router.include_router(_sessions_routes.router)
 router.include_router(_auth_routes.router)
+router.include_router(_magic_link_routes.router)
+router.include_router(_otp_routes.router)
+router.include_router(_passkeys_routes.router)
+router.include_router(_pw_reset_routes.router)
