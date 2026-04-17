@@ -9,9 +9,9 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 ## Current Milestone
 
 **v0.1.6 IAM Hardening for OSS** (v0.1.6)
-Status: 🚧 In Progress
+Status: ✅ Complete (2026-04-17)
 Theme: Make IAM production-grade before open-sourcing. Config-driven auth policy (no hardcoded thresholds), account lockout, session limits, audit coverage closure, email OTP via existing Notify templates, API key rotation, IAM metrics.
-Phases: 0 of 1 complete
+Phases: 2 of 2 complete
 
 **v0.1.7 Notify Production + Developer Docs** (v0.1.7)
 Status: ✅ Complete
@@ -49,8 +49,8 @@ Phases: 6 of 6 complete
 | 17 | Notify — Channel Fallback (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
 | 18 | Notify — Per-Template Analytics UI (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
 | 19 | Developer Docs Pass — Integration guide, API reference, deployment, DKIM/DMARC, examples (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
-| 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | 🚧 In Progress | - |
-| 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | 📋 Planned | - |
+| 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
+| 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
 | 22 | IAM Enterprise — SAML/OIDC SSO, SCIM, impersonation, IP allowlist, dynamic groups, role expiry, SIEM export (v0.1.9) | 8 | 📋 Planned | - |
 
 ## Phase Details
@@ -421,7 +421,7 @@ injection and full pytest + Robot E2E verification.
 
 **Goal:** Make IAM production-grade before open-sourcing. Every threshold/TTL/limit must live in vault-backed config (zero hardcoded values); email OTP must reuse existing Notify templates (no new mailer); audit coverage closed across all auth flows; account lockout, session limits, and password-reset session revocation wired in; TOTP backup codes + API key rotation + IAM metrics.
 **Depends on:** Phase 7 (Vault — config storage), Phase 10 (Audit — emit_audit), Phase 11 (Notify — email templates), Phase 13 (Monitoring — metric emit).
-**Status:** 🚧 In Progress
+**Status:** ✅ Complete (2026-04-17) — 137 tests passing, all 6 plans shipped.
 
 **Scope decisions (confirmed 2026-04-17):**
 - **Per-org policy**: global defaults + per-org override (1-B). Storage: vault paths only (no EAV). Global at `iam.policy.{key}`; per-org override at `iam.policy.orgs.{org_id}.{key}`. Resolver reads org-scoped key first, falls back to global.
@@ -459,7 +459,7 @@ injection and full pytest + Robot E2E verification.
 
 **Goal:** Close the OSS user-experience + compliance gaps that block a real v0.1.6 open-source release. Email verification at signup, admin invite flow, first-run admin wizard, user deactivation vs soft-delete distinction, GDPR export + erasure, end-user session/device management UI.
 **Depends on:** Phase 11 (Notify — for verification/invite emails), Phase 20 (policy layer for signup.require_email_verification toggle).
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-17) — all 6 plans shipped, 137 IAM tests green.
 
 **Scope:**
 - **Email verification at signup**: new sub-feature `16_email_verification/`, `fct_email_verifications` table (user_id, hashed token, consumed_at, ttl_at), policy-gated (`signup.require_email_verification` in 20-01 vault config). Verification email uses Notify template `iam.email.verify`. Unverified users can sign in but get a banner + limited scope until verified.

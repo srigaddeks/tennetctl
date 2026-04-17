@@ -5,14 +5,14 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.1.6 IAM Hardening for OSS — Phase 20 (5 plans) newly drafted. Goal: make IAM production-grade before open-sourcing. Config-driven auth policy (zero hardcoded thresholds), account lockout, session limits, audit coverage closure, email OTP→Notify migration, API key rotation, IAM metrics.
+**Current focus:** v0.1.6 IAM Hardening for OSS — COMPLETE. Phases 20 + 21 fully shipped (12 plans, 137 tests green). Next: Phase 22 (IAM Enterprise — SAML/OIDC SSO, SCIM, impersonation) or v0.1.8 Notify (quiet-hours, timezone-aware sends).
 
 ## Current Position
 
-Milestone: v0.1.6 IAM Hardening for OSS — in progress (milestone created 2026-04-17)
-Phase: 20 of 20 (IAM Hardening for OSS) — 5 plans scoped in ROADMAP, none drafted as PLAN.md yet
-Plan: Not started
-Status: Ready for /paul:plan on 20-01 (Auth policy config layer — vault keys + AuthPolicy service + SWR cache + bootstrap seed).
+Milestone: v0.1.6 IAM Hardening for OSS — ✅ Complete (2026-04-17)
+Phase: 21 of 21 (IAM OSS Completion) — all 6 plans complete
+Plan: All complete — 12/12 SUMMARYs written
+Status: Ready for next milestone. Options: Phase 22 (IAM Enterprise), v0.1.8 Notify, or Phase 9 (Feature Flags vertical).
 Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
 Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
 Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
