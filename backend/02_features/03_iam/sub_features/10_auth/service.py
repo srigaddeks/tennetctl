@@ -48,7 +48,35 @@ _sessions: Any = import_module(
 DEFAULT_ORG_SLUG = "default"
 DEFAULT_ORG_DISPLAY_NAME = "Default Organization"
 
-_AUDIT_NODE_KEY = "audit.events.emit"
+_AUDIT_NODE_KEY  = "audit.events.emit"
+_METRIC_NODE_KEY = "monitoring.metrics.increment"
+
+
+async def _emit_metric(
+    pool: Any,
+    ctx: Any,
+    *,
+    metric_key: str,
+    labels: dict | None = None,
+    value: float = 1.0,
+) -> None:
+    """Best-effort metric increment — never raises."""
+    try:
+        from dataclasses import replace as _replace
+        metric_ctx = _replace(ctx, conn=None)
+        await _catalog.run_node(
+            pool,
+            _METRIC_NODE_KEY,
+            metric_ctx,
+            {
+                "org_id": ctx.org_id or "system",
+                "metric_key": metric_key,
+                "labels": labels or {},
+                "value": value,
+            },
+        )
+    except Exception:
+        pass
 
 
 async def _emit_audit(
@@ -192,7 +220,7 @@ async def signin(
     user = await _find_user_by_email_and_type(
         conn, email=email, account_type="email_password",
     )
-    if user is None or not user["is_active"]:
+    if user is None:
         # Burn a verify cycle to prevent timing-based user enumeration.
         await _credentials.verify_password(
             conn, vault_client=vault_client,
@@ -224,6 +252,15 @@ async def signin(
             outcome="failure",
         )
         raise _errors.UnauthorizedError("invalid email or password")
+
+    if not user["is_active"]:
+        await _emit_audit(
+            pool, ctx,
+            event_key="iam.auth.signin",
+            metadata={"email": email, "user_id": user["id"], "reason": "user_inactive"},
+            outcome="failure",
+        )
+        raise _errors.ForbiddenError("account is deactivated", code="USER_INACTIVE")
 
     # Check lockout before attempting password verification.
     locked_until, lockout_was_cleared = await _credentials.check_lockout(conn, user_id=user["id"])
@@ -268,11 +305,17 @@ async def signin(
                 metadata={"user_id": user["id"], "email": email},
                 outcome="success",
             )
+            await _emit_metric(pool, ctx, metric_key="iam_lockouts_triggered_total")
         await _emit_audit(
             pool, ctx,
             event_key="iam.credentials.verify_failed",
             metadata={"user_id": user["id"], "email": email},
             outcome="failure",
+        )
+        await _emit_metric(
+            pool, ctx,
+            metric_key="iam_failed_auth_total",
+            labels={"reason": "bad_password", "source": "email_password"},
         )
         await _emit_audit(
             pool, ctx,

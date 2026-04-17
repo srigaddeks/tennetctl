@@ -191,9 +191,13 @@ async def me_route(request: Request) -> dict:
     _sessions_repo: Any = import_module(
         "backend.02_features.03_iam.sub_features.09_sessions.repository"
     )
+    _ev_repo: Any = import_module(
+        "backend.02_features.03_iam.sub_features.16_email_verification.repository"
+    )
     async with pool.acquire() as conn:
         user = await _service.me(conn, user_id=user_id)
         session_row = await _sessions_repo.get_by_id(conn, session_id)
+        email_verified_at = await _ev_repo.get_email_verified_at(conn, user_id)
     if user is None:
         raise _errors.UnauthorizedError("session points to a deleted user")
     session_payload = SessionMeta(**session_row).model_dump() if session_row else {
@@ -205,8 +209,10 @@ async def me_route(request: Request) -> dict:
         "revoked_at": None,
         "is_valid": False,
     }
+    user_data = _users_schemas.UserRead(**user).model_dump()
+    user_data["email_verified"] = email_verified_at is not None
     return _response.success({
-        "user": _users_schemas.UserRead(**user).model_dump(),
+        "user": user_data,
         "session": session_payload,
     })
 

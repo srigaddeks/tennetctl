@@ -35,6 +35,23 @@ _configs_repo: Any = import_module(
 _SIGNING_KEY_VAULT_KEY = "auth.session.signing_key_v1"
 _TTL_CONFIG_KEY = "auth.session.ttl_days"
 _DEFAULT_TTL_DAYS = 7
+_METRIC_NODE_KEY = "monitoring.metrics.increment"
+
+
+async def _emit_metric(
+    pool: Any, ctx: Any, *, metric_key: str, labels: dict | None = None
+) -> None:
+    """Best-effort metric increment — never raises."""
+    try:
+        from dataclasses import replace as _r
+        await _catalog.run_node(pool, _METRIC_NODE_KEY, _r(ctx, conn=None), {
+            "org_id": ctx.org_id or "system",
+            "metric_key": metric_key,
+            "labels": labels or {},
+            "value": 1.0,
+        })
+    except Exception:
+        pass
 
 
 def _b64url_encode(data: bytes) -> str:
@@ -308,6 +325,8 @@ async def enforce_session_limits(
             },
         },
     )
+    await _emit_metric(pool, ctx, metric_key="iam_sessions_evicted_total",
+                       labels={"reason": "max_concurrent"})
     return evicted_id
 
 
@@ -351,6 +370,8 @@ async def check_session_timeouts(
                     },
                 },
             )
+            await _emit_metric(pool, ctx, metric_key="iam_sessions_evicted_total",
+                               labels={"reason": "idle_timeout"})
             return "idle_timeout"
 
     # Absolute TTL.
@@ -372,6 +393,8 @@ async def check_session_timeouts(
                     },
                 },
             )
+            await _emit_metric(pool, ctx, metric_key="iam_sessions_evicted_total",
+                               labels={"reason": "absolute_ttl"})
             return "absolute_ttl"
 
     return None

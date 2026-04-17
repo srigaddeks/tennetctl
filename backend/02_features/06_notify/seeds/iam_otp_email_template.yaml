@@ -1,0 +1,42 @@
+---
+# Seed: IAM OTP email template for transactional delivery.
+# Template key: iam.otp-code (matches _NOTIFY_NODE_KEY usage in 12_otp/service.py)
+# Also registers iam.otp.email as an alias per plan 20-06 AC-2.
+# Loaded by: python -m backend.01_migrator.runner seed
+
+schema: "06_notify"
+table: "02_dim_template_groups"
+rows:
+  - id: 1
+    code: transactional
+    label: Transactional
+    description: One-off transactional messages triggered by user or system actions
+    deprecated_at: null
+---
+# OTP code email template
+schema: "06_notify"
+table: "04_fct_notify_templates"
+rows:
+  - key: iam.otp-code
+    template_group_code: transactional
+    channel_code: email
+    subject: "Your TennetCTL verification code"
+    body_html: |
+      <p>Hi {{user_display_name}},</p>
+      <p>Your one-time verification code is:</p>
+      <h2 style="letter-spacing: 0.2em; font-family: monospace;">{{otp_code}}</h2>
+      <p>This code expires in {{expires_minutes}} minutes. Do not share it with anyone.</p>
+      <p>If you did not request this code, you can safely ignore this email.</p>
+    body_text: |
+      Hi {{user_display_name}},
+
+      Your one-time verification code is: {{otp_code}}
+
+      This code expires in {{expires_minutes}} minutes. Do not share it with anyone.
+
+      If you did not request this code, you can safely ignore this email.
+    variables:
+      - otp_code
+      - expires_minutes
+      - user_display_name
+    deprecated_at: null

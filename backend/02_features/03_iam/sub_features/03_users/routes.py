@@ -108,6 +108,7 @@ async def update_user_route(
                 display_name=body.display_name,
                 avatar_url=body.avatar_url,
                 is_active=body.is_active,
+                status=body.status,
             )
     return _response.success(UserRead(**user).model_dump())
 

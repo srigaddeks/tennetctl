@@ -53,6 +53,10 @@ async def _cleanup(pool: Any) -> None:
         if not user_ids:
             return
         await conn.execute(
+            'DELETE FROM "03_iam"."28_fct_totp_backup_codes" WHERE user_id = ANY($1::text[])',
+            user_ids,
+        )
+        await conn.execute(
             'DELETE FROM "03_iam"."24_fct_iam_totp_credentials" WHERE user_id = ANY($1::text[])',
             user_ids,
         )

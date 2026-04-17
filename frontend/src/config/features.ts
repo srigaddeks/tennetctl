@@ -103,6 +103,18 @@ export const FEATURES: FeatureNav[] = [
     ],
   },
   {
+    key: "account",
+    label: "Account",
+    description: "Personal settings: active sessions, API keys, security.",
+    basePath: "/account",
+    testId: "nav-feature-account",
+    subFeatures: [
+      { href: "/account/sessions", label: "Sessions", testId: "nav-account-sessions" },
+      { href: "/account/api-keys", label: "API Keys", testId: "nav-account-api-keys" },
+      { href: "/account/security", label: "Security", testId: "nav-account-security" },
+    ],
+  },
+  {
     key: "nodes",
     label: "Node Catalog",
     description: "Live registry of every feature, sub-feature, and node currently installed.",

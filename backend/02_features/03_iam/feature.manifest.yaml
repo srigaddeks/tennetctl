@@ -453,6 +453,21 @@ spec:
       routes: []
       ui_pages: []
 
+    - key: iam.api_keys_extra
+      number: 22
+      label: API Keys Extended Events
+      description: Additional audit event keys for API key operations added in Plan 20-06.
+      owns:
+        schema: "03_iam"
+        tables: []
+        views: []
+        seeds: []
+      nodes: []
+      routes:
+        - method: POST
+          path: "/v1/api-keys/{key_id}/rotate"
+          handler: sub_features.15_api_keys.routes.rotate_api_key_route
+      ui_pages: []
     - key: iam.lockout
       number: 20
       label: Account Lockout

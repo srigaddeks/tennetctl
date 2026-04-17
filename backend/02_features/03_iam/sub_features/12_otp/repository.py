@@ -1,11 +1,12 @@
-"""Repository for iam.otp (email OTP codes + TOTP credentials)."""
+"""Repository for iam.otp (email OTP codes + TOTP credentials + backup codes)."""
 
 from __future__ import annotations
 
 from typing import Any
 
-_OTP_TABLE  = '"03_iam"."23_fct_iam_otp_codes"'
-_TOTP_TABLE = '"03_iam"."24_fct_iam_totp_credentials"'
+_OTP_TABLE     = '"03_iam"."23_fct_iam_otp_codes"'
+_TOTP_TABLE    = '"03_iam"."24_fct_iam_totp_credentials"'
+_BACKUP_TABLE  = '"03_iam"."28_fct_totp_backup_codes"'
 
 
 # ─── Email OTP ────────────────────────────────────────────────────────────────
@@ -132,4 +133,47 @@ async def delete_totp_credential(conn: Any, cred_id: str, user_id: str) -> None:
     await conn.execute(
         f"UPDATE {_TOTP_TABLE} SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1 AND user_id = $2",
         cred_id, user_id,
+    )
+
+
+# ─── TOTP backup codes ────────────────────────────────────────────────────────
+
+async def insert_backup_code(conn: Any, *, code_id: str, user_id: str, code_hash: str) -> None:
+    await conn.execute(
+        f"INSERT INTO {_BACKUP_TABLE} (id, user_id, code_hash) VALUES ($1, $2, $3)",
+        code_id, user_id, code_hash,
+    )
+
+
+async def list_active_backup_codes(conn: Any, user_id: str) -> list[dict]:
+    rows = await conn.fetch(
+        f"SELECT * FROM {_BACKUP_TABLE} WHERE user_id = $1 AND consumed_at IS NULL",
+        user_id,
+    )
+    return [dict(r) for r in rows]
+
+
+async def get_backup_code_by_hash(conn: Any, user_id: str, code_hash: str) -> dict | None:
+    row = await conn.fetchrow(
+        f"""
+        SELECT * FROM {_BACKUP_TABLE}
+        WHERE user_id = $1 AND code_hash = $2 AND consumed_at IS NULL
+        FOR UPDATE
+        """,
+        user_id, code_hash,
+    )
+    return dict(row) if row else None
+
+
+async def mark_backup_code_consumed(conn: Any, code_id: str) -> None:
+    await conn.execute(
+        f"UPDATE {_BACKUP_TABLE} SET consumed_at = CURRENT_TIMESTAMP WHERE id = $1",
+        code_id,
+    )
+
+
+async def delete_all_backup_codes(conn: Any, user_id: str) -> None:
+    await conn.execute(
+        f"DELETE FROM {_BACKUP_TABLE} WHERE user_id = $1",
+        user_id,
     )

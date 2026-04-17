@@ -1,0 +1,40 @@
+---
+# Seed: IAM email verification template for transactional delivery.
+# Template key: iam.email.verify (matches usage in 16_email_verification/service.py)
+# Loaded by: python -m backend.01_migrator.runner seed
+
+schema: "06_notify"
+table: "02_dim_template_groups"
+rows:
+  - id: 1
+    code: transactional
+    label: Transactional
+    description: One-off transactional messages triggered by user or system actions
+    deprecated_at: null
+---
+# Email verification template
+schema: "06_notify"
+table: "04_fct_notify_templates"
+rows:
+  - key: iam.email.verify
+    template_group_code: transactional
+    channel_code: email
+    subject: "Verify your email address — TennetCTL"
+    body_html: |
+      <p>Hi {{user_display_name}},</p>
+      <p>Please verify your email address by clicking the link below:</p>
+      <p><a href="{{verify_url}}">Verify Email Address</a></p>
+      <p>This link expires in {{ttl_hours}} hours. If you did not create an account, you can safely ignore this email.</p>
+    body_text: |
+      Hi {{user_display_name}},
+
+      Please verify your email address by visiting the link below:
+
+      {{verify_url}}
+
+      This link expires in {{ttl_hours}} hours. If you did not create an account, you can safely ignore this email.
+    variables:
+      - verify_url
+      - ttl_hours
+      - user_display_name
+    deprecated_at: null

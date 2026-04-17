@@ -4,12 +4,17 @@ iam.users — Pydantic v2 API models.
 account_type is accepted as a code (string) on create; the service resolves to
 account_type_id via dim_account_types. account_type is frozen on PATCH (changing
 auth type is a migration, not a casual update).
+
+Status transitions (via PATCH `status` field):
+  "active"   → reactivate (or no-op if already active)
+  "inactive" → deactivate + revoke all sessions
 """
 
 from __future__ import annotations
 
 import re
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -37,13 +42,21 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    """PATCH body — only provided fields change. account_type is frozen."""
+    """PATCH body — only provided fields change. account_type is frozen.
+
+    Use `status` to activate/deactivate. Setting `status` overrides any
+    `is_active` value sent in the same request (deprecated field kept for
+    backward compatibility).
+    """
     model_config = ConfigDict(extra="forbid")
 
     email: str | None = None
     display_name: str | None = None
     avatar_url: str | None = None
+    # Deprecated — use `status` instead. Kept for backward compat.
     is_active: bool | None = None
+    # Preferred status transition field.
+    status: Literal["active", "inactive"] | None = None
 
     @field_validator("email")
     @classmethod

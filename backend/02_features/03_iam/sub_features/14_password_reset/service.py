@@ -37,6 +37,20 @@ _RATE_LIMIT_COUNT      = 3
 _RATE_LIMIT_WINDOW     = 15
 _TOKEN_TTL_MINUTES     = 15
 _NOTIFY_NODE_KEY       = "notify.send.transactional"
+_METRIC_NODE_KEY       = "monitoring.metrics.increment"
+
+
+async def _emit_metric(pool: Any, ctx: Any, *, metric_key: str, labels: dict | None = None) -> None:
+    try:
+        from dataclasses import replace as _r
+        await _catalog.run_node(pool, _METRIC_NODE_KEY, _r(ctx, conn=None), {
+            "org_id": ctx.org_id or "system",
+            "metric_key": metric_key,
+            "labels": labels or {},
+            "value": 1.0,
+        })
+    except Exception:
+        pass
 
 
 async def _signing_key_bytes(vault_client: Any) -> bytes:
@@ -149,6 +163,8 @@ async def request_reset(
         {"event_key": "iam.password_reset.requested", "outcome": "success",
          "metadata": {"user_id": user_id}},
     )
+    await _emit_metric(pool, ctx, metric_key="iam_password_reset_total",
+                       labels={"outcome": "requested"})
 
 
 async def complete_reset(
@@ -205,6 +221,8 @@ async def complete_reset(
         {"event_key": "iam.password_reset.completed", "outcome": "success",
          "metadata": {"user_id": row["user_id"], "sessions_revoked": revoked_count}},
     )
+    await _emit_metric(pool, ctx, metric_key="iam_password_reset_total",
+                       labels={"outcome": "success"})
 
     session_token, session = await _sessions_service.mint_session(
         conn, vault_client=vault_client, user_id=row["user_id"], org_id=ctx.org_id,

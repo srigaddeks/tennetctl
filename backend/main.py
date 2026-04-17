@@ -176,7 +176,70 @@ async def lifespan(application: FastAPI):
         )
         logger.info("Notify webpush sender started.")
 
+    # GDPR worker — processes queued export + erasure jobs every 60 s.
+    _gdpr_worker_task = None
+    if "iam" in config.modules:
+        import asyncio as _asyncio_gdpr
+        _gdpr_service = import_module(
+            "backend.02_features.03_iam.sub_features.19_gdpr.service"
+        )
+        _gdpr_worker_task = _asyncio_gdpr.create_task(
+            _gdpr_service.gdpr_worker_loop(pool)
+        )
+        logger.info("GDPR worker started.")
+
+    # IAM active-sessions gauge — emitted every 30 s as best-effort background task.
+    _iam_gauge_task = None
+    if "iam" in config.modules:
+        import asyncio as _asyncio
+
+        async def _iam_active_sessions_loop() -> None:
+            _catalog_local = import_module("backend.01_catalog")
+            _catalog_ctx_local = import_module("backend.01_catalog.context")
+            _id_local = import_module("backend.01_core.id")
+            while True:
+                try:
+                    await _asyncio.sleep(30)
+                    async with pool.acquire() as _gauge_conn:
+                        count = await _gauge_conn.fetchval(
+                            'SELECT COUNT(*) FROM "03_iam"."16_fct_sessions" '
+                            'WHERE revoked_at IS NULL AND deleted_at IS NULL '
+                            '  AND expires_at > CURRENT_TIMESTAMP'
+                        )
+                    _gauge_ctx = _catalog_ctx_local.NodeContext(
+                        audit_category="setup",
+                        trace_id=_id_local.uuid7(),
+                        span_id=_id_local.uuid7(),
+                        extras={"pool": pool},
+                    )
+                    await _catalog_local.run_node(
+                        pool, "monitoring.metrics.increment", _gauge_ctx,
+                        {
+                            "org_id": "system",
+                            "metric_key": "iam_active_sessions",
+                            "labels": {},
+                            "value": float(count or 0),
+                        },
+                    )
+                except _asyncio.CancelledError:
+                    break
+                except Exception:
+                    pass  # Best-effort; never crash the server
+
+        _iam_gauge_task = _asyncio.create_task(_iam_active_sessions_loop())
+
     yield
+
+    if _gdpr_worker_task is not None:
+        _gdpr_worker_task.cancel()
+        import asyncio as _asyncio_gdpr2
+        await _asyncio_gdpr2.gather(_gdpr_worker_task, return_exceptions=True)
+        logger.info("GDPR worker stopped.")
+
+    if _iam_gauge_task is not None:
+        _iam_gauge_task.cancel()
+        import asyncio as _asyncio2
+        await _asyncio2.gather(_iam_gauge_task, return_exceptions=True)
 
     if _notify_worker_task is not None:
         _notify_worker_task.cancel()
@@ -243,6 +306,12 @@ async def health():
 
 _catalog_routes = import_module("backend.01_catalog.routes")
 app.include_router(_catalog_routes.router)
+
+# Setup routes — always mounted, unauthenticated, bypassed by SetupModeMiddleware.
+_setup_routes = import_module(
+    "backend.02_features.03_iam.sub_features.18_setup.routes"
+)
+app.include_router(_setup_routes.router)
 
 
 def _mount_module_routers(application: FastAPI, modules: frozenset[str]) -> None:

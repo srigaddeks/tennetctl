@@ -174,3 +174,60 @@ async def delete_totp_route(credential_id: str, request: Request) -> Response:
             ctx = _replace(ctx_base, conn=conn)
             await _service.delete_totp(conn, credential_id=credential_id, user_id=user_id, pool=pool, ctx=ctx)
     return Response(status_code=204)
+
+
+# ── TOTP Backup Code routes ────────────────────────────────────────────────────
+
+@router.post("/totp/backup-codes/regenerate", status_code=200)
+async def regenerate_backup_codes_route(request: Request) -> dict:
+    """Generate 10 new backup codes, invalidating previous ones. Returns plaintext once."""
+    pool = request.app.state.pool
+    user_id = getattr(request.state, "user_id", None)
+    if not user_id:
+        raise _errors.AppError("UNAUTHENTICATED", "Authentication required.", 401)
+    ctx_base = _build_ctx(request, pool)
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            ctx = replace(ctx_base, conn=conn)
+            codes = await _service.generate_backup_codes(conn, pool, ctx, user_id=user_id)
+    return _response.success({"backup_codes": codes, "count": len(codes)})
+
+
+@router.post("/totp/backup-codes/verify", status_code=200)
+async def verify_backup_code_route(request: Request) -> dict:
+    """Consume a TOTP backup code and return a new session."""
+    from pydantic import BaseModel
+
+    class _Body(BaseModel):
+        user_id: str
+        code: str
+
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    body_data = await request.json()
+    body = _Body(**body_data)
+    ctx_base = _build_ctx(request, pool)
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            ctx = replace(ctx_base, conn=conn)
+            session_token, user, session = await _service.verify_backup_code(
+                pool, conn, ctx,
+                user_id=body.user_id,
+                code=body.code,
+                vault_client=vault,
+            )
+    payload = {
+        "token": session_token,
+        "user": _users_schemas.UserRead(**user).model_dump(),
+        "session": _auth_schemas.SessionMeta(**session).model_dump(),
+    }
+    resp = _response.success_response(payload, status_code=200)
+    from datetime import datetime, timezone
+    exp = session.get("expires_at")
+    if isinstance(exp, str):
+        delta = datetime.fromisoformat(exp).replace(tzinfo=None) - datetime.now(timezone.utc).replace(tzinfo=None)
+        max_age = max(60, int(delta.total_seconds()))
+    else:
+        max_age = 7 * 24 * 3600
+    _set_session_cookie(request, resp, session_token, max_age)
+    return resp

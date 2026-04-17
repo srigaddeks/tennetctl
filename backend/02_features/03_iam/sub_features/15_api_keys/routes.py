@@ -102,3 +102,15 @@ async def revoke_api_key_route(request: Request, key_id: str) -> None:
         deleted = await _service.revoke_api_key(conn, pool, ctx2, key_id=key_id)
     if not deleted:
         raise _errors.NotFoundError(f"api key {key_id!r} not found or already revoked")
+
+
+@router.post("/{key_id}/rotate", status_code=200)
+async def rotate_api_key_route(request: Request, key_id: str) -> dict:
+    _require_session(request)
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    ctx = _build_ctx(request, pool)
+    async with pool.acquire() as conn:
+        ctx2 = replace(ctx, conn=conn)
+        row = await _service.rotate_api_key(conn, pool, ctx2, vault, key_id=key_id)
+    return _response.success(ApiKeyCreatedResponse(**row).model_dump())

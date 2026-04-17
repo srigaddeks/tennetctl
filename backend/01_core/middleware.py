@@ -211,10 +211,88 @@ def require_scope(request: Request, scope: str) -> None:
         )
 
 
+_SETUP_ALLOWLIST = frozenset({
+    "/health",
+    "/v1/setup/status",
+    "/v1/setup/initial-admin",
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+})
+
+
+class SetupModeMiddleware(BaseHTTPMiddleware):
+    """Block all routes (503) when the system is not yet initialized.
+
+    Initialized = at least one user exists OR vault config system.initialized=true.
+
+    The check result is cached on app.state.setup_initialized (bool | None).
+    None means "not yet determined". True means "initialized — bypass forever".
+    False means "not initialized — re-check each request" (cheap DB count).
+
+    Invalidation: POST /v1/setup/initial-admin sets app.state.setup_initialized=True.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        # Always allow paths in the allowlist.
+        path = request.url.path
+        if path in _SETUP_ALLOWLIST:
+            return await call_next(request)
+
+        app_state = request.app.state
+        # Fast path: already confirmed initialized.
+        if getattr(app_state, "setup_initialized", None) is True:
+            return await call_next(request)
+
+        pool = getattr(app_state, "pool", None)
+        if pool is None:
+            return await call_next(request)
+
+        setup_required = True
+        try:
+            async with pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    'SELECT COUNT(*) AS cnt FROM "03_iam"."12_fct_users"'
+                    ' WHERE deleted_at IS NULL',
+                )
+                cnt = int(row["cnt"]) if row else 0
+                if cnt > 0:
+                    setup_required = False
+
+            # Also check vault config as authoritative override.
+            if setup_required:
+                vault = getattr(app_state, "vault", None)
+                if vault is not None:
+                    try:
+                        val = await vault.get("system.initialized")
+                        if str(val).lower() == "true":
+                            setup_required = False
+                    except Exception:
+                        pass
+
+        except Exception:
+            # If DB is unavailable, fail open (let routes handle their own errors).
+            return await call_next(request)
+
+        if not setup_required:
+            # Cache positive result so we never hit DB again.
+            app_state.setup_initialized = True
+            return await call_next(request)
+
+        # System not initialized — return 503.
+        return _response.error_response(
+            "SETUP_REQUIRED",
+            "System not initialized. Visit /setup to create the initial admin.",
+            503,
+        )
+
+
 def register_middleware(app: FastAPI) -> None:
     """Register all middleware and exception handlers on the app."""
     app.add_exception_handler(_errors.AppError, _app_error_handler)
-    # Order: SessionMiddleware first (innermost — runs after RequestId set),
-    # so request.state.request_id is available inside session resolution.
+    # Order (outermost → innermost when adding with add_middleware):
+    #   RequestIdMiddleware (outermost) → SetupModeMiddleware → SessionMiddleware (innermost)
+    # Starlette executes in REVERSE add order, so add innermost last.
     app.add_middleware(SessionMiddleware)
+    app.add_middleware(SetupModeMiddleware)
     app.add_middleware(RequestIdMiddleware)

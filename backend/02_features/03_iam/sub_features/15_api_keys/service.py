@@ -118,6 +118,58 @@ async def revoke_api_key(
     return deleted
 
 
+async def rotate_api_key(
+    conn: Any, pool: Any, ctx: Any, vault: Any,
+    *, key_id: str,
+) -> dict:
+    """Revoke the existing key and create a new one with the same scopes + label.
+
+    Returns the new key row with `token` attached exactly once.
+    Raises NotFoundError if key_id not found or already revoked.
+    """
+    old_row = await _repo.get_by_id(conn, key_id=key_id)
+    if old_row is None or old_row.get("revoked_at") is not None:
+        from importlib import import_module as _im
+        _err = _im("backend.01_core.errors")
+        raise _err.AppError("NOT_FOUND", f"API key {key_id!r} not found or already revoked.", 404)
+
+    await _repo.revoke_api_key(conn, key_id=key_id, updated_by=ctx.user_id or "system")
+
+    new_key_id = _new_key_id()
+    secret = _new_secret()
+    token = f"{_PREFIX}{new_key_id}.{secret}"
+    secret_hash = await _credentials.hash_password(secret, vault)
+
+    new_row = await _repo.insert_api_key(
+        conn,
+        id=_core_id.uuid7(),
+        org_id=old_row["org_id"],
+        user_id=old_row["user_id"],
+        key_id=new_key_id,
+        secret_hash=secret_hash,
+        label=old_row.get("label", ""),
+        scopes=list(old_row.get("scopes") or []),
+        expires_at=old_row.get("expires_at"),
+        created_by=ctx.user_id or "system",
+    )
+
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {
+            "event_key": "iam.api_keys.rotated",
+            "outcome": "success",
+            "metadata": {
+                "old_key_id": key_id,
+                "new_key_id": new_row["id"],
+                "scopes": list(old_row.get("scopes") or []),
+            },
+        },
+    )
+
+    new_row["token"] = token
+    return new_row
+
+
 async def validate_token(
     conn: Any, vault: Any, *, token: str,
 ) -> dict | None:

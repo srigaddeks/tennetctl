@@ -87,3 +87,13 @@ async def touch_last_used(conn: Any, *, key_id: str) -> None:
         )
     except Exception:
         pass
+
+
+async def get_raw_by_id(conn: Any, *, id: str) -> dict | None:
+    """Fetch raw fct row including scopes for rotation."""
+    row = await conn.fetchrow(
+        f'SELECT id, org_id, user_id, key_id, scopes, label, expires_at, revoked_at, deleted_at '
+        f'FROM {_FCT} WHERE id = $1',
+        id,
+    )
+    return dict(row) if row else None

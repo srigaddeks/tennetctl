@@ -115,6 +115,8 @@ export type User = {
   updated_by: string;
   created_at: string;
   updated_at: string;
+  /** Present on /me response — true when user has verified their email address. */
+  email_verified?: boolean;
 };
 
 export type UserCreateBody = {
@@ -128,7 +130,10 @@ export type UserUpdateBody = {
   email?: string;
   display_name?: string;
   avatar_url?: string;
+  /** @deprecated use `status` instead */
   is_active?: boolean;
+  /** Preferred status transition: "active" | "inactive" */
+  status?: "active" | "inactive";
 };
 
 // ─── IAM: Auth ───────────────────────────────────────────────────
@@ -1203,6 +1208,21 @@ export type PasswordResetCompleteBody = {
   new_password: string;
 };
 
+// ─── IAM: Email Verification ─────────────────────────────────────────────────
+
+export type EmailVerifySendBody = {
+  email: string;
+};
+
+export type EmailVerifyConsumeBody = {
+  token: string;
+};
+
+export type EmailVerifyConsumeResult = {
+  verified: boolean;
+  user_id: string | null;
+};
+
 // ─── Monitoring: Metrics ─────────────────────────────────────────────────────
 
 export type MetricKind = 'counter' | 'gauge' | 'histogram';
@@ -1597,3 +1617,29 @@ export type AlertEventListResponse = {
   offset: number;
 };
 
+
+
+// ── Setup ─────────────────────────────────────────────────────────────────────
+
+export type SetupStatus = {
+  initialized: boolean;
+  user_count: number;
+  setup_required: boolean;
+};
+
+export type InitialAdminBody = {
+  email: string;
+  password: string;
+  display_name: string;
+};
+
+export type InitialAdminResult = {
+  user_id: string;
+  email: string;
+  display_name: string;
+  totp_credential_id: string;
+  otpauth_uri: string;
+  backup_codes: string[];
+  session_token: string;
+  session: Record<string, unknown>;
+};
