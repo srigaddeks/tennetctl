@@ -47,6 +47,12 @@ _NOTIFY_NODE_KEY = "notify.send.transactional"
 _AUDIT_NODE_KEY = "audit.events.emit"
 
 
+def _detach(ctx: Any) -> Any:
+    """Return ctx with conn=None so audit inserts survive a rolled-back tx."""
+    from dataclasses import replace as _r
+    return _r(ctx, conn=None)
+
+
 async def _signing_key_bytes(vault_client: Any) -> bytes:
     import base64
     from importlib import import_module as _im
@@ -180,8 +186,24 @@ async def consume_magic_link(
 
     row = await _repo.get_by_hash(conn, token_hash)
     if row is None:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.magic_link.consume_failed", "outcome": "failure",
+                 "metadata": {"reason": "invalid_token"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("INVALID_TOKEN", "Magic link is invalid or has expired.", 401)
     if row["consumed_at"] is not None:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.magic_link.consume_failed", "outcome": "failure",
+                 "metadata": {"reason": "already_used"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("TOKEN_ALREADY_USED", "This magic link has already been used.", 401)
 
     expires_at = row["expires_at"]
@@ -191,6 +213,14 @@ async def consume_magic_link(
     else:
         exp = datetime.fromisoformat(str(expires_at)).replace(tzinfo=None)
     if now > exp:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.magic_link.consume_failed", "outcome": "failure",
+                 "metadata": {"reason": "expired"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("TOKEN_EXPIRED", "This magic link has expired. Please request a new one.", 401)
 
     await _repo.mark_consumed(conn, row["id"])

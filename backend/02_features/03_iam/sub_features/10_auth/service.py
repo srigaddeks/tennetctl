@@ -59,12 +59,19 @@ async def _emit_audit(
     metadata: dict,
     outcome: str = "success",
 ) -> None:
-    await _catalog.run_node(
-        pool,
-        _AUDIT_NODE_KEY,
-        ctx,
-        {"event_key": event_key, "outcome": outcome, "metadata": metadata},
-    )
+    # For failure outcomes: use a detached context (no ctx.conn) so the
+    # audit insert uses its own pool connection and survives a caller tx rollback.
+    from dataclasses import replace as _replace
+    emit_ctx = _replace(ctx, conn=None) if outcome == "failure" else ctx
+    try:
+        await _catalog.run_node(
+            pool,
+            _AUDIT_NODE_KEY,
+            emit_ctx,
+            {"event_key": event_key, "outcome": outcome, "metadata": metadata},
+        )
+    except Exception:
+        pass  # Audit failures must never crash the auth path.
 
 
 async def _find_user_by_email_and_type(
@@ -180,6 +187,7 @@ async def signin(
     vault_client: Any,
     email: str,
     password: str,
+    source_ip: str | None = None,
 ) -> tuple[str, dict, dict]:
     user = await _find_user_by_email_and_type(
         conn, email=email, account_type="email_password",
@@ -191,6 +199,24 @@ async def signin(
             user_id="00000000-0000-0000-0000-000000000000",
             value=password,
         )
+        # Record best-effort failure for IP tracking (no user_id)
+        auth_policy = getattr(pool, "_auth_policy", None)
+        if auth_policy is None:
+            import sys as _sys
+            for mod in _sys.modules.values():
+                if hasattr(mod, "app") and hasattr(getattr(mod, "app", None), "state"):
+                    _ap = getattr(mod.app.state, "auth_policy", None)
+                    if _ap is not None:
+                        auth_policy = _ap
+                        break
+        if auth_policy is not None:
+            try:
+                await _credentials.record_failure_and_maybe_lock(
+                    pool, email=email, user_id=None,
+                    source_ip=source_ip, auth_policy=auth_policy, org_id=None,
+                )
+            except Exception:
+                pass
         await _emit_audit(
             pool, ctx,
             event_key="iam.auth.signin",
@@ -199,10 +225,55 @@ async def signin(
         )
         raise _errors.UnauthorizedError("invalid email or password")
 
+    # Check lockout before attempting password verification.
+    locked_until, lockout_was_cleared = await _credentials.check_lockout(conn, user_id=user["id"])
+    if locked_until is not None:
+        await _emit_audit(
+            pool, ctx,
+            event_key="iam.auth.signin",
+            metadata={"user_id": user["id"], "reason": "account_locked",
+                      "locked_until": locked_until.isoformat()},
+            outcome="failure",
+        )
+        raise _errors.AppError(
+            "ACCOUNT_LOCKED",
+            f"Account is locked until {locked_until.isoformat()} UTC.",
+            423,
+        )
+
     ok = await _credentials.verify_password(
         conn, vault_client=vault_client, user_id=user["id"], value=password,
     )
     if not ok:
+        # Retrieve auth_policy from app state
+        import importlib as _imp
+        _main_mod = _imp.import_module("backend.main")
+        auth_policy = getattr(getattr(_main_mod, "app", None), "state", None)
+        auth_policy = getattr(auth_policy, "auth_policy", None) if auth_policy else None
+        locked = False
+        if auth_policy is not None:
+            try:
+                org_id_for_policy = user.get("org_id")
+                locked = await _credentials.record_failure_and_maybe_lock(
+                    pool, email=email, user_id=user["id"],
+                    source_ip=source_ip, auth_policy=auth_policy,
+                    org_id=org_id_for_policy,
+                )
+            except Exception:
+                pass
+        if locked:
+            await _emit_audit(
+                pool, ctx,
+                event_key="iam.lockout.triggered",
+                metadata={"user_id": user["id"], "email": email},
+                outcome="success",
+            )
+        await _emit_audit(
+            pool, ctx,
+            event_key="iam.credentials.verify_failed",
+            metadata={"user_id": user["id"], "email": email},
+            outcome="failure",
+        )
         await _emit_audit(
             pool, ctx,
             event_key="iam.auth.signin",
@@ -211,6 +282,14 @@ async def signin(
         )
         raise _errors.UnauthorizedError("invalid email or password")
 
+    # Emit lockout.cleared if the account had an expired lockout.
+    if lockout_was_cleared:
+        await _emit_audit(
+            pool, ctx,
+            event_key="iam.lockout.cleared",
+            metadata={"user_id": user["id"], "email": email},
+            outcome="success",
+        )
     org_id = await _attach_to_default_org_if_needed(
         pool, conn, ctx, user_id=user["id"],
     )

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import base64
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib import import_module
 from typing import Any
 
@@ -137,7 +137,7 @@ async def validate_token(
 
     # Expiry check (naive UTC; DB stores TIMESTAMP without tz).
     exp = row.get("expires_at")
-    if exp is not None and isinstance(exp, datetime) and exp < datetime.utcnow():
+    if exp is not None and isinstance(exp, datetime) and exp < datetime.now(timezone.utc).replace(tzinfo=None):
         return None
 
     # argon2 verify against the stored hash. We re-peppered on create using

@@ -144,6 +144,12 @@ async def request_reset(
     except Exception:
         pass
 
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {"event_key": "iam.password_reset.requested", "outcome": "success",
+         "metadata": {"user_id": user_id}},
+    )
+
 
 async def complete_reset(
     pool: Any,
@@ -174,9 +180,31 @@ async def complete_reset(
         value=new_password,
     )
 
+    # Revoke ALL active sessions atomically in the same tx as the password update.
+    # AC-3: Forces re-auth on every device after a password reset.
+    revoked = await conn.execute(
+        'UPDATE "03_iam"."16_fct_sessions" '
+        'SET revoked_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP '
+        'WHERE user_id = $1 AND revoked_at IS NULL AND deleted_at IS NULL',
+        row["user_id"],
+    )
+    revoked_count = int(revoked.split()[-1]) if revoked else 0
+    for _ in range(revoked_count):
+        await _catalog.run_node(
+            pool, "audit.events.emit", ctx,
+            {"event_key": "iam.sessions.revoked", "outcome": "success",
+             "metadata": {"user_id": row["user_id"], "reason": "password_reset"}},
+        )
+
     user = await _users_repo.get_by_id(conn, row["user_id"])
     if user is None:
         raise _errors.AppError("USER_NOT_FOUND", "User not found.", 404)
+
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {"event_key": "iam.password_reset.completed", "outcome": "success",
+         "metadata": {"user_id": row["user_id"], "sessions_revoked": revoked_count}},
+    )
 
     session_token, session = await _sessions_service.mint_session(
         conn, vault_client=vault_client, user_id=row["user_id"], org_id=ctx.org_id,

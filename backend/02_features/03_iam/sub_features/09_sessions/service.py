@@ -91,8 +91,29 @@ async def mint_session(
     org_id: str | None = None,
     workspace_id: str | None = None,
     ttl_days: int | None = None,
+    pool: Any = None,
+    ctx: Any = None,
 ) -> tuple[str, dict]:
-    """Create a session row and return (token, session_metadata)."""
+    """Create a session row and return (token, session_metadata).
+    If pool + ctx are provided, session-limit enforcement (20-04) runs first.
+    """
+    # Enforce concurrent-session limits if auth_policy is available.
+    if pool is not None and ctx is not None:
+        import importlib as _imp
+        _main_mod = _imp.import_module("backend.main")
+        auth_policy = getattr(getattr(_main_mod, "app", None), "state", None)
+        auth_policy = getattr(auth_policy, "auth_policy", None) if auth_policy else None
+        if auth_policy is not None:
+            try:
+                await enforce_session_limits(
+                    pool, conn, ctx,
+                    user_id=user_id, auth_policy=auth_policy, org_id=org_id,
+                )
+            except _errors.AppError:
+                raise
+            except Exception:
+                pass  # best-effort
+
     session_id = _core_id.uuid7()
     ttl = ttl_days if ttl_days is not None else await _resolve_ttl_days(conn)
     expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=ttl)
@@ -233,3 +254,124 @@ async def extend_my_session(
     # for session trust; future plans may re-sign the token here.
     del vault_client
     return updated
+
+
+# ── Plan 20-04: Session policy enforcement ────────────────────────────────────
+
+async def enforce_session_limits(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    user_id: str,
+    auth_policy: Any,
+    org_id: str | None,
+) -> str | None:
+    """Enforce max_concurrent_per_user. Returns evicted session_id or None.
+    Eviction policy: "oldest" = evict oldest by created_at; "lru" = evict by last_activity_at;
+    "reject" = raise 429.
+    """
+    policy = await auth_policy.session(org_id)
+    active = await _repo.list_active_for_user(conn, user_id=user_id)
+    count = len(active)
+    if count < policy.max_concurrent_per_user:
+        return None
+
+    eviction_policy = policy.eviction_policy
+    if eviction_policy == "reject":
+        raise _errors.AppError(
+            "SESSION_LIMIT_EXCEEDED",
+            f"Maximum of {policy.max_concurrent_per_user} concurrent sessions allowed.",
+            429,
+        )
+
+    # Determine which session to evict.
+    if eviction_policy == "lru":
+        # active is already sorted by last_activity_at ASC (least recent first).
+        victim = active[0]
+    else:
+        # "oldest" — sorted by created_at ASC.
+        victim = min(active, key=lambda s: s["created_at"])
+
+    evicted_id = victim["id"]
+    await _repo.revoke_session(conn, session_id=evicted_id, updated_by=user_id)
+    await _catalog.run_node(
+        pool, "audit.events.emit", ctx,
+        {
+            "event_key": "iam.sessions.evicted",
+            "outcome": "success",
+            "metadata": {
+                "session_id": evicted_id,
+                "user_id": user_id,
+                "reason": "max_concurrent",
+                "policy": eviction_policy,
+            },
+        },
+    )
+    return evicted_id
+
+
+async def check_session_timeouts(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    session_id: str,
+    auth_policy: Any,
+    org_id: str | None,
+) -> str | None:
+    """Check idle + absolute TTL. Returns revocation reason or None if still valid.
+    On timeout, revokes the session and emits audit.
+    """
+    from importlib import import_module as _im
+    _dt = _im("datetime")
+    raw = await _repo.get_raw_by_id(conn, session_id)
+    if raw is None:
+        return "not_found"
+
+    policy = await auth_policy.session(org_id)
+    now = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None)
+
+    # Idle timeout.
+    last_activity = raw.get("last_activity_at")
+    if last_activity is not None:
+        idle_secs = (now - last_activity).total_seconds()
+        if idle_secs > policy.idle_timeout_seconds:
+            await _repo.revoke_session(conn, session_id=session_id, updated_by="system")
+            await _catalog.run_node(
+                pool, "audit.events.emit", ctx,
+                {
+                    "event_key": "iam.sessions.evicted",
+                    "outcome": "success",
+                    "metadata": {
+                        "session_id": session_id,
+                        "user_id": raw.get("user_id"),
+                        "reason": "idle_timeout",
+                        "idle_seconds": int(idle_secs),
+                    },
+                },
+            )
+            return "idle_timeout"
+
+    # Absolute TTL.
+    created_at = raw.get("created_at")
+    if created_at is not None:
+        age_secs = (now - created_at).total_seconds()
+        if age_secs > policy.absolute_ttl_seconds:
+            await _repo.revoke_session(conn, session_id=session_id, updated_by="system")
+            await _catalog.run_node(
+                pool, "audit.events.emit", ctx,
+                {
+                    "event_key": "iam.sessions.evicted",
+                    "outcome": "success",
+                    "metadata": {
+                        "session_id": session_id,
+                        "user_id": raw.get("user_id"),
+                        "reason": "absolute_ttl",
+                        "age_seconds": int(age_secs),
+                    },
+                },
+            )
+            return "absolute_ttl"
+
+    return None

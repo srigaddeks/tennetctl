@@ -577,6 +577,40 @@ export type VaultConfigUpdateBody = {
   is_active?: boolean;
 };
 
+// ─── IAM: Auth Policy ────────────────────────────────────────────
+
+export type AuthPolicyKey =
+  | "password.min_length"
+  | "password.require_upper"
+  | "password.require_digit"
+  | "password.require_symbol"
+  | "password.min_unique_chars"
+  | "lockout.threshold_failed_attempts"
+  | "lockout.window_seconds"
+  | "lockout.duration_seconds"
+  | "session.max_concurrent_per_user"
+  | "session.idle_timeout_seconds"
+  | "session.absolute_ttl_seconds"
+  | "session.eviction_policy"
+  | "magic_link.ttl_seconds"
+  | "magic_link.rate_limit_per_email"
+  | "magic_link.rate_window_seconds"
+  | "otp.email_ttl_seconds"
+  | "otp.email_max_attempts"
+  | "otp.rate_limit_per_email"
+  | "otp.rate_window_seconds"
+  | "password_reset.ttl_seconds";
+
+export type PolicyGroup =
+  | "password"
+  | "lockout"
+  | "session"
+  | "magic_link"
+  | "otp"
+  | "password_reset";
+
+export type PolicyEntry = VaultConfigMeta & { key: `iam.policy.${string}` };
+
 // ─── Catalog ─────────────────────────────────────────────────────
 
 export type NodeKind = "request" | "effect" | "control";

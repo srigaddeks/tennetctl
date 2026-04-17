@@ -28,6 +28,26 @@ _schemas: Any = import_module(
 
 _AUDIT_NODE_KEY = "audit.events.emit"
 
+# Module-level singleton — set from main.py lifespan after AuthPolicy is
+# registered. Vault → IAM coupling seam for hot cache invalidation (NCP §11
+# allows this for shared primitive dependencies; not a sub-feature cross-import).
+_auth_policy_ref: Any = None
+
+
+def set_auth_policy_ref(auth_policy: Any) -> None:
+    global _auth_policy_ref
+    _auth_policy_ref = auth_policy
+
+
+def _invalidate_if_policy_key(key: str, scope: str, org_id: str | None) -> None:
+    if not key.startswith("iam.policy.") or _auth_policy_ref is None:
+        return
+    short_key = key[len("iam.policy."):]
+    if scope == "org" and org_id is not None:
+        _auth_policy_ref.invalidate(org_id, short_key)
+    else:
+        _auth_policy_ref.invalidate_all_for_key(short_key)
+
 
 async def _emit_audit(
     pool: Any,
@@ -100,6 +120,7 @@ async def create_config(
             "scope": scope, "org_id": org_id, "workspace_id": workspace_id,
         },
     )
+    _invalidate_if_policy_key(key, scope, org_id)
 
     created = await _repo.get_by_id(conn, config_id)
     if created is None:
@@ -199,6 +220,7 @@ async def update_config(
             "changed": sorted(changed.keys()),
         },
     )
+    _invalidate_if_policy_key(current["key"], current["scope"], current["org_id"])
 
     updated = await _repo.get_by_id(conn, config_id)
     if updated is None:
@@ -231,3 +253,4 @@ async def delete_config(
             "org_id": current["org_id"], "workspace_id": current["workspace_id"],
         },
     )
+    _invalidate_if_policy_key(current["key"], current["scope"], current["org_id"])

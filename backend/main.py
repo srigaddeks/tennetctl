@@ -76,6 +76,25 @@ async def lifespan(application: FastAPI):
         if inserted > 0:
             logger.info("Vault bootstrap: %d new secret(s) seeded.", inserted)
 
+    # IAM auth policy — always-on. Registers AuthPolicy on app.state and seeds
+    # iam.policy.* defaults into vault.configs on first boot (idempotent).
+    _auth_policy_mod = import_module("backend.02_features.03_iam.auth_policy")
+    _auth_policy_bootstrap = import_module(
+        "backend.02_features.03_iam.auth_policy_bootstrap"
+    )
+    auth_policy = _auth_policy_mod.AuthPolicy(pool)
+    application.state.auth_policy = auth_policy
+
+    if "vault" in config.modules:
+        _ap_inserted = await _auth_policy_bootstrap.ensure_policy_defaults(pool)
+        if _ap_inserted > 0:
+            logger.info("Auth policy bootstrap: %d default(s) seeded.", _ap_inserted)
+        # Wire invalidation: vault.configs writes that touch iam.policy.* bust cache.
+        _vault_configs_svc = import_module(
+            "backend.02_features.02_vault.sub_features.02_configs.service"
+        )
+        _vault_configs_svc.set_auth_policy_ref(auth_policy)
+
     # Monitoring — JetStream bootstrap (best-effort; optional module).
     _monitoring_worker_pool = None
     if "monitoring" in config.modules and config.monitoring_enabled:

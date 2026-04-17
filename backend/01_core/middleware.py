@@ -122,6 +122,8 @@ class SessionMiddleware(BaseHTTPMiddleware):
 
         # Path 2: Session token (cookie / x-session-token / plain Bearer).
         token = _extract_token(request)
+        session_expired = False
+        row = None
         if token and vault is not None and pool is not None:
             try:
                 _sessions: Any = import_module(
@@ -131,6 +133,31 @@ class SessionMiddleware(BaseHTTPMiddleware):
                     row = await _sessions.validate_token(
                         conn, vault_client=vault, token=token,
                     )
+                    if row is not None:
+                        # Plan 20-04: check idle + absolute TTL timeouts.
+                        auth_policy = getattr(request.app.state, "auth_policy", None)
+                        if auth_policy is not None:
+                            try:
+                                _ctx_mod: Any = import_module("backend.01_catalog.context")
+                                ctx = _ctx_mod.NodeContext(
+                                    audit_category="setup",
+                                    trace_id=_id.uuid7(),
+                                    span_id=_id.uuid7(),
+                                    user_id=row.get("user_id"),
+                                    session_id=row["id"],
+                                    org_id=row.get("org_id"),
+                                )
+                                reason = await _sessions.check_session_timeouts(
+                                    pool, conn, ctx,
+                                    session_id=row["id"],
+                                    auth_policy=auth_policy,
+                                    org_id=row.get("org_id"),
+                                )
+                                if reason is not None:
+                                    row = None
+                                    session_expired = True
+                            except Exception:
+                                pass
             except Exception:
                 row = None
             if row is not None:
@@ -138,6 +165,25 @@ class SessionMiddleware(BaseHTTPMiddleware):
                 request.state.session_id = row["id"]
                 request.state.org_id = row.get("org_id")
                 request.state.workspace_id = row.get("workspace_id")
+                # Plan 20-04: bump last_activity_at fire-and-forget.
+                import asyncio as _asyncio
+                _sessions_repo: Any = import_module(
+                    "backend.02_features.03_iam.sub_features.09_sessions.repository"
+                )
+                session_id_for_bump = row["id"]
+
+                async def _bump_activity():
+                    try:
+                        async with pool.acquire() as bump_conn:
+                            await _sessions_repo.bump_last_activity(
+                                bump_conn, session_id=session_id_for_bump,
+                            )
+                    except Exception:
+                        pass
+                _asyncio.create_task(_bump_activity())
+
+        if session_expired:
+            return _response.error_response("SESSION_EXPIRED", "Session expired.", 401)
 
         return await call_next(request)
 

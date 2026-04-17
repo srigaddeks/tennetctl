@@ -103,3 +103,75 @@ async def extend_expires(
         new_expires_at, updated_by, session_id,
     )
     return result.endswith(" 1")
+
+
+# ── Plan 20-04: Session limits ─────────────────────────────────────────────────
+
+async def bump_last_activity(conn: Any, *, session_id: str) -> None:
+    """Update last_activity_at = now for an active session. Best-effort."""
+    await conn.execute(
+        'UPDATE "03_iam"."16_fct_sessions" '
+        'SET last_activity_at = CURRENT_TIMESTAMP '
+        'WHERE id = $1 AND deleted_at IS NULL AND revoked_at IS NULL',
+        session_id,
+    )
+
+
+async def list_active_for_user(conn: Any, *, user_id: str) -> list[dict]:
+    """Return all active (unrevoked, unexpired) sessions for a user, ordered by activity."""
+    rows = await conn.fetch(
+        'SELECT id, user_id, org_id, created_at, last_activity_at '
+        'FROM "03_iam"."16_fct_sessions" '
+        'WHERE user_id = $1 '
+        '  AND deleted_at IS NULL '
+        '  AND revoked_at IS NULL '
+        '  AND expires_at > CURRENT_TIMESTAMP '
+        'ORDER BY last_activity_at ASC, created_at ASC',
+        user_id,
+    )
+    return [dict(r) for r in rows]
+
+
+async def revoke_session_by_reason(
+    conn: Any, *, session_id: str, updated_by: str, reason: str,
+) -> bool:
+    """Revoke a session and store the reason in updated_by for audit."""
+    result = await conn.execute(
+        'UPDATE "03_iam"."16_fct_sessions" '
+        'SET revoked_at = CURRENT_TIMESTAMP, '
+        '    updated_by = $1, '
+        '    updated_at = CURRENT_TIMESTAMP '
+        'WHERE id = $2 AND deleted_at IS NULL AND revoked_at IS NULL',
+        f"{updated_by}:{reason}", session_id,
+    )
+    return result.endswith(" 1")
+
+
+async def get_raw_by_id(conn: Any, session_id: str) -> dict | None:
+    """Fetch the raw fct_sessions row including last_activity_at and created_at."""
+    row = await conn.fetchrow(
+        'SELECT id, user_id, org_id, workspace_id, expires_at, revoked_at, '
+        '       last_activity_at, created_at, deleted_at, is_active '
+        'FROM "03_iam"."16_fct_sessions" WHERE id = $1',
+        session_id,
+    )
+    return dict(row) if row else None
+
+
+async def revoke_all_for_user(
+    conn: Any, *, user_id: str, updated_by: str,
+) -> list[str]:
+    """Revoke all active sessions for a user. Returns list of revoked session IDs."""
+    rows = await conn.fetch(
+        'UPDATE "03_iam"."16_fct_sessions" '
+        'SET revoked_at = CURRENT_TIMESTAMP, '
+        '    updated_by = $1, '
+        '    updated_at = CURRENT_TIMESTAMP '
+        'WHERE user_id = $2 '
+        '  AND deleted_at IS NULL '
+        '  AND revoked_at IS NULL '
+        '  AND expires_at > CURRENT_TIMESTAMP '
+        'RETURNING id',
+        updated_by, user_id,
+    )
+    return [r["id"] for r in rows]

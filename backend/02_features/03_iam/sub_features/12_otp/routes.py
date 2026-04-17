@@ -167,7 +167,10 @@ async def delete_totp_route(credential_id: str, request: Request) -> Response:
     user_id = getattr(request.state, "user_id", None)
     if not user_id:
         raise _errors.AppError("UNAUTHENTICATED", "Authentication required.", 401)
+    ctx_base = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         async with conn.transaction():
-            await _service.delete_totp(conn, credential_id=credential_id, user_id=user_id)
+            from dataclasses import replace as _replace
+            ctx = _replace(ctx_base, conn=conn)
+            await _service.delete_totp(conn, credential_id=credential_id, user_id=user_id, pool=pool, ctx=ctx)
     return Response(status_code=204)

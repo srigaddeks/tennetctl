@@ -36,6 +36,7 @@ export const FEATURES: FeatureNav[] = [
       { href: "/iam/roles", label: "Roles", testId: "nav-roles" },
       { href: "/iam/groups", label: "Groups", testId: "nav-groups" },
       { href: "/iam/applications", label: "Applications", testId: "nav-applications" },
+      { href: "/iam/security/policy", label: "Auth Policy", testId: "nav-iam-policy" },
     ],
   },
   {

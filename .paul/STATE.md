@@ -34,7 +34,7 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [20-01 PLAN drafted, awaiting approval]
+  ✓        ✓        ○     [20-01 APPLY complete — 148 tests green]
 ```
 
 IAM Hardening program — 3 phases, 20 plans total, all drafted on disk:

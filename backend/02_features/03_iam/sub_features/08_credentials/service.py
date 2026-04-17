@@ -13,6 +13,8 @@ log or echo the cleartext anywhere — even on failure.
 
 from __future__ import annotations
 
+import datetime as dt
+import logging
 from importlib import import_module
 from typing import Any
 
@@ -26,6 +28,7 @@ _repo: Any = import_module(
 )
 
 _hasher = PasswordHasher()
+logger = logging.getLogger("tennetctl.iam.credentials")
 
 _PEPPER_VAULT_KEY = "auth.argon2.pepper"
 
@@ -83,6 +86,68 @@ async def verify_password(
 
 async def delete_password(conn: Any, user_id: str) -> bool:
     return await _repo.delete_hash(conn, user_id)
+
+
+# ── Account lockout (Plan 20-03) ──────────────────────────────────────────────
+
+async def check_lockout(
+    conn: Any, *, user_id: str
+) -> tuple[dt.datetime | None, bool]:
+    """Return (locked_until, was_expired_and_cleared).
+
+    - locked_until is non-None when the account is currently locked.
+    - was_expired_and_cleared is True when a lockout existed but had expired;
+      callers should emit iam.lockout.cleared for audit trail.
+    """
+    until = await _repo.get_lockout_until(conn, user_id=user_id)
+    if until is None:
+        return None, False
+    now = dt.datetime.now(dt.timezone.utc).replace(tzinfo=None)
+    if until <= now:
+        # Lockout expired — clear it proactively.
+        try:
+            await _repo.clear_lockout(conn, user_id=user_id)
+        except Exception:
+            pass
+        return None, True
+    return until, False
+
+
+async def record_failure_and_maybe_lock(
+    pool: Any,
+    *,
+    email: str,
+    user_id: str | None,
+    source_ip: str | None,
+    auth_policy: Any,
+    org_id: str | None,
+) -> bool:
+    """Record a failed attempt using a fresh connection (outside caller's tx).
+    If threshold is reached, lock the user. Returns True if the user was locked.
+    """
+    # Use pool directly so this insert survives even if the caller rolls back.
+    # timeout=5s ensures we never block the signin path long-term if the pool
+    # is momentarily saturated.
+    try:
+        async with pool.acquire(timeout=5) as fresh_conn:
+            await _repo.record_failed_attempt(
+                fresh_conn, email=email, user_id=user_id, source_ip=source_ip,
+            )
+            if user_id is None:
+                return False
+            lockout_policy = await auth_policy.lockout(org_id)
+            count = await _repo.count_failed_in_window(
+                fresh_conn, email=email, window_seconds=lockout_policy.window_seconds,
+            )
+            if count >= lockout_policy.threshold_failed_attempts:
+                until = dt.datetime.now(dt.timezone.utc).replace(tzinfo=None) + dt.timedelta(
+                    seconds=lockout_policy.duration_seconds
+                )
+                await _repo.set_lockout_until(fresh_conn, user_id=user_id, until_ts=until)
+                return True
+    except Exception:
+        logger.exception("record_failure_and_maybe_lock error (best-effort, ignored)")
+    return False
 
 
 async def change_password(

@@ -34,6 +34,13 @@ _sessions_service: Any = import_module(
 _NOTIFY_NODE_KEY   = "notify.send.transactional"
 _AUDIT_NODE_KEY    = "audit.events.emit"
 _OTP_CODE_LEN      = 6
+
+
+def _detach(ctx: Any) -> Any:
+    """Return a copy of ctx with conn=None so audit inserts use a fresh pool conn
+    and survive a rolled-back caller transaction."""
+    from dataclasses import replace as _r
+    return _r(ctx, conn=None)
 _OTP_TTL_MINUTES   = 5
 _OTP_MAX_ATTEMPTS  = 3
 _OTP_RATE_LIMIT    = 3   # per 15 min
@@ -139,9 +146,25 @@ async def verify_otp(
 
     attempts = await _repo.increment_otp_attempts(conn, row["id"])
     if attempts > _OTP_MAX_ATTEMPTS:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.otp.email.verify_failed", "outcome": "failure",
+                 "metadata": {"reason": "max_attempts"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("MAX_ATTEMPTS", "Too many failed attempts. Request a new code.", 401)
 
     if _hash_code(code.strip()) != row["code_hash"]:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.otp.email.verify_failed", "outcome": "failure",
+                 "metadata": {"reason": "wrong_code"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("INVALID_CODE", "Incorrect code.", 401)
 
     await _repo.mark_otp_consumed(conn, row["id"])
@@ -150,6 +173,11 @@ async def verify_otp(
     if user is None:
         raise _errors.AppError("USER_NOT_FOUND", "User not found.", 404)
 
+    await _catalog.run_node(
+        pool, _AUDIT_NODE_KEY, ctx,
+        {"event_key": "iam.otp.email.verify_succeeded", "outcome": "success",
+         "metadata": {"user_id": row["user_id"]}},
+    )
     session_token, session = await _sessions_service.mint_session(
         conn, vault_client=vault_client, user_id=row["user_id"], org_id=ctx.org_id,
     )
@@ -185,6 +213,11 @@ async def setup_totp(
     totp = pyotp.TOTP(secret)
     otpauth_uri = totp.provisioning_uri(name=email, issuer_name=_TOTP_APP_NAME)
 
+    await _catalog.run_node(
+        pool, _AUDIT_NODE_KEY, ctx,
+        {"event_key": "iam.otp.totp.enrolled", "outcome": "success",
+         "metadata": {"credential_id": cred["id"], "device_name": device_name}},
+    )
     return {
         "credential_id": cred["id"],
         "otpauth_uri": otpauth_uri,
@@ -207,6 +240,14 @@ async def verify_totp(
     secret = await _decrypt_secret(vault_client, cred["secret_ciphertext"], cred["secret_dek"], cred["secret_nonce"])
     totp = pyotp.TOTP(secret)
     if not totp.verify(code.strip(), valid_window=1):
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.otp.totp.verify_failed", "outcome": "failure",
+                 "metadata": {"credential_id": credential_id, "reason": "wrong_code"}},
+            )
+        except Exception:
+            pass
         raise _errors.AppError("INVALID_CODE", "Incorrect TOTP code.", 401)
 
     await _repo.mark_totp_used(conn, credential_id)
@@ -215,6 +256,11 @@ async def verify_totp(
     if user is None:
         raise _errors.AppError("USER_NOT_FOUND", "User not found.", 404)
 
+    await _catalog.run_node(
+        pool, _AUDIT_NODE_KEY, ctx,
+        {"event_key": "iam.otp.totp.verify_succeeded", "outcome": "success",
+         "metadata": {"credential_id": credential_id, "user_id": cred["user_id"]}},
+    )
     session_token, session = await _sessions_service.mint_session(
         conn, vault_client=vault_client, user_id=cred["user_id"], org_id=ctx.org_id,
     )
@@ -225,8 +271,17 @@ async def list_totp(conn: Any, *, user_id: str) -> list[dict]:
     return await _repo.list_totp_credentials(conn, user_id)
 
 
-async def delete_totp(conn: Any, *, credential_id: str, user_id: str) -> None:
+async def delete_totp(
+    conn: Any, *, credential_id: str, user_id: str,
+    pool: Any = None, ctx: Any = None,
+) -> None:
     cred = await _repo.get_totp_credential(conn, credential_id)
     if cred is None or cred["user_id"] != user_id:
         raise _errors.AppError("NOT_FOUND", "TOTP credential not found.", 404)
     await _repo.delete_totp_credential(conn, credential_id, user_id)
+    if pool is not None and ctx is not None:
+        await _catalog.run_node(
+            pool, _AUDIT_NODE_KEY, ctx,
+            {"event_key": "iam.otp.totp.deleted", "outcome": "success",
+             "metadata": {"credential_id": credential_id}},
+        )
