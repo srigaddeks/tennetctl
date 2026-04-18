@@ -64,7 +64,7 @@ export default function UsersPage() {
   const [openCreate, setOpenCreate] = useState(false);
 
   const { data, isLoading, isError, error, refetch } = useUsers({
-    limit: 100,
+    limit: 500,
     account_type: filterType || undefined,
   });
 
@@ -155,52 +155,70 @@ export default function UsersPage() {
               </tr>
             </THead>
             <TBody>
-              {filtered.map((u) => (
-                <TR
-                  key={u.id}
-                  onClick={() => router.push(`/iam/users/${u.id}`)}
-                  data-testid={`user-row-${u.id}`}
-                >
-                  <TD>
-                    <div className="flex items-center gap-2.5">
-                      {u.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={u.avatar_url}
-                          alt=""
-                          className="h-7 w-7 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                          {(u.display_name ?? u.email ?? "?")
-                            .slice(0, 1)
-                            .toUpperCase()}
-                        </div>
-                      )}
-                      <span>
-                        {u.display_name ?? (
-                          <span className="text-zinc-400">—</span>
+              {filtered.map((u) => {
+                const initial = (
+                  u.display_name?.trim() ||
+                  u.email?.trim() ||
+                  u.id
+                )
+                  .slice(0, 1)
+                  .toUpperCase();
+                const shortId = u.id.slice(0, 8);
+                const hasName = !!u.display_name?.trim();
+                const hasEmail = !!u.email?.trim();
+                return (
+                  <TR
+                    key={u.id}
+                    onClick={() => router.push(`/iam/users/${u.id}`)}
+                    data-testid={`user-row-${u.id}`}
+                  >
+                    <TD>
+                      <div className="flex items-center gap-2.5">
+                        {u.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={u.avatar_url}
+                            alt=""
+                            className="h-7 w-7 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                            {initial}
+                          </div>
                         )}
-                      </span>
-                    </div>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-zinc-500">
-                      {u.email ?? "—"}
-                    </span>
-                  </TD>
-                  <TD>
-                    <Badge tone="blue">
-                      {ACCOUNT_TYPE_LABEL[u.account_type] ?? u.account_type}
-                    </Badge>
-                  </TD>
-                  <TD>
-                    <Badge tone={u.is_active ? "emerald" : "zinc"}>
-                      {u.is_active ? "active" : "inactive"}
-                    </Badge>
-                  </TD>
-                </TR>
-              ))}
+                        <span>
+                          {hasName ? (
+                            u.display_name
+                          ) : (
+                            <span className="font-mono text-xs text-zinc-500">
+                              user-{shortId}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    </TD>
+                    <TD>
+                      {hasEmail ? (
+                        <span className="text-xs text-zinc-500">{u.email}</span>
+                      ) : (
+                        <span className="text-xs text-zinc-400 italic">
+                          no email set
+                        </span>
+                      )}
+                    </TD>
+                    <TD>
+                      <Badge tone="blue">
+                        {ACCOUNT_TYPE_LABEL[u.account_type] ?? u.account_type}
+                      </Badge>
+                    </TD>
+                    <TD>
+                      <Badge tone={u.is_active ? "emerald" : "zinc"}>
+                        {u.is_active ? "active" : "inactive"}
+                      </Badge>
+                    </TD>
+                  </TR>
+                );
+              })}
             </TBody>
           </Table>
         )}

@@ -8,6 +8,7 @@ import {
   Button,
   EmptyState,
   ErrorState,
+  Input,
   Skeleton,
   TBody,
   TD,
@@ -23,7 +24,17 @@ import { OrgDetailDrawer } from "@/features/iam-orgs/org-detail-drawer";
 export default function OrgsPage() {
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
-  const { data, isLoading, isError, error, refetch } = useOrgs({ limit: 100 });
+  const [search, setSearch] = useState("");
+  const { data, isLoading, isError, error, refetch } = useOrgs({ limit: 500 });
+
+  const filtered = (data?.items ?? []).filter((o) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      o.slug.toLowerCase().includes(q) ||
+      (o.display_name ?? "").toLowerCase().includes(q)
+    );
+  });
 
   return (
     <>
@@ -41,6 +52,21 @@ export default function OrgsPage() {
         }
       />
       <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="orgs-body">
+        {data && data.items.length > 0 && (
+          <div className="mb-4 flex items-center gap-3">
+            <Input
+              type="search"
+              placeholder="Search by slug or name…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="max-w-sm"
+              data-testid="search-orgs"
+            />
+            <span className="ml-auto text-xs text-zinc-500">
+              {filtered.length} of {data.items.length} orgs
+            </span>
+          </div>
+        )}
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -65,7 +91,13 @@ export default function OrgsPage() {
             }
           />
         )}
-        {data && data.items.length > 0 && (
+        {data && data.items.length > 0 && filtered.length === 0 && (
+          <EmptyState
+            title="No matches"
+            description="Try a different search term."
+          />
+        )}
+        {data && filtered.length > 0 && (
           <Table>
             <THead>
               <tr>
@@ -76,7 +108,7 @@ export default function OrgsPage() {
               </tr>
             </THead>
             <TBody>
-              {data.items.map((org) => (
+              {filtered.map((org) => (
                 <TR
                   key={org.id}
                   onClick={() => setSelectedOrgId(org.id)}

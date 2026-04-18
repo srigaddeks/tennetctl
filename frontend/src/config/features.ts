@@ -2,6 +2,8 @@ export type SubFeatureNav = {
   href: string;
   label: string;
   testId: string;
+  /** Optional grouping label — sibling entries with same group render under one header */
+  group?: string;
 };
 
 export type FeatureNav = {
@@ -29,23 +31,23 @@ export const FEATURES: FeatureNav[] = [
     basePath: "/iam",
     testId: "nav-feature-iam",
     subFeatures: [
-      { href: "/iam/orgs", label: "Orgs", testId: "nav-orgs" },
-      { href: "/iam/workspaces", label: "Workspaces", testId: "nav-workspaces" },
-      { href: "/iam/users", label: "Users", testId: "nav-users" },
-      { href: "/iam/memberships", label: "Memberships", testId: "nav-memberships" },
-      { href: "/iam/roles", label: "Roles", testId: "nav-roles" },
-      { href: "/iam/groups", label: "Groups", testId: "nav-groups" },
-      { href: "/iam/applications", label: "Applications", testId: "nav-applications" },
-      { href: "/iam/invites", label: "Invites", testId: "nav-invites" },
-      { href: "/iam/security/policy", label: "Auth Policy", testId: "nav-iam-policy" },
-      { href: "/iam/security/portal-views", label: "Portal Views", testId: "nav-iam-portal-views" },
-      { href: "/iam/security/sso", label: "OIDC SSO", testId: "nav-iam-sso" },
-      { href: "/iam/security/saml", label: "SAML SSO", testId: "nav-iam-saml" },
-      { href: "/iam/security/scim", label: "SCIM", testId: "nav-iam-scim" },
-      { href: "/iam/security/mfa", label: "MFA", testId: "nav-iam-mfa" },
-      { href: "/iam/security/ip-allowlist", label: "IP Allowlist", testId: "nav-iam-ip-allowlist" },
-      { href: "/iam/security/siem", label: "SIEM Export", testId: "nav-iam-siem" },
-      { href: "/iam/security/tos", label: "Terms of Service", testId: "nav-iam-tos" },
+      { href: "/iam/orgs", label: "Orgs", testId: "nav-orgs", group: "Directory" },
+      { href: "/iam/workspaces", label: "Workspaces", testId: "nav-workspaces", group: "Directory" },
+      { href: "/iam/users", label: "Users", testId: "nav-users", group: "Directory" },
+      { href: "/iam/memberships", label: "Memberships", testId: "nav-memberships", group: "Directory" },
+      { href: "/iam/roles", label: "Roles", testId: "nav-roles", group: "Directory" },
+      { href: "/iam/groups", label: "Groups", testId: "nav-groups", group: "Directory" },
+      { href: "/iam/applications", label: "Applications", testId: "nav-applications", group: "Directory" },
+      { href: "/iam/invites", label: "Invites", testId: "nav-invites", group: "Directory" },
+      { href: "/iam/security/policy", label: "Auth Policy", testId: "nav-iam-policy", group: "Security" },
+      { href: "/iam/security/portal-views", label: "Portal Views", testId: "nav-iam-portal-views", group: "Security" },
+      { href: "/iam/security/sso", label: "OIDC SSO", testId: "nav-iam-sso", group: "Security" },
+      { href: "/iam/security/saml", label: "SAML SSO", testId: "nav-iam-saml", group: "Security" },
+      { href: "/iam/security/scim", label: "SCIM", testId: "nav-iam-scim", group: "Security" },
+      { href: "/iam/security/mfa", label: "MFA", testId: "nav-iam-mfa", group: "Security" },
+      { href: "/iam/security/ip-allowlist", label: "IP Allowlist", testId: "nav-iam-ip-allowlist", group: "Security" },
+      { href: "/iam/security/siem", label: "SIEM Export", testId: "nav-iam-siem", group: "Security" },
+      { href: "/iam/security/tos", label: "Terms of Service", testId: "nav-iam-tos", group: "Security" },
     ],
   },
   {
@@ -78,14 +80,14 @@ export const FEATURES: FeatureNav[] = [
     testId: "nav-feature-monitoring",
     subFeatures: [
       { href: "/monitoring", label: "Overview", testId: "nav-monitoring-overview" },
-      { href: "/monitoring/logs", label: "Logs", testId: "nav-monitoring-logs" },
-      { href: "/monitoring/metrics", label: "Metrics", testId: "nav-monitoring-metrics" },
-      { href: "/monitoring/traces", label: "Traces", testId: "nav-monitoring-traces" },
-      { href: "/monitoring/dashboards", label: "Dashboards", testId: "nav-monitoring-dashboards" },
-      { href: "/monitoring/alerts", label: "Alerts", testId: "nav-monitoring-alerts" },
-      { href: "/monitoring/alerts/rules", label: "Alert Rules", testId: "nav-monitoring-alert-rules" },
-      { href: "/monitoring/alerts/silences", label: "Silences", testId: "nav-monitoring-silences" },
-      { href: "/monitoring/saved-queries", label: "Saved Queries", testId: "nav-monitoring-saved-queries" },
+      { href: "/monitoring/logs", label: "Logs", testId: "nav-monitoring-logs", group: "Explore" },
+      { href: "/monitoring/metrics", label: "Metrics", testId: "nav-monitoring-metrics", group: "Explore" },
+      { href: "/monitoring/traces", label: "Traces", testId: "nav-monitoring-traces", group: "Explore" },
+      { href: "/monitoring/dashboards", label: "Dashboards", testId: "nav-monitoring-dashboards", group: "Explore" },
+      { href: "/monitoring/saved-queries", label: "Saved Queries", testId: "nav-monitoring-saved-queries", group: "Explore" },
+      { href: "/monitoring/alerts", label: "Alerts", testId: "nav-monitoring-alerts", group: "Alerting" },
+      { href: "/monitoring/alerts/rules", label: "Alert Rules", testId: "nav-monitoring-alert-rules", group: "Alerting" },
+      { href: "/monitoring/alerts/silences", label: "Silences", testId: "nav-monitoring-silences", group: "Alerting" },
     ],
   },
   {

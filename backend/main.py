@@ -417,9 +417,11 @@ async def health(request: Request):
             pass
     pool_busy = pool_size - pool_free if pool_size >= 0 and pool_free >= 0 else -1
 
-    # Modules
+    # Modules — `core` is always-on bootstrap (not router-gated) but should
+    # appear in the admin inventory so "enabled vs available" counts balance.
+    always_on = {"core"}
     enabled = sorted(list(config.modules)) if config else []
-    available = sorted(MODULE_ROUTERS.keys())
+    available = sorted(set(MODULE_ROUTERS.keys()) | always_on)
 
     # Vault
     vault_enabled = "vault" in (config.modules if config else frozenset())

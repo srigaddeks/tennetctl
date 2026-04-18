@@ -26,19 +26,36 @@ export class ApiClientError extends Error {
   }
 }
 
-const AUTH_ROUTES = ["/auth/signin", "/auth/signup", "/auth/forgot-password", "/auth/password-reset", "/auth/magic-link", "/auth/oidc", "/auth/callback", "/setup"];
+const AUTH_ROUTES = ["/auth/", "/setup", "/"];
 
-function redirectToSignin(): void {
+/**
+ * Soft redirect to signin when the backend returns 401 for a user-interacting
+ * call. We skip the redirect when:
+ *  - we're already on an auth page (prevents loops)
+ *  - we're on the landing / or a public-ish page where a sign-in affordance
+ *    already exists (e.g. impersonation banner probe fails harmlessly)
+ *  - the failing URL is an opt-out probe (impersonation, me, session.validate)
+ *    — these legitimately 401 before sign-in and shouldn't bounce the user.
+ */
+const OPT_OUT_PROBES = [
+  "/v1/iam/impersonation",
+  "/v1/auth/me",
+  "/v1/auth/session",
+];
+
+function redirectToSignin(requestUrl?: string): void {
   if (typeof window === "undefined") return;
   const path = window.location.pathname;
+  if (path === "/") return;
   if (AUTH_ROUTES.some((p) => path.startsWith(p))) return;
+  if (requestUrl && OPT_OUT_PROBES.some((p) => requestUrl.includes(p))) return;
   const next = encodeURIComponent(path + window.location.search);
   window.location.href = `/auth/signin?next=${next}`;
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (res.status === 401) {
-    redirectToSignin();
+    redirectToSignin(res.url);
     throw new ApiClientError("UNAUTHORIZED", "Session expired", 401);
   }
   if (res.status === 204) return undefined as T;
@@ -83,7 +100,7 @@ export async function apiList<T>(
     },
   });
   if (res.status === 401) {
-    redirectToSignin();
+    redirectToSignin(res.url);
     throw new ApiClientError("UNAUTHORIZED", "Session expired", 401);
   }
   if (res.status === 204) {
