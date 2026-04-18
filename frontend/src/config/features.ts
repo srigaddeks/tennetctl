@@ -99,6 +99,7 @@ export const FEATURES: FeatureNav[] = [
     subFeatures: [
       { href: "/notify/templates",   label: "Templates",   testId: "nav-notify-templates" },
       { href: "/notify/deliveries",  label: "Deliveries",  testId: "nav-notify-deliveries" },
+      { href: "/notify/suppressions", label: "Suppressions", testId: "nav-notify-suppressions" },
       { href: "/notify/send",        label: "Send API",    testId: "nav-notify-send" },
       { href: "/notify/preferences", label: "Preferences", testId: "nav-notify-preferences" },
       { href: "/notify/settings",    label: "Settings",    testId: "nav-notify-settings" },
@@ -124,6 +125,16 @@ export const FEATURES: FeatureNav[] = [
     testId: "nav-feature-nodes",
     subFeatures: [
       { href: "/nodes", label: "All nodes", testId: "nav-nodes-all" },
+    ],
+  },
+  {
+    key: "catalog",
+    label: "Catalog",
+    description: "Platform inventory — features + sub-features with node counts.",
+    basePath: "/catalog",
+    testId: "nav-feature-catalog",
+    subFeatures: [
+      { href: "/catalog", label: "Inventory", testId: "nav-catalog-inventory" },
     ],
   },
   {

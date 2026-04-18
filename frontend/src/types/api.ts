@@ -706,6 +706,23 @@ export type CatalogNode = {
   module: string;
 };
 
+export type CatalogFeature = {
+  feature_key: string;
+  feature_number: number;
+  module: string;
+  sub_feature_count: number;
+  node_count: number;
+};
+
+export type CatalogSubFeature = {
+  sub_feature_key: string;
+  sub_feature_number: number;
+  feature_key: string;
+  feature_number: number;
+  module: string;
+  node_count: number;
+};
+
 // ─── Audit Events (Phase 10 Plan 01) ─────────────────────────────
 
 export type AuditOutcome = "success" | "failure";
@@ -1153,6 +1170,37 @@ export type NotifyTemplateGroupUpdate = {
   category_id?: number;
   smtp_config_id?: string | null;
   is_active?: boolean;
+};
+
+// ─── Notify: Suppressions ───────────────────────────────────────
+
+export type NotifySuppressionReasonCode =
+  | "hard_bounce"
+  | "complaint"
+  | "manual"
+  | "unsubscribe";
+
+export type NotifySuppression = {
+  id: string;
+  org_id: string;
+  email: string;
+  reason_code: NotifySuppressionReasonCode;
+  delivery_id: string | null;
+  notes: string | null;
+  created_by: string;
+  created_at: string;
+};
+
+export type NotifySuppressionAdd = {
+  org_id: string;
+  email: string;
+  reason_code?: NotifySuppressionReasonCode;
+  notes?: string | null;
+};
+
+export type NotifySuppressionListResponse = {
+  items: NotifySuppression[];
+  total: number;
 };
 
 // ─── Notify: Deliveries ──────────────────────────────────────────

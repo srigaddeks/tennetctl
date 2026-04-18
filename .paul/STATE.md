@@ -198,15 +198,15 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-18 — AUTONOMOUS SEQUENCE (admin UI coverage)
-Stopped at: v0.2.4 critical gaps all closed. 4 plans shipped in sequence (35-01 → 35-02 → 35-03 → 36-01). Frontend typecheck + build green on every plan.
+Last session: 2026-04-18 — AUTONOMOUS SEQUENCE (admin UI coverage + yellow-gap sweep)
+Stopped at: v0.2.4 closed 🔴 + several 🟡 gaps. 6 plans shipped in sequence: 35-01 Workspaces detail, 35-02 Notify edit, 35-03 System Health, 36-01 System nav, 36-02 Notify Suppressions, 36-03 Catalog browser. Frontend typecheck + build green throughout.
 Next action: Choose based on priorities —
-  • /paul:verify — walk Workspaces detail + Notify edit + System Health in Playwright MCP (requires live backend)
+  • /paul:verify — walk new surfaces in Playwright MCP (requires live backend)
   • /paul:plan 38 Auth hardening (v0.1.8; rate limiting + HIBP + device revocation)
   • /paul:plan 39 NCP v1 maturity (bulk get_many, pool promotion, doc sync)
-  • /paul:plan 40 Alerting (v0.3.0; rule evaluator worker + silences + critical Notify integration)
+  • /paul:plan 40 Alerting (v0.3.0; rule evaluator worker + silences)
   • /paul:plan 33 APISIX integration test (requires docker-compose apisix up)
-Resume files: `.paul/phases/35-critical-admin-ui/*-SUMMARY.md`, `.paul/phases/36-portal-polish/36-01-SUMMARY.md`, `.paul/MILESTONE-QUEUE.md`
+Resume files: `.paul/phases/35-critical-admin-ui/*-SUMMARY.md`, `.paul/phases/36-portal-polish/36-*-SUMMARY.md`, `.paul/MILESTONE-QUEUE.md`
 
 ### This session's total output
 - 6 phase SUMMARY files across phases 28, 29, 30, 31, 32, 34
