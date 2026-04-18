@@ -5,22 +5,11 @@ import { use, useState } from "react";
 
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
-import {
-  Badge,
-  Button,
-  EmptyState,
-  ErrorState,
-  Skeleton,
-  TBody,
-  TD,
-  TH,
-  THead,
-  TR,
-  Table,
-} from "@/components/ui";
+import { Badge, Button, ErrorState, Skeleton } from "@/components/ui";
 import { FlagEnvironmentsPanel } from "@/features/featureflags/flag-environments-panel";
 import { FlagOverridesPanel } from "@/features/featureflags/flag-overrides-panel";
-import { FlagPermissionsPanel } from "@/features/featureflags/flag-permissions-panel";
+// FlagPermissionsPanel removed in phase 23R — role access is now managed
+// from /iam/roles → Capabilities tab against the unified capability catalog.
 import { FlagRulesPanel } from "@/features/featureflags/flag-rules-panel";
 import {
   useDeleteFlag,
@@ -29,7 +18,7 @@ import {
 import { ApiClientError } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
-type Tab = "environments" | "rules" | "overrides" | "permissions";
+type Tab = "environments" | "rules" | "overrides";
 
 export default function FlagDetailPage({
   params,
@@ -134,7 +123,6 @@ export default function FlagDetailPage({
               { id: "environments", label: "Environments" },
               { id: "rules", label: "Rules" },
               { id: "overrides", label: "Overrides" },
-              { id: "permissions", label: "Permissions" },
             ] as const
           ).map((t) => (
             <button
@@ -158,7 +146,6 @@ export default function FlagDetailPage({
         {tab === "environments" && <FlagEnvironmentsPanel flag={flag} />}
         {tab === "rules" && <FlagRulesPanel flag={flag} />}
         {tab === "overrides" && <FlagOverridesPanel flag={flag} />}
-        {tab === "permissions" && <FlagPermissionsPanel flag={flag} />}
       </div>
     </>
   );
