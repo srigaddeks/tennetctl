@@ -627,3 +627,31 @@ spec:
           path: "/v1/iam/oidc-providers/{provider_id}"
           handler: sub_features.20_oidc_sso.routes.delete_oidc_provider
       ui_pages: []
+
+    - key: iam.portal_views
+      number: 28
+      label: Portal Views
+      description: Role-gated UI navigation config — which features a user can see in the nav shell
+      owns:
+        schema: "03_iam"
+        tables: ["08_dim_portal_views", "46_lnk_role_views"]
+        views: []
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/iam/portal-views
+          handler: sub_features.28_portal_views.routes.list_views_route
+        - method: GET
+          path: "/v1/iam/roles/{role_id}/views"
+          handler: sub_features.28_portal_views.routes.list_role_views_route
+        - method: POST
+          path: "/v1/iam/roles/{role_id}/views"
+          handler: sub_features.28_portal_views.routes.attach_view_route
+        - method: DELETE
+          path: "/v1/iam/roles/{role_id}/views/{view_id}"
+          handler: sub_features.28_portal_views.routes.detach_view_route
+        - method: GET
+          path: /v1/iam/my-views
+          handler: sub_features.28_portal_views.routes.my_views_route
+      ui_pages: []

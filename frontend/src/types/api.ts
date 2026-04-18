@@ -1794,3 +1794,35 @@ export type TosVersion = {
   created_at: string;
   updated_at: string;
 };
+
+// ─── Portal Views (28-01) ─────────────────────────────────────────────────────
+
+export type PortalView = {
+  id: number;
+  code: string;
+  label: string;
+  icon: string | null;
+  color: string | null;
+  default_route: string;
+  sort_order: number;
+};
+
+export type RoleViewAssignment = {
+  id: string;
+  role_id: string;
+  view_id: number;
+  org_id: string;
+  created_by: string;
+  created_at: string;
+  // Joined from dim_portal_views
+  code: string | null;
+  label: string | null;
+  icon: string | null;
+  color: string | null;
+  default_route: string | null;
+  sort_order: number | null;
+};
+
+export type AttachViewBody = {
+  view_id: number;
+};
