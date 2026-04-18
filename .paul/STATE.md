@@ -5,14 +5,14 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.1.9 IAM Enterprise — Phase 22 (7 plans). OIDC SSO complete. Next: SAML 2.0 SSO. Testing: pytest + Playwright MCP (Robot Framework removed).
+**Current focus:** v0.2.0 Feature Flags + AuthZ Control Plane — Phase 23 starting. Unified role model: permissions (feature-scoped, from manifests) + feature flags (targeting rules, SDK, APISIX) bundled into roles. 5 phases, 13 plans: 23 Flag Engine → 24 Permissions+Role Redesign+AccessContext → 25 SDK+APISIX → 26 UX (Flag Dashboard + Role Designer + Rule Builder + Playground) → 27 Portal Views+AuthZ Audit. Reference: 99_ref/backend/03_auth_manage/ analyzed.
 
 ## Current Position
 
-Milestone: v0.1.9 IAM Enterprise — 🚧 In Progress
-Phase: 22 of 22 (IAM Enterprise) — 1 of 7 plans complete
-Plan: 22-01 COMPLETE. Ready for 22-02 (SAML 2.0 SSO).
-Status: 22-01 APPLY+UNIFY done. 11/11 tests green. UI verified.
+Milestone: v0.2.0 Feature Flags + AuthZ Control Plane — 🚧 In Progress
+Phase: 23 of 27 (Feature Flag Engine Foundation) — 0 of 3 plans started
+Plan: None yet — ready for /paul:plan 23-01
+Status: Deep ref analysis complete. CONTEXT.md written with full design model. Phase 22 (IAM Enterprise) done.
 Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
 Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
 Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
@@ -34,17 +34,35 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✅       ✅       ✅    [22-01 COMPLETE — ready for 22-02 PLAN]
+  ○        ○        ○    [23-01 — ready to plan]
 ```
 
-Phase 22 (v0.1.9 — IAM Enterprise) — 7 plans (simplified for Keycloak/Zitadel/Clerk parity):
-  1. ✅ 22-01 — OIDC SSO (authlib + PKCE + per-org + JIT user) COMPLETE
-  2. ▶ 22-02 — SAML 2.0 SSO (python3-saml + per-org + JIT user)
-  3.   22-03 — SCIM 2.0 provisioning (RFC 7644, Okta/Azure)
-  4.   22-04 — Admin impersonation (dual-actor audit + red banner)
-  5.   22-05 — MFA enforcement policy (per-org/role require 2FA gate)
-  6.   22-06 — IP allowlisting per org (CIDRs + middleware)
-  7.   22-07 — Audit SIEM export (webhook/S3/Splunk outbox worker)
+v0.2.0 — Feature Flags + AuthZ Control Plane (5 phases, 13 plans):
+
+Phase 23 — Feature Flag Engine Foundation (3 plans)
+  1. ○ 23-01 — Schema + dim seeds + manifest + pytest smoke
+  2. ○ 23-02 — Evaluation engine (rule walker, rollout hash, JSON conditions, SWR cache, control node)
+  3. ○ 23-03 — Management API + mutation audit + basic admin UI + Playwright verify
+
+Phase 24 — Feature-Scoped Permissions + Role Redesign (3 plans)
+  1. ○ 24-01 — dim_permissions + manifest declaration + boot seeder + backfill existing features
+  2. ○ 24-02 — Role schema redesign (role_level, scope, flag_grants) + migrate + CRUD updated
+  3. ○ 24-03 — require_permission helper + AccessContext resolver + wire into all routes + audit
+
+Phase 25 — SDK + Gateway Compilation (2 plans)
+  1. ○ 25-01 — Python + TS SDK + evaluation endpoints + SWR cache
+  2. ○ 25-02 — APISIX compilation for request-path flags + sync worker + audit
+
+Phase 26 — Awesome UX (3 plans)
+  1. ○ 26-01 — Flag Dashboard (list, stat cards, inline pickers, env status, presets)
+  2. ○ 26-02 — Role Designer (grouped list, expandable rows, permission matrix, flag-grants picker)
+  3. ○ 26-03 — Targeting Rule Builder + Evaluation Playground
+
+Phase 27 — Portal Views + AuthZ Audit Explorer (2 plans)
+  1. ○ 27-01 — Portal Views backend + admin UI + nav integration
+  2. ○ 27-02 — AuthZ Audit Explorer (pre-filtered events + aggregates + saved views)
+
+Phase 22 (v0.1.9 — IAM Enterprise) — COMPLETE ✅ (8/8 plans)
 
 ## Performance Metrics
 

@@ -336,6 +336,23 @@ async def signin(
     org_id = await _attach_to_default_org_if_needed(
         pool, conn, ctx, user_id=user["id"],
     )
+
+    # MFA enforcement gate — check before minting session.
+    _gate_org_id = ctx.org_id or org_id  # prefer request org header; fall back to attached org
+    if _gate_org_id:
+        try:
+            import importlib as _imp
+            _mfa_svc = _imp.import_module(
+                "backend.02_features.03_iam.sub_features.24_mfa_policy.service"
+            )
+            reason = await _mfa_svc.check_mfa_gate(conn, org_id=_gate_org_id, user_id=user["id"])
+            if reason:
+                raise _errors.AppError(reason, "MFA enrollment required before sign-in.", 403)
+        except _errors.AppError:
+            raise
+        except Exception:
+            pass  # best-effort — never block sign-in on transient policy lookup failure
+
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
         user_id=user["id"], org_id=org_id,

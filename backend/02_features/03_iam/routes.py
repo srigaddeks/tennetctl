@@ -70,6 +70,27 @@ _invites_routes: Any = import_module(
 _oidc_sso_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.20_oidc_sso.routes"
 )
+_saml_sso_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.21_saml_sso.routes"
+)
+_scim_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.22_scim.routes"
+)
+_impersonation_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.23_impersonation.routes"
+)
+_mfa_policy_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.24_mfa_policy.routes"
+)
+_ip_allowlist_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.25_ip_allowlist.routes"
+)
+_siem_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.26_siem_export.routes"
+)
+_tos_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.27_tos.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -91,6 +112,14 @@ router.include_router(_email_verification_routes.router)
 router.include_router(_gdpr_routes.router)
 router.include_router(_invites_routes.router)
 router.include_router(_oidc_sso_routes.router)
+router.include_router(_saml_sso_routes.router)
+router.include_router(_scim_routes.router)
+router.include_router(_scim_routes.scim_router)
+router.include_router(_impersonation_routes.router)
+router.include_router(_mfa_policy_routes.router)
+router.include_router(_ip_allowlist_routes.router)
+router.include_router(_siem_routes.router)
+router.include_router(_tos_routes.router)
 
 # OIDC auth routes (no session required — browser-facing)
 from fastapi import Request  # noqa: E402
@@ -152,3 +181,80 @@ async def oidc_callback(org_slug: str, request: Request, code: str = "", state: 
 
 
 router.include_router(_oidc_router)
+
+# SAML auth routes (no session required — browser-facing)
+_saml_service: Any = import_module(
+    "backend.02_features.03_iam.sub_features.21_saml_sso.service"
+)
+
+_saml_router = APIRouter(prefix="/v1/auth/saml", tags=["iam.saml_sso.auth"])
+
+
+@_saml_router.get("/{org_slug}/metadata")
+async def saml_metadata(org_slug: str, request: Request) -> Any:
+    from fastapi.responses import Response as _Response
+    pool = request.app.state.pool
+    base_url = str(request.base_url).rstrip("/")
+    async with pool.acquire() as conn:
+        try:
+            xml = await _saml_service.get_sp_metadata_xml(
+                conn, org_slug, f"{base_url}/v1/auth/saml/{org_slug}/acs"
+            )
+        except Exception as exc:
+            code = getattr(exc, "code", "SAML_ERROR")
+            return _Response(content=f"Error: {code}", status_code=404)
+    return _Response(content=xml, media_type="application/xml")
+
+
+@_saml_router.get("/{org_slug}/initiate")
+async def saml_initiate(org_slug: str, request: Request) -> Any:
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    base_url = str(request.base_url).rstrip("/")
+    async with pool.acquire() as conn:
+        try:
+            url = await _saml_service.build_initiate_redirect(
+                conn, vault, org_slug=org_slug, base_url=base_url,
+            )
+        except Exception as exc:
+            code = getattr(exc, "code", "SAML_ERROR")
+            return RedirectResponse(f"/auth/signin?error={code}", status_code=302)
+    return RedirectResponse(url, status_code=302)
+
+
+@_saml_router.post("/{org_slug}/acs")
+async def saml_acs(org_slug: str, request: Request) -> Any:
+    pool = request.app.state.pool
+    vault = request.app.state.vault
+    base_url = str(request.base_url).rstrip("/")
+    form = await request.form()
+    saml_response = form.get("SAMLResponse", "")
+    relay_state = form.get("RelayState", "")
+    ctx = _catalog_ctx.NodeContext(
+        user_id=None, session_id=None, org_id=None, workspace_id=None,
+        trace_id=_core_id_mod.uuid7(), span_id=_core_id_mod.uuid7(),
+        request_id=_core_id_mod.uuid7(), audit_category="setup",
+        extras={"pool": pool},
+    )
+    async with pool.acquire() as conn:
+        try:
+            _, token = await _saml_service.handle_acs(
+                pool, conn, ctx, vault,
+                org_slug=org_slug, saml_response=str(saml_response),
+                relay_state=str(relay_state), base_url=base_url,
+            )
+        except Exception:
+            return RedirectResponse("/auth/signin?error=saml_failed", status_code=302)
+
+    response = RedirectResponse("/", status_code=303)
+    response.set_cookie(
+        key="tennetctl_session",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=request.url.scheme == "https",
+    )
+    return response
+
+
+router.include_router(_saml_router)

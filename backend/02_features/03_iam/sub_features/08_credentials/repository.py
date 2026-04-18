@@ -139,3 +139,35 @@ async def clear_lockout(conn: Any, *, user_id: str) -> None:
         'WHERE entity_type_id = 3 AND entity_id = $1 AND attr_def_id = $2',
         user_id, attr_def_id,
     )
+
+
+# ── Password history ──────────────────────────────────────────────────────────
+
+_PW_HIST = '"03_iam"."50_fct_password_history"'
+
+
+async def list_recent_hashes(conn: Any, user_id: str, depth: int) -> list[str]:
+    rows = await conn.fetch(
+        f'SELECT hash FROM {_PW_HIST} WHERE user_id = $1 '
+        f'ORDER BY created_at DESC LIMIT $2',
+        user_id, depth,
+    )
+    return [r["hash"] for r in rows]
+
+
+async def push_hash(conn: Any, *, id: str, user_id: str, hash: str) -> None:
+    await conn.execute(
+        f'INSERT INTO {_PW_HIST} (id, user_id, hash) VALUES ($1, $2, $3)',
+        id, user_id, hash,
+    )
+
+
+async def prune_beyond(conn: Any, *, user_id: str, depth: int) -> None:
+    """Delete oldest hashes beyond `depth` for this user."""
+    await conn.execute(
+        f'DELETE FROM {_PW_HIST} WHERE user_id = $1 AND id NOT IN ('
+        f'  SELECT id FROM {_PW_HIST} WHERE user_id = $1 '
+        f'  ORDER BY created_at DESC LIMIT $2'
+        f')',
+        user_id, depth,
+    )

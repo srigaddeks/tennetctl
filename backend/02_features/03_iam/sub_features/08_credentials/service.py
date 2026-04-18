@@ -26,6 +26,9 @@ _catalog: Any = import_module("backend.01_catalog")
 _repo: Any = import_module(
     "backend.02_features.03_iam.sub_features.08_credentials.repository"
 )
+_core_id: Any = import_module("backend.01_core.id")
+
+_PW_HISTORY_DEPTH_DEFAULT = 5
 
 _hasher = PasswordHasher()
 logger = logging.getLogger("tennetctl.iam.credentials")
@@ -45,16 +48,41 @@ async def hash_password(value: str, vault_client: Any) -> str:
     return _hasher.hash(await _peppered(value, vault_client))
 
 
+async def _check_password_history(conn: Any, *, vault_client: Any, user_id: str, value: str, depth: int) -> None:
+    """Raise AppError if `value` matches any of the last `depth` stored hashes."""
+    recent = await _repo.list_recent_hashes(conn, user_id, depth)
+    peppered = await _peppered(value, vault_client)
+    for stored_hash in recent:
+        try:
+            _hasher.verify(stored_hash, peppered)
+            raise _errors.AppError("PASSWORD_REUSED", "Password was recently used. Choose a different one.", 400)
+        except _errors.AppError:
+            raise
+        except Exception:
+            continue  # mismatch or invalid hash — not a reuse
+
+
 async def set_password(
     conn: Any,
     *,
     vault_client: Any,
     user_id: str,
     value: str,
+    check_history: bool = False,
+    history_depth: int = _PW_HISTORY_DEPTH_DEFAULT,
 ) -> None:
-    """Hash + store a password for an existing user. Idempotent (upsert)."""
+    """Hash + store a password for an existing user. Idempotent (upsert).
+
+    When check_history=True, raises PASSWORD_REUSED if `value` matches any of
+    the last `history_depth` stored hashes, then pushes the new hash into history.
+    """
+    if check_history:
+        await _check_password_history(conn, vault_client=vault_client, user_id=user_id, value=value, depth=history_depth)
     password_hash = await hash_password(value, vault_client)
     await _repo.upsert_hash(conn, user_id=user_id, password_hash=password_hash)
+    if check_history:
+        await _repo.push_hash(conn, id=_core_id.uuid7(), user_id=user_id, hash=password_hash)
+        await _repo.prune_beyond(conn, user_id=user_id, depth=history_depth)
 
 
 async def verify_password(
@@ -178,6 +206,7 @@ async def change_password(
 
     await set_password(
         conn, vault_client=vault_client, user_id=user_id, value=new_password,
+        check_history=True,
     )
 
     # Revoke sibling sessions. The caller's session row stays valid so the

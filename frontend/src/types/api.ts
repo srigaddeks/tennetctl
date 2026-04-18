@@ -1696,3 +1696,101 @@ export type OidcProviderCreateBody = {
   scopes?: string;
   claim_mapping?: Record<string, string>;
 };
+
+export type SamlProvider = {
+  id: string;
+  org_id: string;
+  org_slug: string;
+  idp_entity_id: string;
+  sso_url: string;
+  x509_cert: string;
+  sp_entity_id: string;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SamlProviderCreateBody = {
+  idp_entity_id: string;
+  sso_url: string;
+  x509_cert: string;
+  sp_entity_id: string;
+  enabled?: boolean;
+};
+
+export type ScimToken = {
+  id: string;
+  org_id: string;
+  label: string;
+  last_used_at: string | null;
+  created_at: string;
+};
+
+export type ScimTokenCreateBody = {
+  label: string;
+};
+
+export type ImpersonationStatus = {
+  active: boolean;
+  impersonation_id?: string;
+  impersonated_user_id?: string;
+  impersonated_display_name?: string;
+  impersonated_email?: string;
+  session_expires_at?: string;
+};
+
+export type StartImpersonationRequest = {
+  target_user_id: string;
+};
+
+export type MfaPolicyStatus = {
+  org_id: string;
+  required: boolean;
+  totp_enrolled: boolean;
+};
+
+export type IpAllowlistEntry = {
+  id: string;
+  org_id: string;
+  cidr: string;
+  label: string;
+  created_by: string;
+  created_at: string | null;
+};
+
+export type IpAllowlistCreateBody = {
+  cidr: string;
+  label?: string;
+};
+
+export type SiemDestination = {
+  id: string;
+  org_id: string;
+  kind: "webhook" | "splunk_hec" | "datadog" | "s3";
+  label: string;
+  config_jsonb: Record<string, unknown>;
+  is_active: boolean;
+  last_cursor: number;
+  last_exported_at: string | null;
+  failure_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SiemDestinationCreateBody = {
+  kind: SiemDestination["kind"];
+  label?: string;
+  config_jsonb?: Record<string, unknown>;
+  credentials_vault_key?: string;
+};
+
+export type TosVersion = {
+  id: string;
+  version: string;
+  title: string;
+  body_markdown: string;
+  published_at: string | null;
+  effective_at: string | null;
+  created_at: string;
+  updated_at: string;
+};

@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
+import { ImpersonationBanner } from "@/features/iam/_components/impersonation-banner";
 
 export default function DashboardLayout({
   children,
@@ -8,6 +9,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
+      <ImpersonationBanner />
       <TopBar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />

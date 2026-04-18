@@ -81,6 +81,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
         request.state.workspace_id = None
         request.state.api_key_id = None
         request.state.scopes = None  # None = session auth = all scopes
+        request.state.impersonator_user_id = None
+        request.state.impersonated_user_id = None
+        request.state.ip_blocked = False
 
         vault = getattr(request.app.state, "vault", None)
         pool = getattr(request.app.state, "pool", None)
@@ -165,6 +168,17 @@ class SessionMiddleware(BaseHTTPMiddleware):
                 request.state.session_id = row["id"]
                 request.state.org_id = row.get("org_id")
                 request.state.workspace_id = row.get("workspace_id")
+                # Detect impersonation — expose dual-actor IDs on state.
+                try:
+                    _imp_repo: Any = import_module(
+                        "backend.02_features.03_iam.sub_features.23_impersonation.repository"
+                    )
+                    imp = await _imp_repo.get_active_by_session_id(conn, session_id=row["id"])
+                    if imp is not None:
+                        request.state.impersonator_user_id = imp["impersonator_user_id"]
+                        request.state.impersonated_user_id = imp["impersonated_user_id"]
+                except Exception:
+                    pass
                 # Plan 20-04: bump last_activity_at fire-and-forget.
                 import asyncio as _asyncio
                 _sessions_repo: Any = import_module(
@@ -185,7 +199,57 @@ class SessionMiddleware(BaseHTTPMiddleware):
         if session_expired:
             return _response.error_response("SESSION_EXPIRED", "Session expired.", 401)
 
+        # IP allowlist check — only when org is known (authenticated request).
+        org_id_for_ip = getattr(request.state, "org_id", None)
+        if org_id_for_ip and pool is not None:
+            try:
+                # Get client IP: prefer X-Forwarded-For (behind proxy) else direct client.
+                forwarded_for = request.headers.get("x-forwarded-for")
+                client_ip = (forwarded_for.split(",")[0].strip() if forwarded_for
+                             else (request.client.host if request.client else None))
+                if client_ip:
+                    _ip_svc: Any = import_module(
+                        "backend.02_features.03_iam.sub_features.25_ip_allowlist.service"
+                    )
+                    async with pool.acquire() as conn:
+                        allowed = await _ip_svc.check_ip_gate(conn, org_id=org_id_for_ip, client_ip=client_ip)
+                    if not allowed:
+                        return _response.error_response(
+                            "IP_NOT_ALLOWED", "Your IP address is not in the org's allowlist.", 403
+                        )
+            except Exception:
+                pass  # best-effort — never block on allowlist lookup failure
+
         return await call_next(request)
+
+
+async def require_permission_from_request(
+    request: Request,
+    scope_code: str,
+    *,
+    scope_org_id: str | None = None,
+) -> None:
+    """Assert the authenticated user holds scope_code.
+
+    Grabs pool from request.app.state and user_id from request.state.
+    Raises UNAUTHORIZED (401) when no user is on state, FORBIDDEN (403)
+    when the user lacks the scope.
+
+    Call at the top of any protected route handler:
+        await require_permission_from_request(request, "flags:view:org",
+                                               scope_org_id=org_id)
+    """
+    user_id = getattr(request.state, "user_id", None)
+    if not user_id:
+        raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
+    pool = getattr(request.app.state, "pool", None)
+    if pool is None:
+        raise _errors.AppError("INTERNAL_ERROR", "Database pool unavailable.", 500)
+    _authz = import_module("backend.01_core.authz")
+    async with pool.acquire() as conn:
+        await _authz.require_permission(
+            conn, user_id, scope_code, scope_org_id=scope_org_id
+        )
 
 
 def require_scope(request: Request, scope: str) -> None:

@@ -228,6 +228,28 @@ async def lifespan(application: FastAPI):
 
         _iam_gauge_task = _asyncio.create_task(_iam_active_sessions_loop())
 
+    # SIEM export worker — polls audit outbox and delivers to all active destinations.
+    _siem_worker_task = None
+    if "iam" in config.modules:
+        import asyncio as _asyncio_siem
+        _siem_svc = import_module(
+            "backend.02_features.03_iam.sub_features.26_siem_export.service"
+        )
+        _siem_worker_task = _asyncio_siem.create_task(_siem_svc.start_worker(pool))
+        logger.info("SIEM export worker started.")
+
+    # Role expiry sweeper — revokes expired lnk_user_roles every 300 s.
+    _role_expiry_task = None
+    if "iam" in config.modules:
+        import asyncio as _asyncio_roles
+        _role_expiry_sweeper = import_module(
+            "backend.02_features.03_iam.sub_features.04_roles.expiry_sweeper"
+        )
+        _role_expiry_task = _asyncio_roles.create_task(
+            _role_expiry_sweeper.start_sweeper(pool, interval_seconds=300)
+        )
+        logger.info("Role expiry sweeper started.")
+
     yield
 
     if _gdpr_worker_task is not None:
@@ -240,6 +262,18 @@ async def lifespan(application: FastAPI):
         _iam_gauge_task.cancel()
         import asyncio as _asyncio2
         await _asyncio2.gather(_iam_gauge_task, return_exceptions=True)
+
+    if _siem_worker_task is not None:
+        _siem_worker_task.cancel()
+        import asyncio as _asyncio_siem2
+        await _asyncio_siem2.gather(_siem_worker_task, return_exceptions=True)
+        logger.info("SIEM export worker stopped.")
+
+    if _role_expiry_task is not None:
+        _role_expiry_task.cancel()
+        import asyncio as _asyncio_roles2
+        await _asyncio_roles2.gather(_role_expiry_task, return_exceptions=True)
+        logger.info("Role expiry sweeper stopped.")
 
     if _notify_worker_task is not None:
         _notify_worker_task.cancel()

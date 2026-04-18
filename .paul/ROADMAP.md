@@ -8,8 +8,14 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 ## Current Milestone
 
-**v0.1.9 IAM Enterprise** (v0.1.9)
+**v0.2.0 Feature Flags + AuthZ Control Plane** (v0.2.0)
 Status: 🚧 In Progress
+Theme: Unified AuthZ + Feature Control Plane — roles bundle permissions and feature flags into one control surface. Full flag evaluation engine (targeting, % rollout, SDK, APISIX), feature-scoped permissions declared in feature manifests, enforcement + audit across every route, and a best-in-class role designer + flag dashboard UX ported from the 99_ref project.
+Phases: 0 of 5 complete (Phases 23–27, 13 plans)
+Reference: 99_ref/backend/03_auth_manage/ analyzed 2026-04-18 — 6,581 lines across 18 sub-features mapped to our NCP v1 + EAV model
+
+**v0.1.9 IAM Enterprise** (v0.1.9)
+Status: ✅ Complete (2026-04-18)
 Theme: Enterprise-grade federated identity (SAML/OIDC SSO), automated provisioning (SCIM 2.0), admin controls, compliance primitives — everything a mid-market SaaS team needs to pass a security review.
 Phases: 0 of 1 complete
 
@@ -56,7 +62,12 @@ Phases: 6 of 6 complete
 | 19 | Developer Docs Pass — Integration guide, API reference, deployment, DKIM/DMARC, examples (v0.1.7) | 1 | ✅ Complete | 2026-04-17 |
 | 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
 | 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
-| 22 | IAM Enterprise — OIDC SSO, SAML SSO, SCIM, impersonation, MFA enforcement, IP allowlist, SIEM export (v0.1.9) | 7 | 🚧 In Progress | - |
+| 22 | IAM Enterprise — OIDC SSO, SAML SSO, SCIM, impersonation, MFA enforcement, IP allowlist, SIEM export (v0.1.9) | 8 | ✅ Complete | 2026-04-18 |
+| 23 | Feature Flag Engine Foundation — schema, evaluation engine, management API, admin UI (v0.2.0) | 3 | Not started | - |
+| 24 | Feature-Scoped Permissions + Role Redesign — dim_permissions from manifests, role_level, AccessContext (v0.2.0) | 3 | Not started | - |
+| 25 | SDK + Gateway Compilation — Python/TS SDK, APISIX request-path flag sync (v0.2.0) | 2 | Not started | - |
+| 26 | Awesome UX — Flag dashboard, Role Designer, Targeting rule builder, Evaluation playground (v0.2.0) | 3 | Not started | - |
+| 27 | Portal Views + AuthZ Audit Explorer — role-gated navigation, authz event explorer (v0.2.0) | 2 | Not started | - |
 
 ## Phase Details
 
@@ -507,6 +518,102 @@ injection and full pytest + Robot E2E verification.
 - [ ] 22-05: MFA enforcement policy (AuthPolicy gate on signin + enrollment redirect + admin UI toggle + pytest)
 - [ ] 22-06: IP allowlisting per org (schema + middleware + admin UI + Playwright MCP verify)
 - [ ] 22-07: Audit SIEM export (webhook/S3/Splunk destinations + outbox worker + admin UI + pytest)
+
+### Phase 23: Feature Flag Engine Foundation (v0.2.0)
+
+**Goal:** Working feature flag engine end-to-end — schema, evaluation, management API, basic admin UI. No SDK or gateway compilation yet.
+**Depends on:** Phase 9 stub schema, Phase 22 (org/policy context), Phase 10 (audit emit)
+**Reference:** `99_ref/backend/03_auth_manage/03_feature_flags/` — 4-table normalized schema, rule walker with priority, deterministic rollout hash
+
+**Scope:**
+- Feature `09_flags` + schema `"09_flags"` with tables: `fct_flags`, `fct_flag_states` (per-env), `fct_rules` (targeting, priority ordered), `fct_overrides` (force-value per entity)
+- Dims: `environments` (dev/staging/prod), `value_types` (bool/string/number/json), `scopes` (global/org/application), `flag_permissions` (view/toggle/write/admin ranked)
+- Evaluation engine: override → rule walk (priority ASC) → env default → global default
+- Targeting JSON condition tree: `and/or/not/eq/neq/in/startswith/endswith/contains`
+- Deterministic rollout: `hash(flag_key + entity_id) % 100 < rollout_percentage`
+- `flags.flag.evaluate` control node (tx=caller, read-only) with SWR cache
+- Mutation audit: `flags.flag.created|updated|deleted|activated|deactivated`, same for rules + overrides
+- Basic admin UI at `/admin/flags` (list + create + edit, raw JSON for rules in this phase)
+- Playwright MCP verify: create flag → add rule → evaluate → see value
+
+**Plans:**
+- [ ] 23-01: Schema + dim seeds + feature manifest entry + pytest smoke
+- [ ] 23-02: Evaluation engine (rule walker + rollout hash + JSON condition evaluator + override precedence + scope resolution + SWR cache + `flags.flag.evaluate` node)
+- [ ] 23-03: Management API (CRUD flags/rules/overrides) + mutation audit + basic admin UI + Playwright MCP verify
+
+### Phase 24: Feature-Scoped Permissions + Role Redesign (v0.2.0)
+
+**Goal:** Permissions move from hardcoded to manifest-declared. Roles restructured to carry `role_level + permissions + flag_grants`. `require_permission` wired site-wide. `AccessContext` primitive live.
+**Depends on:** Phase 23 (flags must exist to bundle into roles), Phase 6 (existing role backend), Phase 10 (audit emit)
+**Reference:** `99_ref/backend/03_auth_manage/04_roles/`, `_permission_check.py`, `06_access_context/`
+
+**Scope:**
+- `dim_permissions` table + feature manifest declaration block + boot seeder (idempotent upsert; manifest reload updates)
+- Backfill: declare existing permissions in manifests for iam, audit, vault, notify, monitoring
+- Role schema extension: `role_level` (platform/org/workspace), `scope_org_id`, `scope_workspace_id`, `is_system`
+- `lnk_role_permissions` (role → permission) + `lnk_role_flag_grants` (role → flag + permission_level)
+- `require_permission(user_id, perm_code, scope_org_id?, scope_workspace_id?)` helper — inline call pattern, raises `AuthorizationError`
+- `AccessContext` resolver: per-request bundle `{user_id, org_id, ws_id, permissions: Set, flags: Map, views: Set}`, 5-min SWR cache keyed on `(user_id, org_id, ws_id)`, invalidate on role/assignment change
+- Wire `require_permission` into all existing feature routes (iam, audit, vault, notify, monitoring)
+- Audit `authz.permission.checked` behind `authz.audit_checks` policy flag (default off — perf)
+
+**Plans:**
+- [ ] 24-01: `dim_permissions` schema + manifest declaration + seeder + backfill all existing features + pytest
+- [ ] 24-02: Role schema redesign (role_level, scope, flag_grants, permission_level) + migrate existing roles + role CRUD API updated + tests green
+- [ ] 24-03: `require_permission` helper + `AccessContext` resolver + per-request dependency injection + wire into all existing routes + audit integration
+
+### Phase 25: SDK + Gateway Compilation (v0.2.0)
+
+**Goal:** External consumers can evaluate flags. Request-path flags compile to APISIX — gateway evaluates without backend hit.
+**Depends on:** Phase 23 (evaluation engine), Phase 24 (permission checks protect SDK endpoints), APISIX
+
+**Scope:**
+- Python SDK: `tennetctl-sdk-py` — `Client.evaluate(flag_key, entity)`, `evaluate_bulk([...])`, 60s SWR cache
+- TypeScript SDK: `@tennetctl/sdk` — zero-dep (native fetch), same API shape
+- Evaluation endpoint: `POST /v1/flags/evaluate` + `POST /v1/flags/evaluate-bulk` (returns `{value, source, matched_rule_id?}`)
+- Flag `kind` attribute: `effect` (backend-evaluated) or `request` (APISIX-compiled)
+- APISIX sync worker: on `request`-kind flag mutation, push config to APISIX via Admin API (plugin = `traffic-split` for rollout, `consumer-restriction` for segment match)
+- Audit every APISIX sync: `flags.apisix.synced|sync_failed`
+
+**Plans:**
+- [ ] 25-01: Python + TypeScript SDK thin clients + evaluation endpoints + SWR cache + SDK tests
+- [ ] 25-02: APISIX compilation for request-path flags + sync worker + audit + live APISIX integration test
+
+### Phase 26: Awesome UX — Flag Dashboard + Role Designer + Playground (v0.2.0)
+
+**Goal:** Port the reference UX patterns verbatim. Three major pages: flag dashboard, role designer, evaluation playground + rule builder.
+**Depends on:** Phases 23–25 (complete backend)
+**Reference:** `99_ref/frontend/apps/web/src/app/(005_admin)/admin/feature-flags/` and `admin/roles/` (1,308 + 1,379 lines of Next.js patterns to port)
+
+**Scope:**
+- Flag Dashboard (`/admin/flags`): grouped list by category with collapse/expand; stat cards with colored left borders; inline environment status indicator (highest-reached); inline edit pickers for simple state changes; modal for full edit; permission presets (None/View/RW/Full/Admin); search + filter pills
+- Role Designer (`/admin/roles`): grouped by role_level (Platform/Org/Workspace) with collapsible headers; expandable rows with 3 tabs (Permissions / Flag Grants / Audit); permission matrix (feature rows × action columns) with search; flag-grants picker with permission-level dropdown; scope-aware filtering pills; duplicate/disable/delete actions; smart code auto-generation
+- Targeting Rule Builder: form-based tree editor (NOT freeform JSON) — guided add/edit of conditions with operator dropdowns + attr/value inputs; nested and/or/not groups; preview audience size
+- Evaluation Playground (`/admin/flags/playground`): input `(flag_code, entity_id, attribute_context)`, see full resolution trace (which branch won? which rule matched? what was the hash bucket?)
+
+**Plans:**
+- [ ] 26-01: Flag Dashboard — list, stat cards, inline pickers, env status, permission presets, create/edit modals + Playwright MCP verify
+- [ ] 26-02: Role Designer — grouped list, expandable rows, permission matrix, flag-grants picker, scope filter + Playwright MCP verify
+- [ ] 26-03: Targeting Rule Builder + Evaluation Playground + Playwright MCP verify
+
+### Phase 27: Portal Views + AuthZ Audit Explorer (v0.2.0)
+
+**Goal:** Role-gated UI navigation (ref's `portal_views` concept) + focused audit view for authz events.
+**Depends on:** Phases 24 (AccessContext), 26 (UX patterns), Phase 10 (audit explorer pattern)
+**Reference:** `99_ref/backend/03_auth_manage/16_portal_views/`
+
+**Scope:**
+- `dim_portal_views` (code, name, icon, color, default_route) + `fct_view_routes` (per-view nested routes with sidebar metadata) + `lnk_role_views` (role → view)
+- Resolver: `AccessContext.views` populated via same 4-path role walk
+- Admin UI: define views + assign to roles
+- Frontend navigation shell: reads resolved views from AccessContext, renders top-level menu accordingly; hides routes user can't access
+- Seeded portals: `platform`, `iam`, `audit`, `monitoring`, `notify`, `vault`, `flags`
+- AuthZ Audit Explorer (`/audit/authz`): pre-filtered to categories `authz.permission.checked`, `flags.evaluated`, `authz.access_context.resolved`, `roles.*`, `flags.*.mutated`
+- Timeline + per-permission/per-flag aggregates + saved views
+
+**Plans:**
+- [ ] 27-01: Portal Views backend + admin UI + frontend navigation integration + Playwright MCP verify
+- [ ] 27-02: AuthZ Audit Explorer (pre-filtered view + aggregates + saved views) + Playwright MCP verify
 
 ---
 

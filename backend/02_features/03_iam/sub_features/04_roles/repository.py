@@ -143,6 +143,56 @@ async def touch_role(conn: Any, *, id: str, updated_by: str) -> bool:
     return result.endswith(" 1")
 
 
+async def assign_role(
+    conn: Any,
+    *,
+    id: str,
+    user_id: str,
+    role_id: str,
+    org_id: str,
+    created_by: str,
+    expires_at: Any = None,
+) -> dict:
+    row = await conn.fetchrow(
+        'INSERT INTO "03_iam"."42_lnk_user_roles" '
+        '    (id, user_id, role_id, org_id, created_by, expires_at, created_at) '
+        'VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) '
+        'ON CONFLICT (user_id, role_id, org_id) DO UPDATE '
+        '    SET expires_at = EXCLUDED.expires_at, revoked_at = NULL '
+        'RETURNING id, user_id, role_id, org_id, expires_at, revoked_at, created_at',
+        id, user_id, role_id, org_id, created_by, expires_at,
+    )
+    return dict(row)
+
+
+async def revoke_role(
+    conn: Any,
+    *,
+    user_id: str,
+    role_id: str,
+    org_id: str,
+) -> bool:
+    result = await conn.execute(
+        'UPDATE "03_iam"."42_lnk_user_roles" '
+        'SET revoked_at = CURRENT_TIMESTAMP '
+        'WHERE user_id = $1 AND role_id = $2 AND org_id = $3 AND revoked_at IS NULL',
+        user_id, role_id, org_id,
+    )
+    return result.endswith(" 1")
+
+
+async def expire_due(conn: Any) -> list[dict]:
+    """Mark all expired, non-revoked assignments as revoked. Returns revoked rows."""
+    rows = await conn.fetch(
+        'UPDATE "03_iam"."42_lnk_user_roles" '
+        'SET revoked_at = CURRENT_TIMESTAMP '
+        'WHERE expires_at IS NOT NULL AND expires_at < CURRENT_TIMESTAMP '
+        '  AND revoked_at IS NULL '
+        'RETURNING id, user_id, role_id, org_id, expires_at',
+    )
+    return [dict(r) for r in rows]
+
+
 async def soft_delete_role(conn: Any, *, id: str, updated_by: str) -> bool:
     result = await conn.execute(
         'UPDATE "03_iam"."13_fct_roles" '

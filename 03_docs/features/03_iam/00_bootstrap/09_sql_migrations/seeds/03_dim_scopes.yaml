@@ -1,9 +1,65 @@
 schema: "03_iam"
 table: "03_dim_scopes"
 rows:
-  - {id: 1, code: "read:all",   label: "Read All (global)",   scope_level: global, description: "Read all resources across all tenants",    deprecated_at: null}
-  - {id: 2, code: "write:all",  label: "Write All (global)",  scope_level: global, description: "Write all resources across all tenants",   deprecated_at: null}
-  - {id: 3, code: "admin:all",  label: "Admin All (global)",  scope_level: global, description: "Admin all resources across all tenants",   deprecated_at: null}
-  - {id: 4, code: "read:org",   label: "Read Org",            scope_level: org,    description: "Read resources within the caller's org",    deprecated_at: null}
-  - {id: 5, code: "write:org",  label: "Write Org",           scope_level: org,    description: "Write resources within the caller's org",   deprecated_at: null}
-  - {id: 6, code: "admin:org",  label: "Admin Org",           scope_level: org,    description: "Admin resources within the caller's org",   deprecated_at: null}
+  # ─── Global platform scopes ─────────────────────────────────────────
+  - {id: 1,  code: "read:all",   label: "Read All (global)",   scope_level: global, description: "Read all resources across all tenants",    deprecated_at: null}
+  - {id: 2,  code: "write:all",  label: "Write All (global)",  scope_level: global, description: "Write all resources across all tenants",   deprecated_at: null}
+  - {id: 3,  code: "admin:all",  label: "Admin All (global)",  scope_level: global, description: "Admin all resources across all tenants",   deprecated_at: null}
+
+  # ─── Org-level broad scopes ─────────────────────────────────────────
+  - {id: 4,  code: "read:org",   label: "Read Org",            scope_level: org,    description: "Read resources within the caller's org",    deprecated_at: null}
+  - {id: 5,  code: "write:org",  label: "Write Org",           scope_level: org,    description: "Write resources within the caller's org",   deprecated_at: null}
+  - {id: 6,  code: "admin:org",  label: "Admin Org",           scope_level: org,    description: "Admin resources within the caller's org",   deprecated_at: null}
+
+  # ─── Flags (feature 09) ─────────────────────────────────────────────
+  - {id: 7,  code: "flags:view:org",   label: "Flags: View (Org)",   scope_level: org, description: "Read flag definitions within an org",                                  deprecated_at: null}
+  - {id: 8,  code: "flags:toggle:org", label: "Flags: Toggle (Org)", scope_level: org, description: "Enable or disable flag states within an org (no other edits)",         deprecated_at: null}
+  - {id: 9,  code: "flags:write:org",  label: "Flags: Write (Org)",  scope_level: org, description: "Create / update flags, rules, and overrides within an org",           deprecated_at: null}
+  - {id: 10, code: "flags:admin:org",  label: "Flags: Admin (Org)",  scope_level: org, description: "Full flag management within an org including per-flag permissions",   deprecated_at: null}
+
+  # ─── IAM (feature 03) ───────────────────────────────────────────────
+  - {id: 20, code: "iam:orgs:read",        label: "IAM Orgs: Read",           scope_level: org, description: "Read org details",                          deprecated_at: null}
+  - {id: 21, code: "iam:orgs:write",       label: "IAM Orgs: Write",          scope_level: org, description: "Create / update org details",               deprecated_at: null}
+  - {id: 22, code: "iam:users:read",       label: "IAM Users: Read",          scope_level: org, description: "List and read users in an org",             deprecated_at: null}
+  - {id: 23, code: "iam:users:write",      label: "IAM Users: Write",         scope_level: org, description: "Create / update / deactivate users",        deprecated_at: null}
+  - {id: 24, code: "iam:users:delete",     label: "IAM Users: Delete",        scope_level: org, description: "Soft-delete / pseudonymize users",          deprecated_at: null}
+  - {id: 25, code: "iam:roles:read",       label: "IAM Roles: Read",          scope_level: org, description: "List and read roles + permission bundles",  deprecated_at: null}
+  - {id: 26, code: "iam:roles:write",      label: "IAM Roles: Write",         scope_level: org, description: "Create / update / delete roles",            deprecated_at: null}
+  - {id: 27, code: "iam:roles:assign",     label: "IAM Roles: Assign",        scope_level: org, description: "Assign or revoke user-role links",          deprecated_at: null}
+  - {id: 28, code: "iam:groups:read",      label: "IAM Groups: Read",         scope_level: org, description: "Read group definitions and memberships",    deprecated_at: null}
+  - {id: 29, code: "iam:groups:write",     label: "IAM Groups: Write",        scope_level: org, description: "Create / update / delete groups",           deprecated_at: null}
+  - {id: 30, code: "iam:invites:manage",   label: "IAM Invites: Manage",      scope_level: org, description: "Create, revoke, and resend invites",        deprecated_at: null}
+  - {id: 31, code: "iam:policy:read",      label: "IAM Policy: Read",         scope_level: org, description: "Read auth-policy config values",            deprecated_at: null}
+  - {id: 32, code: "iam:policy:write",     label: "IAM Policy: Write",        scope_level: org, description: "Edit auth-policy config (lockout, sessions, mfa, etc.)", deprecated_at: null}
+  - {id: 33, code: "iam:sessions:read",    label: "IAM Sessions: Read",       scope_level: org, description: "List active sessions",                      deprecated_at: null}
+  - {id: 34, code: "iam:sessions:revoke",  label: "IAM Sessions: Revoke",     scope_level: org, description: "Revoke any session in the org",             deprecated_at: null}
+  - {id: 35, code: "iam:impersonate",      label: "IAM Impersonate",          scope_level: global, description: "Start an impersonation session (super admin)",           deprecated_at: null}
+  - {id: 36, code: "iam:sso:manage",       label: "IAM SSO: Manage",          scope_level: org, description: "Configure OIDC / SAML providers for the org",              deprecated_at: null}
+  - {id: 37, code: "iam:scim:manage",      label: "IAM SCIM: Manage",         scope_level: org, description: "Manage SCIM provisioning tokens",           deprecated_at: null}
+  - {id: 38, code: "iam:security:manage",  label: "IAM Security: Manage",     scope_level: org, description: "Manage MFA policy, IP allowlist, TOS",      deprecated_at: null}
+
+  # ─── Vault (feature 02) ─────────────────────────────────────────────
+  - {id: 50, code: "vault:read",    label: "Vault: Read",    scope_level: org, description: "Read secret metadata (not plaintext values)",      deprecated_at: null}
+  - {id: 51, code: "vault:reveal",  label: "Vault: Reveal",  scope_level: org, description: "Reveal secret plaintext via reveal-once flow",      deprecated_at: null}
+  - {id: 52, code: "vault:write",   label: "Vault: Write",   scope_level: org, description: "Create / update / rotate secrets",                  deprecated_at: null}
+  - {id: 53, code: "vault:delete",  label: "Vault: Delete",  scope_level: org, description: "Soft-delete secrets",                               deprecated_at: null}
+  - {id: 54, code: "vault:admin",   label: "Vault: Admin",   scope_level: org, description: "Rotate root key; manage vault configuration",       deprecated_at: null}
+
+  # ─── Audit (feature 04) ─────────────────────────────────────────────
+  - {id: 60, code: "audit:read",    label: "Audit: Read",    scope_level: org,    description: "Query audit events within the org",             deprecated_at: null}
+  - {id: 61, code: "audit:read:all", label: "Audit: Read All", scope_level: global, description: "Query audit events across all orgs",          deprecated_at: null}
+  - {id: 62, code: "audit:export",  label: "Audit: Export",  scope_level: org,    description: "Export audit events (CSV / SIEM)",              deprecated_at: null}
+  - {id: 63, code: "audit:siem:manage", label: "Audit: SIEM Manage", scope_level: org, description: "Configure SIEM export destinations",       deprecated_at: null}
+
+  # ─── Monitoring (feature 05) ────────────────────────────────────────
+  - {id: 70, code: "monitoring:read",     label: "Monitoring: Read",     scope_level: org, description: "Query logs / metrics / traces",           deprecated_at: null}
+  - {id: 71, code: "monitoring:write",    label: "Monitoring: Write",    scope_level: org, description: "Create dashboards, saved queries",        deprecated_at: null}
+  - {id: 72, code: "monitoring:alerts:manage", label: "Monitoring: Alerts", scope_level: org, description: "Create / edit / silence alert rules", deprecated_at: null}
+  - {id: 73, code: "monitoring:ingest",   label: "Monitoring: Ingest",   scope_level: org, description: "Send telemetry into the tenant (SDK)",    deprecated_at: null}
+
+  # ─── Notify (feature 06) ────────────────────────────────────────────
+  - {id: 80, code: "notify:send",          label: "Notify: Send",       scope_level: org, description: "Send transactional notifications",        deprecated_at: null}
+  - {id: 81, code: "notify:templates:read",  label: "Notify Templates: Read", scope_level: org, description: "Read notification templates",      deprecated_at: null}
+  - {id: 82, code: "notify:templates:write", label: "Notify Templates: Write", scope_level: org, description: "Create / edit notification templates", deprecated_at: null}
+  - {id: 83, code: "notify:campaigns:manage", label: "Notify: Campaigns", scope_level: org, description: "Create and run notification campaigns",  deprecated_at: null}
+  - {id: 84, code: "notify:suppressions:manage", label: "Notify: Suppressions", scope_level: org, description: "Manage suppression / bounce list", deprecated_at: null}
