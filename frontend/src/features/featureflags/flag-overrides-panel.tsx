@@ -20,6 +20,7 @@ import {
   Table,
   Textarea,
 } from "@/components/ui";
+// Select is kept — still used by the Create Override modal for env + entity type pickers.
 import {
   useCreateOverride,
   useDeleteOverride,
@@ -63,19 +64,34 @@ export function FlagOverridesPanel({ flag }: { flag: Flag }) {
   return (
     <>
       <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-zinc-500">Environment:</span>
-          <Select
-            value={env}
-            onChange={(e) => setEnv(e.target.value as FlagEnvironment)}
-            className="w-40"
-          >
-            {ENVS.map((e) => (
-              <option key={e} value={e}>
+          {ENVS.map((e) => {
+            const active = env === e;
+            const tone = e === "dev"
+              ? "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+              : e === "staging"
+              ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+              : e === "prod"
+              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+              : "border-purple-300 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-900/30 dark:text-purple-300";
+            return (
+              <button
+                key={e}
+                type="button"
+                onClick={() => setEnv(e)}
+                className={
+                  "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium transition " +
+                  (active
+                    ? tone
+                    : "border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900")
+                }
+                data-testid={`override-env-${e}`}
+              >
                 {e}
-              </option>
-            ))}
-          </Select>
+              </button>
+            );
+          })}
         </div>
         <Button onClick={() => setOpenCreate(true)}>+ Add override</Button>
       </div>

@@ -37,6 +37,7 @@ export const FEATURES: FeatureNav[] = [
       { href: "/iam/groups", label: "Groups", testId: "nav-groups" },
       { href: "/iam/applications", label: "Applications", testId: "nav-applications" },
       { href: "/iam/security/policy", label: "Auth Policy", testId: "nav-iam-policy" },
+      { href: "/iam/security/portal-views", label: "Portal Views", testId: "nav-iam-portal-views" },
     ],
   },
   {
@@ -86,6 +87,7 @@ export const FEATURES: FeatureNav[] = [
     testId: "nav-feature-audit",
     subFeatures: [
       { href: "/audit", label: "Explorer", testId: "nav-audit-explorer" },
+      { href: "/audit/authz", label: "AuthZ Explorer", testId: "nav-audit-authz" },
     ],
   },
   {

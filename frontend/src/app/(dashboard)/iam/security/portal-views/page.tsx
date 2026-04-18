@@ -272,6 +272,37 @@ function ViewCard({
   );
 }
 
+// ─── View card wrapper that computes live grant count ────────────────────────
+
+function ViewCardWithCount({
+  view,
+  roles,
+  expanded,
+  onToggle,
+}: {
+  view: PortalView;
+  roles: Role[];
+  expanded: boolean;
+  onToggle: (id: number) => void;
+}) {
+  // Query each role's view list; count how many have this view.
+  // Tiny N (roles usually 3-20), TanStack dedupes across the whole page.
+  const roleQueries = roles.map((r) => useRoleViews(r.id));
+  const grantCount = roleQueries.reduce(
+    (acc, q) => acc + (q.data?.some((rv) => rv.view_id === view.id) ? 1 : 0),
+    0,
+  );
+  return (
+    <ViewCard
+      view={view}
+      grantCount={grantCount}
+      roles={roles}
+      expanded={expanded}
+      onToggle={onToggle}
+    />
+  );
+}
+
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function PortalViewsPage() {
@@ -359,10 +390,9 @@ export default function PortalViewsPage() {
         {!isLoading && !isError && views.length > 0 && (
           <div className="space-y-2">
             {views.map((view) => (
-              <ViewCard
+              <ViewCardWithCount
                 key={view.id}
                 view={view}
-                grantCount={0} // populated inside expanded panel via per-role queries
                 roles={allRoles}
                 expanded={expandedId === view.id}
                 onToggle={handleToggle}

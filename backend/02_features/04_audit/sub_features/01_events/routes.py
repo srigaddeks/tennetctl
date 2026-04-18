@@ -17,7 +17,7 @@ an org_id, the filter is forced to match — cross-org queries return 403.
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib import import_module
 from typing import Any
 
@@ -64,6 +64,13 @@ AuditOutboxCursorResponse = _outbox_schemas.AuditOutboxCursorResponse
 
 
 router = APIRouter(tags=["audit.events"])
+
+
+def _naive_utc(dt: datetime | None) -> datetime | None:
+    """Strip tz from a datetime — DB column is TIMESTAMP (tz-naive, app-UTC)."""
+    if dt is None or dt.tzinfo is None:
+        return dt
+    return dt.astimezone(timezone.utc).replace(tzinfo=None)
 
 
 def _session_scope(request: Request) -> dict:
@@ -172,8 +179,8 @@ async def list_audit_events_route(
         "org_id": org_id,
         "workspace_id": workspace_id,
         "trace_id": trace_id,
-        "since": since,
-        "until": until,
+        "since": _naive_utc(since),
+        "until": _naive_utc(until),
         "q": q,
     }
     _enforce_org_authz(request, filters)
@@ -260,8 +267,8 @@ async def stats_audit_events_route(
         "org_id": org_id,
         "workspace_id": workspace_id,
         "trace_id": trace_id,
-        "since": since,
-        "until": until,
+        "since": _naive_utc(since),
+        "until": _naive_utc(until),
         "q": q,
     }
     _enforce_org_authz(request, filters)
