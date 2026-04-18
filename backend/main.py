@@ -10,7 +10,7 @@ import logging
 from contextlib import asynccontextmanager
 from importlib import import_module
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 _config = import_module("backend.01_core.config")
@@ -53,6 +53,7 @@ async def lifespan(application: FastAPI):
     # Boot catalog: discover feature manifests, validate, upsert into 01_catalog.
     # See NCP v1 §11 (boot sequence). Failure raises — uvicorn exits.
     report = await _catalog.upsert_all(pool, config.modules)
+    application.state.catalog_report = report
     logger.info(
         "Catalog upsert: %d features, %d sub-features, %d nodes (%d deprecated)",
         report.features_upserted,
@@ -250,6 +251,35 @@ async def lifespan(application: FastAPI):
         )
         logger.info("Role expiry sweeper started.")
 
+    # Catalog hot-reload — watches feature manifests in dev and invalidates
+    # the runner handler cache + re-imports handler modules on change. Gated
+    # on DEBUG to keep prod boot quiet.
+    _hot_reload_task = None
+    if getattr(config, "debug", False):
+        import asyncio as _asyncio_hot
+        _hot_reload = import_module("backend.01_catalog.hot_reload")
+        _hot_reload_task = _asyncio_hot.create_task(
+            _hot_reload.watch_manifests(pool)
+        )
+        logger.info("Catalog hot-reload watcher started (DEBUG=true).")
+
+    # APISIX sync worker — polls flag state and publishes request-path flags
+    # to APISIX (YAML file + optional Admin API). Only runs when featureflags
+    # module is enabled.
+    _apisix_worker_task = None
+    if "featureflags" in config.modules:
+        import asyncio as _asyncio_apisix
+        _apisix_worker_mod = import_module(
+            "backend.02_features.09_featureflags.apisix_worker"
+        )
+        application.state.apisix_sync_status = {}
+        _apisix_worker_task = _asyncio_apisix.create_task(
+            _apisix_worker_mod.run_worker(
+                pool, status_holder=application.state.__dict__
+            )
+        )
+        logger.info("APISIX sync worker started.")
+
     yield
 
     if _gdpr_worker_task is not None:
@@ -274,6 +304,18 @@ async def lifespan(application: FastAPI):
         import asyncio as _asyncio_roles2
         await _asyncio_roles2.gather(_role_expiry_task, return_exceptions=True)
         logger.info("Role expiry sweeper stopped.")
+
+    if _hot_reload_task is not None:
+        _hot_reload_task.cancel()
+        import asyncio as _asyncio_hot2
+        await _asyncio_hot2.gather(_hot_reload_task, return_exceptions=True)
+        logger.info("Catalog hot-reload watcher stopped.")
+
+    if _apisix_worker_task is not None:
+        _apisix_worker_task.cancel()
+        import asyncio as _asyncio_apisix2
+        await _asyncio_apisix2.gather(_apisix_worker_task, return_exceptions=True)
+        logger.info("APISIX sync worker stopped.")
 
     if _notify_worker_task is not None:
         _notify_worker_task.cancel()
@@ -332,10 +374,84 @@ app.add_middleware(
 _middleware.register_middleware(app)
 
 
+_APP_VERSION = "0.2.x"
+
+
+def _nats_url_host(url: str) -> str:
+    """Strip scheme + credentials from a NATS URL."""
+    if "://" in url:
+        url = url.split("://", 1)[1]
+    if "@" in url:
+        url = url.split("@", 1)[1]
+    return url
+
+
 @app.get("/health")
-async def health():
-    """Health check endpoint."""
-    return _response.success({"status": "healthy"})
+async def health(request: Request):
+    """System health — module + infrastructure status for the /system/health admin page."""
+    from datetime import datetime, timezone
+
+    state = request.app.state
+    config = getattr(state, "config", None)
+    pool = getattr(state, "pool", None)
+
+    # Database
+    db_ok = False
+    db_error: str | None = None
+    if pool is not None:
+        try:
+            async with pool.acquire() as conn:
+                val = await conn.fetchval("SELECT 1")
+                db_ok = val == 1
+        except Exception as exc:  # noqa: BLE001
+            db_error = str(exc)[:200]
+
+    # Pool
+    pool_size = -1
+    pool_free = -1
+    if pool is not None:
+        try:
+            pool_size = pool.get_size()
+            pool_free = pool.get_idle_size()
+        except Exception:  # noqa: BLE001
+            pass
+    pool_busy = pool_size - pool_free if pool_size >= 0 and pool_free >= 0 else -1
+
+    # Modules
+    enabled = sorted(list(config.modules)) if config else []
+    available = sorted(MODULE_ROUTERS.keys())
+
+    # Vault
+    vault_enabled = "vault" in (config.modules if config else frozenset())
+    vault_ok = hasattr(state, "vault")
+
+    # Catalog
+    cat_report = getattr(state, "catalog_report", None)
+    catalog = {
+        "features": cat_report.features_upserted if cat_report else None,
+        "sub_features": cat_report.sub_features_upserted if cat_report else None,
+        "nodes": cat_report.nodes_upserted if cat_report else None,
+    }
+
+    # NATS
+    nats_url = config.nats_url if config else ""
+    nats = {
+        "configured": bool(nats_url),
+        "url_host": _nats_url_host(nats_url) if nats_url else "",
+    }
+
+    return _response.success({
+        "app": {
+            "version": _APP_VERSION,
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        },
+        "db": {"ok": db_ok, "error": db_error},
+        "pool": {"size": pool_size, "free": pool_free, "busy": pool_busy},
+        "modules": {"enabled": enabled, "available": available},
+        "vault": {"enabled": vault_enabled, "ok": vault_ok},
+        "catalog": catalog,
+        "nats": nats,
+    })
 
 
 _catalog_routes = import_module("backend.01_catalog.routes")

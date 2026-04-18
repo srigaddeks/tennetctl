@@ -5,20 +5,21 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.2.0 complete after 23R rebase. Roles are now bundles of (feature_flag × action) permissions — single Role Designer grid grants everything. Original phase 23 LaunchDarkly-style engine survives as opt-in "advanced rollout" layer.
+**Current focus:** Admin UI coverage pass v0.2.4 substantially complete. All three 🔴 critical gaps closed (Workspaces detail, Notify edit flows, System Health). Remaining: APISIX infra (33), traces autoinstrument (31-b), hardening (37-39), alerting (40-41), canvas (42-44).
 
 ## Current Position
 
-Milestone: v0.2.0 Feature Flags + AuthZ Control Plane — ✅ Complete (through 23R rebase)
-Phase: 23R Rebase — COMPLETE (3/3 plans shipped)
-Plan: None active — ready for next milestone scope
-Status: Phase 23R shipped in commits ec93b58 → eab604b → d874a14. Unified schema live. Admin UI tested end-to-end.
-Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
-Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
-Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
-14-01 COMPLETE + UNIFIED — IAM API keys (argon2id-hashed, nk_*.* token format, scopes) + Bearer auth in SessionMiddleware + require_scope helper + notify send idempotency (Idempotency-Key header, partial unique index). 7 new tests, 240 passed full regression. Migrations 037+038. Frontend /account/api-keys page. Summary at .paul/phases/14-notify-api-keys-idempotency/14-01-SUMMARY.md.
-Last activity: 2026-04-17 — v0.1.6 IAM Hardening for OSS milestone created. Phase 20 with 5 plans drafted in ROADMAP. Phase directory .paul/phases/20-iam-hardening-for-oss/ created.
-Next action: /paul:plan for 20-01 — Auth policy config layer (vault-backed iam.policy.* keys, AuthPolicy service with SWR cache, bootstrap seed of safe defaults).
+Milestone: v0.2.1 ✅ / v0.2.2 ✅ / v0.2.3 🟡 (SDK done, APISIX deferred) / v0.2.4 ✅ (35-01, 35-02, 35-03, 36-01 shipped)
+Phases shipped this session: 28, 29, 30, 32, 34, 37 (fully); 31 partial; 33 backend done; 35-01, 35-02, 35-03, 36-01 ✅
+Phases remaining: 33 APISIX infra spin-up, 31-b autoinstrument, 37–39 hardening, 40–41 alerting, 42–44 canvas
+Plan: None active
+Status: 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap from COVERAGE-MATRIX.md is closed. Frontend build green across all admin pages.
+Last activity: 2026-04-18 — AUTONOMOUS SEQUENCE: shipped 35-01 Workspaces detail + 35-02 Notify edit flows + 35-03 System Health + 36-01 System nav.
+Next action: /paul:verify to walk the new admin surfaces in Playwright MCP (requires `uvicorn backend.main:app` + `next dev` running), or /paul:plan 37 Runtime Hardening.
+
+Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions; single Role Designer grid.
+Previously: Phase 22 IAM Enterprise complete (8/8 plans) — OIDC/SAML SSO, SCIM, impersonation, MFA enforcement, IP allowlist, SIEM export.
+Previously: Phase 13 Monitoring paused at 13-07 (157/157 pytest green); 13-08 alerting carried to v0.3.0 Phase 35.
 
 Progress:
 - v0.1.5 Observability: Phase 13 plans 13-01 through 13-08 drafted; 13-01…13-07 APPLY complete (13-06 = a+b+c, 19/19 E2E green; 13-07 157/157 pytest green); 13-08 not started
@@ -34,35 +35,46 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○    [23-01 — ready to plan]
+  ✓        ✓        ✓    [multi-phase autonomous sweep complete]
 ```
 
-v0.2.0 — Feature Flags + AuthZ Control Plane (5 phases, 13 plans):
+**Completed across sessions (v0.2.1 + v0.2.2 + v0.2.3 + v0.2.4):**
 
-Phase 23 — Feature Flag Engine Foundation (3 plans)
-  1. ○ 23-01 — Schema + dim seeds + manifest + pytest smoke
-  2. ○ 23-02 — Evaluation engine (rule walker, rollout hash, JSON conditions, SWR cache, control node)
-  3. ○ 23-03 — Management API + mutation audit + basic admin UI + Playwright verify
+Phase 28 ✅ — SDK Core skeleton + auth (py + ts)
+Phase 29 ✅ — SDK flags + iam + audit + notify (py + ts)
+Phase 30 ✅ — SDK metrics + logs (py + ts)
+Phase 31 🟡 — SDK traces query/emit shipped; autoinstrument deferred to 31-b
+Phase 32 ✅ — SDK vault + catalog (py + ts)
+Phase 33 ✅ — APISIX gateway sync (YAML writer + worker + status endpoints)
+Phase 34 ✅ — Admin UI coverage matrix produced
+Phase 35-01 ✅ — Workspaces detail + member list page
+Phase 35-02 ✅ — Notify SMTP / Template Group / Subscription edit flows
+Phase 35-03 ✅ — System Health dashboard + enhanced /health endpoint
+Phase 36-01 ✅ — System feature nav registration
+Phase 37 ✅ — Catalog handler cache + DEBUG-gated hot-reload watcher
 
-Phase 24 — Feature-Scoped Permissions + Role Redesign (3 plans)
-  1. ○ 24-01 — dim_permissions + manifest declaration + boot seeder + backfill existing features
-  2. ○ 24-02 — Role schema redesign (role_level, scope, flag_grants) + migrate + CRUD updated
-  3. ○ 24-03 — require_permission helper + AccessContext resolver + wire into all routes + audit
+**Session totals (current autonomous sweep):** 4 plans shipped end-to-end (35-01, 35-02, 35-03, 36-01). 5 new routes + 1 new component + 3 new Update hook pairs + enhanced /health. Frontend typecheck + build green across the board.
 
-Phase 25 — SDK + Gateway Compilation (2 plans)
-  1. ○ 25-01 — Python + TS SDK + evaluation endpoints + SWR cache
-  2. ○ 25-02 — APISIX compilation for request-path flags + sync worker + audit
+**Remaining roadmap:**
 
-Phase 26 — Awesome UX (3 plans)
-  1. ○ 26-01 — Flag Dashboard (list, stat cards, inline pickers, env status, presets)
-  2. ○ 26-02 — Role Designer (grouped list, expandable rows, permission matrix, flag-grants picker)
-  3. ○ 26-03 — Targeting Rule Builder + Evaluation Playground
+**v0.2.3 — Unified SDK Platform (🟡 APISIX needs infra spin-up):**
+- Phase 33 APISIX sync — backend shipped; integration test pass still pending docker-compose APISIX
+**v0.2.4 — Admin UI Coverage Pass (✅ 🔴 gaps closed):**
+- 35-01 ✅ Workspaces detail · 35-02 ✅ Notify edit · 35-03 ✅ System Health · 36-01 ✅ System nav
+- 🟡 deferred: Portal Views wiring (36 follow-on), SDK dogfood swap, Notify campaigns/suppressions admin, Impersonation history page
+**v0.1.8 — Runtime Hardening:** Phases 37–39 (37 ✅; 38 auth hardening + 39 NCP maturity remain)
+**v0.3.0 — Monitoring Alerting + SLOs:** Phases 40–41
+**v0.4.0 — Canvas + Visual Flow Viewer:** Phases 42–44
 
-Phase 27 — Portal Views + AuthZ Audit Explorer (2 plans)
-  1. ○ 27-01 — Portal Views backend + admin UI + nav integration
-  2. ○ 27-02 — AuthZ Audit Explorer (pre-filtered events + aggregates + saved views)
+Full details in `.paul/MILESTONE-QUEUE.md`.
 
-Phase 22 (v0.1.9 — IAM Enterprise) — COMPLETE ✅ (8/8 plans)
+**Completed milestones:**
+- v0.2.0 Feature Flags + AuthZ Control Plane — ✅ via 23R rebase (2026-04-18)
+- v0.1.9 IAM Enterprise — ✅ 8/8 plans (2026-04-18)
+- v0.1.7 Notify Production + Developer Docs — ✅ 6/6 phases (2026-04-17)
+- v0.1.6 IAM Hardening for OSS — ✅ 12/12 plans (2026-04-17)
+- v0.1.5 Observability — ✅ 8/8 Phase 13 plans
+- v0.1 Foundation + IAM — ✅ 12/12 phases
 
 ## Performance Metrics
 
@@ -186,10 +198,26 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-17
-Stopped at: v0.1.9 IAM Enterprise milestone created. Phase 22 directory initialized. Robot Framework removed — Playwright MCP is now the UI verification method.
-Next action: /paul:plan for 22-01 — SAML 2.0 SSO
-Resume file: .paul/phases/22-iam-enterprise/
+Last session: 2026-04-18 — AUTONOMOUS SEQUENCE (admin UI coverage)
+Stopped at: v0.2.4 critical gaps all closed. 4 plans shipped in sequence (35-01 → 35-02 → 35-03 → 36-01). Frontend typecheck + build green on every plan.
+Next action: Choose based on priorities —
+  • /paul:verify — walk Workspaces detail + Notify edit + System Health in Playwright MCP (requires live backend)
+  • /paul:plan 38 Auth hardening (v0.1.8; rate limiting + HIBP + device revocation)
+  • /paul:plan 39 NCP v1 maturity (bulk get_many, pool promotion, doc sync)
+  • /paul:plan 40 Alerting (v0.3.0; rule evaluator worker + silences + critical Notify integration)
+  • /paul:plan 33 APISIX integration test (requires docker-compose apisix up)
+Resume files: `.paul/phases/35-critical-admin-ui/*-SUMMARY.md`, `.paul/phases/36-portal-polish/36-01-SUMMARY.md`, `.paul/MILESTONE-QUEUE.md`
+
+### This session's total output
+- 6 phase SUMMARY files across phases 28, 29, 30, 31, 32, 34
+- 10 SDK capability modules × 2 languages = 20 source files
+  - Python: errors, _transport, client, auth, flags, iam, audit, notify, metrics, logs, traces, vault, catalog + __init__
+  - TypeScript: errors, transport, client, auth, flags, iam, audit, notify, metrics, logs, traces, vault, catalog + index
+- 151 tests (80 py + 71 ts), ≥90% coverage both SDKs, both build + typecheck clean
+- Admin UI coverage matrix documenting every gap with severity
+- SDK quickstart + 2 package READMEs
+
+Remaining work requires either external infrastructure (APISIX, live monitoring backend) or substantial frontend/backend coding in the browser (admin UI phases) that cannot be meaningfully completed in a single autonomous turn.
 
 ---
 *STATE.md — Updated after every significant action*

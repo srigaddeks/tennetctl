@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
@@ -31,12 +31,21 @@ import {
   useSMTPConfigs,
   useSubscriptionList,
   useTemplateGroupList,
+  useUpdateSMTPConfig,
+  useUpdateSubscription,
+  useUpdateTemplateGroup,
 } from "@/features/notify/hooks/use-notify-settings";
 import { useTemplates } from "@/features/notify/hooks/use-templates";
 import type {
   NotifyCategoryCode,
   NotifyChannelCode,
+  NotifySMTPConfig,
+  NotifySMTPConfigUpdate,
+  NotifySubscription,
   NotifySubscriptionRecipientMode,
+  NotifySubscriptionUpdate,
+  NotifyTemplateGroup,
+  NotifyTemplateGroupUpdate,
 } from "@/types/api";
 
 const CHANNEL_OPTIONS: { id: number; code: NotifyChannelCode; label: string }[] = [
@@ -246,6 +255,8 @@ export default function NotifySettingsPage() {
 
   const [smtpOpen, setSmtpOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
+  const [smtpEdit, setSmtpEdit] = useState<NotifySMTPConfig | null>(null);
+  const [groupEdit, setGroupEdit] = useState<NotifyTemplateGroup | null>(null);
 
   const smtpItems = smtp.data?.items ?? [];
   const groupItems = groups.data?.items ?? [];
@@ -295,17 +306,27 @@ export default function NotifySettingsPage() {
                     <TD><span className="text-xs">{s.username}</span></TD>
                     <TD><Badge tone={s.tls ? "emerald" : "zinc"}>{s.tls ? "Yes" : "No"}</Badge></TD>
                     <TD>
-                      <button
-                        type="button"
-                        data-testid={`smtp-delete-${s.id}`}
-                        disabled={deleteSMTP.isPending}
-                        onClick={() => {
-                          if (confirm(`Delete SMTP config "${s.label}"?`)) deleteSMTP.mutate(s.id);
-                        }}
-                        className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          data-testid={`smtp-edit-${s.id}`}
+                          onClick={() => setSmtpEdit(s)}
+                          className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          data-testid={`smtp-delete-${s.id}`}
+                          disabled={deleteSMTP.isPending}
+                          onClick={() => {
+                            if (confirm(`Delete SMTP config "${s.label}"?`)) deleteSMTP.mutate(s.id);
+                          }}
+                          className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </TD>
                   </TR>
                 ))}
@@ -349,17 +370,27 @@ export default function NotifySettingsPage() {
                     <TD><Badge tone="blue">{g.category_label}</Badge></TD>
                     <TD><span className="text-xs">{g.smtp_config_key ?? "—"}</span></TD>
                     <TD>
-                      <button
-                        type="button"
-                        data-testid={`group-delete-${g.id}`}
-                        disabled={deleteGroup.isPending}
-                        onClick={() => {
-                          if (confirm(`Delete group "${g.label}"?`)) deleteGroup.mutate(g.id);
-                        }}
-                        className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          data-testid={`group-edit-${g.id}`}
+                          onClick={() => setGroupEdit(g)}
+                          className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          data-testid={`group-delete-${g.id}`}
+                          disabled={deleteGroup.isPending}
+                          onClick={() => {
+                            if (confirm(`Delete group "${g.label}"?`)) deleteGroup.mutate(g.id);
+                          }}
+                          className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </TD>
                   </TR>
                 ))}
@@ -376,9 +407,255 @@ export default function NotifySettingsPage() {
         <>
           <NewSMTPDialog open={smtpOpen} onClose={() => setSmtpOpen(false)} orgId={orgId} />
           <NewGroupDialog open={groupOpen} onClose={() => setGroupOpen(false)} orgId={orgId} smtpConfigs={smtpItems.map((s) => ({ id: s.id, label: s.label, key: s.key }))} />
+          <EditSMTPDialog
+            open={smtpEdit !== null}
+            onClose={() => setSmtpEdit(null)}
+            orgId={orgId}
+            row={smtpEdit}
+          />
+          <EditGroupDialog
+            open={groupEdit !== null}
+            onClose={() => setGroupEdit(null)}
+            orgId={orgId}
+            row={groupEdit}
+            smtpConfigs={smtpItems.map((s) => ({ id: s.id, label: s.label, key: s.key }))}
+          />
         </>
       )}
     </>
+  );
+}
+
+function EditSMTPDialog({
+  open,
+  onClose,
+  orgId,
+  row,
+}: {
+  open: boolean;
+  onClose: () => void;
+  orgId: string;
+  row: NotifySMTPConfig | null;
+}) {
+  const update = useUpdateSMTPConfig(orgId);
+  const [form, setForm] = useState({
+    label: "",
+    host: "",
+    port: 587,
+    tls: true,
+    username: "",
+    auth_vault_key: "",
+    from_email: "",
+    from_name: "",
+    is_active: true,
+  });
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (row) {
+      setForm({
+        label: row.label,
+        host: row.host,
+        port: row.port,
+        tls: row.tls,
+        username: row.username,
+        auth_vault_key: row.auth_vault_key,
+        from_email: row.from_email ?? "",
+        from_name: row.from_name ?? "",
+        is_active: row.is_active,
+      });
+      setErr(null);
+    }
+  }, [row]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!row) return;
+    setErr(null);
+    const body: NotifySMTPConfigUpdate = {};
+    if (form.label !== row.label) body.label = form.label;
+    if (form.host !== row.host) body.host = form.host;
+    if (Number(form.port) !== row.port) body.port = Number(form.port);
+    if (form.tls !== row.tls) body.tls = form.tls;
+    if (form.username !== row.username) body.username = form.username;
+    if (form.auth_vault_key !== row.auth_vault_key) body.auth_vault_key = form.auth_vault_key;
+    if ((form.from_email || null) !== row.from_email) body.from_email = form.from_email || null;
+    if ((form.from_name || null) !== row.from_name) body.from_name = form.from_name || null;
+    if (form.is_active !== row.is_active) body.is_active = form.is_active;
+    if (Object.keys(body).length === 0) {
+      onClose();
+      return;
+    }
+    update.mutate(
+      { id: row.id, body },
+      {
+        onSuccess: () => onClose(),
+        onError: (e) => setErr(e.message),
+      },
+    );
+  }
+
+  if (!row) return null;
+
+  return (
+    <Modal open={open} onClose={onClose} title={`Edit SMTP "${row.key}"`} size="md">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" data-testid="smtp-edit-form">
+        <Field label="Label" htmlFor="smtp-edit-label">
+          <Input id="smtp-edit-label" value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} />
+        </Field>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="col-span-2">
+            <Field label="Host" htmlFor="smtp-edit-host">
+              <Input id="smtp-edit-host" value={form.host} onChange={(e) => setForm((f) => ({ ...f, host: e.target.value }))} />
+            </Field>
+          </div>
+          <Field label="Port" htmlFor="smtp-edit-port">
+            <Input id="smtp-edit-port" type="number" value={form.port} onChange={(e) => setForm((f) => ({ ...f, port: Number(e.target.value) }))} />
+          </Field>
+        </div>
+        <Field label="Username" htmlFor="smtp-edit-username">
+          <Input id="smtp-edit-username" value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} />
+        </Field>
+        <Field label="Vault auth key" htmlFor="smtp-edit-vault-key">
+          <Input id="smtp-edit-vault-key" value={form.auth_vault_key} onChange={(e) => setForm((f) => ({ ...f, auth_vault_key: e.target.value }))} />
+        </Field>
+        <Field label="From email" htmlFor="smtp-edit-from-email">
+          <Input id="smtp-edit-from-email" type="email" value={form.from_email} onChange={(e) => setForm((f) => ({ ...f, from_email: e.target.value }))} />
+        </Field>
+        <Field label="From name" htmlFor="smtp-edit-from-name">
+          <Input id="smtp-edit-from-name" value={form.from_name} onChange={(e) => setForm((f) => ({ ...f, from_name: e.target.value }))} />
+        </Field>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.tls} onChange={(e) => setForm((f) => ({ ...f, tls: e.target.checked }))} />
+          Use TLS
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.is_active}
+            onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
+            data-testid="smtp-edit-is-active"
+          />
+          Active
+        </label>
+        {err && <p className="text-xs text-red-500">{err}</p>}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button type="submit" disabled={update.isPending} data-testid="smtp-edit-submit">
+            {update.isPending ? "Saving…" : "Save"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function EditGroupDialog({
+  open,
+  onClose,
+  orgId,
+  row,
+  smtpConfigs,
+}: {
+  open: boolean;
+  onClose: () => void;
+  orgId: string;
+  row: NotifyTemplateGroup | null;
+  smtpConfigs: { id: string; label: string; key: string }[];
+}) {
+  const update = useUpdateTemplateGroup(orgId);
+  const [form, setForm] = useState({
+    label: "",
+    category_id: 1,
+    smtp_config_id: "",
+    is_active: true,
+  });
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (row) {
+      setForm({
+        label: row.label,
+        category_id: row.category_id,
+        smtp_config_id: row.smtp_config_id ?? "",
+        is_active: row.is_active,
+      });
+      setErr(null);
+    }
+  }, [row]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!row) return;
+    setErr(null);
+    const body: NotifyTemplateGroupUpdate = {};
+    if (form.label !== row.label) body.label = form.label;
+    if (form.category_id !== row.category_id) body.category_id = form.category_id;
+    const nextSmtp = form.smtp_config_id || null;
+    if (nextSmtp !== row.smtp_config_id) body.smtp_config_id = nextSmtp;
+    if (form.is_active !== row.is_active) body.is_active = form.is_active;
+    if (Object.keys(body).length === 0) {
+      onClose();
+      return;
+    }
+    update.mutate(
+      { id: row.id, body },
+      {
+        onSuccess: () => onClose(),
+        onError: (e) => setErr(e.message),
+      },
+    );
+  }
+
+  if (!row) return null;
+
+  return (
+    <Modal open={open} onClose={onClose} title={`Edit group "${row.key}"`} size="md">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" data-testid="group-edit-form">
+        <Field label="Label" htmlFor="group-edit-label">
+          <Input id="group-edit-label" value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} />
+        </Field>
+        <Field label="Category" htmlFor="group-edit-category">
+          <Select
+            id="group-edit-category"
+            value={form.category_id}
+            onChange={(e) => setForm((f) => ({ ...f, category_id: Number(e.target.value) }))}
+          >
+            {CATEGORY_OPTIONS.map((c) => (
+              <option key={c.id} value={c.id}>{c.label}</option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="SMTP config" htmlFor="group-edit-smtp">
+          <Select
+            id="group-edit-smtp"
+            value={form.smtp_config_id}
+            onChange={(e) => setForm((f) => ({ ...f, smtp_config_id: e.target.value }))}
+          >
+            <option value="">— none —</option>
+            {smtpConfigs.map((s) => (
+              <option key={s.id} value={s.id}>{s.label} ({s.key})</option>
+            ))}
+          </Select>
+        </Field>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.is_active}
+            onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
+            data-testid="group-edit-is-active"
+          />
+          Active
+        </label>
+        {err && <p className="text-xs text-red-500">{err}</p>}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button type="submit" disabled={update.isPending} data-testid="group-edit-submit">
+            {update.isPending ? "Saving…" : "Save"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
@@ -391,6 +668,7 @@ function SubscriptionsSection({ orgId }: { orgId: string | null }) {
   const del = useDeleteSubscription(orgId);
   const templates = useTemplates(orgId);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editRow, setEditRow] = useState<NotifySubscription | null>(null);
 
   const items = subs.data?.items ?? [];
   const templateLabel = (id: string) =>
@@ -429,7 +707,12 @@ function SubscriptionsSection({ orgId }: { orgId: string | null }) {
           <TBody>
             {items.map((s) => (
               <TR key={s.id} data-testid={`sub-row-${s.id}`}>
-                <TD>{s.name}</TD>
+                <TD>
+                  <span>{s.name}</span>
+                  {!s.is_active && (
+                    <Badge tone="zinc" className="ml-2">inactive</Badge>
+                  )}
+                </TD>
                 <TD><span className="font-mono text-xs">{s.event_key_pattern}</span></TD>
                 <TD><span className="text-xs">{templateLabel(s.template_id)}</span></TD>
                 <TD><Badge tone="blue">{s.channel_code}</Badge></TD>
@@ -442,17 +725,27 @@ function SubscriptionsSection({ orgId }: { orgId: string | null }) {
                   )}
                 </TD>
                 <TD>
-                  <button
-                    type="button"
-                    data-testid={`sub-delete-${s.id}`}
-                    disabled={del.isPending}
-                    onClick={() => {
-                      if (confirm(`Delete subscription "${s.name}"?`)) del.mutate(s.id);
-                    }}
-                    className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      data-testid={`sub-edit-${s.id}`}
+                      onClick={() => setEditRow(s)}
+                      className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      data-testid={`sub-delete-${s.id}`}
+                      disabled={del.isPending}
+                      onClick={() => {
+                        if (confirm(`Delete subscription "${s.name}"?`)) del.mutate(s.id);
+                      }}
+                      className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </TD>
               </TR>
             ))}
@@ -461,14 +754,136 @@ function SubscriptionsSection({ orgId }: { orgId: string | null }) {
       )}
 
       {orgId && (
-        <NewSubscriptionDialog
-          open={dialogOpen}
-          onClose={() => setDialogOpen(false)}
-          orgId={orgId}
-          templates={(templates.data?.items ?? []).map((t) => ({ id: t.id, key: t.key }))}
-        />
+        <>
+          <NewSubscriptionDialog
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            orgId={orgId}
+            templates={(templates.data?.items ?? []).map((t) => ({ id: t.id, key: t.key }))}
+          />
+          <EditSubscriptionDialog
+            open={editRow !== null}
+            onClose={() => setEditRow(null)}
+            orgId={orgId}
+            row={editRow}
+            templates={(templates.data?.items ?? []).map((t) => ({ id: t.id, key: t.key }))}
+          />
+        </>
       )}
     </section>
+  );
+}
+
+function EditSubscriptionDialog({
+  open,
+  onClose,
+  orgId,
+  row,
+  templates,
+}: {
+  open: boolean;
+  onClose: () => void;
+  orgId: string;
+  row: NotifySubscription | null;
+  templates: { id: string; key: string }[];
+}) {
+  const update = useUpdateSubscription(orgId);
+  const [form, setForm] = useState({
+    name: "",
+    event_key_pattern: "",
+    template_id: "",
+    channel_id: 1,
+    is_active: true,
+  });
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (row) {
+      setForm({
+        name: row.name,
+        event_key_pattern: row.event_key_pattern,
+        template_id: row.template_id,
+        channel_id: row.channel_id,
+        is_active: row.is_active,
+      });
+      setErr(null);
+    }
+  }, [row]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!row) return;
+    setErr(null);
+    const body: NotifySubscriptionUpdate = {};
+    if (form.name !== row.name) body.name = form.name;
+    if (form.event_key_pattern !== row.event_key_pattern) body.event_key_pattern = form.event_key_pattern;
+    if (form.template_id !== row.template_id) body.template_id = form.template_id;
+    if (form.channel_id !== row.channel_id) body.channel_id = form.channel_id;
+    if (form.is_active !== row.is_active) body.is_active = form.is_active;
+    if (Object.keys(body).length === 0) {
+      onClose();
+      return;
+    }
+    update.mutate(
+      { id: row.id, body },
+      {
+        onSuccess: () => onClose(),
+        onError: (e) => setErr(e.message),
+      },
+    );
+  }
+
+  if (!row) return null;
+
+  return (
+    <Modal open={open} onClose={onClose} title={`Edit "${row.name}"`} size="md">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" data-testid="sub-edit-form">
+        <Field label="Name" htmlFor="sub-edit-name">
+          <Input id="sub-edit-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+        </Field>
+        <Field label="Event key pattern" htmlFor="sub-edit-event">
+          <Input id="sub-edit-event" value={form.event_key_pattern} onChange={(e) => setForm((f) => ({ ...f, event_key_pattern: e.target.value }))} />
+        </Field>
+        <Field label="Template" htmlFor="sub-edit-template">
+          <Select
+            id="sub-edit-template"
+            value={form.template_id}
+            onChange={(e) => setForm((f) => ({ ...f, template_id: e.target.value }))}
+          >
+            {templates.map((t) => (
+              <option key={t.id} value={t.id}>{t.key}</option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Channel" htmlFor="sub-edit-channel">
+          <Select
+            id="sub-edit-channel"
+            value={form.channel_id}
+            onChange={(e) => setForm((f) => ({ ...f, channel_id: Number(e.target.value) }))}
+          >
+            {CHANNEL_OPTIONS.filter((c) => c.id !== 3).map((c) => (
+              <option key={c.id} value={c.id}>{c.label}</option>
+            ))}
+          </Select>
+        </Field>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.is_active}
+            onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
+            data-testid="sub-edit-is-active"
+          />
+          Active
+        </label>
+        {err && <p className="text-xs text-red-500">{err}</p>}
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button type="submit" disabled={update.isPending} data-testid="sub-edit-submit">
+            {update.isPending ? "Saving…" : "Save"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 

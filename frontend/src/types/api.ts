@@ -1085,6 +1085,18 @@ export type NotifySMTPConfigCreate = {
   from_name?: string | null;
 };
 
+export type NotifySMTPConfigUpdate = {
+  label?: string;
+  host?: string;
+  port?: number;
+  tls?: boolean;
+  username?: string;
+  auth_vault_key?: string;
+  from_email?: string | null;
+  from_name?: string | null;
+  is_active?: boolean;
+};
+
 // ─── Notify: Subscriptions ──────────────────────────────────────
 
 export type NotifySubscriptionRecipientMode = "actor" | "users" | "roles";
@@ -1115,6 +1127,14 @@ export type NotifySubscriptionCreate = {
   recipient_filter?: Record<string, unknown>;
 };
 
+export type NotifySubscriptionUpdate = {
+  name?: string;
+  event_key_pattern?: string;
+  template_id?: string;
+  channel_id?: number;
+  is_active?: boolean;
+};
+
 export type NotifySubscriptionListResponse = {
   items: NotifySubscription[];
   total: number;
@@ -1126,6 +1146,13 @@ export type NotifyTemplateGroupCreate = {
   label: string;
   category_id: number;
   smtp_config_id?: string | null;
+};
+
+export type NotifyTemplateGroupUpdate = {
+  label?: string;
+  category_id?: number;
+  smtp_config_id?: string | null;
+  is_active?: boolean;
 };
 
 // ─── Notify: Deliveries ──────────────────────────────────────────
@@ -1165,6 +1192,22 @@ export type NotifyTemplateAnalytics = {
   by_status: Record<string, number>;
   by_event_type: Record<string, number>;
   total_deliveries: number;
+};
+
+// ─── System health ───────────────────────────────────────────────
+
+export type SystemHealthReport = {
+  app: { version: string; checked_at: string };
+  db: { ok: boolean; error: string | null };
+  pool: { size: number; free: number; busy: number };
+  modules: { enabled: string[]; available: string[] };
+  vault: { enabled: boolean; ok: boolean };
+  catalog: {
+    features: number | null;
+    sub_features: number | null;
+    nodes: number | null;
+  };
+  nats: { configured: boolean; url_host: string };
 };
 
 // ─── IAM: API Keys ───────────────────────────────────────────────

@@ -126,6 +126,16 @@ export const FEATURES: FeatureNav[] = [
       { href: "/nodes", label: "All nodes", testId: "nav-nodes-all" },
     ],
   },
+  {
+    key: "system",
+    label: "System",
+    description: "Platform operations: module status, pool depth, worker lag, migration history.",
+    basePath: "/system",
+    testId: "nav-feature-system",
+    subFeatures: [
+      { href: "/system/health", label: "Health", testId: "nav-system-health" },
+    ],
+  },
 ];
 
 export function activeFeature(pathname: string): FeatureNav {

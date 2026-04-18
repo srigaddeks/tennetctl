@@ -13,12 +13,15 @@ import type {
   NotifySMTPConfig,
   NotifySMTPConfigCreate,
   NotifySMTPConfigListResponse,
+  NotifySMTPConfigUpdate,
   NotifySubscription,
   NotifySubscriptionCreate,
   NotifySubscriptionListResponse,
+  NotifySubscriptionUpdate,
   NotifyTemplateGroup,
   NotifyTemplateGroupCreate,
   NotifyTemplateGroupListResponse,
+  NotifyTemplateGroupUpdate,
 } from "@/types/api";
 
 const smtpQk = {
@@ -76,6 +79,26 @@ export function useDeleteSMTPConfig(
   });
 }
 
+export function useUpdateSMTPConfig(
+  orgId: string | null,
+): UseMutationResult<
+  NotifySMTPConfig,
+  Error,
+  { id: string; body: NotifySMTPConfigUpdate }
+> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }) =>
+      apiFetch<NotifySMTPConfig>(`/v1/notify/smtp-configs/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      if (orgId) qc.invalidateQueries({ queryKey: smtpQk.list(orgId) });
+    },
+  });
+}
+
 // ── Template Groups ───────────────────────────────────────────────
 
 export function useCreateTemplateGroup(
@@ -102,6 +125,26 @@ export function useDeleteTemplateGroup(
     mutationFn: async (id) => {
       await apiFetch<void>(`/v1/notify/template-groups/${id}`, { method: "DELETE" });
     },
+    onSuccess: () => {
+      if (orgId) qc.invalidateQueries({ queryKey: groupsQk.list(orgId) });
+    },
+  });
+}
+
+export function useUpdateTemplateGroup(
+  orgId: string | null,
+): UseMutationResult<
+  NotifyTemplateGroup,
+  Error,
+  { id: string; body: NotifyTemplateGroupUpdate }
+> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }) =>
+      apiFetch<NotifyTemplateGroup>(`/v1/notify/template-groups/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      }),
     onSuccess: () => {
       if (orgId) qc.invalidateQueries({ queryKey: groupsQk.list(orgId) });
     },
@@ -168,6 +211,26 @@ export function useDeleteSubscription(
     mutationFn: async (id) => {
       await apiFetch<void>(`/v1/notify/subscriptions/${id}`, { method: "DELETE" });
     },
+    onSuccess: () => {
+      if (orgId) qc.invalidateQueries({ queryKey: subsQk.list(orgId) });
+    },
+  });
+}
+
+export function useUpdateSubscription(
+  orgId: string | null,
+): UseMutationResult<
+  NotifySubscription,
+  Error,
+  { id: string; body: NotifySubscriptionUpdate }
+> {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }) =>
+      apiFetch<NotifySubscription>(`/v1/notify/subscriptions/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      }),
     onSuccess: () => {
       if (orgId) qc.invalidateQueries({ queryKey: subsQk.list(orgId) });
     },
