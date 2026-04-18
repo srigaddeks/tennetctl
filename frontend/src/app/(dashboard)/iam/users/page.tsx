@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -26,9 +27,6 @@ import {
 } from "@/components/ui";
 import {
   useCreateUser,
-  useDeleteUser,
-  useUpdateUser,
-  useUser,
   useUsers,
 } from "@/features/iam-users/hooks/use-users";
 import { ApiClientError } from "@/lib/api";
@@ -40,6 +38,11 @@ const ACCOUNT_TYPES: { value: AccountType; label: string }[] = [
   { value: "google_oauth", label: "Google OAuth" },
   { value: "github_oauth", label: "GitHub OAuth" },
 ];
+
+const ACCOUNT_TYPE_LABEL: Record<AccountType, string> = ACCOUNT_TYPES.reduce(
+  (acc, t) => ({ ...acc, [t.value]: t.label }),
+  {} as Record<AccountType, string>,
+);
 
 const createSchema = z.object({
   account_type: z.enum([
@@ -54,22 +57,24 @@ const createSchema = z.object({
 });
 type CreateForm = z.infer<typeof createSchema>;
 
-const updateSchema = z.object({
-  email: z.email().optional().or(z.literal("")),
-  display_name: z.string().min(1).optional(),
-  avatar_url: z.string().url().optional().or(z.literal("")),
-  is_active: z.boolean().optional(),
-});
-type UpdateForm = z.infer<typeof updateSchema>;
-
 export default function UsersPage() {
+  const router = useRouter();
   const [filterType, setFilterType] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
   const [openCreate, setOpenCreate] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useUsers({
     limit: 100,
     account_type: filterType || undefined,
+  });
+
+  const filtered = (data?.items ?? []).filter((u) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      (u.email ?? "").toLowerCase().includes(q) ||
+      (u.display_name ?? "").toLowerCase().includes(q)
+    );
   });
 
   return (
@@ -88,20 +93,34 @@ export default function UsersPage() {
         }
       />
       <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="users-body">
-        <div className="mb-4 flex items-center gap-2">
-          <label className="text-xs text-zinc-500">Filter by type</label>
-          <Select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-64"
-          >
-            <option value="">All account types</option>
-            {ACCOUNT_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </Select>
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-zinc-500">Type</label>
+            <Select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-56"
+              data-testid="filter-user-type"
+            >
+              <option value="">All account types</option>
+              {ACCOUNT_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Input
+            type="search"
+            placeholder="Search email or name…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-xs"
+            data-testid="search-users"
+          />
+          <span className="ml-auto text-xs text-zinc-500">
+            {filtered.length} {filtered.length === 1 ? "user" : "users"}
+          </span>
         </div>
         {isLoading && <Skeleton className="h-12 w-full" />}
         {isError && (
@@ -110,14 +129,22 @@ export default function UsersPage() {
             retry={() => refetch()}
           />
         )}
-        {data && data.items.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <EmptyState
-            title="No users"
-            description="Create your first user. Email & display_name go into EAV."
-            action={<Button onClick={() => setOpenCreate(true)}>+ New user</Button>}
+            title={data && data.items.length === 0 ? "No users" : "No matches"}
+            description={
+              data && data.items.length === 0
+                ? "Create your first user. Email & display_name go into EAV."
+                : "Try a different filter or search term."
+            }
+            action={
+              data && data.items.length === 0 ? (
+                <Button onClick={() => setOpenCreate(true)}>+ New user</Button>
+              ) : undefined
+            }
           />
         )}
-        {data && data.items.length > 0 && (
+        {filtered.length > 0 && (
           <Table>
             <THead>
               <tr>
@@ -128,8 +155,12 @@ export default function UsersPage() {
               </tr>
             </THead>
             <TBody>
-              {data.items.map((u) => (
-                <TR key={u.id} onClick={() => setSelected(u.id)}>
+              {filtered.map((u) => (
+                <TR
+                  key={u.id}
+                  onClick={() => router.push(`/iam/users/${u.id}`)}
+                  data-testid={`user-row-${u.id}`}
+                >
                   <TD>
                     <div className="flex items-center gap-2.5">
                       {u.avatar_url ? (
@@ -159,7 +190,9 @@ export default function UsersPage() {
                     </span>
                   </TD>
                   <TD>
-                    <Badge tone="blue">{u.account_type}</Badge>
+                    <Badge tone="blue">
+                      {ACCOUNT_TYPE_LABEL[u.account_type] ?? u.account_type}
+                    </Badge>
                   </TD>
                   <TD>
                     <Badge tone={u.is_active ? "emerald" : "zinc"}>
@@ -179,10 +212,6 @@ export default function UsersPage() {
           onClose={() => setOpenCreate(false)}
         />
       )}
-      <UserDetailDrawer
-        userId={selected}
-        onClose={() => setSelected(null)}
-      />
     </>
   );
 }
@@ -195,6 +224,7 @@ function CreateUserDialog({
   onClose: () => void;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
   const create = useCreateUser();
   const form = useForm<CreateForm>({
     resolver: zodResolver(createSchema),
@@ -217,6 +247,7 @@ function CreateUserDialog({
       toast(`Created user ${user.email}`, "success");
       form.reset();
       onClose();
+      router.push(`/iam/users/${user.id}`);
     } catch (err) {
       const msg = err instanceof ApiClientError ? err.message : String(err);
       toast(msg, "error");
@@ -293,147 +324,6 @@ function CreateUserDialog({
           </Button>
         </div>
       </form>
-    </Modal>
-  );
-}
-
-function UserDetailDrawer({
-  userId,
-  onClose,
-}: {
-  userId: string | null;
-  onClose: () => void;
-}) {
-  const { toast } = useToast();
-  const { data: user, isLoading } = useUser(userId);
-  const update = useUpdateUser();
-  const del = useDeleteUser();
-
-  const form = useForm<UpdateForm>({
-    resolver: zodResolver(updateSchema),
-    defaultValues: {
-      email: "",
-      display_name: "",
-      avatar_url: "",
-      is_active: true,
-    },
-  });
-
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        email: user.email ?? "",
-        display_name: user.display_name ?? "",
-        avatar_url: user.avatar_url ?? "",
-        is_active: user.is_active,
-      });
-    }
-  }, [user, form]);
-
-  async function onSubmit(values: UpdateForm) {
-    if (!userId) return;
-    const dirty = form.formState.dirtyFields;
-    const body: UpdateForm = {};
-    if (dirty.email) body.email = values.email;
-    if (dirty.display_name) body.display_name = values.display_name;
-    if (dirty.avatar_url) body.avatar_url = values.avatar_url;
-    if (dirty.is_active) body.is_active = values.is_active;
-    if (Object.keys(body).length === 0) {
-      toast("No changes", "info");
-      return;
-    }
-    try {
-      await update.mutateAsync({ id: userId, body });
-      toast("Saved", "success");
-    } catch (err) {
-      const msg = err instanceof ApiClientError ? err.message : String(err);
-      toast(msg, "error");
-    }
-  }
-
-  async function onDelete() {
-    if (!userId) return;
-    if (!confirm(`Delete user "${user?.email ?? userId}"?`)) return;
-    try {
-      await del.mutateAsync(userId);
-      toast("Deleted", "success");
-      onClose();
-    } catch (err) {
-      const msg = err instanceof ApiClientError ? err.message : String(err);
-      toast(msg, "error");
-    }
-  }
-
-  return (
-    <Modal
-      open={userId !== null}
-      onClose={onClose}
-      title={user?.display_name ?? "User"}
-      description={user?.email ?? undefined}
-    >
-      {isLoading && <p className="text-sm text-zinc-500">Loading…</p>}
-      {user && (
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
-        >
-          <div className="flex items-center gap-3">
-            {user.avatar_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.avatar_url}
-                alt=""
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            )}
-            <div>
-              <Badge tone="blue">{user.account_type}</Badge>
-              <div className="mt-1 text-xs text-zinc-500 font-mono">
-                id: {user.id.slice(0, 8)}…
-              </div>
-            </div>
-          </div>
-          <Field label="Email" error={form.formState.errors.email?.message}>
-            <Input type="email" {...form.register("email")} />
-          </Field>
-          <Field
-            label="Display name"
-            error={form.formState.errors.display_name?.message}
-          >
-            <Input {...form.register("display_name")} />
-          </Field>
-          <Field label="Avatar URL">
-            <Input {...form.register("avatar_url")} />
-          </Field>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" {...form.register("is_active")} />
-            Active
-          </label>
-          <div className="mt-2 flex justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-            <Button
-              variant="danger"
-              type="button"
-              size="sm"
-              onClick={onDelete}
-              loading={del.isPending}
-            >
-              Delete
-            </Button>
-            <div className="flex gap-2">
-              <Button variant="secondary" type="button" onClick={onClose}>
-                Close
-              </Button>
-              <Button
-                type="submit"
-                loading={update.isPending}
-                disabled={!form.formState.isDirty}
-              >
-                Save
-              </Button>
-            </div>
-          </div>
-        </form>
-      )}
     </Modal>
   );
 }

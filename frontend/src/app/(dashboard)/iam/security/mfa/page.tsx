@@ -1,73 +1,119 @@
 "use client";
 
-import { useMfaPolicy, useSetMfaPolicy } from "@/features/iam/hooks/use-mfa-policy";
+import { PageHeader } from "@/components/page-header";
+import { useToast } from "@/components/toast";
+import {
+  Badge,
+  Button,
+  Checkbox,
+  ErrorState,
+  Skeleton,
+} from "@/components/ui";
+import {
+  useMfaPolicy,
+  useSetMfaPolicy,
+} from "@/features/iam-security/hooks/use-mfa";
+import { ApiClientError } from "@/lib/api";
+
+const BREADCRUMBS = [
+  { label: "Identity", href: "/iam/users" },
+  { label: "Security" },
+  { label: "MFA" },
+];
 
 export default function MFAPolicyPage() {
-  const { data: policy, isLoading } = useMfaPolicy();
-  const setMutation = useSetMfaPolicy();
+  const { data: policy, isLoading, isError, error, refetch } = useMfaPolicy();
+  const set = useSetMfaPolicy();
+  const { toast } = useToast();
 
-  async function toggle() {
-    if (!policy) return;
+  async function onToggle(next: boolean) {
     try {
-      await setMutation.mutateAsync(!policy.required);
-    } catch {
-      /* ignore */
+      await set.mutateAsync(next);
+      toast(
+        next ? "MFA is now required for all users" : "MFA is now optional",
+        "success",
+      );
+    } catch (e) {
+      toast(e instanceof ApiClientError ? e.message : String(e), "error");
     }
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold">MFA Enforcement</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Require all org members to enroll in TOTP multi-factor authentication before signing in.
-        </p>
+    <>
+      <PageHeader
+        title="MFA Enforcement"
+        description="Require every member of this org to enroll in TOTP multi-factor authentication before signing in."
+        testId="heading-iam-mfa"
+        breadcrumbs={BREADCRUMBS}
+      />
+      <div
+        className="flex-1 overflow-y-auto px-8 py-6 space-y-6"
+        data-testid="iam-mfa-body"
+      >
+        {isLoading && <Skeleton className="h-24 w-full max-w-xl" />}
+        {isError && (
+          <ErrorState
+            message={error instanceof Error ? error.message : "Load failed"}
+            retry={() => refetch()}
+          />
+        )}
+        {policy && (
+          <>
+            <section className="max-w-xl rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-semibold">
+                    Require MFA for sign-in
+                  </h2>
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {policy.required
+                      ? "All users must enroll in TOTP before they can sign in."
+                      : "MFA is optional — users can enroll but are not required to."}
+                  </p>
+                </div>
+                <Badge tone={policy.required ? "emerald" : "zinc"}>
+                  {policy.required ? "required" : "optional"}
+                </Badge>
+              </div>
+              <div className="mt-4">
+                <Checkbox
+                  id="mfa-required"
+                  label="Enforce TOTP for all members"
+                  hint="Users without an enrolled authenticator will be blocked at sign-in."
+                  checked={policy.required}
+                  disabled={set.isPending}
+                  onChange={(e) => onToggle(e.target.checked)}
+                  data-testid="mfa-required-toggle"
+                />
+              </div>
+            </section>
+
+            <section className="max-w-xl rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
+              <h2 className="text-sm font-semibold">Your TOTP status</h2>
+              <div className="mt-2 flex items-center gap-2">
+                <Badge tone={policy.totp_enrolled ? "emerald" : "amber"}>
+                  {policy.totp_enrolled ? "enrolled" : "not enrolled"}
+                </Badge>
+              </div>
+              {!policy.totp_enrolled && (
+                <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  Go to Account → Security → Authenticator App to enroll a TOTP
+                  device.
+                </p>
+              )}
+              {!policy.totp_enrolled && (
+                <div className="mt-3">
+                  <a href="/account/security">
+                    <Button variant="secondary" size="sm" type="button">
+                      Open account security
+                    </Button>
+                  </a>
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
-
-      {isLoading && <p className="text-sm text-gray-400">Loading…</p>}
-
-      {policy && (
-        <div className="border rounded p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-sm">Require MFA for sign-in</p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                {policy.required
-                  ? "All users must enroll in TOTP before they can sign in."
-                  : "MFA is optional — users can enroll but are not required to."}
-              </p>
-            </div>
-            <button
-              onClick={toggle}
-              disabled={setMutation.isPending}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-                policy.required ? "bg-blue-600" : "bg-gray-200"
-              }`}
-              role="switch"
-              aria-checked={policy.required}
-              data-testid="mfa-required-toggle"
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  policy.required ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
-          </div>
-
-          <div className="border-t pt-3 text-sm">
-            <p className="text-gray-500">Your TOTP status</p>
-            <p className={`font-medium mt-0.5 ${policy.totp_enrolled ? "text-green-700" : "text-amber-600"}`}>
-              {policy.totp_enrolled ? "Enrolled" : "Not enrolled"}
-            </p>
-            {!policy.totp_enrolled && (
-              <p className="text-xs text-gray-400 mt-1">
-                Go to Account → Security → Authenticator App to enroll.
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

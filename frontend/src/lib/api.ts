@@ -26,7 +26,21 @@ export class ApiClientError extends Error {
   }
 }
 
+const AUTH_ROUTES = ["/auth/signin", "/auth/signup", "/auth/forgot-password", "/auth/password-reset", "/auth/magic-link", "/auth/oidc", "/auth/callback", "/setup"];
+
+function redirectToSignin(): void {
+  if (typeof window === "undefined") return;
+  const path = window.location.pathname;
+  if (AUTH_ROUTES.some((p) => path.startsWith(p))) return;
+  const next = encodeURIComponent(path + window.location.search);
+  window.location.href = `/auth/signin?next=${next}`;
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
+  if (res.status === 401) {
+    redirectToSignin();
+    throw new ApiClientError("UNAUTHORIZED", "Session expired", 401);
+  }
   if (res.status === 204) return undefined as T;
   const data: ApiResponse<T> = await res.json();
   if (!data.ok) {
@@ -68,6 +82,10 @@ export async function apiList<T>(
       ...options?.headers,
     },
   });
+  if (res.status === 401) {
+    redirectToSignin();
+    throw new ApiClientError("UNAUTHORIZED", "Session expired", 401);
+  }
   if (res.status === 204) {
     return { items: [], pagination: { total: 0, limit: 0, offset: 0 } };
   }

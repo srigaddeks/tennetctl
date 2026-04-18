@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 
 import { cn } from "@/lib/cn";
 
-type ToastKind = "success" | "error" | "info";
+type ToastKind = "success" | "error" | "info" | "warning";
 type Toast = { id: string; kind: ToastKind; message: string };
 
 type ToastContextValue = {
@@ -49,7 +49,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               t.kind === "error" &&
                 "border-red-200 bg-red-50/95 text-red-900 dark:border-red-800/50 dark:bg-red-950/95 dark:text-red-100",
               t.kind === "info" &&
-                "border-zinc-200 bg-white/95 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/95 dark:text-zinc-50"
+                "border-zinc-200 bg-white/95 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/95 dark:text-zinc-50",
+              t.kind === "warning" &&
+                "border-amber-200 bg-amber-50/95 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/95 dark:text-amber-100"
             )}
           >
             <div className="flex items-start gap-2">
@@ -57,6 +59,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {t.kind === "success" && "✓"}
                 {t.kind === "error" && "✕"}
                 {t.kind === "info" && "ℹ"}
+                {t.kind === "warning" && "!"}
               </span>
               <span className="flex-1 leading-snug">{t.message}</span>
             </div>

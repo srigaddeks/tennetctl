@@ -193,6 +193,45 @@ export function Field({
   );
 }
 
+// ─── Checkbox ────────────────────────────────────────────────────
+
+export const Checkbox = forwardRef<
+  HTMLInputElement,
+  Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & { label?: string; hint?: string }
+>(function Checkbox({ className, label, hint, id, ...rest }, ref) {
+  const el = (
+    <input
+      ref={ref}
+      type="checkbox"
+      id={id}
+      className={cn(
+        "h-4 w-4 rounded border-zinc-300 text-zinc-900 transition",
+        "focus:ring-2 focus:ring-zinc-900 focus:ring-offset-1",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+        "dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:ring-zinc-100",
+        className
+      )}
+      {...rest}
+    />
+  );
+  if (!label) return el;
+  return (
+    <label htmlFor={id} className="flex items-start gap-2 text-sm cursor-pointer">
+      {el}
+      <span className="flex flex-col gap-0.5">
+        <span className="font-medium text-zinc-800 dark:text-zinc-200">
+          {label}
+        </span>
+        {hint && (
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            {hint}
+          </span>
+        )}
+      </span>
+    </label>
+  );
+});
+
 // ─── Badge ────────────────────────────────────────────────────────
 
 type BadgeTone =

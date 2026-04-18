@@ -115,6 +115,11 @@ export default function UserDetailPage() {
         title={user.display_name ?? user.id}
         description={user.email ?? "No email"}
         testId="heading-user-detail"
+        breadcrumbs={[
+          { label: "Identity", href: "/iam/users" },
+          { label: "Users", href: "/iam/users" },
+          { label: user.display_name ?? user.email ?? user.id.slice(0, 8) },
+        ]}
       />
 
       <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8">

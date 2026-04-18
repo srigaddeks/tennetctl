@@ -2,12 +2,39 @@
 
 import { useState } from "react";
 
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Modal } from "@/components/modal";
+import { PageHeader } from "@/components/page-header";
+import { useToast } from "@/components/toast";
+import {
+  Badge,
+  Button,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  Skeleton,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+  Textarea,
+} from "@/components/ui";
 import {
   useCreateSamlProvider,
   useDeleteSamlProvider,
   useSamlProviders,
-} from "@/features/iam/hooks/use-saml-providers";
-import type { SamlProviderCreateBody } from "@/types/api";
+} from "@/features/iam-security/hooks/use-saml";
+import { ApiClientError } from "@/lib/api";
+import type { SamlProvider, SamlProviderCreateBody } from "@/types/api";
+
+const BREADCRUMBS = [
+  { label: "Identity", href: "/iam/users" },
+  { label: "Security" },
+  { label: "SAML" },
+];
 
 const EMPTY_FORM: SamlProviderCreateBody = {
   idp_entity_id: "",
@@ -18,169 +45,263 @@ const EMPTY_FORM: SamlProviderCreateBody = {
 };
 
 export default function SAMLPage() {
-  const { data: providers = [], isLoading } = useSamlProviders();
-  const createMutation = useCreateSamlProvider();
-  const deleteMutation = useDeleteSamlProvider();
+  const { data: providers = [], isLoading, isError, error, refetch } =
+    useSamlProviders();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<SamlProvider | null>(null);
 
-  const [showForm, setShowForm] = useState(false);
+  return (
+    <>
+      <PageHeader
+        title="SAML 2.0 SSO"
+        description="SAML 2.0 Identity Providers for SP-initiated SSO."
+        testId="heading-iam-saml"
+        breadcrumbs={BREADCRUMBS}
+        actions={
+          <Button
+            data-testid="btn-new-saml"
+            onClick={() => setCreateOpen(true)}
+          >
+            + Add provider
+          </Button>
+        }
+      />
+      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="iam-saml-body">
+        {isLoading && (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+        )}
+        {isError && (
+          <ErrorState
+            message={error instanceof Error ? error.message : "Load failed"}
+            retry={() => refetch()}
+          />
+        )}
+        {!isLoading && !isError && providers.length === 0 && (
+          <EmptyState
+            title="No SAML providers"
+            description="Add an IdP to accept SAML-signed authentication assertions."
+            action={
+              <Button onClick={() => setCreateOpen(true)}>
+                + Add provider
+              </Button>
+            }
+          />
+        )}
+        {providers.length > 0 && (
+          <Table>
+            <THead>
+              <tr>
+                <TH>IdP Entity ID</TH>
+                <TH>SSO URL</TH>
+                <TH>Status</TH>
+                <TH className="text-right">Actions</TH>
+              </tr>
+            </THead>
+            <TBody>
+              {providers.map((p) => (
+                <TR key={p.id} data-testid={`saml-row-${p.id}`}>
+                  <TD>
+                    <span className="font-mono text-xs">{p.idp_entity_id}</span>
+                  </TD>
+                  <TD>
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                      {p.sso_url}
+                    </span>
+                  </TD>
+                  <TD>
+                    <Badge tone={p.enabled ? "emerald" : "zinc"}>
+                      {p.enabled ? "enabled" : "disabled"}
+                    </Badge>
+                  </TD>
+                  <TD className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <a
+                        href={`/v1/auth/saml/${p.org_slug}/metadata`}
+                        target="_blank"
+                        rel="noreferrer"
+                        data-testid={`saml-metadata-${p.id}`}
+                      >
+                        <Button variant="ghost" size="sm" type="button">
+                          Metadata
+                        </Button>
+                      </a>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        data-testid={`saml-delete-${p.id}`}
+                        onClick={() => setDeleteTarget(p)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TD>
+                </TR>
+              ))}
+            </TBody>
+          </Table>
+        )}
+      </div>
+
+      <CreateSamlDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+      />
+      <DeleteSamlDialog
+        provider={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+      />
+    </>
+  );
+}
+
+function CreateSamlDialog({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { toast } = useToast();
+  const create = useCreateSamlProvider();
   const [form, setForm] = useState<SamlProviderCreateBody>(EMPTY_FORM);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
-  function handleInput(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
+  const [err, setErr] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setFormError(null);
+    setErr(null);
     try {
-      await createMutation.mutateAsync(form);
-      setShowForm(false);
+      await create.mutateAsync(form);
+      toast("SAML provider added", "success");
       setForm(EMPTY_FORM);
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to create provider.");
-    }
-  }
-
-  async function handleDelete(id: string) {
-    try {
-      await deleteMutation.mutateAsync(id);
-    } catch {
-      // silent
-    } finally {
-      setConfirmDeleteId(null);
+      onClose();
+    } catch (e) {
+      const msg = e instanceof ApiClientError ? e.message : String(e);
+      setErr(msg);
+      toast(msg, "error");
     }
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-1">SAML 2.0 SSO</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        Configure SAML 2.0 Identity Providers for SP-initiated SSO.
-      </p>
-
-      {isLoading ? (
-        <p className="text-sm text-gray-400">Loading…</p>
-      ) : providers.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
-          No SAML providers configured yet. Add one below.
-        </div>
-      ) : (
-        <table className="w-full text-sm border rounded-lg overflow-hidden mb-6">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="text-left px-4 py-2">IdP Entity ID</th>
-              <th className="text-left px-4 py-2">SSO URL</th>
-              <th className="text-left px-4 py-2">Status</th>
-              <th className="text-left px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {providers.map((p) => (
-              <tr key={p.id} className="border-t">
-                <td className="px-4 py-2 font-mono text-xs truncate max-w-xs">{p.idp_entity_id}</td>
-                <td className="px-4 py-2 text-gray-600 truncate max-w-xs">{p.sso_url}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      p.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {p.enabled ? "Enabled" : "Disabled"}
-                  </span>
-                </td>
-                <td className="px-4 py-2 flex gap-2">
-                  <a
-                    href={`/v1/auth/saml/${p.org_slug}/metadata`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:underline text-xs"
-                  >
-                    Metadata
-                  </a>
-                  {confirmDeleteId === p.id ? (
-                    <>
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        className="text-red-600 text-xs hover:underline"
-                      >
-                        Confirm
-                      </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(null)}
-                        className="text-gray-500 text-xs hover:underline"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => setConfirmDeleteId(p.id)}
-                      className="text-red-500 text-xs hover:underline"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      <button
-        onClick={() => setShowForm((v) => !v)}
-        className="mb-4 text-sm font-medium text-blue-600 hover:underline"
+    <Modal open={open} onClose={onClose} title="Add SAML provider" size="md">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4"
+        data-testid="create-saml-form"
       >
-        {showForm ? "Cancel" : "+ Add Provider"}
-      </button>
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="border rounded-lg p-6 bg-gray-50 space-y-4">
-          <h2 className="text-base font-semibold">Add SAML Provider</h2>
-          {formError && <p className="text-sm text-red-600">{formError}</p>}
-          {[
-            { label: "IdP Entity ID", name: "idp_entity_id", placeholder: "https://idp.example.com/saml2/metadata" },
-            { label: "IdP SSO URL", name: "sso_url", placeholder: "https://idp.example.com/saml2/sso" },
-            { label: "SP Entity ID", name: "sp_entity_id", placeholder: "https://tennetctl.example.com" },
-          ].map(({ label, name, placeholder }) => (
-            <div key={name}>
-              <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
-              <input
-                name={name}
-                value={(form as unknown as Record<string, string>)[name] ?? ""}
-                onChange={handleInput}
-                placeholder={placeholder}
-                required
-                className="w-full border rounded px-3 py-1.5 text-sm"
-              />
-            </div>
-          ))}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              IdP x509 Certificate (PEM)
-            </label>
-            <textarea
-              name="x509_cert"
-              value={form.x509_cert}
-              onChange={handleInput}
-              rows={6}
-              required
-              placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
-              className="w-full border rounded px-3 py-1.5 text-sm font-mono"
-            />
-          </div>
-          <button
+        <Field label="IdP Entity ID" htmlFor="saml-idp-entity" required>
+          <Input
+            id="saml-idp-entity"
+            value={form.idp_entity_id}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, idp_entity_id: e.target.value }))
+            }
+            placeholder="https://idp.example.com/saml2/metadata"
+            autoFocus
+            required
+            data-testid="create-saml-idp-entity"
+          />
+        </Field>
+        <Field label="IdP SSO URL" htmlFor="saml-sso-url" required>
+          <Input
+            id="saml-sso-url"
+            value={form.sso_url}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, sso_url: e.target.value }))
+            }
+            placeholder="https://idp.example.com/saml2/sso"
+            required
+            data-testid="create-saml-sso-url"
+          />
+        </Field>
+        <Field label="SP Entity ID" htmlFor="saml-sp-entity" required>
+          <Input
+            id="saml-sp-entity"
+            value={form.sp_entity_id}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, sp_entity_id: e.target.value }))
+            }
+            placeholder="https://tennetctl.example.com"
+            required
+            data-testid="create-saml-sp-entity"
+          />
+        </Field>
+        <Field
+          label="IdP x509 Certificate (PEM)"
+          htmlFor="saml-cert"
+          required
+        >
+          <Textarea
+            id="saml-cert"
+            value={form.x509_cert}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, x509_cert: e.target.value }))
+            }
+            rows={6}
+            required
+            placeholder={"-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"}
+            className="font-mono"
+            data-testid="create-saml-cert"
+          />
+        </Field>
+        {err && <p className="text-xs text-red-600">{err}</p>}
+        <div className="mt-2 flex justify-end gap-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
             type="submit"
-            disabled={createMutation.isPending}
-            className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            loading={create.isPending}
+            data-testid="create-saml-submit"
           >
-            {createMutation.isPending ? "Saving…" : "Save Provider"}
-          </button>
-        </form>
-      )}
-    </div>
+            Save provider
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function DeleteSamlDialog({
+  provider,
+  onClose,
+}: {
+  provider: SamlProvider | null;
+  onClose: () => void;
+}) {
+  const { toast } = useToast();
+  const del = useDeleteSamlProvider();
+
+  async function onConfirm() {
+    if (!provider) return;
+    try {
+      await del.mutateAsync(provider.id);
+      toast("SAML provider deleted", "success");
+      onClose();
+    } catch (e) {
+      toast(e instanceof ApiClientError ? e.message : String(e), "error");
+    }
+  }
+
+  return (
+    <ConfirmDialog
+      open={provider !== null}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title="Delete SAML provider"
+      description={
+        provider
+          ? `This removes the IdP "${provider.idp_entity_id}". Users authenticating through it will need to re-enrol.`
+          : undefined
+      }
+      confirmLabel="Delete"
+      tone="danger"
+      loading={del.isPending}
+      testId="confirm-delete-saml"
+    />
   );
 }

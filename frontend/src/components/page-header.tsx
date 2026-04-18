@@ -1,17 +1,24 @@
+import { Breadcrumb, type BreadcrumbItem } from "@/components/breadcrumb";
+
 export function PageHeader({
   title,
   description,
   actions,
   testId,
+  breadcrumbs,
 }: {
   title: string;
   description?: string;
   actions?: React.ReactNode;
   testId?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }) {
   return (
     <div className="flex flex-col gap-3 border-b border-zinc-200 bg-white px-8 py-6 sm:flex-row sm:items-start sm:justify-between dark:border-zinc-800 dark:bg-zinc-950">
-      <div>
+      <div className="flex flex-col gap-1.5">
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <Breadcrumb items={breadcrumbs} />
+        )}
         <h1
           className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
           data-testid={testId}

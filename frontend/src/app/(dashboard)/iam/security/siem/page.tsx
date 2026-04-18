@@ -2,122 +2,300 @@
 
 import { useState } from "react";
 
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Modal } from "@/components/modal";
+import { PageHeader } from "@/components/page-header";
+import { useToast } from "@/components/toast";
+import {
+  Badge,
+  Button,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  Select,
+  Skeleton,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui";
+import {
+  useCreateSiemDestination,
+  useDeleteSiemDestination,
+  useSiemDestinations,
+} from "@/features/iam-security/hooks/use-siem";
+import { ApiClientError } from "@/lib/api";
 import type { SiemDestination } from "@/types/api";
 
-const BASE = "/api/v1/iam/siem-destinations";
-const KINDS = ["webhook", "splunk_hec", "datadog", "s3"] as const;
+const BREADCRUMBS = [
+  { label: "Identity", href: "/iam/users" },
+  { label: "Security" },
+  { label: "SIEM export" },
+];
 
-function useSiemDestinations(orgId: string) {
-  const [destinations, setDestinations] = useState<SiemDestination[]>([]);
-  const [loading, setLoading] = useState(false);
+type DestKind = SiemDestination["kind"];
 
-  async function load() {
-    setLoading(true);
-    try {
-      const res = await fetch(BASE, { headers: { "x-org-id": orgId } });
-      const data = await res.json();
-      if (data.ok) setDestinations(data.data);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return { destinations, loading, load };
-}
-
-const PLACEHOLDER_ORG = "default";
+const KIND_OPTIONS: { value: DestKind; label: string; help: string }[] = [
+  { value: "webhook", label: "Webhook", help: "POSTs JSON to your HTTPS endpoint." },
+  { value: "splunk_hec", label: "Splunk HEC", help: "Not yet wired — webhook-only scope for this release." },
+  { value: "datadog", label: "Datadog", help: "Not yet wired — webhook-only scope for this release." },
+  { value: "s3", label: "Amazon S3", help: "Not yet wired — webhook-only scope for this release." },
+];
 
 export default function SiemPage() {
-  const orgId = PLACEHOLDER_ORG;
-  const [kind, setKind] = useState<(typeof KINDS)[number]>("webhook");
+  const { data: destinations = [], isLoading, isError, error, refetch } =
+    useSiemDestinations();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<SiemDestination | null>(
+    null,
+  );
+
+  return (
+    <>
+      <PageHeader
+        title="SIEM Export"
+        description="Stream audit events to an external SIEM. Only the webhook destination is wired today; other kinds are reserved for future releases."
+        testId="heading-iam-siem"
+        breadcrumbs={BREADCRUMBS}
+        actions={
+          <Button
+            data-testid="btn-new-siem"
+            onClick={() => setCreateOpen(true)}
+          >
+            + Add destination
+          </Button>
+        }
+      />
+      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="iam-siem-body">
+        {isLoading && (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+        )}
+        {isError && (
+          <ErrorState
+            message={error instanceof Error ? error.message : "Load failed"}
+            retry={() => refetch()}
+          />
+        )}
+        {!isLoading && !isError && destinations.length === 0 && (
+          <EmptyState
+            title="No SIEM destinations"
+            description="Add a webhook URL to start streaming audit events to an external system."
+            action={
+              <Button onClick={() => setCreateOpen(true)}>
+                + Add destination
+              </Button>
+            }
+          />
+        )}
+        {destinations.length > 0 && (
+          <Table>
+            <THead>
+              <tr>
+                <TH>Kind</TH>
+                <TH>Label</TH>
+                <TH>Status</TH>
+                <TH>Last exported</TH>
+                <TH className="text-right">Actions</TH>
+              </tr>
+            </THead>
+            <TBody>
+              {destinations.map((d) => (
+                <TR key={d.id} data-testid={`siem-row-${d.id}`}>
+                  <TD>
+                    <Badge tone="blue">{d.kind}</Badge>
+                  </TD>
+                  <TD>
+                    {d.label ? (
+                      <span>{d.label}</span>
+                    ) : (
+                      <span className="text-zinc-400">—</span>
+                    )}
+                  </TD>
+                  <TD>
+                    {d.failure_count > 0 ? (
+                      <Badge tone="red">{d.failure_count} failures</Badge>
+                    ) : (
+                      <Badge tone="emerald">healthy</Badge>
+                    )}
+                  </TD>
+                  <TD>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {d.last_exported_at
+                        ? new Date(d.last_exported_at).toLocaleString()
+                        : "—"}
+                    </span>
+                  </TD>
+                  <TD className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      data-testid={`siem-delete-${d.id}`}
+                      onClick={() => setDeleteTarget(d)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    >
+                      Remove
+                    </Button>
+                  </TD>
+                </TR>
+              ))}
+            </TBody>
+          </Table>
+        )}
+      </div>
+
+      <CreateDestinationDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+      />
+      <RemoveDestinationDialog
+        destination={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+      />
+    </>
+  );
+}
+
+function CreateDestinationDialog({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { toast } = useToast();
+  const create = useCreateSiemDestination();
+  const [kind, setKind] = useState<DestKind>("webhook");
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [destinations, setDestinations] = useState<SiemDestination[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  async function fetchAll() {
-    const res = await fetch(BASE, { headers: { "x-org-id": orgId } });
-    const data = await res.json();
-    if (data.ok) {
-      setDestinations(data.data);
-      setLoaded(true);
-    }
-  }
+  const kindHelp = KIND_OPTIONS.find((o) => o.value === kind)?.help;
 
-  async function handleAdd(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    const body = { kind, label, config_jsonb: kind === "webhook" ? { url } : {} };
-    const res = await fetch(BASE, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-org-id": orgId },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (!data.ok) { setError(data.error?.message); return; }
-    setLabel(""); setUrl("");
-    await fetchAll();
-  }
-
-  async function handleDelete(id: string) {
-    await fetch(`${BASE}/${id}`, { method: "DELETE", headers: { "x-org-id": orgId } });
-    await fetchAll();
-  }
-
-  if (!loaded) {
-    return (
-      <div className="max-w-2xl mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-4">SIEM Export</h1>
-        <button onClick={fetchAll} className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
-          Load destinations
-        </button>
-      </div>
-    );
+    setErr(null);
+    try {
+      await create.mutateAsync({
+        kind,
+        label: label || undefined,
+        config_jsonb: kind === "webhook" ? { url } : {},
+      });
+      toast("SIEM destination added", "success");
+      setKind("webhook");
+      setLabel("");
+      setUrl("");
+      onClose();
+    } catch (e) {
+      const msg = e instanceof ApiClientError ? e.message : String(e);
+      setErr(msg);
+      toast(msg, "error");
+    }
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-semibold mb-6">SIEM Export Destinations</h1>
-
-      <form onSubmit={handleAdd} className="space-y-3 mb-8 border rounded p-4">
-        <div className="flex gap-3">
-          <select className="border rounded px-3 py-2 text-sm" value={kind}
-            onChange={(e) => setKind(e.target.value as typeof kind)}>
-            {KINDS.map((k) => <option key={k} value={k}>{k}</option>)}
-          </select>
-          <input className="border rounded px-3 py-2 text-sm flex-1" placeholder="Label"
-            value={label} onChange={(e) => setLabel(e.target.value)} />
-        </div>
+    <Modal open={open} onClose={onClose} title="Add SIEM destination" size="md">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4"
+        data-testid="create-siem-form"
+      >
+        <Field label="Kind" htmlFor="siem-kind" required hint={kindHelp}>
+          <Select
+            id="siem-kind"
+            value={kind}
+            onChange={(e) => setKind(e.target.value as DestKind)}
+            data-testid="create-siem-kind"
+          >
+            {KIND_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="Label" htmlFor="siem-label" hint="optional">
+          <Input
+            id="siem-label"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="splunk-prod"
+            data-testid="create-siem-label"
+          />
+        </Field>
         {kind === "webhook" && (
-          <input className="w-full border rounded px-3 py-2 text-sm" placeholder="Webhook URL"
-            value={url} onChange={(e) => setUrl(e.target.value)} required={kind === "webhook"} />
+          <Field label="Webhook URL" htmlFor="siem-url" required>
+            <Input
+              id="siem-url"
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://siem.example.com/ingest"
+              required
+              data-testid="create-siem-url"
+            />
+          </Field>
         )}
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm">
-          Add destination
-        </button>
+        {err && <p className="text-xs text-red-600">{err}</p>}
+        <div className="mt-2 flex justify-end gap-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            loading={create.isPending}
+            data-testid="create-siem-submit"
+          >
+            Add destination
+          </Button>
+        </div>
       </form>
+    </Modal>
+  );
+}
 
-      {destinations.length === 0 ? (
-        <p className="text-gray-400 text-sm">No destinations configured.</p>
-      ) : (
-        <ul className="divide-y border rounded">
-          {destinations.map((d) => (
-            <li key={d.id} className="flex items-center justify-between px-4 py-3">
-              <div>
-                <span className="font-mono text-sm bg-gray-100 px-1 rounded">{d.kind}</span>
-                {d.label && <span className="ml-2 text-sm">{d.label}</span>}
-                <span className="ml-3 text-xs text-gray-400">
-                  {d.failure_count > 0 ? `${d.failure_count} failures` : "healthy"}
-                </span>
-              </div>
-              <button onClick={() => handleDelete(d.id)}
-                className="text-red-600 text-sm hover:underline">Remove</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+function RemoveDestinationDialog({
+  destination,
+  onClose,
+}: {
+  destination: SiemDestination | null;
+  onClose: () => void;
+}) {
+  const { toast } = useToast();
+  const remove = useDeleteSiemDestination();
+
+  async function onConfirm() {
+    if (!destination) return;
+    try {
+      await remove.mutateAsync(destination.id);
+      toast("Destination removed", "success");
+      onClose();
+    } catch (e) {
+      toast(e instanceof ApiClientError ? e.message : String(e), "error");
+    }
+  }
+
+  return (
+    <ConfirmDialog
+      open={destination !== null}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title="Remove SIEM destination"
+      description={
+        destination
+          ? `Audit events will stop flowing to ${destination.label || destination.kind}.`
+          : undefined
+      }
+      confirmLabel="Remove"
+      tone="danger"
+      loading={remove.isPending}
+      testId="confirm-remove-siem"
+    />
   );
 }

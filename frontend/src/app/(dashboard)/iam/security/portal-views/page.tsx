@@ -134,7 +134,6 @@ function RolePickerPanel({
   );
 }
 
-// We need per-role attach/detach — a small component that fetches its own role views
 function RoleCheckRow({
   role,
   view,
@@ -146,15 +145,13 @@ function RoleCheckRow({
   granted: boolean;
   onGrantChange: (granted: boolean, err: string | null) => void;
 }) {
-  const { data: roleAssignments = [] } = useRoleViews(role.id);
-  const isGranted = roleAssignments.some((a) => a.view_id === view.id);
   const attach = useAttachView(role.id);
   const detach = useDetachView(role.id);
   const isPending = attach.isPending || detach.isPending;
 
   async function toggle() {
     try {
-      if (isGranted) {
+      if (granted) {
         await detach.mutateAsync(view.id);
         onGrantChange(false, null);
       } else {
@@ -162,7 +159,7 @@ function RoleCheckRow({
         onGrantChange(true, null);
       }
     } catch (err) {
-      onGrantChange(isGranted, err instanceof ApiClientError ? err.message : String(err));
+      onGrantChange(granted, err instanceof ApiClientError ? err.message : String(err));
     }
   }
 
@@ -170,7 +167,7 @@ function RoleCheckRow({
     <li className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950">
       <input
         type="checkbox"
-        checked={isGranted}
+        checked={granted}
         onChange={toggle}
         disabled={isPending}
         className="h-4 w-4 rounded border-zinc-300 accent-violet-600 dark:border-zinc-700"
@@ -277,21 +274,16 @@ function ViewCard({
 function ViewCardWithCount({
   view,
   roles,
+  grantCount,
   expanded,
   onToggle,
 }: {
   view: PortalView;
   roles: Role[];
+  grantCount: number;
   expanded: boolean;
   onToggle: (id: number) => void;
 }) {
-  // Query each role's view list; count how many have this view.
-  // Tiny N (roles usually 3-20), TanStack dedupes across the whole page.
-  const roleQueries = roles.map((r) => useRoleViews(r.id));
-  const grantCount = roleQueries.reduce(
-    (acc, q) => acc + (q.data?.some((rv) => rv.view_id === view.id) ? 1 : 0),
-    0,
-  );
   return (
     <ViewCard
       view={view}
@@ -310,12 +302,18 @@ export default function PortalViewsPage() {
 
   const { data: views = [], isLoading, isError, error, refetch } = usePortalViews();
   const { data: rolesData } = useRoles({ limit: 500 });
+  const { data: allAssignments = [] } = useRoleViews(undefined);
   const allRoles = rolesData?.items ?? [];
 
-  // Count grants per view — we need all role-view data
-  // We approximate by counting per view via per-role queries; for the stat
-  // card we just show total views and total roles for now, and compute
-  // grants dynamically when a card is expanded.
+  // Compute grant count per view from one global query (O(n) instead of O(roles×views))
+  const grantsByView = useMemo(() => {
+    const m = new Map<number, number>();
+    for (const a of allAssignments) {
+      m.set(a.view_id, (m.get(a.view_id) ?? 0) + 1);
+    }
+    return m;
+  }, [allAssignments]);
+
   const totalViews = views.length;
   const activeRoles = allRoles.filter((r) => r.is_active).length;
 
@@ -394,6 +392,7 @@ export default function PortalViewsPage() {
                 key={view.id}
                 view={view}
                 roles={allRoles}
+                grantCount={grantsByView.get(view.id) ?? 0}
                 expanded={expandedId === view.id}
                 onToggle={handleToggle}
               />

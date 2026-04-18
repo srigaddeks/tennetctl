@@ -152,6 +152,11 @@ export default function WorkspaceDetailPage() {
         title={ws.display_name ?? ws.slug}
         description={`Workspace in org ${org?.slug ?? ws.org_id.slice(0, 8)}`}
         testId="heading-workspace-detail"
+        breadcrumbs={[
+          { label: "Identity", href: "/iam/workspaces" },
+          { label: "Workspaces", href: "/iam/workspaces" },
+          { label: ws.display_name ?? ws.slug },
+        ]}
       />
       <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="workspace-detail-body">
         <div className="mb-4">
