@@ -5,14 +5,14 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.2.0 Feature Flags + AuthZ Control Plane — Phase 23 starting. Unified role model: permissions (feature-scoped, from manifests) + feature flags (targeting rules, SDK, APISIX) bundled into roles. 5 phases, 13 plans: 23 Flag Engine → 24 Permissions+Role Redesign+AccessContext → 25 SDK+APISIX → 26 UX (Flag Dashboard + Role Designer + Rule Builder + Playground) → 27 Portal Views+AuthZ Audit. Reference: 99_ref/backend/03_auth_manage/ analyzed.
+**Current focus:** v0.2.0 complete after 23R rebase. Roles are now bundles of (feature_flag × action) permissions — single Role Designer grid grants everything. Original phase 23 LaunchDarkly-style engine survives as opt-in "advanced rollout" layer.
 
 ## Current Position
 
-Milestone: v0.2.0 Feature Flags + AuthZ Control Plane — 🚧 In Progress
-Phase: 23 of 27 (Feature Flag Engine Foundation) — 0 of 3 plans started
-Plan: None yet — ready for /paul:plan 23-01
-Status: Deep ref analysis complete. CONTEXT.md written with full design model. Phase 22 (IAM Enterprise) done.
+Milestone: v0.2.0 Feature Flags + AuthZ Control Plane — ✅ Complete (through 23R rebase)
+Phase: 23R Rebase — COMPLETE (3/3 plans shipped)
+Plan: None active — ready for next milestone scope
+Status: Phase 23R shipped in commits ec93b58 → eab604b → d874a14. Unified schema live. Admin UI tested end-to-end.
 Previously: 13-06c COMPLETE — 4 Robot E2E suites, 19/19 tests green. Backend fix: LogsConsumer + SpansConsumer org_id now resolves real single-tenant UUID from IAM. Summaries at .paul/phases/13-monitoring/13-06c-SUMMARY.md and 13-06-SUMMARY.md (consolidated).
 Previously: 13-06b COMPLETE — Monitoring frontend: 6 TanStack Query hooks, 9 components, 7 pages. recharts + react-grid-layout v2.
 Previously: 13-06a COMPLETE — Monitoring backend dashboards/panels + SSE live-tail. 139/139 pytest green.
