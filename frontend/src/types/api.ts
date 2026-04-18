@@ -1577,6 +1577,22 @@ export type SavedQueryListResponse = {
   total: number;
 };
 
+export type SavedQueryCreateRequest = {
+  name: string;
+  description?: string | null;
+  target: QueryTarget;
+  dsl: LogsQuery | MetricsQuery | TracesQuery;
+  shared?: boolean;
+};
+
+export type SavedQueryUpdateRequest = {
+  name?: string;
+  description?: string | null;
+  dsl?: LogsQuery | MetricsQuery | TracesQuery;
+  shared?: boolean;
+  is_active?: boolean;
+};
+
 // ─── Monitoring: Traces ─────────────────────────────────────────────────────
 
 export type TraceDetailResponse = {

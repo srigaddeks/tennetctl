@@ -36,8 +36,16 @@ export const FEATURES: FeatureNav[] = [
       { href: "/iam/roles", label: "Roles", testId: "nav-roles" },
       { href: "/iam/groups", label: "Groups", testId: "nav-groups" },
       { href: "/iam/applications", label: "Applications", testId: "nav-applications" },
+      { href: "/iam/invites", label: "Invites", testId: "nav-invites" },
       { href: "/iam/security/policy", label: "Auth Policy", testId: "nav-iam-policy" },
       { href: "/iam/security/portal-views", label: "Portal Views", testId: "nav-iam-portal-views" },
+      { href: "/iam/security/sso", label: "OIDC SSO", testId: "nav-iam-sso" },
+      { href: "/iam/security/saml", label: "SAML SSO", testId: "nav-iam-saml" },
+      { href: "/iam/security/scim", label: "SCIM", testId: "nav-iam-scim" },
+      { href: "/iam/security/mfa", label: "MFA", testId: "nav-iam-mfa" },
+      { href: "/iam/security/ip-allowlist", label: "IP Allowlist", testId: "nav-iam-ip-allowlist" },
+      { href: "/iam/security/siem", label: "SIEM Export", testId: "nav-iam-siem" },
+      { href: "/iam/security/tos", label: "Terms of Service", testId: "nav-iam-tos" },
     ],
   },
   {
@@ -77,6 +85,7 @@ export const FEATURES: FeatureNav[] = [
       { href: "/monitoring/alerts", label: "Alerts", testId: "nav-monitoring-alerts" },
       { href: "/monitoring/alerts/rules", label: "Alert Rules", testId: "nav-monitoring-alert-rules" },
       { href: "/monitoring/alerts/silences", label: "Silences", testId: "nav-monitoring-silences" },
+      { href: "/monitoring/saved-queries", label: "Saved Queries", testId: "nav-monitoring-saved-queries" },
     ],
   },
   {
@@ -115,6 +124,7 @@ export const FEATURES: FeatureNav[] = [
       { href: "/account/sessions", label: "Sessions", testId: "nav-account-sessions" },
       { href: "/account/api-keys", label: "API Keys", testId: "nav-account-api-keys" },
       { href: "/account/security", label: "Security", testId: "nav-account-security" },
+      { href: "/account/privacy", label: "Privacy", testId: "nav-account-privacy" },
     ],
   },
   {

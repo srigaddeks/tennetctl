@@ -198,8 +198,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-18 — AUTONOMOUS SEQUENCE (admin UI coverage + yellow-gap sweep)
-Stopped at: v0.2.4 closed 🔴 + several 🟡 gaps. 6 plans shipped in sequence: 35-01 Workspaces detail, 35-02 Notify edit, 35-03 System Health, 36-01 System nav, 36-02 Notify Suppressions, 36-03 Catalog browser. Frontend typecheck + build green throughout.
+Last session: 2026-04-18 — AUTONOMOUS SEQUENCE (admin UI coverage + yellow-gap sweep + nav completeness)
+Stopped at: v0.2.4 closed 🔴 + every shipped route now discoverable. 7 plans shipped: 35-01 Workspaces detail, 35-02 Notify edit, 35-03 System Health, 36-01 System nav, 36-02 Notify Suppressions, 36-03 Catalog browser, 36-04 Saved Queries + 10-route nav sweep. Frontend typecheck + build green throughout.
 Next action: Choose based on priorities —
   • /paul:verify — walk new surfaces in Playwright MCP (requires live backend)
   • /paul:plan 38 Auth hardening (v0.1.8; rate limiting + HIBP + device revocation)
