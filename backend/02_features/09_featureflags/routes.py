@@ -14,8 +14,10 @@ from fastapi import APIRouter
 _flags: Any = import_module(
     "backend.02_features.09_featureflags.sub_features.01_flags.routes"
 )
-_permissions: Any = import_module(
-    "backend.02_features.09_featureflags.sub_features.02_permissions.routes"
+# 02_permissions removed in 23R — old dim_flag_permissions + lnk_role_flag_permissions
+# tables were dropped. Replaced by the capabilities surface below.
+_capabilities: Any = import_module(
+    "backend.02_features.09_featureflags.sub_features.06_capabilities.routes"
 )
 _rules: Any = import_module(
     "backend.02_features.09_featureflags.sub_features.03_rules.routes"
@@ -29,7 +31,7 @@ _evaluations: Any = import_module(
 
 router = APIRouter()
 router.include_router(_flags.router)
-router.include_router(_permissions.router)
+router.include_router(_capabilities.router)
 router.include_router(_rules.router)
 router.include_router(_overrides.router)
 router.include_router(_evaluations.router)

@@ -404,6 +404,75 @@ export type RoleFlagPermissionCreateBody = {
   permission: FlagPermission;
 };
 
+// ─── Capabilities (23R unified model) ─────────────────────────────
+
+export type PermissionAction = {
+  id: number;
+  code: string;
+  label: string;
+  description: string | null;
+  sort_order: number;
+};
+
+export type FeatureFlagCategory = {
+  id: number;
+  code: string;
+  label: string;
+  description: string | null;
+  sort_order: number;
+};
+
+export type FeaturePermission = {
+  id: number;
+  code: string;
+  flag_id: number;
+  flag_code: string;
+  action_id: number;
+  action_code: string;
+  name: string;
+  description: string | null;
+};
+
+export type Capability = {
+  id: number;
+  code: string;
+  name: string;
+  description: string | null;
+  category_id: number;
+  category_code: string;
+  feature_scope: "platform" | "org" | "workspace" | "product";
+  access_mode: "public" | "authenticated" | "permissioned";
+  lifecycle_state: "planned" | "active" | "deprecated" | "retired";
+  env_dev: boolean;
+  env_staging: boolean;
+  env_prod: boolean;
+  rollout_mode: "simple" | "targeted";
+  required_license: string | null;
+  permissions: FeaturePermission[];
+};
+
+export type CapabilityCatalog = {
+  categories: FeatureFlagCategory[];
+  actions: PermissionAction[];
+  capabilities: Capability[];
+};
+
+export type RoleGrant = {
+  id: string;
+  role_id: string;
+  feature_permission_id: number;
+  permission_code: string;
+  flag_code: string;
+  action_code: string;
+  created_at: string;
+};
+
+export type RoleGrants = {
+  role_id: string;
+  role_code: string | null;
+  grants: RoleGrant[];
+};
+
 // ─── Feature Flags: Rules ────────────────────────────────────────
 
 export type FlagRule = {

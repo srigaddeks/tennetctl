@@ -36,6 +36,7 @@ import {
   Skeleton,
   Textarea,
 } from "@/components/ui";
+import { CapabilityGrid } from "@/features/capabilities/capability-grid";
 import { useOrgs } from "@/features/iam-orgs/hooks/use-orgs";
 import {
   useCreateRole,
@@ -50,7 +51,7 @@ import type { Role, RoleType } from "@/types/api";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 type RoleCategory = "platform" | "org-scoped";
-type ActiveTab = "overview" | "permissions" | "audit";
+type ActiveTab = "overview" | "capabilities" | "audit";
 
 type ConfirmAction = {
   title: string;
@@ -275,7 +276,7 @@ function TabBar({
 }) {
   const tabs: { id: ActiveTab; label: string }[] = [
     { id: "overview", label: "Overview" },
-    { id: "permissions", label: "Permissions" },
+    { id: "capabilities", label: "Capabilities" },
     { id: "audit", label: "Audit" },
   ];
   return (
@@ -449,20 +450,12 @@ function OverviewTab({
   );
 }
 
-// ─── PermissionsTab ───────────────────────────────────────────────────────────
+// ─── CapabilitiesTab (23R unified model) ──────────────────────────────────────
 
-function PermissionsTab({ roleCode }: { roleCode: string }) {
-  // TODO: Implement scope assignment when /v1/iam/roles/{id}/scopes endpoint is available (v0.2.1)
+function CapabilitiesTab({ roleId, roleCode }: { roleId: string; roleCode: string | null }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-      <ShieldAlert className="h-8 w-8 text-zinc-300 dark:text-zinc-600" />
-      <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-        Scope assignment coming in v0.2.1
-      </p>
-      <p className="text-xs text-zinc-400 dark:text-zinc-500">
-        Role <code className="font-mono">{roleCode}</code> — scope matrix will appear here once
-        the <code className="font-mono">/v1/iam/roles/&#123;id&#125;/scopes</code> endpoint is available.
-      </p>
+    <div className="py-2">
+      <CapabilityGrid roleId={roleId} roleCode={roleCode} />
     </div>
   );
 }
@@ -519,7 +512,7 @@ function ExpandedPanel({
           onClose={onClose}
         />
       )}
-      {tab === "permissions" && <PermissionsTab roleCode={role.code ?? role.id} />}
+      {tab === "capabilities" && <CapabilitiesTab roleId={role.id} roleCode={role.code} />}
       {tab === "audit" && <AuditTab />}
     </div>
   );
