@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useToast } from "@/components/toast";
-import { Button, Field, Input } from "@/components/ui";
+import { Button, Checkbox, Field, Input } from "@/components/ui";
 import {
   useCreatePolicy,
   useUpdatePolicy,
@@ -102,30 +102,41 @@ function PolicyField({
     }
   }
 
-  const inputEl =
-    def.value_type === "boolean" ? (
-      <select
-        className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        value={raw}
-        onChange={(e) => setRaw(e.target.value)}
-        data-testid={`policy-field-${def.key}`}
-      >
-        <option value="true">true</option>
-        <option value="false">false</option>
-      </select>
-    ) : (
-      <Input
-        value={raw}
-        onChange={(e) => setRaw(e.target.value)}
-        data-testid={`policy-field-${def.key}`}
-      />
+  if (def.value_type === "boolean") {
+    return (
+      <div className="flex items-center justify-between gap-3">
+        <Checkbox
+          id={`policy-field-${def.key}`}
+          label={def.label}
+          hint={def.hint}
+          checked={raw === "true"}
+          onChange={(e) => setRaw(e.target.checked ? "true" : "false")}
+          data-testid={`policy-field-${def.key}`}
+        />
+        {dirty && (
+          <Button
+            size="sm"
+            onClick={save}
+            disabled={update.isPending || create.isPending}
+            data-testid={`policy-save-${def.key}`}
+          >
+            Save
+          </Button>
+        )}
+      </div>
     );
+  }
 
   return (
     <div className="flex items-end gap-3">
       <div className="flex-1">
         <Field label={def.label} hint={def.hint}>
-          {inputEl}
+          <Input
+            type={def.value_type === "number" ? "number" : "text"}
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            data-testid={`policy-field-${def.key}`}
+          />
         </Field>
       </div>
       {dirty && (

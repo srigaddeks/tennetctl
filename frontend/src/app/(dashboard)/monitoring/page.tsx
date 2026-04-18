@@ -32,6 +32,18 @@ const STATS_NAV = [
     description: "Grid-layout panels of queries.",
     tone: "bg-purple-300 dark:bg-purple-700",
   },
+  {
+    href: "/monitoring/alerts",
+    label: "Alerts",
+    description: "Active + recent alerts · rules · silences.",
+    tone: "bg-red-300 dark:bg-red-700",
+  },
+  {
+    href: "/monitoring/saved-queries",
+    label: "Saved Queries",
+    description: "Persisted DSL snippets across logs / metrics / traces.",
+    tone: "bg-indigo-300 dark:bg-indigo-700",
+  },
 ];
 
 function StatCard({

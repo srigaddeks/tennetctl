@@ -117,17 +117,52 @@ export default function AuditExplorerPage() {
     setLiveItems([]);
   }, [listKey]);
 
+  /**
+   * Client-side filter for live-tail items. The tail endpoint only respects
+   * org scoping; remaining filter dimensions (event_key, category, outcome,
+   * actor, q) are applied here so live mode obeys the active filter bar.
+   */
+  const matchesFilter = useMemo(
+    () => (r: AuditEventRow) => {
+      if (filter.event_key) {
+        const want = filter.event_key;
+        if (want.endsWith(".*")) {
+          const prefix = want.slice(0, -2);
+          if (!r.event_key?.startsWith(prefix)) return false;
+        } else if (r.event_key !== want) {
+          return false;
+        }
+      }
+      if (filter.category_code && r.category_code !== filter.category_code) {
+        return false;
+      }
+      if (filter.outcome && r.outcome !== filter.outcome) return false;
+      if (filter.actor_user_id && r.actor_user_id !== filter.actor_user_id) {
+        return false;
+      }
+      if (filter.q) {
+        const q = filter.q.toLowerCase();
+        const hay = JSON.stringify(r.metadata ?? {}).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    },
+    [filter.event_key, filter.category_code, filter.outcome, filter.actor_user_id, filter.q],
+  );
+
   const items: AuditEventRow[] = useMemo(() => {
     if (liveOn && liveItems.length > 0) {
       const baseIds = new Set((data?.items ?? []).map((r) => r.id));
-      const liveFiltered = liveItems.filter((r) => !baseIds.has(r.id));
+      const liveFiltered = liveItems
+        .filter((r) => !baseIds.has(r.id))
+        .filter(matchesFilter);
       return [...liveFiltered, ...(data?.items ?? [])];
     }
     const firstPage = data?.items ?? [];
     const ids = new Set(firstPage.map((r) => r.id));
     const extras = accumulated.filter((r) => !ids.has(r.id));
     return [...firstPage, ...extras];
-  }, [data, accumulated, liveOn, liveItems]);
+  }, [data, accumulated, liveOn, liveItems, matchesFilter]);
 
   const effectiveCursor = tailCursor ?? data?.next_cursor ?? null;
 

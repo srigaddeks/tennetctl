@@ -30,6 +30,7 @@ import {
   useUsers,
 } from "@/features/iam-users/hooks/use-users";
 import { ApiClientError } from "@/lib/api";
+import { downloadCsv } from "@/lib/csv";
 import type { AccountType } from "@/types/api";
 
 const ACCOUNT_TYPES: { value: AccountType; label: string }[] = [
@@ -84,12 +85,31 @@ export default function UsersPage() {
         description="Human & service identities. account_type drives auth. Email / display_name / avatar stored as EAV attrs."
         testId="heading-users"
         actions={
-          <Button
-            onClick={() => setOpenCreate(true)}
-            data-testid="open-create-user"
-          >
-            + New user
-          </Button>
+          <>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                downloadCsv("users", filtered, [
+                  { key: "id", accessor: (u) => u.id },
+                  { key: "email", accessor: (u) => u.email ?? "" },
+                  { key: "display_name", accessor: (u) => u.display_name ?? "" },
+                  { key: "account_type", accessor: (u) => u.account_type },
+                  { key: "is_active", accessor: (u) => u.is_active },
+                  { key: "created_at", accessor: (u) => u.created_at },
+                ])
+              }
+              disabled={filtered.length === 0}
+              data-testid="users-export-csv"
+            >
+              Export CSV
+            </Button>
+            <Button
+              onClick={() => setOpenCreate(true)}
+              data-testid="open-create-user"
+            >
+              + New user
+            </Button>
+          </>
         }
       />
       <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="users-body">

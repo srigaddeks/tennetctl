@@ -63,6 +63,22 @@ export function TopBar() {
           })}
         </nav>
         <div className="ml-auto flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(
+                new KeyboardEvent("keydown", { key: "k", metaKey: true }),
+              );
+            }}
+            className="hidden items-center gap-1 rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-500 transition hover:bg-zinc-100 sm:inline-flex dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
+            data-testid="topbar-cmdk"
+            aria-label="Open command palette"
+          >
+            <span>Search</span>
+            <kbd className="rounded border border-zinc-200 bg-zinc-50 px-1 font-mono text-[10px] dark:border-zinc-700 dark:bg-zinc-900">
+              ⌘K
+            </kbd>
+          </button>
           {user && (
             <NotificationBell userId={user.id} orgId={session?.org_id ?? null} />
           )}

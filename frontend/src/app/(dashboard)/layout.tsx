@@ -1,3 +1,4 @@
+import { CommandPalette } from "@/components/command-palette";
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/topbar";
 import { ImpersonationBanner } from "@/features/iam/_components/impersonation-banner";
@@ -15,6 +16,7 @@ export default function DashboardLayout({
         <Sidebar />
         <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
       </div>
+      <CommandPalette />
     </div>
   );
 }
