@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/page-header";
@@ -19,11 +20,10 @@ import {
 } from "@/components/ui";
 import { CreateOrgDialog } from "@/features/iam-orgs/create-org-dialog";
 import { useOrgs } from "@/features/iam-orgs/hooks/use-orgs";
-import { OrgDetailDrawer } from "@/features/iam-orgs/org-detail-drawer";
 
 export default function OrgsPage() {
+  const router = useRouter();
   const [openCreate, setOpenCreate] = useState(false);
-  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const { data, isLoading, isError, error, refetch } = useOrgs({ limit: 500 });
 
@@ -111,7 +111,8 @@ export default function OrgsPage() {
               {filtered.map((org) => (
                 <TR
                   key={org.id}
-                  onClick={() => setSelectedOrgId(org.id)}
+                  onClick={() => router.push(`/iam/orgs/${org.id}`)}
+                  data-testid={`org-row-${org.id}`}
                 >
                   <TD>
                     <span
@@ -146,10 +147,6 @@ export default function OrgsPage() {
       <CreateOrgDialog
         open={openCreate}
         onClose={() => setOpenCreate(false)}
-      />
-      <OrgDetailDrawer
-        orgId={selectedOrgId}
-        onClose={() => setSelectedOrgId(null)}
       />
     </>
   );

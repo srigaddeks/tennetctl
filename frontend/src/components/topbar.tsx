@@ -41,7 +41,7 @@ export function TopBar() {
             </div>
           </div>
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="hide-scrollbar flex items-center gap-1 overflow-x-auto">
           {FEATURES.map((f) => {
             const active = f.key === current.key;
             const landing = f.subFeatures[0]?.href ?? f.basePath;

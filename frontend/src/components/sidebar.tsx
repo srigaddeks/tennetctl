@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   activeFeature,
@@ -46,47 +47,109 @@ function groupItems(subFeatures: SubFeatureNav[]): GroupedEntry[] {
 export function Sidebar() {
   const pathname = usePathname();
   const feature = activeFeature(pathname);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close the drawer whenever the route changes.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   if (feature.subFeatures.length === 0) return null;
   const activeHref = activeSubFeatureHref(pathname, feature);
   const grouped = groupItems(feature.subFeatures);
 
-  return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-          Feature
-        </div>
-        <div className="text-sm font-semibold">{feature.label}</div>
+  const nav = (
+    <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <ul className="flex flex-col gap-0.5">
+        {grouped.map((entry, idx) =>
+          entry.kind === "item" ? (
+            <NavLink
+              key={entry.item.href}
+              item={entry.item}
+              active={entry.item.href === activeHref}
+            />
+          ) : (
+            <li key={`${entry.label}-${idx}`} className="mt-3 first:mt-0">
+              <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
+                {entry.label}
+              </div>
+              <ul className="flex flex-col gap-0.5">
+                {entry.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    item={item}
+                    active={item.href === activeHref}
+                  />
+                ))}
+              </ul>
+            </li>
+          ),
+        )}
+      </ul>
+    </nav>
+  );
+
+  const header = (
+    <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+        Feature
       </div>
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <ul className="flex flex-col gap-0.5">
-          {grouped.map((entry, idx) =>
-            entry.kind === "item" ? (
-              <NavLink
-                key={entry.item.href}
-                item={entry.item}
-                active={entry.item.href === activeHref}
-              />
-            ) : (
-              <li key={`${entry.label}-${idx}`} className="mt-3 first:mt-0">
-                <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
-                  {entry.label}
+      <div className="text-sm font-semibold">{feature.label}</div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile toggle — visible < md */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open navigation"
+        className="fixed bottom-4 left-4 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700 shadow-lg md:hidden dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+        data-testid="sidebar-mobile-open"
+      >
+        ≡
+      </button>
+
+      {/* Desktop sidebar — visible ≥ md */}
+      <aside className="hidden w-56 shrink-0 flex-col border-r border-zinc-200 bg-white md:flex dark:border-zinc-800 dark:bg-zinc-950">
+        {header}
+        {nav}
+      </aside>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 flex md:hidden"
+          data-testid="sidebar-mobile-drawer"
+        >
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden
+          />
+          <aside className="relative flex w-64 max-w-[80vw] flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  Feature
                 </div>
-                <ul className="flex flex-col gap-0.5">
-                  {entry.items.map((item) => (
-                    <NavLink
-                      key={item.href}
-                      item={item}
-                      active={item.href === activeHref}
-                    />
-                  ))}
-                </ul>
-              </li>
-            ),
-          )}
-        </ul>
-      </nav>
-    </aside>
+                <div className="text-sm font-semibold">{feature.label}</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close navigation"
+                className="h-8 w-8 rounded-md text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                ✕
+              </button>
+            </div>
+            {nav}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }
 

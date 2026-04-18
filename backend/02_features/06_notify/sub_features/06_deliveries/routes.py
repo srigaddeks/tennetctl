@@ -87,6 +87,27 @@ async def get_delivery_route(request: Request, delivery_id: str) -> dict:
     return _response.success(DeliveryRow(**row).model_dump())
 
 
+@router.post("/v1/notify/deliveries/{delivery_id}/retry", status_code=200)
+async def retry_delivery_route(request: Request, delivery_id: str) -> dict:
+    """Requeue a failed / bounced delivery for the worker to pick up again.
+
+    Admin-only: caller must have an authenticated session with an org scope.
+    """
+    user_id = getattr(request.state, "user_id", None)
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    if not user_id:
+        raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
+    if not org_id:
+        raise _errors.AppError("UNAUTHORIZED", "org scope required", 401)
+
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        updated = await _service.retry_delivery(
+            conn, delivery_id=delivery_id, org_id=org_id,
+        )
+    return _response.success(DeliveryRow(**updated).model_dump())
+
+
 @router.patch("/v1/notify/deliveries/{delivery_id}", status_code=200)
 async def patch_delivery_route(
     delivery_id: str, body: DeliveryPatchBody, request: Request

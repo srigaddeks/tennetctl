@@ -12,6 +12,7 @@ import { useToast } from "@/components/toast";
 import {
   Badge,
   Button,
+  Checkbox,
   EmptyState,
   ErrorState,
   Field,
@@ -25,12 +26,15 @@ import {
   TR,
   Table,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import {
   useCreateUser,
+  useDeleteUser,
   useUsers,
 } from "@/features/iam-users/hooks/use-users";
 import { ApiClientError } from "@/lib/api";
 import { downloadCsv } from "@/lib/csv";
+import { useTableSort } from "@/lib/table-sort";
 import type { AccountType } from "@/types/api";
 
 const ACCOUNT_TYPES: { value: AccountType; label: string }[] = [
@@ -60,9 +64,13 @@ type CreateForm = z.infer<typeof createSchema>;
 
 export default function UsersPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [filterType, setFilterType] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const del = useDeleteUser();
 
   const { data, isLoading, isError, error, refetch } = useUsers({
     limit: 500,
@@ -78,6 +86,53 @@ export default function UsersPage() {
     );
   });
 
+  const { sorted, toggle, dirFor } = useTableSort(filtered, {
+    display_name: (u) => u.display_name ?? u.email ?? u.id,
+    email: (u) => u.email ?? "",
+    account_type: (u) => u.account_type,
+    is_active: (u) => u.is_active,
+  });
+
+  const visibleIds = sorted.map((u) => u.id);
+  const allSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+
+  function toggleRow(id: string, checked: boolean) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleAll(checked: boolean) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) visibleIds.forEach((id) => next.add(id));
+      else visibleIds.forEach((id) => next.delete(id));
+      return next;
+    });
+  }
+
+  async function handleBulkDelete() {
+    const ids = Array.from(selectedIds);
+    let ok = 0;
+    let err = 0;
+    for (const id of ids) {
+      try {
+        await del.mutateAsync(id);
+        ok += 1;
+      } catch {
+        err += 1;
+      }
+    }
+    setBulkDeleteOpen(false);
+    setSelectedIds(new Set());
+    if (err === 0) toast(`Deleted ${ok} user${ok === 1 ? "" : "s"}`, "success");
+    else toast(`Deleted ${ok}, failed ${err}`, err === ids.length ? "error" : "warning");
+  }
+
   return (
     <>
       <PageHeader
@@ -86,6 +141,15 @@ export default function UsersPage() {
         testId="heading-users"
         actions={
           <>
+            {selectedIds.size > 0 && (
+              <Button
+                variant="danger"
+                onClick={() => setBulkDeleteOpen(true)}
+                data-testid="users-bulk-delete"
+              >
+                Delete {selectedIds.size}
+              </Button>
+            )}
             <Button
               variant="secondary"
               onClick={() =>
@@ -164,18 +228,54 @@ export default function UsersPage() {
             }
           />
         )}
-        {filtered.length > 0 && (
+        {sorted.length > 0 && (
           <Table>
             <THead>
               <tr>
-                <TH>User</TH>
-                <TH>Email</TH>
-                <TH>Type</TH>
-                <TH>Status</TH>
+                <TH className="w-8">
+                  <Checkbox
+                    checked={allSelected}
+                    onChange={(e) => toggleAll(e.target.checked)}
+                    aria-label="Select all visible users"
+                    data-testid="users-select-all"
+                  />
+                </TH>
+                <TH
+                  sortable
+                  sortDir={dirFor("display_name")}
+                  onSort={() => toggle("display_name")}
+                  testId="sort-user-name"
+                >
+                  User
+                </TH>
+                <TH
+                  sortable
+                  sortDir={dirFor("email")}
+                  onSort={() => toggle("email")}
+                  testId="sort-user-email"
+                >
+                  Email
+                </TH>
+                <TH
+                  sortable
+                  sortDir={dirFor("account_type")}
+                  onSort={() => toggle("account_type")}
+                  testId="sort-user-type"
+                >
+                  Type
+                </TH>
+                <TH
+                  sortable
+                  sortDir={dirFor("is_active")}
+                  onSort={() => toggle("is_active")}
+                  testId="sort-user-status"
+                >
+                  Status
+                </TH>
               </tr>
             </THead>
             <TBody>
-              {filtered.map((u) => {
+              {sorted.map((u) => {
                 const initial = (
                   u.display_name?.trim() ||
                   u.email?.trim() ||
@@ -189,9 +289,24 @@ export default function UsersPage() {
                 return (
                   <TR
                     key={u.id}
-                    onClick={() => router.push(`/iam/users/${u.id}`)}
+                    onClick={((e: React.MouseEvent<HTMLTableRowElement>) => {
+                      if ((e.target as HTMLElement).closest('[data-row-select="true"]')) {
+                        return;
+                      }
+                      router.push(`/iam/users/${u.id}`);
+                    }) as unknown as () => void}
                     data-testid={`user-row-${u.id}`}
                   >
+                    <TD className="w-8">
+                      <span data-row-select="true">
+                        <Checkbox
+                          checked={selectedIds.has(u.id)}
+                          onChange={(e) => toggleRow(u.id, e.target.checked)}
+                          aria-label={`Select ${u.display_name ?? u.email ?? u.id}`}
+                          data-testid={`user-select-${u.id}`}
+                        />
+                      </span>
+                    </TD>
                     <TD>
                       <div className="flex items-center gap-2.5">
                         {u.avatar_url ? (
@@ -250,6 +365,17 @@ export default function UsersPage() {
           onClose={() => setOpenCreate(false)}
         />
       )}
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        onClose={() => setBulkDeleteOpen(false)}
+        onConfirm={handleBulkDelete}
+        title={`Delete ${selectedIds.size} user${selectedIds.size === 1 ? "" : "s"}?`}
+        description="This permanently deletes the selected users. Their email + display_name are pseudonymized; audit history is preserved."
+        confirmLabel={`Delete ${selectedIds.size}`}
+        tone="danger"
+        loading={del.isPending}
+        testId="users-bulk-delete-confirm"
+      />
     </>
   );
 }

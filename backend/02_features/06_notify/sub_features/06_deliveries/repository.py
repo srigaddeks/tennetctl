@@ -166,6 +166,32 @@ def backoff_seconds_for_attempt(attempt_count: int) -> int:
     return 60 * (2 ** max(0, attempt_count))
 
 
+async def requeue_delivery(
+    conn: Any,
+    *,
+    delivery_id: str,
+) -> dict | None:
+    """Reset a delivery back to pending so the worker picks it up again.
+
+    Only meaningful for deliveries in a terminal error state (failed, bounced).
+    Clears failure_reason + next_retry_at; keeps attempt_count for audit but
+    resets it to 0 so the worker gets a fresh budget.
+    """
+    await conn.execute(
+        f"""
+        UPDATE {_FCT}
+        SET status_id = 1,                  -- pending
+            failure_reason = NULL,
+            next_retry_at = NULL,
+            attempt_count = 0,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        """,
+        delivery_id,
+    )
+    return await get_delivery(conn, delivery_id)
+
+
 async def create_delivery_event(
     conn: Any,
     *,

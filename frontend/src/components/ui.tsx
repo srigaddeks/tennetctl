@@ -359,13 +359,53 @@ export function THead({ children }: { children: React.ReactNode }) {
   );
 }
 
+export type SortDir = "asc" | "desc";
+
 export function TH({
   children,
   className,
+  sortable,
+  sortDir,
+  onSort,
+  testId,
 }: {
   children?: React.ReactNode;
   className?: string;
+  sortable?: boolean;
+  sortDir?: SortDir | null;
+  onSort?: () => void;
+  testId?: string;
 }) {
+  if (sortable) {
+    return (
+      <th
+        scope="col"
+        className={cn("whitespace-nowrap px-4 py-2 font-medium", className)}
+      >
+        <button
+          type="button"
+          onClick={onSort}
+          data-testid={testId}
+          className={cn(
+            "inline-flex items-center gap-1 rounded transition",
+            "hover:text-zinc-900 dark:hover:text-zinc-100",
+            sortDir && "text-zinc-900 dark:text-zinc-50",
+          )}
+        >
+          {children}
+          <span
+            aria-hidden
+            className={cn(
+              "inline-block text-[10px] transition",
+              sortDir ? "opacity-100" : "opacity-30",
+            )}
+          >
+            {sortDir === "asc" ? "▲" : sortDir === "desc" ? "▼" : "↕"}
+          </span>
+        </button>
+      </th>
+    );
+  }
   return (
     <th
       scope="col"
@@ -391,9 +431,9 @@ export function TR({
   ...rest
 }: {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLTableRowElement>;
   selected?: boolean;
-} & React.HTMLAttributes<HTMLTableRowElement>) {
+} & Omit<React.HTMLAttributes<HTMLTableRowElement>, "onClick">) {
   return (
     <tr
       onClick={onClick}

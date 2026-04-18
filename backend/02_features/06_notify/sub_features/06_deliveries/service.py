@@ -10,6 +10,9 @@ _repo: Any = import_module(
 )
 _core_id: Any = import_module("backend.01_core.id")
 
+# Statuses that may be manually retried from the admin UI.
+_RETRYABLE_STATUSES = {"failed", "bounced"}
+
 
 async def list_deliveries(
     conn: Any,
@@ -126,6 +129,28 @@ async def unread_count(
         org_id, recipient_user_id,
     )
     return int(val or 0)
+
+
+async def retry_delivery(
+    conn: Any, *, delivery_id: str, org_id: str,
+) -> dict:
+    """Requeue a failed / bounced delivery.
+
+    Raises:
+      NotFoundError — delivery not found or not in caller's org
+      ValidationError — delivery is not in a retryable state
+    """
+    _errors: Any = import_module("backend.01_core.errors")
+    row = await _repo.get_delivery(conn, delivery_id)
+    if row is None or row.get("org_id") != org_id:
+        raise _errors.NotFoundError(f"delivery {delivery_id!r} not found")
+    if row.get("status_code") not in _RETRYABLE_STATUSES:
+        raise _errors.ValidationError(
+            f"delivery status {row.get('status_code')!r} is not retryable "
+            f"(only failed / bounced can be requeued)"
+        )
+    updated = await _repo.requeue_delivery(conn, delivery_id=delivery_id)
+    return updated or row
 
 
 async def update_delivery_status(
