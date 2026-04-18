@@ -110,6 +110,8 @@ async def mint_session(
     ttl_days: int | None = None,
     pool: Any = None,
     ctx: Any = None,
+    user_agent: str | None = None,
+    ip_address: str | None = None,
 ) -> tuple[str, dict]:
     """Create a session row and return (token, session_metadata).
     If pool + ctx are provided, session-limit enforcement (20-04) runs first.
@@ -142,6 +144,8 @@ async def mint_session(
         workspace_id=workspace_id,
         expires_at=expires,
         created_by=user_id,
+        user_agent=user_agent,
+        ip_address=ip_address,
     )
     signing_key = await _signing_key_bytes(vault_client)
     token = make_token(session_id, signing_key)

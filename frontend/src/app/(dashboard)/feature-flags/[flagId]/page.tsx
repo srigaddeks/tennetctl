@@ -78,6 +78,10 @@ export default function FlagDetailPage({
           flag.description ?? "No description — add one via the edit panel."
         }
         testId="heading-flag-detail"
+        breadcrumbs={[
+          { label: "Feature Flags", href: "/feature-flags" },
+          { label: flag.flag_key },
+        ]}
         actions={
           <>
             <Link
@@ -108,12 +112,24 @@ export default function FlagDetailPage({
           </span>
           {flag.org_id && (
             <span className="text-xs text-zinc-500">
-              · org {flag.org_id.slice(0, 8)}…
+              · org{" "}
+              <Link
+                href={`/iam/orgs/${flag.org_id}`}
+                className="font-mono text-zinc-700 underline-offset-2 hover:underline dark:text-zinc-300"
+              >
+                {flag.org_id.slice(0, 8)}…
+              </Link>
             </span>
           )}
           {flag.application_id && (
             <span className="text-xs text-zinc-500">
-              · app {flag.application_id.slice(0, 8)}…
+              · app{" "}
+              <Link
+                href={`/iam/applications`}
+                className="font-mono text-zinc-700 underline-offset-2 hover:underline dark:text-zinc-300"
+              >
+                {flag.application_id.slice(0, 8)}…
+              </Link>
             </span>
           )}
         </div>

@@ -216,6 +216,7 @@ async def signin(
     email: str,
     password: str,
     source_ip: str | None = None,
+    user_agent: str | None = None,
 ) -> tuple[str, dict, dict]:
     user = await _find_user_by_email_and_type(
         conn, email=email, account_type="email_password",
@@ -356,6 +357,7 @@ async def signin(
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
         user_id=user["id"], org_id=org_id,
+        user_agent=user_agent, ip_address=source_ip,
     )
     await _emit_audit(
         pool, ctx,

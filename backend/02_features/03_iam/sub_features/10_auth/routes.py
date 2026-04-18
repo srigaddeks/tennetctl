@@ -144,6 +144,13 @@ async def signin_route(request: Request, body: SigninBody) -> Response:
     pool = request.app.state.pool
     vault = _vault(request)
     ctx_base = _build_ctx(request, pool, audit_category="setup")
+    # Capture client UA + IP so /account/sessions can show "Chrome on macOS
+    # from 10.0.0.4" rather than a raw session-ID prefix.
+    ua = request.headers.get("user-agent")
+    xff = request.headers.get("x-forwarded-for")
+    client_ip = xff.split(",")[0].strip() if xff else (
+        request.client.host if request.client else None
+    )
     async with pool.acquire() as conn:
         async with conn.transaction():
             ctx = replace(ctx_base, conn=conn)
@@ -152,6 +159,8 @@ async def signin_route(request: Request, body: SigninBody) -> Response:
                 vault_client=vault,
                 email=body.email,
                 password=body.password,
+                source_ip=client_ip,
+                user_agent=ua,
             )
     payload = _build_response_payload(token, user, session)
     response = _response.success_response(payload, status_code=200)

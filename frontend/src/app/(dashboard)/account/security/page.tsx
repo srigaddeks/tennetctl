@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui";
 import {
   usePasskeyDelete,
   usePasskeyList,
@@ -42,16 +44,27 @@ export default function SecurityPage() {
   const credentials = listData?.items ?? [];
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="border-b border-zinc-200 bg-white px-8 py-6 dark:border-zinc-800 dark:bg-zinc-950">
-        <h1 className="text-xl font-semibold tracking-tight" data-testid="security-heading">Security</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your two-factor authentication and passkey devices.</p>
-      </div>
-      <div className="mx-auto w-full max-w-2xl space-y-8 px-8 py-6">
+    <>
+      <PageHeader
+        title="Security"
+        description="Manage your two-factor authentication and passkey devices."
+        testId="security-heading"
+      />
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+        <div className="mx-auto w-full max-w-2xl space-y-6">
 
       {/* Enrolled TOTP devices */}
-      <section>
-        <h2 className="mb-3 text-sm font-semibold">Authenticator apps</h2>
+      <section className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            Authenticator apps
+          </h2>
+          <Badge tone={credentials.length > 0 ? "emerald" : "zinc"}>
+            {credentials.length > 0
+              ? `${credentials.length} enrolled`
+              : "not enrolled"}
+          </Badge>
+        </div>
         {isLoading ? (
           <p className="text-xs text-zinc-400">Loading…</p>
         ) : credentials.length === 0 ? (
@@ -206,9 +219,18 @@ export default function SecurityPage() {
       </section>
 
       {/* Passkeys section */}
-      <section>
-        <h2 className="mb-3 text-sm font-semibold">Passkeys</h2>
-        <p className="mb-3 text-xs text-zinc-500">
+      <section className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            Passkeys
+          </h2>
+          <Badge tone={passkeys.length > 0 ? "emerald" : "zinc"}>
+            {passkeys.length > 0
+              ? `${passkeys.length} registered`
+              : "not set up"}
+          </Badge>
+        </div>
+        <p className="mb-4 text-xs text-zinc-500 dark:text-zinc-400">
           Passkeys use your device&apos;s biometrics or PIN for passwordless sign-in.
         </p>
         {passkeyLoading ? (
@@ -317,7 +339,8 @@ export default function SecurityPage() {
           </form>
         )}
       </section>
-    </div>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }

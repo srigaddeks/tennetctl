@@ -91,8 +91,8 @@ export default function MonitoringOverview() {
 
   const total = logs.data?.items.length ?? 0;
   const errorCount = errors.data?.items.length ?? 0;
-  const ratePerSec = (total / 3600).toFixed(2);
-  const errorPct = total > 0 ? ((errorCount / total) * 100).toFixed(1) : "0.0";
+  const ratePerSec = total > 0 ? (total / 3600).toFixed(2) : "—";
+  const errorPct = total > 0 ? ((errorCount / total) * 100).toFixed(1) : "—";
   const services = new Set(
     (logs.data?.items ?? []).map((r) => r.service_name).filter(Boolean),
   );
@@ -114,13 +114,13 @@ export default function MonitoringOverview() {
           />
           <StatCard
             title="Log rate"
-            value={`${ratePerSec}/s`}
+            value={ratePerSec === "—" ? "—" : `${ratePerSec}/s`}
             hint="Approx logs per second (last 1h)."
             loading={logs.isLoading}
           />
           <StatCard
             title="Error rate"
-            value={`${errorPct}%`}
+            value={errorPct === "—" ? "—" : `${errorPct}%`}
             hint="Severity ≥ error over total (1h)."
             loading={logs.isLoading || errors.isLoading}
           />

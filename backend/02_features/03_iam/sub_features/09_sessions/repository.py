@@ -21,12 +21,19 @@ async def insert_session(
     workspace_id: str | None,
     expires_at: datetime,
     created_by: str,
+    user_agent: str | None = None,
+    ip_address: str | None = None,
 ) -> None:
+    # Truncate UA to the column width (512) to avoid insert failures.
+    if user_agent and len(user_agent) > 512:
+        user_agent = user_agent[:512]
     await conn.execute(
         'INSERT INTO "03_iam"."16_fct_sessions" '
-        '(id, user_id, org_id, workspace_id, expires_at, created_by, updated_by) '
-        'VALUES ($1, $2, $3, $4, $5, $6, $6)',
+        '(id, user_id, org_id, workspace_id, expires_at, created_by, updated_by, '
+        ' user_agent, ip_address) '
+        'VALUES ($1, $2, $3, $4, $5, $6, $6, $7, $8)',
         id, user_id, org_id, workspace_id, expires_at, created_by,
+        user_agent, ip_address,
     )
 
 
@@ -77,6 +84,7 @@ async def list_by_user(
     rows = await conn.fetch(
         f'SELECT id, user_id, org_id, workspace_id, expires_at, revoked_at, '
         f'       is_active, is_test, deleted_at, is_valid, '
+        f'       user_agent, ip_address, last_activity_at, '
         f'       created_by, updated_by, created_at, updated_at '
         f'FROM "03_iam"."v_sessions" '
         f'WHERE {where_sql} '

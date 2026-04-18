@@ -51,7 +51,7 @@ export function TopBar() {
                 href={landing}
                 data-testid={f.testId}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm transition",
+                  "whitespace-nowrap rounded-md px-3 py-1.5 text-sm transition",
                   active
                     ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
                     : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900",

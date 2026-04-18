@@ -90,7 +90,7 @@ export default function SessionsPage() {
           <Table>
             <THead>
               <tr>
-                <TH>Session</TH>
+                <TH>Device</TH>
                 <TH>Signed in</TH>
                 <TH>Last active</TH>
                 <TH>Status</TH>

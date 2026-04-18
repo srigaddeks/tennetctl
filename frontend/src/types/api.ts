@@ -175,6 +175,9 @@ export type SessionReadShape = {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  last_activity_at: string | null;
+  user_agent: string | null;
+  ip_address: string | null;
 };
 
 export type SessionPatchBody = {
@@ -2001,4 +2004,58 @@ export type RoleViewAssignment = {
 
 export type AttachViewBody = {
   view_id: number;
+};
+
+// ── Product Ops (10_product_ops) ───────────────────────────────────
+
+export type ProductEventKind =
+  | "page_view"
+  | "custom"
+  | "click"
+  | "identify"
+  | "alias"
+  | "referral_attached";
+
+export type ProductEvent = {
+  id: string;
+  visitor_id: string;
+  user_id: string | null;
+  session_id: string | null;
+  org_id: string;
+  workspace_id: string;
+  event_kind: ProductEventKind;
+  event_name: string | null;
+  occurred_at: string;
+  page_url: string | null;
+  referrer: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type ProductEventListResponse = {
+  events: ProductEvent[];
+  cursor: string | null;
+};
+
+export type TrackBatchResponse = {
+  accepted: number;
+  dropped_dnt: number;
+  dropped_capped: number;
+};
+
+export type AttributionTouch = {
+  occurred_at: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  referrer: string | null;
+  landing_url: string | null;
+};
+
+export type AttributionResolveResponse = {
+  visitor_id: string;
+  first_touch: AttributionTouch | null;
+  last_touch: AttributionTouch | null;
 };
