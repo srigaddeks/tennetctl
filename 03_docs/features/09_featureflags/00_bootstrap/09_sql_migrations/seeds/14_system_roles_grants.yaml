@@ -1,0 +1,36 @@
+# System roles grants — lnk_role_feature_permissions
+#
+# OPEN QUESTION (flagged to maintainer):
+#
+#   The 7 system roles (platform_super_admin, org_admin, org_member, org_viewer,
+#   workspace_admin, workspace_contributor, workspace_viewer) are created by the
+#   Python app initialiser (backend/02_features/03_iam/sub_features/04_roles/),
+#   not by a SQL seed, because their UUIDs are generated at runtime via uuid7().
+#
+#   The migration UP block (Step 8 in 20260418_050_rebase-flags-as-capabilities.sql)
+#   already contains the grant INSERT...SELECT statements. Those statements resolve
+#   role IDs via the EAV dtl_attrs lookup (attr code='code', entity_type_id=4) and
+#   run safely at migration time:
+#     - If the roles exist when the migration runs → grants are created immediately.
+#     - If the roles do not yet exist (fresh install) → the INSERT returns 0 rows
+#       safely; grants are applied on the next "reseed" run after app init.
+#
+# RESEED PROCEDURE (fresh install path):
+#   1. Run app init: the Python initialiser creates the 7 system roles via the API.
+#   2. Re-run the grant block:
+#        python -m backend.01_migrator.runner reseed --migration 20260418_050
+#      OR apply it as a one-shot script once role rows exist.
+#
+# This file intentionally contains no rows because the seed runner inserts rows
+# keyed by SMALLINT id, but lnk_role_feature_permissions uses UUID v7 PKs
+# generated at runtime. The inline INSERT...SELECT in the migration is the
+# correct mechanism for these grants.
+#
+# DO NOT add rows here — the seed runner would need to know the role UUIDs,
+# which are only determined after app init.
+
+schema: "09_featureflags"
+table: "40_lnk_role_feature_permissions"
+conflict_target: null
+on_conflict: DO NOTHING
+rows: []

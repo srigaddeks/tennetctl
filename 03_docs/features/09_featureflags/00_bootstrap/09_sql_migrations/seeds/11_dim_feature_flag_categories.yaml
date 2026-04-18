@@ -1,0 +1,60 @@
+schema: "09_featureflags"
+table: "02_dim_feature_flag_categories"
+conflict_target: id
+on_conflict: DO NOTHING
+rows:
+  - id: 1
+    code: platform
+    label: Platform
+    description: "Cross-cutting platform capabilities (admin, catalog, nodes)."
+    sort_order: 10
+    deprecated_at: null
+
+  - id: 2
+    code: iam
+    label: IAM
+    description: "Identity & Access Management — orgs, users, roles, auth, sessions."
+    sort_order: 20
+    deprecated_at: null
+
+  - id: 3
+    code: vault
+    label: Vault
+    description: "Secrets and runtime configuration management."
+    sort_order: 30
+    deprecated_at: null
+
+  - id: 4
+    code: audit
+    label: Audit
+    description: "Audit log explorer and saved views."
+    sort_order: 40
+    deprecated_at: null
+
+  - id: 5
+    code: monitoring
+    label: Monitoring
+    description: "Logs, metrics, traces, dashboards, and alerts."
+    sort_order: 50
+    deprecated_at: null
+
+  - id: 6
+    code: notify
+    label: Notify
+    description: "Notification templates, campaigns, delivery, and preferences."
+    sort_order: 60
+    deprecated_at: null
+
+  - id: 7
+    code: featureflags
+    label: Feature Flags
+    description: "Flag definitions, rules, overrides, and the capability catalog itself."
+    sort_order: 70
+    deprecated_at: null
+
+  - id: 8
+    code: nodes
+    label: Nodes
+    description: "Node catalog — platform-level building blocks browsable by developers."
+    sort_order: 80
+    deprecated_at: null

@@ -1,0 +1,613 @@
+schema: "09_featureflags"
+table: "03_dim_feature_flags"
+conflict_target: id
+on_conflict: DO NOTHING
+rows:
+  # ── Platform ──────────────────────────────────────────────────────────
+  - id: 1
+    code: platform_admin
+    name: Platform Admin
+    description: "Super-admin access across all orgs and platform settings."
+    category_id: 1
+    feature_scope: platform
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 2
+    code: node_catalog
+    name: Node Catalog
+    description: "Browse and inspect the platform node registry."
+    category_id: 8
+    feature_scope: platform
+    access_mode: authenticated
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── IAM: Org-level ────────────────────────────────────────────────────
+  - id: 3
+    code: orgs
+    name: Organisations
+    description: "Manage org identity and settings."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 4
+    code: workspaces
+    name: Workspaces
+    description: "Manage workspaces within an org."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 5
+    code: users
+    name: Users
+    description: "Manage user accounts within an org."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 6
+    code: memberships
+    name: Memberships
+    description: "Manage org membership (add/remove members)."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 7
+    code: roles
+    name: Roles
+    description: "Manage roles and their capability grants."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 8
+    code: groups
+    name: Groups
+    description: "Manage user groups within an org."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 9
+    code: applications
+    name: Applications
+    description: "Manage client applications registered to an org."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── IAM: Auth & security ──────────────────────────────────────────────
+  - id: 10
+    code: api_keys
+    name: API Keys
+    description: "Manage API keys for programmatic access."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 11
+    code: sessions
+    name: Sessions
+    description: "View and revoke user sessions."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 12
+    code: credentials
+    name: Credentials
+    description: "Manage user credentials (passwords, passkeys, TOTP)."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 13
+    code: auth_policy
+    name: Auth Policy
+    description: "Configure org-wide authentication policy (MFA, password strength)."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 14
+    code: portal_views
+    name: Portal Views
+    description: "Manage which portal views are exposed to each role."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── IAM: Enterprise SSO / provisioning ───────────────────────────────
+  - id: 15
+    code: oidc_sso
+    name: OIDC SSO
+    description: "Configure OIDC single-sign-on providers."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 16
+    code: saml_sso
+    name: SAML SSO
+    description: "Configure SAML single-sign-on providers."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 17
+    code: scim
+    name: SCIM Provisioning
+    description: "Configure SCIM tokens for automated user provisioning."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 18
+    code: mfa_policy
+    name: MFA Policy
+    description: "Enforce and configure multi-factor authentication requirements."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 19
+    code: ip_allowlist
+    name: IP Allowlist
+    description: "Restrict org access to specific IP ranges."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 20
+    code: impersonation
+    name: Impersonation
+    description: "Allow admins to act as another user for support purposes."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 21
+    code: siem_export
+    name: SIEM Export
+    description: "Configure export of audit events to an external SIEM."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 22
+    code: tos
+    name: Terms of Service
+    description: "Manage terms-of-service acceptance for org members."
+    category_id: 2
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── Vault ─────────────────────────────────────────────────────────────
+  - id: 23
+    code: vault_secrets
+    name: Vault Secrets
+    description: "Manage secrets stored in the vault."
+    category_id: 3
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 24
+    code: vault_configs
+    name: Vault Configs
+    description: "Manage runtime configuration entries in the vault."
+    category_id: 3
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── Audit ─────────────────────────────────────────────────────────────
+  - id: 25
+    code: audit_explorer
+    name: Audit Explorer
+    description: "Browse and search the org audit log."
+    category_id: 4
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 26
+    code: audit_saved_views
+    name: Audit Saved Views
+    description: "Create and manage saved audit filter views."
+    category_id: 4
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── Monitoring ────────────────────────────────────────────────────────
+  - id: 27
+    code: monitoring_logs
+    name: "Monitoring: Logs"
+    description: "View and search application logs."
+    category_id: 5
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 28
+    code: monitoring_metrics
+    name: "Monitoring: Metrics"
+    description: "View metric charts and time-series data."
+    category_id: 5
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 29
+    code: monitoring_traces
+    name: "Monitoring: Traces"
+    description: "View distributed traces."
+    category_id: 5
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 30
+    code: monitoring_dashboards
+    name: "Monitoring: Dashboards"
+    description: "Create and manage monitoring dashboards."
+    category_id: 5
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 31
+    code: monitoring_alerts
+    name: "Monitoring: Alerts"
+    description: "Configure alerting rules and notification channels."
+    category_id: 5
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── Notify ────────────────────────────────────────────────────────────
+  - id: 32
+    code: notify_templates
+    name: "Notify: Templates"
+    description: "Manage notification message templates."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 33
+    code: notify_deliveries
+    name: "Notify: Deliveries"
+    description: "View notification delivery history and status."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 34
+    code: notify_send
+    name: "Notify: Send"
+    description: "Trigger notification sends manually or via API."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 35
+    code: notify_preferences
+    name: "Notify: Preferences"
+    description: "Manage per-user notification preferences."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 36
+    code: notify_campaigns
+    name: "Notify: Campaigns"
+    description: "Create and schedule bulk notification campaigns."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 37
+    code: notify_webpush
+    name: "Notify: Web Push"
+    description: "Manage web push notification subscriptions and sends."
+    category_id: 6
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  # ── Feature Flags ─────────────────────────────────────────────────────
+  - id: 38
+    code: feature_flags
+    name: Feature Flags
+    description: "Manage feature flag definitions and their capability metadata."
+    category_id: 7
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 39
+    code: feature_flag_rules
+    name: Feature Flag Rules
+    description: "Manage targeting rules for flags with rollout_mode=targeted."
+    category_id: 7
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null
+
+  - id: 40
+    code: feature_flag_overrides
+    name: Feature Flag Overrides
+    description: "Manage per-entity force-value overrides for targeted flags."
+    category_id: 7
+    feature_scope: org
+    access_mode: permissioned
+    lifecycle_state: active
+    env_dev: true
+    env_staging: true
+    env_prod: true
+    rollout_mode: simple
+    required_license: null
+    deprecated_at: null

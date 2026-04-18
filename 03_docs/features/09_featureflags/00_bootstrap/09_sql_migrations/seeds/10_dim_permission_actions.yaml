@@ -1,0 +1,60 @@
+schema: "09_featureflags"
+table: "01_dim_permission_actions"
+conflict_target: id
+on_conflict: DO NOTHING
+rows:
+  - id: 1
+    code: view
+    label: View
+    description: "Read a resource or list its entries."
+    sort_order: 10
+    deprecated_at: null
+
+  - id: 2
+    code: create
+    label: Create
+    description: "Create a new resource."
+    sort_order: 20
+    deprecated_at: null
+
+  - id: 3
+    code: update
+    label: Update
+    description: "Modify an existing resource."
+    sort_order: 30
+    deprecated_at: null
+
+  - id: 4
+    code: delete
+    label: Delete
+    description: "Soft-delete a resource."
+    sort_order: 40
+    deprecated_at: null
+
+  - id: 5
+    code: assign
+    label: Assign
+    description: "Grant access to or link entities (e.g. assign a role)."
+    sort_order: 50
+    deprecated_at: null
+
+  - id: 6
+    code: configure
+    label: Configure
+    description: "Modify configuration or settings for a resource."
+    sort_order: 60
+    deprecated_at: null
+
+  - id: 7
+    code: export
+    label: Export
+    description: "Export data outside the platform."
+    sort_order: 70
+    deprecated_at: null
+
+  - id: 8
+    code: impersonate
+    label: Impersonate
+    description: "Act as another user within a session."
+    sort_order: 80
+    deprecated_at: null

@@ -1,0 +1,1149 @@
+schema: "09_featureflags"
+table: "04_dim_feature_permissions"
+conflict_target: id
+on_conflict: DO NOTHING
+# Action reference: 1=view 2=create 3=update 4=delete 5=assign 6=configure 7=export 8=impersonate
+rows:
+  # ── platform_admin (flag 1) — all 8 actions ──────────────────────────
+  - id: 1
+    flag_id: 1
+    action_id: 1
+    code: platform_admin.view
+    name: "Platform Admin — View"
+    description: "View platform-level configuration and all orgs."
+    deprecated_at: null
+
+  - id: 2
+    flag_id: 1
+    action_id: 2
+    code: platform_admin.create
+    name: "Platform Admin — Create"
+    description: "Create platform-level resources."
+    deprecated_at: null
+
+  - id: 3
+    flag_id: 1
+    action_id: 3
+    code: platform_admin.update
+    name: "Platform Admin — Update"
+    description: "Modify platform-level configuration."
+    deprecated_at: null
+
+  - id: 4
+    flag_id: 1
+    action_id: 4
+    code: platform_admin.delete
+    name: "Platform Admin — Delete"
+    description: "Delete platform-level resources."
+    deprecated_at: null
+
+  - id: 5
+    flag_id: 1
+    action_id: 5
+    code: platform_admin.assign
+    name: "Platform Admin — Assign"
+    description: "Assign platform roles and grants."
+    deprecated_at: null
+
+  - id: 6
+    flag_id: 1
+    action_id: 6
+    code: platform_admin.configure
+    name: "Platform Admin — Configure"
+    description: "Configure platform-wide settings."
+    deprecated_at: null
+
+  - id: 7
+    flag_id: 1
+    action_id: 7
+    code: platform_admin.export
+    name: "Platform Admin — Export"
+    description: "Export platform data."
+    deprecated_at: null
+
+  - id: 8
+    flag_id: 1
+    action_id: 8
+    code: platform_admin.impersonate
+    name: "Platform Admin — Impersonate"
+    description: "Impersonate any user platform-wide."
+    deprecated_at: null
+
+  # ── node_catalog (flag 2) — view only ────────────────────────────────
+  - id: 9
+    flag_id: 2
+    action_id: 1
+    code: node_catalog.view
+    name: "Node Catalog — View"
+    description: "Browse and inspect the platform node registry."
+    deprecated_at: null
+
+  # ── orgs (flag 3) ─────────────────────────────────────────────────────
+  - id: 10
+    flag_id: 3
+    action_id: 1
+    code: orgs.view
+    name: "Organisations — View"
+    description: "List and read org details."
+    deprecated_at: null
+
+  - id: 11
+    flag_id: 3
+    action_id: 2
+    code: orgs.create
+    name: "Organisations — Create"
+    description: "Create a new organisation."
+    deprecated_at: null
+
+  - id: 12
+    flag_id: 3
+    action_id: 3
+    code: orgs.update
+    name: "Organisations — Update"
+    description: "Modify org settings and metadata."
+    deprecated_at: null
+
+  - id: 13
+    flag_id: 3
+    action_id: 4
+    code: orgs.delete
+    name: "Organisations — Delete"
+    description: "Soft-delete an organisation."
+    deprecated_at: null
+
+  # ── workspaces (flag 4) ───────────────────────────────────────────────
+  - id: 14
+    flag_id: 4
+    action_id: 1
+    code: workspaces.view
+    name: "Workspaces — View"
+    description: "List and read workspace details."
+    deprecated_at: null
+
+  - id: 15
+    flag_id: 4
+    action_id: 2
+    code: workspaces.create
+    name: "Workspaces — Create"
+    description: "Create a new workspace."
+    deprecated_at: null
+
+  - id: 16
+    flag_id: 4
+    action_id: 3
+    code: workspaces.update
+    name: "Workspaces — Update"
+    description: "Modify workspace settings."
+    deprecated_at: null
+
+  - id: 17
+    flag_id: 4
+    action_id: 4
+    code: workspaces.delete
+    name: "Workspaces — Delete"
+    description: "Soft-delete a workspace."
+    deprecated_at: null
+
+  # ── users (flag 5) ────────────────────────────────────────────────────
+  - id: 18
+    flag_id: 5
+    action_id: 1
+    code: users.view
+    name: "Users — View"
+    description: "List and read user profiles."
+    deprecated_at: null
+
+  - id: 19
+    flag_id: 5
+    action_id: 2
+    code: users.create
+    name: "Users — Create"
+    description: "Create a new user account."
+    deprecated_at: null
+
+  - id: 20
+    flag_id: 5
+    action_id: 3
+    code: users.update
+    name: "Users — Update"
+    description: "Modify user profile and metadata."
+    deprecated_at: null
+
+  - id: 21
+    flag_id: 5
+    action_id: 4
+    code: users.delete
+    name: "Users — Delete"
+    description: "Soft-delete a user account."
+    deprecated_at: null
+
+  # ── memberships (flag 6) ──────────────────────────────────────────────
+  - id: 22
+    flag_id: 6
+    action_id: 1
+    code: memberships.view
+    name: "Memberships — View"
+    description: "List org membership."
+    deprecated_at: null
+
+  - id: 23
+    flag_id: 6
+    action_id: 2
+    code: memberships.create
+    name: "Memberships — Create"
+    description: "Add a member to the org."
+    deprecated_at: null
+
+  - id: 24
+    flag_id: 6
+    action_id: 4
+    code: memberships.delete
+    name: "Memberships — Delete"
+    description: "Remove a member from the org."
+    deprecated_at: null
+
+  - id: 25
+    flag_id: 6
+    action_id: 5
+    code: memberships.assign
+    name: "Memberships — Assign"
+    description: "Assign a role to an org member."
+    deprecated_at: null
+
+  # ── roles (flag 7) ────────────────────────────────────────────────────
+  - id: 26
+    flag_id: 7
+    action_id: 1
+    code: roles.view
+    name: "Roles — View"
+    description: "List and read role definitions."
+    deprecated_at: null
+
+  - id: 27
+    flag_id: 7
+    action_id: 2
+    code: roles.create
+    name: "Roles — Create"
+    description: "Create a new role."
+    deprecated_at: null
+
+  - id: 28
+    flag_id: 7
+    action_id: 3
+    code: roles.update
+    name: "Roles — Update"
+    description: "Modify role name and description."
+    deprecated_at: null
+
+  - id: 29
+    flag_id: 7
+    action_id: 4
+    code: roles.delete
+    name: "Roles — Delete"
+    description: "Soft-delete a role."
+    deprecated_at: null
+
+  - id: 30
+    flag_id: 7
+    action_id: 5
+    code: roles.assign
+    name: "Roles — Assign"
+    description: "Grant capability permissions to a role."
+    deprecated_at: null
+
+  # ── groups (flag 8) ───────────────────────────────────────────────────
+  - id: 31
+    flag_id: 8
+    action_id: 1
+    code: groups.view
+    name: "Groups — View"
+    description: "List and read groups."
+    deprecated_at: null
+
+  - id: 32
+    flag_id: 8
+    action_id: 2
+    code: groups.create
+    name: "Groups — Create"
+    description: "Create a group."
+    deprecated_at: null
+
+  - id: 33
+    flag_id: 8
+    action_id: 3
+    code: groups.update
+    name: "Groups — Update"
+    description: "Modify group name and membership."
+    deprecated_at: null
+
+  - id: 34
+    flag_id: 8
+    action_id: 4
+    code: groups.delete
+    name: "Groups — Delete"
+    description: "Soft-delete a group."
+    deprecated_at: null
+
+  # ── applications (flag 9) ─────────────────────────────────────────────
+  - id: 35
+    flag_id: 9
+    action_id: 1
+    code: applications.view
+    name: "Applications — View"
+    description: "List and read client applications."
+    deprecated_at: null
+
+  - id: 36
+    flag_id: 9
+    action_id: 2
+    code: applications.create
+    name: "Applications — Create"
+    description: "Register a new client application."
+    deprecated_at: null
+
+  - id: 37
+    flag_id: 9
+    action_id: 3
+    code: applications.update
+    name: "Applications — Update"
+    description: "Modify application settings."
+    deprecated_at: null
+
+  - id: 38
+    flag_id: 9
+    action_id: 4
+    code: applications.delete
+    name: "Applications — Delete"
+    description: "Soft-delete an application."
+    deprecated_at: null
+
+  # ── api_keys (flag 10) ────────────────────────────────────────────────
+  - id: 39
+    flag_id: 10
+    action_id: 1
+    code: api_keys.view
+    name: "API Keys — View"
+    description: "List API keys (secrets not shown)."
+    deprecated_at: null
+
+  - id: 40
+    flag_id: 10
+    action_id: 2
+    code: api_keys.create
+    name: "API Keys — Create"
+    description: "Issue a new API key."
+    deprecated_at: null
+
+  - id: 41
+    flag_id: 10
+    action_id: 3
+    code: api_keys.update
+    name: "API Keys — Update"
+    description: "Modify API key label or expiry."
+    deprecated_at: null
+
+  - id: 42
+    flag_id: 10
+    action_id: 4
+    code: api_keys.delete
+    name: "API Keys — Delete"
+    description: "Revoke an API key."
+    deprecated_at: null
+
+  # ── sessions (flag 11) ────────────────────────────────────────────────
+  - id: 43
+    flag_id: 11
+    action_id: 1
+    code: sessions.view
+    name: "Sessions — View"
+    description: "List active user sessions."
+    deprecated_at: null
+
+  - id: 44
+    flag_id: 11
+    action_id: 4
+    code: sessions.delete
+    name: "Sessions — Delete"
+    description: "Revoke a user session."
+    deprecated_at: null
+
+  # ── credentials (flag 12) ─────────────────────────────────────────────
+  - id: 45
+    flag_id: 12
+    action_id: 1
+    code: credentials.view
+    name: "Credentials — View"
+    description: "View credential metadata (not raw secrets)."
+    deprecated_at: null
+
+  - id: 46
+    flag_id: 12
+    action_id: 2
+    code: credentials.create
+    name: "Credentials — Create"
+    description: "Add a credential (set password, register passkey)."
+    deprecated_at: null
+
+  - id: 47
+    flag_id: 12
+    action_id: 3
+    code: credentials.update
+    name: "Credentials — Update"
+    description: "Change a credential (reset password)."
+    deprecated_at: null
+
+  - id: 48
+    flag_id: 12
+    action_id: 4
+    code: credentials.delete
+    name: "Credentials — Delete"
+    description: "Revoke a credential."
+    deprecated_at: null
+
+  # ── auth_policy (flag 13) ─────────────────────────────────────────────
+  - id: 49
+    flag_id: 13
+    action_id: 1
+    code: auth_policy.view
+    name: "Auth Policy — View"
+    description: "Read the org authentication policy."
+    deprecated_at: null
+
+  - id: 50
+    flag_id: 13
+    action_id: 6
+    code: auth_policy.configure
+    name: "Auth Policy — Configure"
+    description: "Modify authentication policy settings."
+    deprecated_at: null
+
+  # ── portal_views (flag 14) ────────────────────────────────────────────
+  - id: 51
+    flag_id: 14
+    action_id: 1
+    code: portal_views.view
+    name: "Portal Views — View"
+    description: "List portal views assigned to roles."
+    deprecated_at: null
+
+  - id: 52
+    flag_id: 14
+    action_id: 6
+    code: portal_views.configure
+    name: "Portal Views — Configure"
+    description: "Assign or remove portal views from roles."
+    deprecated_at: null
+
+  # ── oidc_sso (flag 15) ────────────────────────────────────────────────
+  - id: 53
+    flag_id: 15
+    action_id: 1
+    code: oidc_sso.view
+    name: "OIDC SSO — View"
+    description: "Read OIDC provider configuration."
+    deprecated_at: null
+
+  - id: 54
+    flag_id: 15
+    action_id: 2
+    code: oidc_sso.create
+    name: "OIDC SSO — Create"
+    description: "Register an OIDC provider."
+    deprecated_at: null
+
+  - id: 55
+    flag_id: 15
+    action_id: 3
+    code: oidc_sso.update
+    name: "OIDC SSO — Update"
+    description: "Modify an OIDC provider configuration."
+    deprecated_at: null
+
+  - id: 56
+    flag_id: 15
+    action_id: 4
+    code: oidc_sso.delete
+    name: "OIDC SSO — Delete"
+    description: "Remove an OIDC provider."
+    deprecated_at: null
+
+  # ── saml_sso (flag 16) ────────────────────────────────────────────────
+  - id: 57
+    flag_id: 16
+    action_id: 1
+    code: saml_sso.view
+    name: "SAML SSO — View"
+    description: "Read SAML provider configuration."
+    deprecated_at: null
+
+  - id: 58
+    flag_id: 16
+    action_id: 2
+    code: saml_sso.create
+    name: "SAML SSO — Create"
+    description: "Register a SAML provider."
+    deprecated_at: null
+
+  - id: 59
+    flag_id: 16
+    action_id: 3
+    code: saml_sso.update
+    name: "SAML SSO — Update"
+    description: "Modify a SAML provider configuration."
+    deprecated_at: null
+
+  - id: 60
+    flag_id: 16
+    action_id: 4
+    code: saml_sso.delete
+    name: "SAML SSO — Delete"
+    description: "Remove a SAML provider."
+    deprecated_at: null
+
+  # ── scim (flag 17) ────────────────────────────────────────────────────
+  - id: 61
+    flag_id: 17
+    action_id: 1
+    code: scim.view
+    name: "SCIM — View"
+    description: "Read SCIM token configuration."
+    deprecated_at: null
+
+  - id: 62
+    flag_id: 17
+    action_id: 2
+    code: scim.create
+    name: "SCIM — Create"
+    description: "Issue a SCIM token."
+    deprecated_at: null
+
+  - id: 63
+    flag_id: 17
+    action_id: 3
+    code: scim.update
+    name: "SCIM — Update"
+    description: "Modify SCIM token settings."
+    deprecated_at: null
+
+  - id: 64
+    flag_id: 17
+    action_id: 4
+    code: scim.delete
+    name: "SCIM — Delete"
+    description: "Revoke a SCIM token."
+    deprecated_at: null
+
+  # ── mfa_policy (flag 18) ──────────────────────────────────────────────
+  - id: 65
+    flag_id: 18
+    action_id: 1
+    code: mfa_policy.view
+    name: "MFA Policy — View"
+    description: "Read the org MFA enforcement policy."
+    deprecated_at: null
+
+  - id: 66
+    flag_id: 18
+    action_id: 6
+    code: mfa_policy.configure
+    name: "MFA Policy — Configure"
+    description: "Enable or modify the org MFA enforcement policy."
+    deprecated_at: null
+
+  # ── ip_allowlist (flag 19) ────────────────────────────────────────────
+  - id: 67
+    flag_id: 19
+    action_id: 1
+    code: ip_allowlist.view
+    name: "IP Allowlist — View"
+    description: "List IP allowlist entries."
+    deprecated_at: null
+
+  - id: 68
+    flag_id: 19
+    action_id: 2
+    code: ip_allowlist.create
+    name: "IP Allowlist — Create"
+    description: "Add an IP allowlist entry."
+    deprecated_at: null
+
+  - id: 69
+    flag_id: 19
+    action_id: 3
+    code: ip_allowlist.update
+    name: "IP Allowlist — Update"
+    description: "Modify an IP allowlist entry."
+    deprecated_at: null
+
+  - id: 70
+    flag_id: 19
+    action_id: 4
+    code: ip_allowlist.delete
+    name: "IP Allowlist — Delete"
+    description: "Remove an IP allowlist entry."
+    deprecated_at: null
+
+  - id: 71
+    flag_id: 19
+    action_id: 6
+    code: ip_allowlist.configure
+    name: "IP Allowlist — Configure"
+    description: "Toggle IP allowlist enforcement on or off."
+    deprecated_at: null
+
+  # ── impersonation (flag 20) ───────────────────────────────────────────
+  - id: 72
+    flag_id: 20
+    action_id: 1
+    code: impersonation.view
+    name: "Impersonation — View"
+    description: "List active impersonation sessions."
+    deprecated_at: null
+
+  - id: 73
+    flag_id: 20
+    action_id: 8
+    code: impersonation.impersonate
+    name: "Impersonation — Impersonate"
+    description: "Start an impersonation session as another user."
+    deprecated_at: null
+
+  # ── siem_export (flag 21) ─────────────────────────────────────────────
+  - id: 74
+    flag_id: 21
+    action_id: 1
+    code: siem_export.view
+    name: "SIEM Export — View"
+    description: "Read SIEM export configuration."
+    deprecated_at: null
+
+  - id: 75
+    flag_id: 21
+    action_id: 6
+    code: siem_export.configure
+    name: "SIEM Export — Configure"
+    description: "Configure SIEM export endpoint and filters."
+    deprecated_at: null
+
+  - id: 76
+    flag_id: 21
+    action_id: 7
+    code: siem_export.export
+    name: "SIEM Export — Export"
+    description: "Trigger a manual SIEM data export."
+    deprecated_at: null
+
+  # ── tos (flag 22) ─────────────────────────────────────────────────────
+  - id: 77
+    flag_id: 22
+    action_id: 1
+    code: tos.view
+    name: "Terms of Service — View"
+    description: "Read ToS acceptance status for org members."
+    deprecated_at: null
+
+  - id: 78
+    flag_id: 22
+    action_id: 6
+    code: tos.configure
+    name: "Terms of Service — Configure"
+    description: "Publish or update the org ToS and configure enforcement."
+    deprecated_at: null
+
+  # ── vault_secrets (flag 23) ───────────────────────────────────────────
+  - id: 79
+    flag_id: 23
+    action_id: 1
+    code: vault_secrets.view
+    name: "Vault Secrets — View"
+    description: "List secret keys (values never exposed via API)."
+    deprecated_at: null
+
+  - id: 80
+    flag_id: 23
+    action_id: 2
+    code: vault_secrets.create
+    name: "Vault Secrets — Create"
+    description: "Create a new secret entry."
+    deprecated_at: null
+
+  - id: 81
+    flag_id: 23
+    action_id: 3
+    code: vault_secrets.update
+    name: "Vault Secrets — Update"
+    description: "Update a secret value."
+    deprecated_at: null
+
+  - id: 82
+    flag_id: 23
+    action_id: 4
+    code: vault_secrets.delete
+    name: "Vault Secrets — Delete"
+    description: "Delete a secret."
+    deprecated_at: null
+
+  # ── vault_configs (flag 24) ───────────────────────────────────────────
+  - id: 83
+    flag_id: 24
+    action_id: 1
+    code: vault_configs.view
+    name: "Vault Configs — View"
+    description: "List configuration entries."
+    deprecated_at: null
+
+  - id: 84
+    flag_id: 24
+    action_id: 2
+    code: vault_configs.create
+    name: "Vault Configs — Create"
+    description: "Create a configuration entry."
+    deprecated_at: null
+
+  - id: 85
+    flag_id: 24
+    action_id: 3
+    code: vault_configs.update
+    name: "Vault Configs — Update"
+    description: "Update a configuration entry."
+    deprecated_at: null
+
+  - id: 86
+    flag_id: 24
+    action_id: 4
+    code: vault_configs.delete
+    name: "Vault Configs — Delete"
+    description: "Delete a configuration entry."
+    deprecated_at: null
+
+  # ── audit_explorer (flag 25) ──────────────────────────────────────────
+  - id: 87
+    flag_id: 25
+    action_id: 1
+    code: audit_explorer.view
+    name: "Audit Explorer — View"
+    description: "Browse and search the audit log."
+    deprecated_at: null
+
+  - id: 88
+    flag_id: 25
+    action_id: 7
+    code: audit_explorer.export
+    name: "Audit Explorer — Export"
+    description: "Export audit log entries."
+    deprecated_at: null
+
+  # ── audit_saved_views (flag 26) ───────────────────────────────────────
+  - id: 89
+    flag_id: 26
+    action_id: 1
+    code: audit_saved_views.view
+    name: "Audit Saved Views — View"
+    description: "List saved audit filter views."
+    deprecated_at: null
+
+  - id: 90
+    flag_id: 26
+    action_id: 2
+    code: audit_saved_views.create
+    name: "Audit Saved Views — Create"
+    description: "Create a saved audit filter view."
+    deprecated_at: null
+
+  - id: 91
+    flag_id: 26
+    action_id: 3
+    code: audit_saved_views.update
+    name: "Audit Saved Views — Update"
+    description: "Rename or modify a saved view."
+    deprecated_at: null
+
+  - id: 92
+    flag_id: 26
+    action_id: 4
+    code: audit_saved_views.delete
+    name: "Audit Saved Views — Delete"
+    description: "Delete a saved view."
+    deprecated_at: null
+
+  # ── monitoring_logs (flag 27) ─────────────────────────────────────────
+  - id: 93
+    flag_id: 27
+    action_id: 1
+    code: monitoring_logs.view
+    name: "Monitoring: Logs — View"
+    description: "View application logs."
+    deprecated_at: null
+
+  - id: 94
+    flag_id: 27
+    action_id: 7
+    code: monitoring_logs.export
+    name: "Monitoring: Logs — Export"
+    description: "Export log entries."
+    deprecated_at: null
+
+  # ── monitoring_metrics (flag 28) ──────────────────────────────────────
+  - id: 95
+    flag_id: 28
+    action_id: 1
+    code: monitoring_metrics.view
+    name: "Monitoring: Metrics — View"
+    description: "View metric charts and time-series."
+    deprecated_at: null
+
+  - id: 96
+    flag_id: 28
+    action_id: 7
+    code: monitoring_metrics.export
+    name: "Monitoring: Metrics — Export"
+    description: "Export metric data."
+    deprecated_at: null
+
+  # ── monitoring_traces (flag 29) ───────────────────────────────────────
+  - id: 97
+    flag_id: 29
+    action_id: 1
+    code: monitoring_traces.view
+    name: "Monitoring: Traces — View"
+    description: "View distributed traces."
+    deprecated_at: null
+
+  - id: 98
+    flag_id: 29
+    action_id: 7
+    code: monitoring_traces.export
+    name: "Monitoring: Traces — Export"
+    description: "Export trace data."
+    deprecated_at: null
+
+  # ── monitoring_dashboards (flag 30) ───────────────────────────────────
+  - id: 99
+    flag_id: 30
+    action_id: 1
+    code: monitoring_dashboards.view
+    name: "Monitoring: Dashboards — View"
+    description: "View monitoring dashboards."
+    deprecated_at: null
+
+  - id: 100
+    flag_id: 30
+    action_id: 2
+    code: monitoring_dashboards.create
+    name: "Monitoring: Dashboards — Create"
+    description: "Create a monitoring dashboard."
+    deprecated_at: null
+
+  - id: 101
+    flag_id: 30
+    action_id: 3
+    code: monitoring_dashboards.update
+    name: "Monitoring: Dashboards — Update"
+    description: "Modify a monitoring dashboard."
+    deprecated_at: null
+
+  - id: 102
+    flag_id: 30
+    action_id: 4
+    code: monitoring_dashboards.delete
+    name: "Monitoring: Dashboards — Delete"
+    description: "Delete a monitoring dashboard."
+    deprecated_at: null
+
+  # ── monitoring_alerts (flag 31) ───────────────────────────────────────
+  - id: 103
+    flag_id: 31
+    action_id: 1
+    code: monitoring_alerts.view
+    name: "Monitoring: Alerts — View"
+    description: "View alerting rules."
+    deprecated_at: null
+
+  - id: 104
+    flag_id: 31
+    action_id: 2
+    code: monitoring_alerts.create
+    name: "Monitoring: Alerts — Create"
+    description: "Create an alerting rule."
+    deprecated_at: null
+
+  - id: 105
+    flag_id: 31
+    action_id: 3
+    code: monitoring_alerts.update
+    name: "Monitoring: Alerts — Update"
+    description: "Modify an alerting rule."
+    deprecated_at: null
+
+  - id: 106
+    flag_id: 31
+    action_id: 4
+    code: monitoring_alerts.delete
+    name: "Monitoring: Alerts — Delete"
+    description: "Delete an alerting rule."
+    deprecated_at: null
+
+  # ── notify_templates (flag 32) ────────────────────────────────────────
+  - id: 107
+    flag_id: 32
+    action_id: 1
+    code: notify_templates.view
+    name: "Notify: Templates — View"
+    description: "List and read notification templates."
+    deprecated_at: null
+
+  - id: 108
+    flag_id: 32
+    action_id: 2
+    code: notify_templates.create
+    name: "Notify: Templates — Create"
+    description: "Create a notification template."
+    deprecated_at: null
+
+  - id: 109
+    flag_id: 32
+    action_id: 3
+    code: notify_templates.update
+    name: "Notify: Templates — Update"
+    description: "Edit a notification template."
+    deprecated_at: null
+
+  - id: 110
+    flag_id: 32
+    action_id: 4
+    code: notify_templates.delete
+    name: "Notify: Templates — Delete"
+    description: "Delete a notification template."
+    deprecated_at: null
+
+  # ── notify_deliveries (flag 33) ───────────────────────────────────────
+  - id: 111
+    flag_id: 33
+    action_id: 1
+    code: notify_deliveries.view
+    name: "Notify: Deliveries — View"
+    description: "View notification delivery history."
+    deprecated_at: null
+
+  - id: 112
+    flag_id: 33
+    action_id: 7
+    code: notify_deliveries.export
+    name: "Notify: Deliveries — Export"
+    description: "Export delivery history."
+    deprecated_at: null
+
+  # ── notify_send (flag 34) ─────────────────────────────────────────────
+  - id: 113
+    flag_id: 34
+    action_id: 1
+    code: notify_send.view
+    name: "Notify: Send — View"
+    description: "View send history and queue."
+    deprecated_at: null
+
+  - id: 114
+    flag_id: 34
+    action_id: 2
+    code: notify_send.create
+    name: "Notify: Send — Create"
+    description: "Trigger a notification send."
+    deprecated_at: null
+
+  # ── notify_preferences (flag 35) ─────────────────────────────────────
+  - id: 115
+    flag_id: 35
+    action_id: 1
+    code: notify_preferences.view
+    name: "Notify: Preferences — View"
+    description: "View user notification preferences."
+    deprecated_at: null
+
+  - id: 116
+    flag_id: 35
+    action_id: 2
+    code: notify_preferences.create
+    name: "Notify: Preferences — Create"
+    description: "Set notification preferences for a user."
+    deprecated_at: null
+
+  - id: 117
+    flag_id: 35
+    action_id: 3
+    code: notify_preferences.update
+    name: "Notify: Preferences — Update"
+    description: "Modify notification preferences."
+    deprecated_at: null
+
+  - id: 118
+    flag_id: 35
+    action_id: 4
+    code: notify_preferences.delete
+    name: "Notify: Preferences — Delete"
+    description: "Reset notification preferences."
+    deprecated_at: null
+
+  # ── notify_campaigns (flag 36) ────────────────────────────────────────
+  - id: 119
+    flag_id: 36
+    action_id: 1
+    code: notify_campaigns.view
+    name: "Notify: Campaigns — View"
+    description: "List and read campaign definitions."
+    deprecated_at: null
+
+  - id: 120
+    flag_id: 36
+    action_id: 2
+    code: notify_campaigns.create
+    name: "Notify: Campaigns — Create"
+    description: "Create a notification campaign."
+    deprecated_at: null
+
+  - id: 121
+    flag_id: 36
+    action_id: 3
+    code: notify_campaigns.update
+    name: "Notify: Campaigns — Update"
+    description: "Modify a campaign."
+    deprecated_at: null
+
+  - id: 122
+    flag_id: 36
+    action_id: 4
+    code: notify_campaigns.delete
+    name: "Notify: Campaigns — Delete"
+    description: "Delete a campaign."
+    deprecated_at: null
+
+  # ── notify_webpush (flag 37) ──────────────────────────────────────────
+  - id: 123
+    flag_id: 37
+    action_id: 1
+    code: notify_webpush.view
+    name: "Notify: Web Push — View"
+    description: "View web push subscriptions."
+    deprecated_at: null
+
+  - id: 124
+    flag_id: 37
+    action_id: 2
+    code: notify_webpush.create
+    name: "Notify: Web Push — Create"
+    description: "Register a web push subscription."
+    deprecated_at: null
+
+  - id: 125
+    flag_id: 37
+    action_id: 3
+    code: notify_webpush.update
+    name: "Notify: Web Push — Update"
+    description: "Modify a web push subscription."
+    deprecated_at: null
+
+  - id: 126
+    flag_id: 37
+    action_id: 4
+    code: notify_webpush.delete
+    name: "Notify: Web Push — Delete"
+    description: "Revoke a web push subscription."
+    deprecated_at: null
+
+  # ── feature_flags (flag 38) ───────────────────────────────────────────
+  - id: 127
+    flag_id: 38
+    action_id: 1
+    code: feature_flags.view
+    name: "Feature Flags — View"
+    description: "List and read feature flag definitions."
+    deprecated_at: null
+
+  - id: 128
+    flag_id: 38
+    action_id: 2
+    code: feature_flags.create
+    name: "Feature Flags — Create"
+    description: "Create a feature flag."
+    deprecated_at: null
+
+  - id: 129
+    flag_id: 38
+    action_id: 3
+    code: feature_flags.update
+    name: "Feature Flags — Update"
+    description: "Modify a feature flag definition."
+    deprecated_at: null
+
+  - id: 130
+    flag_id: 38
+    action_id: 4
+    code: feature_flags.delete
+    name: "Feature Flags — Delete"
+    description: "Soft-delete a feature flag."
+    deprecated_at: null
+
+  # ── feature_flag_rules (flag 39) ──────────────────────────────────────
+  - id: 131
+    flag_id: 39
+    action_id: 1
+    code: feature_flag_rules.view
+    name: "Feature Flag Rules — View"
+    description: "List targeting rules for a flag."
+    deprecated_at: null
+
+  - id: 132
+    flag_id: 39
+    action_id: 2
+    code: feature_flag_rules.create
+    name: "Feature Flag Rules — Create"
+    description: "Create a targeting rule."
+    deprecated_at: null
+
+  - id: 133
+    flag_id: 39
+    action_id: 3
+    code: feature_flag_rules.update
+    name: "Feature Flag Rules — Update"
+    description: "Modify a targeting rule."
+    deprecated_at: null
+
+  - id: 134
+    flag_id: 39
+    action_id: 4
+    code: feature_flag_rules.delete
+    name: "Feature Flag Rules — Delete"
+    description: "Delete a targeting rule."
+    deprecated_at: null
+
+  # ── feature_flag_overrides (flag 40) ──────────────────────────────────
+  - id: 135
+    flag_id: 40
+    action_id: 1
+    code: feature_flag_overrides.view
+    name: "Feature Flag Overrides — View"
+    description: "List per-entity overrides."
+    deprecated_at: null
+
+  - id: 136
+    flag_id: 40
+    action_id: 2
+    code: feature_flag_overrides.create
+    name: "Feature Flag Overrides — Create"
+    description: "Create a force-value override."
+    deprecated_at: null
+
+  - id: 137
+    flag_id: 40
+    action_id: 3
+    code: feature_flag_overrides.update
+    name: "Feature Flag Overrides — Update"
+    description: "Modify an override value."
+    deprecated_at: null
+
+  - id: 138
+    flag_id: 40
+    action_id: 4
+    code: feature_flag_overrides.delete
+    name: "Feature Flag Overrides — Delete"
+    description: "Remove an override."
+    deprecated_at: null
