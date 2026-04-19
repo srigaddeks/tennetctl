@@ -2059,3 +2059,303 @@ export type AttributionResolveResponse = {
   first_touch: AttributionTouch | null;
   last_touch: AttributionTouch | null;
 };
+
+export type ProductVisitorAlias = {
+  alias_anonymous_id: string;
+  linked_at: string;
+};
+
+export type ReferralCode = {
+  id: string;
+  code: string;
+  referrer_user_id: string;
+  org_id: string;
+  workspace_id: string;
+  reward_config: Record<string, unknown>;
+  is_active: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  conversion_count: number;
+  conversion_value_cents_total: number;
+};
+
+export type ReferralListResponse = {
+  items: ReferralCode[];
+  total: number;
+};
+
+export type CreateReferralBody = {
+  code: string;
+  referrer_user_id: string;
+  workspace_id?: string;
+  reward_config?: Record<string, unknown>;
+};
+
+export type ShortLink = {
+  id: string;
+  slug: string;
+  target_url: string;
+  org_id: string;
+  workspace_id: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  is_active: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ShortLinkListResponse = {
+  items: ShortLink[];
+  total: number;
+};
+
+export type CreateShortLinkBody = {
+  slug?: string | null;
+  target_url: string;
+  workspace_id?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
+};
+
+export type Partner = {
+  id: string;
+  slug: string;
+  display_name: string;
+  contact_email: string;
+  org_id: string;
+  workspace_id: string;
+  user_id: string | null;
+  tier_id: number;
+  tier_code: string;
+  tier_label: string;
+  default_payout_bp: number;
+  is_active: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  code_count: number;
+  conversion_count: number;
+  conversion_value_cents_total: number;
+  payout_paid_cents: number;
+  payout_pending_cents: number;
+};
+
+export type PartnerListResponse = {
+  items: Partner[];
+  total: number;
+};
+
+export type CreatePartnerBody = {
+  slug: string;
+  display_name: string;
+  contact_email: string;
+  workspace_id?: string;
+  user_id?: string;
+  tier_id?: number;
+};
+
+export type PartnerCodeLink = {
+  id: string;
+  partner_id: string;
+  code_kind: "referral" | "promo";
+  referral_code_id: string | null;
+  promo_code_id: string | null;
+  payout_bp_override: number | null;
+  created_at: string;
+  code: string | null;
+  promo_status: string | null;
+  is_active: boolean | null;
+};
+
+export type PartnerCodeListResponse = {
+  items: PartnerCodeLink[];
+};
+
+export type PartnerPayout = {
+  id: string;
+  partner_id: string;
+  period_start: string;
+  period_end: string;
+  amount_cents: number;
+  currency: string;
+  status: "pending" | "paid" | "failed" | "cancelled";
+  paid_at: string | null;
+  external_ref: string | null;
+  metadata: Record<string, unknown>;
+  occurred_at: string;
+  created_at: string;
+};
+
+export type PartnerPayoutListResponse = {
+  items: PartnerPayout[];
+};
+
+export type PromoRedemptionKind = "discount_pct" | "discount_cents" | "free_trial_days" | "custom";
+export type PromoStatus = "scheduled" | "active" | "expired" | "inactive" | "exhausted";
+
+export type PromoCode = {
+  id: string;
+  code: string;
+  org_id: string;
+  workspace_id: string;
+  redemption_kind: PromoRedemptionKind;
+  redemption_config: Record<string, unknown>;
+  description: string | null;
+  max_total_uses: number | null;
+  max_uses_per_visitor: number;
+  starts_at: string | null;
+  ends_at: string | null;
+  eligibility: Record<string, unknown>;
+  is_active: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  redemption_count: number;
+  rejection_count: number;
+  status: PromoStatus;
+};
+
+export type PromoListResponse = {
+  items: PromoCode[];
+  total: number;
+};
+
+export type CreatePromoBody = {
+  code: string;
+  workspace_id?: string;
+  redemption_kind: PromoRedemptionKind;
+  redemption_config?: Record<string, unknown>;
+  description?: string;
+  max_total_uses?: number | null;
+  max_uses_per_visitor?: number;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  eligibility?: Record<string, unknown>;
+};
+
+export type RedeemPromoResponse = {
+  outcome: string;
+  redemption_id: string | null;
+  promo_code_id: string | null;
+  redemption_kind: PromoRedemptionKind | null;
+  redemption_config: Record<string, unknown> | null;
+  rejection_reason: string | null;
+};
+
+export type ProductProfileTrait = {
+  code: string;
+  label: string;
+  value_type: "text" | "jsonb" | "smallint";
+  value: unknown;
+  source: string;
+  set_at: string;
+};
+
+export type ProductProfile = {
+  id: string;
+  anonymous_id: string;
+  user_id: string | null;
+  org_id: string;
+  workspace_id: string;
+  first_seen: string;
+  last_seen: string;
+  email: string | null;
+  phone: string | null;
+  name: string | null;
+  plan: string | null;
+  mrr_cents: unknown;
+  country: string | null;
+  company: string | null;
+  role: string | null;
+  signup_at: string | null;
+  last_login_at: string | null;
+  first_utm_campaign: string | null;
+  first_referrer: string | null;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+  traits?: ProductProfileTrait[] | null;
+};
+
+export type ProductProfileListResponse = {
+  items: ProductProfile[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type ProductFunnelStep = {
+  step: number;
+  event_name: string;
+  visitors: number;
+  conversion_rate_from_first: number;
+};
+
+export type ProductFunnelResponse = {
+  steps: ProductFunnelStep[];
+  days: number;
+};
+
+export type ProductRetentionCohort = {
+  cohort_week: string;
+  cohort_size: number;
+  retained_weeks: number[];
+};
+
+export type ProductRetentionResponse = {
+  cohorts: ProductRetentionCohort[];
+  weeks: number;
+};
+
+export type UtmAggregateRow = {
+  utm_source: string;
+  utm_campaign: string;
+  visitors: number;
+  conversions: number;
+};
+
+export type UtmAggregateResponse = {
+  rows: UtmAggregateRow[];
+  days: number;
+};
+
+export type ProductVisitorDetail = {
+  id: string;
+  anonymous_id: string;
+  user_id: string | null;
+  org_id: string;
+  workspace_id: string;
+  first_seen: string;
+  last_seen: string;
+  first_utm_source: string | null;
+  first_utm_medium: string | null;
+  first_utm_campaign: string | null;
+  first_utm_term: string | null;
+  first_utm_content: string | null;
+  first_referrer: string | null;
+  first_landing_url: string | null;
+  is_active: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  last_touch: AttributionTouch | null;
+  aliases: ProductVisitorAlias[];
+};

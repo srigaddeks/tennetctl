@@ -32,6 +32,7 @@ MODULE_ROUTERS: dict[str, str] = {
     "audit": "backend.02_features.04_audit.routes",
     "notify": "backend.02_features.06_notify.routes",
     "monitoring": "backend.02_features.05_monitoring.routes",
+    "product_ops": "backend.02_features.10_product_ops.routes",
 }
 
 

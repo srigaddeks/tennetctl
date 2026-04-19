@@ -27,6 +27,25 @@ logger = logging.getLogger("tennetctl.runner")
 
 _SCHEMA = '"01_catalog"'
 
+# Handler cache: node_key → handler class. Populated on first resolution.
+# Hot-reload (backend/01_catalog/hot_reload.py) calls `invalidate_handlers()`
+# when a manifest changes in dev mode, ensuring code edits are picked up
+# without a backend restart.
+_HANDLER_CACHE: dict[str, type] = {}
+
+
+def invalidate_handlers(key: str | None = None) -> None:
+    """Evict cached handler classes.
+
+    Called by the hot-reload watcher in dev, and by tests that need to
+    re-import handler modules. Safe to call at any time — next `run_node`
+    resolution will re-walk the manifest and populate the cache.
+    """
+    if key is None:
+        _HANDLER_CACHE.clear()
+    else:
+        _HANDLER_CACHE.pop(key, None)
+
 
 async def _lookup_node(conn: Any, key: str) -> dict | None:
     """Fetch node metadata joined with kind + tx mode codes. Returns dict or None."""
@@ -52,8 +71,15 @@ def _resolve_handler(meta: dict) -> type:
     Use the loader's shared handler path resolution logic by walking manifests.
     Fast path: the catalog row has the relative handler_path; we need the feature
     directory too. Search both real + fixture manifests for a match on the key.
+
+    Cached after first resolution — the manifest walk is O(features) and
+    importlib has its own module cache, but skipping both on hot paths is worth
+    a dict lookup. See `invalidate_handlers()` for the hot-reload hook.
     """
     key = meta["key"]
+    cached = _HANDLER_CACHE.get(key)
+    if cached is not None:
+        return cached
     # Find the feature this node belongs to. We know key format is
     # "{feature}.{sub}.{action..}", so feature_key is the first segment.
     feature_key = key.split(".", 1)[0]
@@ -77,7 +103,9 @@ def _resolve_handler(meta: dict) -> type:
         module_path = _loader._handler_import_path(manifest_path, meta["handler_path"])
         attr = meta["handler_path"].rsplit(".", 1)[-1]
         mod = _import_module(module_path)
-        return getattr(mod, attr)
+        handler_cls = getattr(mod, attr)
+        _HANDLER_CACHE[key] = handler_cls
+        return handler_cls
     raise _errors.NodeNotFound(
         f"handler for node {key!r} could not be resolved (no matching manifest found)",
         node_key=key,

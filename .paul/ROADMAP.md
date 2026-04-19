@@ -8,11 +8,48 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 ## Current Milestone
 
+**v0.2.2 Unified SDK Observability** (v0.2.2) — NEXT
+Status: Queued — requires monitoring backend (Phase 13) verified live before plan.
+Theme: Add metrics + logs + traces to the same SDK. `tennetctl.autoinstrument(app)` makes backend services self-observing in one line.
+Phases: 0 of 2 (Phases 30–31)
+
+**v0.2.1 Unified SDK Core** (v0.2.1) — ✅ COMPLETE (2026-04-18)
+Theme shipped: Polyglot SDK (Python + TypeScript) with single client covering auth + flags + iam + audit + notify.
+Phases: 2 of 2 complete. 114 tests green across both languages, ≥93% coverage each.
+See: `.paul/phases/28-sdk-core-auth/` + `.paul/phases/29-sdk-core-flags-iam-audit-notify/`
+
+## Queued Milestones
+
+**v0.2.2 Unified SDK Observability** (v0.2.2) — Queued
+Theme: Add metrics + logs + traces to the same SDK. `tennetctl.autoinstrument(app)` makes backend services self-observing in one line.
+Phases: 0 of 2 (Phases 30–31)
+
+**v0.2.3 Unified SDK Platform** (v0.2.3) — Queued
+Theme: Close SDK coverage — vault + catalog inspection — and compile request-path flags to APISIX so the gateway evaluates without backend round-trip.
+Phases: 0 of 2 (Phases 32–33)
+
+**v0.2.4 Admin UI Coverage Pass** (v0.2.4) — Queued
+Theme: Every feature module has a complete admin portal page. Walk every feature, enumerate gaps, build missing pages, unify navigation. All pages dogfood the unified SDK.
+Phases: 0 of 3 (Phases 34–36)
+
+**v0.1.8 Runtime Hardening** (v0.1.8) — Queued
+Theme: Close pre-OSS audit gaps — catalog hot-reload, rate limiting, HIBP, passkey hardening, 2FA enforcement, NCP v1 doc sync, handler caching, versioning pattern.
+Phases: 0 of 3 (Phases 37–39)
+
+**v0.3.0 Monitoring Alerting + SLOs** (v0.3.0) — Queued
+Theme: Finish Phase 13 (paused at 13-07). Alerting end-to-end, SLO tracking, dashboard sharing. Monitoring SDK already shipped in v0.2.2.
+Phases: 0 of 2 (Phases 40–41)
+
+**v0.4.0 Canvas + Visual Flow Viewer** (v0.4.0) — Queued
+Theme: React Flow canvas reads live catalog via the same `client.catalog` surface external apps use. Read-only v1 — typed ports, DAG render, execution trace overlay.
+Phases: 0 of 3 (Phases 42–44)
+
+## Previous Milestones
+
 **v0.2.0 Feature Flags + AuthZ Control Plane** (v0.2.0)
-Status: 🚧 In Progress
-Theme: Unified AuthZ + Feature Control Plane — roles bundle permissions and feature flags into one control surface. Full flag evaluation engine (targeting, % rollout, SDK, APISIX), feature-scoped permissions declared in feature manifests, enforcement + audit across every route, and a best-in-class role designer + flag dashboard UX ported from the 99_ref project.
-Phases: 0 of 5 complete (Phases 23–27, 13 plans)
-Reference: 99_ref/backend/03_auth_manage/ analyzed 2026-04-18 — 6,581 lines across 18 sub-features mapped to our NCP v1 + EAV model
+Status: ✅ Complete (2026-04-18 via 23R rebase)
+Theme: Unified AuthZ + Feature Control Plane. Original Phases 23–27 were condensed into the 23R rebase (3 plans, commits ec93b58 → eab604b → d874a14) delivering the unified flag+permission role model. SDK, APISIX compilation, and portal views carried forward to v0.2.1 / v0.2.2.
+Phases: Shipped via 23R (23R-01, 23R-02, 23R-03). Original 23–27 plans closed as superseded.
 
 **v0.1.9 IAM Enterprise** (v0.1.9)
 Status: ✅ Complete (2026-04-18)
@@ -63,11 +100,29 @@ Phases: 6 of 6 complete
 | 20 | IAM Hardening for OSS — config-driven policy, lockout, session limits, audit closure, OTP→Notify, key rotation, metrics (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
 | 21 | IAM OSS Completion — email verification, invite flow, first-run wizard, deactivate vs delete, GDPR, session UI (v0.1.6) | 6 | ✅ Complete | 2026-04-17 |
 | 22 | IAM Enterprise — OIDC SSO, SAML SSO, SCIM, impersonation, MFA enforcement, IP allowlist, SIEM export (v0.1.9) | 8 | ✅ Complete | 2026-04-18 |
-| 23 | Feature Flag Engine Foundation — schema, evaluation engine, management API, admin UI (v0.2.0) | 3 | Not started | - |
-| 24 | Feature-Scoped Permissions + Role Redesign — dim_permissions from manifests, role_level, AccessContext (v0.2.0) | 3 | Not started | - |
-| 25 | SDK + Gateway Compilation — Python/TS SDK, APISIX request-path flag sync (v0.2.0) | 2 | Not started | - |
-| 26 | Awesome UX — Flag dashboard, Role Designer, Targeting rule builder, Evaluation playground (v0.2.0) | 3 | Not started | - |
-| 27 | Portal Views + AuthZ Audit Explorer — role-gated navigation, authz event explorer (v0.2.0) | 2 | Not started | - |
+| 23 | Feature Flag Engine Foundation (v0.2.0) | 3 | ✅ Superseded by 23R | 2026-04-18 |
+| 24 | Feature-Scoped Permissions + Role Redesign (v0.2.0) | 3 | ✅ Superseded by 23R | 2026-04-18 |
+| 25 | SDK + Gateway Compilation (v0.2.0) | 2 | ⏭ Carried to v0.2.1 (Phase 28/29) | - |
+| 26 | Awesome UX (v0.2.0) | 3 | ✅ Superseded by 23R (Role Designer shipped) | 2026-04-18 |
+| 27 | Portal Views + AuthZ Audit Explorer (v0.2.0) | 2 | ⏭ Carried to v0.2.2 (Phase 30/31) | - |
+| 23R | Unified Flag+AuthZ Rebase (v0.2.0) | 3 | ✅ Complete | 2026-04-18 |
+| 28 | SDK Core — skeleton + auth module (v0.2.1) | 2 | ✅ Complete | 2026-04-18 |
+| 29 | SDK Core — flags + iam + audit + notify modules (v0.2.1) | 2 | ✅ Complete | 2026-04-18 |
+| 30 | SDK Observability — metrics + logs (v0.2.2) | 1 | ✅ Complete | 2026-04-18 |
+| 31 | SDK Observability — traces + auto-instrument (v0.2.2) | 1 | 🟡 Partial (query shipped; autoinstrument deferred) | 2026-04-18 |
+| 32 | SDK Platform — vault + catalog modules (v0.2.3) | 1 | ✅ Complete | 2026-04-18 |
+| 33 | APISIX Gateway Sync (v0.2.3) | 1 | ✅ Complete | 2026-04-18 |
+| 34 | Admin UI — coverage audit (v0.2.4) | 1 | ✅ Complete | 2026-04-18 |
+| 35 | Admin UI — build missing critical pages (v0.2.4) | TBD | Not started | - |
+| 36 | Admin UI — polish + unified nav (v0.2.4) | TBD | Not started | - |
+| 37 | DX + Catalog Hot-Reload (v0.1.8) | 1 | ✅ Complete | 2026-04-18 |
+| 38 | Auth Hardening — rate limit, HIBP, passkey, 2FA policy (v0.1.8) | TBD | Not started | - |
+| 39 | NCP v1 Maturity — doc sync, handler caching, versioning, bulk ops (v0.1.8) | TBD | Not started | - |
+| 40 | Monitoring Alerting (v0.3.0) | TBD | Not started | - |
+| 41 | Monitoring SLO + dashboard sharing (v0.3.0) | TBD | Not started | - |
+| 42 | Flow schema + backend (v0.4.0) | TBD | Not started | - |
+| 43 | Canvas renderer (v0.4.0) | TBD | Not started | - |
+| 44 | Trace overlay + search (v0.4.0) | TBD | Not started | - |
 
 ## Phase Details
 
@@ -617,35 +672,283 @@ injection and full pytest + Robot E2E verification.
 
 ---
 
-## Future Milestones (post-v0.1.6)
+### Phase 28: SDK Core — skeleton + auth module (v0.2.1)
 
-### v0.1.8 Runtime Hardening (deferred gaps)
-Gaps surfaced during gap analysis (2026-04-16). Close before wider adoption:
-- Versioning operationalized (v1 → v2 migration pattern working in practice)
-- Async effect dispatch via NATS JetStream wired to effect nodes
-- Gateway sync: request-kind nodes propagated to APISIX config
-- Dev hot-reload of catalog on manifest change (not just restart)
-- Bulk operation patterns documented (`get_many` alongside every `get`)
-- Passkey audit-coverage + hardening
-- Signin/signup rate limiting (per-IP + per-email)
-- HaveIBeenPwned breach-password check
-- 2FA-required policy enforcement (per-org + per-role)
+**Goal:** Both `tennetctl-py` (Python) and `@tennetctl/sdk` (TypeScript) exist with a working transport layer and a complete `auth` module.
+**Depends on:** 23R (unified role/permission model), Phase 14 (API key middleware).
+
+**Scope:**
+- Package scaffolding: `sdk/python/` + `sdk/typescript/` in repo, versioning (semver), release pipeline (PyPI-ready + npm-ready; internal registry for v1)
+- Transport layer: `httpx.AsyncClient` (py) + native `fetch` (ts); bearer auth from API key or session cookie; retry with exponential backoff; envelope parsing (`{ok, data, error}`)
+- `client.auth` module parity across both languages:
+  - `signin(email, password)` / `signin_with_oauth(provider)`
+  - `signout()`
+  - `me()` → session user
+  - `session.validate(token)` / `session.list()` / `session.revoke(id)`
+  - `api_keys.list()` / `api_keys.create(name, scopes)` → `{token_shown_once, ...}` / `api_keys.revoke(id)` / `api_keys.rotate(id)`
+- Typed errors: `TennetctlError` base + `AuthError`, `RateLimitError`, `NetworkError` subclasses
+- pytest + vitest coverage ≥80% on transport + auth
+- SDK quickstart guide in `03_docs/00_main/09_guides/sdk-quickstart.md`
+
+**Plans:**
+- [x] 28-01: Python SDK — scaffolding + transport + `client.auth` + pytest (2026-04-18)
+- [x] 28-02: TypeScript SDK — scaffolding + transport + `client.auth` + vitest (2026-04-18)
+
+### Phase 29: SDK Core — flags + iam + audit + notify modules (v0.2.1) — ✅ COMPLETE 2026-04-18
+
+**Goal:** SDK covers the "core business workflow" set — feature flags, IAM read helpers, audit query, transactional notify.
+
+**Shipped:**
+- `client.flags.evaluate(key, entity, context?)` + `evaluate_bulk` with 60s TTL cache (Python + TS)
+- `client.iam.users/orgs/workspaces/roles/groups.list/get` read-only (Python + TS)
+- `client.audit.events.list/get/stats/tail/funnel/retention/outbox_cursor/event_keys` — NO emit() (backend-only via node)
+- `client.notify.send(template_key, recipient_user_id, variables?, channel?, idempotency_key?)` — optional `Idempotency-Key` header
+- 26 new Python tests + 21 new TS tests = 47 new tests in this phase
+- Per-module reference docs updated
+
+**Plans:**
+- [x] 29-01: Python flags/iam/audit/notify + pytest (2026-04-18)
+- [x] 29-02: TypeScript flags/iam/audit/notify + vitest (2026-04-18)
+
+---
+
+### Phase 30: SDK Observability — metrics + logs (v0.2.2)
+
+**Goal:** `client.metrics` and `client.logs` modules with async batching, cardinality caps, and fail-open semantics.
+**Depends on:** Phase 29 (SDK core complete), Phase 13-02 (metrics backend), Phase 13-03 (logs backend)
+
+**Scope:**
+- `client.metrics.increment(name, value?, labels?)`, `.observe(name, value, labels?)`, `.gauge_set(name, value, labels?)`
+- `client.logs.emit(level, msg, attrs?)` — structlog-compatible in py; console-bridge available in ts
+- Async batch flush (configurable window, default 1s / 100 items); drops after retry budget, never blocks
+- Cardinality cap enforced SDK-side (mirrors backend's `MetricsStore.increment` behavior)
+- Sampling policy exposed as config
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 31: SDK Observability — traces + auto-instrument (v0.2.2)
+
+**Goal:** Distributed tracing in the SDK + one-line auto-instrument for Python backend services. Browser SDK captures page-view + long-task traces.
+**Depends on:** Phase 30 (logs/metrics infrastructure), Phase 13-03 (OTLP receiver)
+
+**Scope:**
+- `client.traces.start_span(name, parent_ctx?)` with context managers (py) / async-local-storage (ts)
+- W3C trace-context propagation — inject/extract HTTP headers
+- `tennetctl.autoinstrument(app)` — one call instruments FastAPI + asyncpg + httpx + Jinja2 in Python
+- Browser SDK: auto page-view, long-task, first-input-delay, cumulative-layout-shift captured as spans
+- Sampling policy: head-based (fixed %) + tail-based (keep all errors + slow)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+### Phase 32: SDK Platform — vault + catalog modules (v0.2.3)
+
+**Goal:** Close SDK coverage — vault secret access (scoped, audited, never cached in SDK memory) + catalog inspection (useful for meta-UIs and for the v0.4.0 canvas).
+**Depends on:** Phase 29 (SDK core), Phase 7 (vault backend), Phase 2 (catalog).
+
+**Scope:**
+- `client.vault.get_secret(key)` — forwards to `/v1/vault/{key}`; server-side audit; SDK never caches plaintext
+- Browser TS SDK: `vault.get_signed_ref(key)` — returns short-lived HMAC URL, never plaintext in browser memory
+- `client.catalog.list_features()`, `.list_sub_features(feature?)`, `.list_nodes(feature?, kind?)`, `.get_flow(key)` — read-only manifest inspection
+- Full OpenAPI spec + SDK regeneration CI check (drift → fail build)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 33: APISIX Gateway Sync (v0.2.3)
+
+**Goal:** Request-path flags evaluate at the gateway with zero backend round-trip.
+**Depends on:** 23R (flag engine), running APISIX container.
+
+**Scope:**
+- Add `kind` column on `fct_flags` (dim: `effect` / `request`)
+- APISIX sync worker: on `request`-kind flag mutation, PATCH APISIX Admin API with `traffic-split` (rollout %) + `consumer-restriction` (segment match)
+- Boot reconcile: on startup, diff APISIX state vs Postgres `request`-kind flags, push deltas
+- Audit `flags.apisix.synced` / `flags.apisix.sync_failed` with payload diff
+- Admin UI badge on each flag showing APISIX sync status (in-sync / drift / sync-failed)
+- Live integration test: mutate flag → observe APISIX config change → curl through gateway sees new value
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+### Phase 34: Admin UI — coverage audit (v0.2.4)
+
+**Goal:** Produce a coverage matrix: every feature module × every admin surface it needs × current status. Output drives Phases 35–36.
+**Depends on:** 23R (unified role/permission model), Phase 29 (SDK available for dogfooding).
+
+**Scope:**
+- Walk every feature in `backend/02_features/` and every sub-feature
+- For each sub-feature, enumerate expected admin pages (list, detail, create/edit, settings)
+- Check which exist in `frontend/src/app/` and which are stub/missing
+- Severity ranking: critical (blocks admin day-to-day) / nice-to-have / polish
+- Output: `.paul/phases/34-admin-ui-coverage-audit/COVERAGE-MATRIX.md`
+- Known gaps to verify: Workspaces UI, Catalog browser, System health dashboard, Module toggles, Auth policy at-scale, Notify Suppressions + Scheduled + Fallback + Analytics depth, SIEM destinations, Portal Views (from 23R), AuthZ Explorer (from 23R)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 35: Admin UI — build missing critical pages (v0.2.4)
+
+**Goal:** Close all critical-severity gaps from the Phase 34 coverage matrix. Every page dogfoods the unified SDK.
+**Depends on:** Phase 34 (coverage matrix), Phase 29 (SDK).
+
+**Scope:**
+- Build pages enumerated as critical in Phase 34 output
+- All frontend code uses `@tennetctl/sdk` — zero direct `apiFetch` calls in new code
+- Design tokens + component library: standardize table, filter, action button, loading/empty/error states
+- Permission-gate every page via resolved role (23R unified model)
+- Playwright MCP verification per page
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 36: Admin UI — polish + unified nav (v0.2.4)
+
+**Goal:** Every admin surface feels like one product. Portal views (deferred from 23R) drive role-gated navigation.
+**Depends on:** Phase 35 (pages exist).
+
+**Scope:**
+- Port the original 23R Phase 27 portal-views model: `dim_portal_views` + `fct_view_routes` + `lnk_role_views`
+- Frontend navigation shell reads resolved views from AccessContext, renders per-role sidebar, hides routes user can't access
+- Seeded portals: `platform`, `iam`, `audit`, `monitoring`, `notify`, `vault`, `flags`, `catalog`
+- AuthZ Audit Explorer (`/audit/authz`) — pre-filtered view for authz events (also from 23R)
+- Polish pass: loading skeletons consistent, empty states have actionable CTA, error boundaries recover gracefully
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+### Phase 37: DX + Catalog Hot-Reload (v0.1.8)
+
+**Goal:** Dev feedback loop under 5 seconds. Manifest change → catalog reloaded without restart.
+
+**Scope:**
+- `watchdog` on `feature.manifest.yaml` in dev mode (`TENNETCTL_ENV=dev` only)
+- Re-run catalog upsert + cross-import linter on change
+- Handler class caching in runner — eliminate per-invocation `import_module`
+- Pre-commit hook wires cross-import linter; documented in CONTRIBUTING
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 38: Auth Hardening — rate limit, HIBP, passkey, 2FA policy (v0.1.8)
+
+**Goal:** Close pre-OSS audit gaps deferred from v0.1.6.
+
+**Scope:**
+- Signin/signup rate limiting per-IP + per-email (Valkey counters; Postgres fallback)
+- HaveIBeenPwned k-anonymity check on password create/update; blocks if breached
+- Passkey hardening — full `iam.passkey.*` audit, device revocation, attestation verification
+- 2FA-required policy enforcement — per-org + per-role gate blocks session creation if unenrolled
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 39: NCP v1 Maturity — doc sync, versioning, bulk ops (v0.1.8)
+
+**Goal:** Protocol doc matches reality; versioning pattern demonstrated; bulk ops documented.
+
+**Scope:**
+- NCP v1 §9 doc sync (setup-bypass + authz hook)
+- NCP v1 §11 doc sync (control nodes may read)
+- `get_many` alongside every `get` in repos + services; CONTRIBUTING updated
+- v1 → v2 node migration demonstrated on one real upgrade
+- `pool` promoted from `NodeContext.extras['pool']` to first-class field
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+### Phase 40: Monitoring Alerting (v0.3.0)
+
+**Goal:** Unpause Phase 13-08. Ship alert rules + evaluator + silences + Notify integration end-to-end.
+**Depends on:** Phase 13 (paused at 13-07), Phase 11 (Notify critical category).
+
+**Scope:**
+- Alert rule designer UI (metric + threshold + duration + channels)
+- Alert evaluator worker; LISTEN/NOTIFY sub-minute evaluation
+- Silences with expiration + dedup window + escalation chain
+- Deliver via Notify `critical` category
+- Alerts UI: active / acked / silenced / history
+- pg_cron partition manager verified in live deploy; retention tiers working
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 41: Monitoring SLO + dashboard sharing (v0.3.0)
+
+**Goal:** SLO tracking + dashboard sharing + saved queries. (Monitoring SDK already lives in v0.2.2.)
+
+**Scope:**
+- SLO tracking: error-budget calc on top of metrics; burn-rate rendering
+- Saved queries + per-user query history
+- Signed dashboard share links (optional embed token)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+### Phase 42: Flow schema + backend (v0.4.0)
+
+**Goal:** Activate flow composition tables the catalog has referenced but never populated.
+
+**Scope:**
+- `fct_flows`, `fct_flow_nodes`, `lnk_flow_edges` migrations
+- Manifest-driven flow registration (feature declares flows alongside nodes)
+- DAG acyclicity + typed-edge compatibility validation
+- Read-path endpoints exposed via `client.catalog.get_flow(key)` (from Phase 32)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 43: Canvas renderer (v0.4.0)
+
+**Goal:** React Flow reads live catalog and renders every flow as a DAG. Canvas consumes the same `client.catalog` external apps use.
+
+**Scope:**
+- `/flows` list + `/flows/[key]` detail using React Flow (XY Flow)
+- Typed ports per node (input/output schemas from manifest)
+- Node detail drawer — schemas, handler path, execution policy
+- Virtualization spike for >200-node flows
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+### Phase 44: Trace overlay + search (v0.4.0)
+
+**Goal:** Pick a trace_id; canvas animates node activation with timing. Searchable across flows.
+
+**Scope:**
+- Trace overlay — select trace_id, nodes animate in execution order with duration chips
+- Search: find flows by node/feature/kind
+- Recent-executions list on node detail drawer
+- Permalink per flow (URL restores canvas state)
+
+**Plans:**
+- [ ] TBD during /paul:plan
+
+---
+
+## Future Milestones (post-v0.4.0)
 
 ### v0.2 Platform Access Layer
 - **MCP Integration** — `inspect / search / scaffold / validate / run` generic tools (ADR-024) over the catalog
 - Scaffolder CLI — template-driven feature/sub-feature/node creation
 - Agent indices — `_index.yaml` generated alongside manifests if the simple pattern proves insufficient
-- Flow composition tables (`fct_flows`, `fct_flow_nodes`, `lnk_flow_edges`) activated — required before visual canvas
-
-### v0.3 Canvas + Monitoring
-- React Flow read-only canvas reads catalog + flows, renders DAG
-- Monitoring feature vertical (traces, metrics, logs via NATS)
 
 ### v1.0 Enterprise
-- Feature flag evaluation at gateway
 - Multi-region catalog replication
 - Visual flow editor (writeable canvas)
+- Enterprise support contract tier
 
 ---
 *Roadmap created: 2026-04-12*
-*Last updated: 2026-04-17 — v0.1.9 IAM Enterprise milestone opened. Phase 22 (8 plans) active. Testing convention changed: Robot Framework removed, Playwright MCP for UI verification going forward.*
+*Last updated: 2026-04-18 — Rescoped around unified SDK + admin UI coverage. v0.2.0 closed via 23R. v0.2.1 Unified SDK Core active; v0.2.2/v0.2.3/v0.2.4 extend SDK + admin UI; v0.1.8/v0.3.0/v0.4.0 follow. Phases 28–44.*

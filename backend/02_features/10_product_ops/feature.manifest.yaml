@@ -1,0 +1,326 @@
+apiVersion: tennetctl/v1
+kind: Feature
+
+metadata:
+  key: product_ops
+  number: 10
+  module: product_ops
+  always_on: false
+  label: Product Ops
+  description: Mixpanel/PostHog-class product analytics + acquisition. Anonymous-first browser SDK ingest, UTM attribution, link shortener (Phase 46), referrals (Phase 47), generalized funnels (Phase 48). Separate from 04_audit per ADR-030 — different scope contract, different privacy contract, different partition strategy. Optional module; gated by TENNETCTL_MODULES.
+  manifest_version: 1
+
+spec:
+  depends_on_modules:
+    - iam
+    - audit
+    - vault
+
+  sub_features:
+    - key: product_ops.events
+      number: 1
+      label: Product Events
+      description: evt_product_events ingest + read views + LISTEN/NOTIFY live tail. POST /v1/track accepts batches; per-event audit is bypassed (one summary audit per batch). UTM attribution rolls into fct_visitors first/last touch via product.touches.record.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "01_dim_event_kinds"
+          - "02_dim_attribution_sources"
+          - "03_dim_attr_defs"
+          - "10_fct_visitors"
+          - "40_lnk_visitor_aliases"
+          - "60_evt_product_events"
+          - "60_evt_attribution_touches"
+        views:
+          - "v_visitors"
+          - "v_product_events"
+        seeds: []
+      nodes:
+        - key: product_ops.events.ingest
+          kind: effect
+          handler: sub_features.01_events.nodes.ingest.IngestProductEvents
+          label: Ingest Product Events
+          description: Accept a batch of browser-emitted events. Resolves project_key → workspace_id via vault.secrets.get; truncates client IP per privacy contract; enforces 256-char UTM cap + 500-distinct-event-name-per-workspace-per-day cap (vault-tunable); upserts visitor with first/last touch; bulk-inserts evt_product_events + evt_attribution_touches; emits ONE audit summary for the batch (per-event audit bypassed per ADR-030).
+          emits_audit: true
+          version: 1
+          tags: [product_ops, ingest, hot_path]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: own
+        - key: product_ops.events.attribution_resolve
+          kind: control
+          handler: sub_features.01_events.nodes.resolve_attribution.ResolveAttribution
+          label: Resolve Attribution
+          description: Returns {first_touch, last_touch} for a given visitor_id. Read-only over fct_visitors + most-recent evt_attribution_touches row. Used by funnel/cohort/retention queries in Phase 48.
+          emits_audit: false
+          version: 1
+          tags: [product_ops, attribution, read]
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+      routes:
+        - method: POST
+          path: /v1/track
+          handler: sub_features.01_events.routes.track_route
+        - method: GET
+          path: /v1/product-events
+          handler: sub_features.01_events.routes.list_product_events_route
+        - method: GET
+          path: /v1/product-events/utm-aggregate
+          handler: sub_features.01_events.routes.utm_aggregate_route
+        - method: POST
+          path: /v1/product-events/funnel
+          handler: sub_features.01_events.routes.funnel_route
+        - method: GET
+          path: /v1/product-events/retention
+          handler: sub_features.01_events.routes.retention_route
+        - method: GET
+          path: "/v1/product-visitors/{visitor_id}"
+          handler: sub_features.01_events.routes.get_product_visitor_route
+      ui_pages:
+        - path: /product
+          label: Product Ops
+          description: Live event stream + visitor drilldown.
+    - key: product_ops.links
+      number: 2
+      label: Link Shortener
+      description: Slug → target URL mapping with optional UTM preset. /l/{slug} redirect emits a click event into evt_product_events with the link's UTM stitched onto the touch row.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_short_links"
+        views:
+          - "v_short_links"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: "/l/{slug}"
+          handler: sub_features.02_links.routes.redirect_route
+        - method: GET
+          path: /v1/short-links
+          handler: sub_features.02_links.routes.list_links_route
+        - method: POST
+          path: /v1/short-links
+          handler: sub_features.02_links.routes.create_link_route
+        - method: GET
+          path: "/v1/short-links/{link_id}"
+          handler: sub_features.02_links.routes.get_link_route
+        - method: PATCH
+          path: "/v1/short-links/{link_id}"
+          handler: sub_features.02_links.routes.update_link_route
+        - method: DELETE
+          path: "/v1/short-links/{link_id}"
+          handler: sub_features.02_links.routes.delete_link_route
+      ui_pages:
+        - path: /product/links
+          label: Link Shortener
+          description: Create + manage short links with UTM presets.
+    - key: product_ops.referrals
+      number: 3
+      label: Referrals
+      description: Referral codes → referrer + reward config + conversion log. Attach auto-emits utm_source=referral touch into the product event stream so referrals show in standard UTM funnels.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_referral_codes"
+          - "60_evt_referral_conversions"
+        views:
+          - "v_referral_codes"
+        seeds: []
+      nodes:
+        - key: product_ops.referrals.attach
+          kind: effect
+          handler: sub_features.03_referrals.nodes.attach.AttachReferral
+          label: Attach Referral
+          description: Resolve a referral code on visitor landing. Writes a synthetic utm_source=referral touch + referral_attached event into the product event stream so referrals show up in standard UTM funnels with no special-case UI.
+          emits_audit: true
+          version: 1
+          tags: [product_ops, referrals]
+          execution:
+            timeout_ms: 3000
+            retries: 0
+            tx: own
+      routes:
+        - method: GET
+          path: /v1/referrals
+          handler: sub_features.03_referrals.routes.list_referrals_route
+        - method: POST
+          path: /v1/referrals
+          handler: sub_features.03_referrals.routes.create_referral_route
+        - method: GET
+          path: "/v1/referrals/{code_id}"
+          handler: sub_features.03_referrals.routes.get_referral_route
+        - method: DELETE
+          path: "/v1/referrals/{code_id}"
+          handler: sub_features.03_referrals.routes.delete_referral_route
+        - method: POST
+          path: /v1/referrals/attach
+          handler: sub_features.03_referrals.routes.attach_referral_route
+        - method: POST
+          path: /v1/referrals/conversions
+          handler: sub_features.03_referrals.routes.record_conversion_route
+      ui_pages:
+        - path: /product/referrals
+          label: Referrals
+          description: Manage referral codes + view conversions.
+    - key: product_ops.profiles
+      number: 4
+      label: Profiles
+      description: Mixpanel "people" / PostHog "persons" — accumulated per-visitor traits via EAV (dtl_visitor_attrs). Read view v_visitor_profiles pivots into typed columns. Add new traits by INSERTing into dim_attr_defs + extending the view.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "20_dtl_visitor_attrs"
+        views:
+          - "v_visitor_profiles"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/product-profiles
+          handler: sub_features.04_profiles.routes.list_profiles_route
+        - method: POST
+          path: /v1/product-profiles/traits
+          handler: sub_features.04_profiles.routes.set_traits_route
+        - method: GET
+          path: "/v1/product-profiles/{visitor_id}"
+          handler: sub_features.04_profiles.routes.get_profile_route
+      ui_pages:
+        - path: /product/profiles
+          label: Profiles
+          description: Browse & filter visitor profiles + accumulated traits.
+    - key: product_ops.promos
+      number: 5
+      label: Promo Codes
+      description: Coupon codes (distinct from referrals — promos discount the redeemer; referrals credit the referrer). Usage caps, per-visitor caps, scheduled/expired windows, eligibility predicate. Append-only redemption log captures both successes and rejections for audit.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_promo_codes"
+          - "60_evt_promo_redemptions"
+        views:
+          - "v_promo_codes"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/promos
+          handler: sub_features.05_promos.routes.list_promos_route
+        - method: POST
+          path: /v1/promos
+          handler: sub_features.05_promos.routes.create_promo_route
+        - method: GET
+          path: "/v1/promos/{promo_id}"
+          handler: sub_features.05_promos.routes.get_promo_route
+        - method: PATCH
+          path: "/v1/promos/{promo_id}"
+          handler: sub_features.05_promos.routes.update_promo_route
+        - method: DELETE
+          path: "/v1/promos/{promo_id}"
+          handler: sub_features.05_promos.routes.delete_promo_route
+        - method: POST
+          path: /v1/promos/redeem
+          handler: sub_features.05_promos.routes.redeem_promo_route
+      ui_pages:
+        - path: /product/promos
+          label: Promo Codes
+          description: Manage promo codes + view redemptions.
+    - key: product_ops.partners
+      number: 6
+      label: Partner Management
+      description: B2B affiliate / partner accounts (dib.co-style). Tiers (standard/silver/gold/platinum with default payout %), code linkage to existing referral + promo codes, append-only payout log with status tracking. Pre-aggregated stats (code count, conversion count + value, paid + pending payouts) live on the v_partners view for partner leaderboard rendering.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "01_dim_partner_tiers"
+          - "10_fct_partners"
+          - "40_lnk_partner_codes"
+          - "60_evt_partner_payouts"
+        views:
+          - "v_partners"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/partners
+          handler: sub_features.06_partners.routes.list_partners_route
+        - method: POST
+          path: /v1/partners
+          handler: sub_features.06_partners.routes.create_partner_route
+        - method: GET
+          path: "/v1/partners/{partner_id}"
+          handler: sub_features.06_partners.routes.get_partner_route
+        - method: PATCH
+          path: "/v1/partners/{partner_id}"
+          handler: sub_features.06_partners.routes.update_partner_route
+        - method: DELETE
+          path: "/v1/partners/{partner_id}"
+          handler: sub_features.06_partners.routes.delete_partner_route
+        - method: GET
+          path: "/v1/partners/{partner_id}/codes"
+          handler: sub_features.06_partners.routes.list_partner_codes_route
+        - method: POST
+          path: "/v1/partners/{partner_id}/codes"
+          handler: sub_features.06_partners.routes.link_partner_code_route
+        - method: DELETE
+          path: "/v1/partners/{partner_id}/codes/{link_id}"
+          handler: sub_features.06_partners.routes.unlink_partner_code_route
+        - method: GET
+          path: "/v1/partners/{partner_id}/payouts"
+          handler: sub_features.06_partners.routes.list_partner_payouts_route
+        - method: POST
+          path: "/v1/partners/{partner_id}/payouts"
+          handler: sub_features.06_partners.routes.record_partner_payout_route
+      ui_pages:
+        - path: /product/partners
+          label: Partners
+          description: Manage partner accounts + tiers + payouts.
+    - key: product_ops.campaigns
+      number: 7
+      label: Promo Campaigns
+      description: Bundle multiple promos under named campaigns with shared schedule + audience filter + A/B weighting. Public POST /v1/promo-campaigns/pick returns the right promo for a given visitor (weighted random over eligible promos), logs an exposure row regardless. The "extreme configurability" layer — combine with the eligibility rule evaluator (shared with promos) for any-shape promotion logic.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_promo_campaigns"
+          - "40_lnk_campaign_promos"
+          - "60_evt_campaign_exposures"
+        views:
+          - "v_promo_campaigns"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/promo-campaigns
+          handler: sub_features.07_campaigns.routes.list_campaigns_route
+        - method: POST
+          path: /v1/promo-campaigns
+          handler: sub_features.07_campaigns.routes.create_campaign_route
+        - method: POST
+          path: /v1/promo-campaigns/pick
+          handler: sub_features.07_campaigns.routes.pick_promo_route
+        - method: GET
+          path: "/v1/promo-campaigns/{campaign_id}"
+          handler: sub_features.07_campaigns.routes.get_campaign_route
+        - method: PATCH
+          path: "/v1/promo-campaigns/{campaign_id}"
+          handler: sub_features.07_campaigns.routes.update_campaign_route
+        - method: DELETE
+          path: "/v1/promo-campaigns/{campaign_id}"
+          handler: sub_features.07_campaigns.routes.delete_campaign_route
+        - method: GET
+          path: "/v1/promo-campaigns/{campaign_id}/promos"
+          handler: sub_features.07_campaigns.routes.list_campaign_promos_route
+        - method: POST
+          path: "/v1/promo-campaigns/{campaign_id}/promos"
+          handler: sub_features.07_campaigns.routes.link_campaign_promo_route
+        - method: DELETE
+          path: "/v1/promo-campaigns/{campaign_id}/promos/{link_id}"
+          handler: sub_features.07_campaigns.routes.unlink_campaign_promo_route
+      ui_pages:
+        - path: /product/campaigns
+          label: Promo Campaigns
+          description: Bundle promos with shared schedule + audience + A/B weighting.

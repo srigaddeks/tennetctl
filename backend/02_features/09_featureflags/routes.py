@@ -28,6 +28,9 @@ _overrides: Any = import_module(
 _evaluations: Any = import_module(
     "backend.02_features.09_featureflags.sub_features.05_evaluations.routes"
 )
+_apisix: Any = import_module(
+    "backend.02_features.09_featureflags.apisix_routes"
+)
 
 router = APIRouter()
 router.include_router(_flags.router)
@@ -35,3 +38,4 @@ router.include_router(_capabilities.router)
 router.include_router(_rules.router)
 router.include_router(_overrides.router)
 router.include_router(_evaluations.router)
+router.include_router(_apisix.router)

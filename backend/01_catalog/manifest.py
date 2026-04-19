@@ -58,7 +58,7 @@ _FEATURE_KEY_RE = re.compile(rf"^{_KEY_SEGMENT}$")
 _SUB_FEATURE_KEY_RE = re.compile(rf"^{_KEY_SEGMENT}\.{_KEY_SEGMENT}$")
 _NODE_KEY_RE = re.compile(rf"^{_KEY_SEGMENT}(\.{_KEY_SEGMENT}){{2,}}$")
 
-_VALID_MODULES = {"core", "iam", "audit", "monitoring", "vault", "notify", "billing", "llmops", "featureflags"}
+_VALID_MODULES = {"core", "iam", "audit", "monitoring", "vault", "notify", "billing", "llmops", "featureflags", "product_ops"}
 
 
 # ── Manifest models ─────────────────────────────────────────────────
@@ -175,7 +175,7 @@ class FeatureMetadata(BaseModel):
 
     key: str
     number: int = Field(ge=1, le=99)
-    module: Literal["core", "iam", "audit", "monitoring", "vault", "notify", "billing", "llmops", "featureflags"]
+    module: Literal["core", "iam", "audit", "monitoring", "vault", "notify", "billing", "llmops", "featureflags", "product_ops"]
     always_on: bool = False
     label: str
     description: str = ""
