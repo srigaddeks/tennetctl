@@ -161,6 +161,7 @@ async def oidc_callback(org_slug: str, request: Request, code: str = "", state: 
         user_id=None, session_id=None, org_id=None, workspace_id=None,
         trace_id=_core_id_mod.uuid7(), span_id=_core_id_mod.uuid7(),
         request_id=_core_id_mod.uuid7(), audit_category="setup",
+        pool=pool,
         extras={"pool": pool},
     )
     if not code or not state:
@@ -238,6 +239,7 @@ async def saml_acs(org_slug: str, request: Request) -> Any:
         user_id=None, session_id=None, org_id=None, workspace_id=None,
         trace_id=_core_id_mod.uuid7(), span_id=_core_id_mod.uuid7(),
         request_id=_core_id_mod.uuid7(), audit_category="setup",
+        pool=pool,
         extras={"pool": pool},
     )
     async with pool.acquire() as conn:

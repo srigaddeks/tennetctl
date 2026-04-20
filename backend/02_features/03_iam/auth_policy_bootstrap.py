@@ -62,6 +62,7 @@ async def ensure_policy_defaults(pool: Any) -> int:
         span_id=_core_id.uuid7(),
         request_id=_core_id.uuid7(),
         audit_category="setup",
+        pool=pool,
         extras={"pool": pool},
     )
 

@@ -39,7 +39,9 @@ def _ctx(request: Request, pool: Any) -> Any:
         workspace_id=getattr(request.state, "workspace_id", None),
         trace_id=_core_id.uuid7(), span_id=_core_id.uuid7(),
         request_id=getattr(request.state, "request_id", "") or _core_id.uuid7(),
-        audit_category="setup", extras={"pool": pool},
+        audit_category="setup",
+        pool=pool,
+        extras={"pool": pool},
     )
 
 

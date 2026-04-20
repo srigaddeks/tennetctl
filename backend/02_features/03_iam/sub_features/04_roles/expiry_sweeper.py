@@ -34,6 +34,7 @@ async def run_once(pool: Any) -> int:
                 trace_id=_id.uuid7(),
                 span_id=_id.uuid7(),
                 audit_category="setup",
+                pool=pool,
                 extras={"pool": pool},
             )
             await _catalog.run_node(

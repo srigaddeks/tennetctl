@@ -29,6 +29,7 @@ class NodeContext:
 
     # Runtime
     conn: Any = None  # asyncpg.Connection | None; typed as Any to avoid hard import
+    pool: Any = None  # asyncpg.Pool | None — Plan 39-01: first-class (was extras["pool"]); both supported during transition
     request_id: str = ""
 
     # Policy

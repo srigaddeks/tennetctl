@@ -155,6 +155,36 @@ Rules:
 - Raw SQL only — no ORM, no query builder
 - `conn` (not pool) is passed as first argument
 
+#### Bulk reads: `get_many` (Plan 39-02)
+
+Every repo that exposes `get_by_id` should also expose `get_many` so callers avoid N+1 query loops. Signature:
+
+```python
+async def get_many(conn, ids: list[str]) -> dict[str, dict]:
+    """Bulk-read by id. Returns {id: row}; missing/deleted ids omitted."""
+    if not ids:
+        return {}
+    rows = await conn.fetch(
+        'SELECT <same columns as get_by_id> '
+        'FROM "<schema>"."<v_view>" '
+        'WHERE id = ANY($1::varchar[]) AND deleted_at IS NULL',
+        ids,
+    )
+    return {r["id"]: dict(r) for r in rows}
+```
+
+Contract:
+- Empty input → empty dict (no query executed)
+- Missing or soft-deleted ids simply don't appear in the result (no None slots, no KeyError)
+- Column list mirrors `get_by_id` exactly so callers can substitute one for the other
+- Order of ids is NOT preserved (dict lookup is order-independent); callers needing ordered output do `[result[i] for i in ids if i in result]`
+
+**When to use:** any time a service might loop over ids to fetch rows. Resolving memberships into user rows, resolving audit actor_ids into user rows, resolving workspace ids into display names — all should go through `get_many`.
+
+**Exceptions** (rare) call it out in a docstring. Example: a table with expensive per-row computation where batching doesn't help.
+
+Shipped examples (Plan 39-02): `iam.orgs`, `iam.workspaces`, `iam.users`.
+
 ### service.py — Business Logic
 
 ```python

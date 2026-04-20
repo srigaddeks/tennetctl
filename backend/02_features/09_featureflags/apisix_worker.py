@@ -52,6 +52,7 @@ async def _emit_audit(
             span_id=_core_id.uuid7(),
             request_id=_core_id.uuid7(),
             audit_category="system",  # bypasses audit-scope requirement
+            pool=pool,
             extras={"pool": pool},
         )
         await _catalog.run_node(

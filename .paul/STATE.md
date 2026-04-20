@@ -9,21 +9,13 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Milestone: **v0.1.8 Runtime Hardening**
-Phase: **38 — Auth Hardening** — Plans 01 + 02 complete; phase substantively done
-Plan: **38-02 UNIFIED** (SUMMARY: `.paul/phases/38-auth-hardening/38-02-SUMMARY.md`)
-Status: Session rotation now covers all three OWASP privilege-escalation boundaries (login + password-change + MFA-enroll). Pyright + imports clean; live DB verification operator-deferred.
-Last activity: 2026-04-20 — UNIFY for 38-02. Phase 38 closed. Next: Phase 39 (NCP v1 maturity) to finish v0.1.8 milestone, or pause/commit.
+Milestone: **v0.1.8 Runtime Hardening** (Phase 38 ✅ complete; Phase 39 in flight)
+Phase: **39 — NCP v1 Maturity**
+Plan: **39-01 PLANNED** — pool→first-class NodeContext field + NCP v1 §11 doc sync. Drafted, not yet applied.
+Status: Devtools-platform scope only. Scope-creep cleanup completed 2026-04-20 — old phases 45–59 (product_ops/CDP) and the entire `10_product_ops` feature were removed from the codebase. kbio/kprotect ideas retired from roadmap. Remaining queued milestones: v0.1.8 (39), v0.3.0 monitoring alerting (40–41), v0.4.0 canvas (42–44), v0.8.0 GDPR DSAR (45).
+Last activity: 2026-04-20 — Removed product_ops scope creep (15 phases, feature dir, frontend routes, SDK clients, tests, docs, browser SDK).
 
-Progress:
-- Milestone v0.5.0: [░░░░░░░░░░] 0% (4 plans queued: 45-01 backend ingest + tail, 45-02 browser SDK + identify, 45-03 server-side SDK + UTM dashboard, 46/47/48 follow-on phases)
-- Phase 45: [░░░░░░░░░░] 0%
-
-**Open coherence items before APPLY:**
-- File overlap: `backend/main.py`, `frontend/src/components/sidebar.tsx`, `frontend/src/config/features.ts` all uncommitted from prior sweep — recommend committing prior work before APPLY
-- ROADMAP.md backfill: Phase 45 + milestone v0.5.0 not yet in ROADMAP.md (CONTEXT.md defined them; canonical roadmap pending update)
-
-Next action: Review Plan 45-01, then `/paul:apply .paul/phases/45-product-sdk-ingest-attribution/45-01-PLAN.md` (or backfill ROADMAP.md + commit prior sweep first).
+Next action: Resume Plan 39-01 (`.paul/phases/39-ncp-v1-maturity/`).
 
 Previously: v0.2.4 complete (multi-phase autonomous sweep — 35-01/35-02/35-03/36-01 + portal polish). 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap closed.
 Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions.
@@ -47,8 +39,10 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓    [Plan 38-02 closed 2026-04-20; Phase 38 substantively done]
+  ✓        ○        ○    [Plan 39-01 created — pool→first-class field + NCP v1 doc sync]
 ```
+
+Previous: Plan 38-02 closed 2026-04-20; Phase 38 substantively done.
 
 **Phase 38 Auth Hardening — shipped across 2 plans:**
 - 38-01: session-fixation on login, IP rate limiter (PG-native), atomic single-use tokens

@@ -214,15 +214,21 @@ class NodeContext:
 
     # Runtime
     conn: asyncpg.Connection | None  # None when tx_mode=none
+    pool: asyncpg.Pool | None        # asyncpg pool — first-class since Plan 39-01 (was `extras["pool"]`)
     request_id: str                  # inbound HTTP/event correlation
     audit_category: str              # system | user | integration | setup
 
     # Policy
     dry_run: bool = False
     timeout_override_ms: int | None = None
+
+    # Free-form extras (rarely used; kept for forward-compat with caller-specific state)
+    extras: dict[str, Any] = field(default_factory=dict)
 ```
 
 **Propagation rule:** `run_node` creates a child context with a new `span_id` and `parent_span_id = parent.span_id`. Everything else copies unchanged.
+
+**`pool` vs `extras["pool"]` (Plan 39-01):** the pool is a first-class field as of Plan 39-01. Existing callers that seeded `extras={"pool": pool}` are kept populated alongside `pool=pool` for back-compat; downstream reads can migrate to `ctx.pool` opportunistically. Both channels carry the same reference.
 
 ---
 
@@ -283,6 +289,14 @@ Each node declares its policy in the manifest; runner enforces.
 
 **Idempotency:** when retries > 0, the caller MUST pass an `idempotency_key` in inputs. Runner stores `(node_key, idempotency_key) → output` for 24h and returns cached result on retry.
 
+**Kind semantics (Plan 04-01 widening, 39-01 doc sync):**
+
+- **`request`** — gateway-compiled to APISIX (auth, rate limit, feature flags). Runs pre-backend. `tx=none`.
+- **`control`** — flow logic AND **read-only DB ops**. Default `tx=caller` so the node can reach `ctx.conn`. First example: `iam.orgs.get` (Plan 04-01). A control node must not mutate. Mutations require `kind=effect`.
+- **`effect`** — performs side effects (DB writes, external calls). MUST emit audit (triple-defense: DB CHECK + Pydantic + runner). Default `tx=caller`.
+
+The earlier wording "control nodes are compute-only flow routers" was narrower than the runner permits and is superseded. Read-only-DB is allowed in control; write-intent requires effect.
+
 ---
 
 ## §9 — Authorization Hook
@@ -290,11 +304,20 @@ Each node declares its policy in the manifest; runner enforces.
 `authz.check_call(ctx, node_meta)` is called before every node execution.
 
 **Default implementation (v1):**
-- If `ctx.audit_category == "system"`: allow.
+- If `ctx.audit_category in ("system", "setup")`: allow.
 - If `ctx.user_id is None`: deny (`NodeAuthDenied`).
 - Otherwise: allow. (Full RBAC lands in Phase 3 when IAM is seeded.)
 
 **Pluggable:** implementations register via `backend.01_catalog.authz.register_checker()`. Runs in order; first denial wins.
+
+**Audit-scope bypasses (Plan 03-03 + Plan 10-01 confirmed in 39-01):**
+
+The triple-defense on audit scope (DB CHECK + Pydantic validator + runner handler) requires every emitted audit event to carry `(user_id, session_id, org_id, workspace_id)`. Two bypasses are honored:
+
+1. **`audit_category in ("system", "setup")`** — the setup/system flow is establishing the user/session itself; requiring scope before the scope exists is a chicken-and-egg. The signup + initial-bootstrap paths emit under this bypass.
+2. **`outcome == "failure"`** — failure emits run on a *detached* connection (`replace(ctx, conn=None)`) and survive caller-tx rollback. Reduced-scope failure events are accepted so audit trail retains the attempt even when the transactional state is gone.
+
+Both bypasses are enforced consistently at the DB CHECK, the Pydantic validator, and the `audit.events.emit` handler — no asymmetric acceptance.
 
 ---
 
@@ -416,6 +439,16 @@ Any of these lands as its own ADR + protocol revision.
 - Adding a feature = write manifest + 5 files per sub-feature + node classes; restart
 - Claude/coding agents operate at the manifest level — one file tells them the shape
 - The 1000-node scale works because discovery is a DB query, not a grep
+
+---
+
+## §17 — Changelog
+
+| Date | Section | Change | Origin |
+|---|---|---|---|
+| 2026-04-20 | §6 | `pool` added as first-class NodeContext field (was `extras["pool"]`). `extras` still documented; both channels supported during transition. | Plan 39-01 |
+| 2026-04-20 | §9 | Documented setup-category + failure-outcome bypasses on audit scope. Behavior was present since Plan 03-03; spec lagged. | Plan 39-01 (from Plans 03-03 + 10-01) |
+| 2026-04-20 | §8 | Kind semantics table added; control nodes may do read-only DB ops (were previously described as compute-only). | Plan 39-01 (from Plan 04-01) |
 
 ---
 

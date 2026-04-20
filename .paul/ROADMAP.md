@@ -44,6 +44,10 @@ Phases: 0 of 2 (Phases 40–41)
 Theme: React Flow canvas reads live catalog via the same `client.catalog` surface external apps use. Read-only v1 — typed ports, DAG render, execution trace overlay.
 Phases: 0 of 3 (Phases 42–44)
 
+**v0.8.0 GDPR DSAR** (v0.8.0) — Queued (scoped 2026-04-20)
+Theme: Self-service data subject access + erasure flows for the platform itself (IAM/audit/notify scope). Required for OSS readiness in EU/UK markets.
+Phases: 0 of 1 (Phase 45)
+
 ## Previous Milestones
 
 **v0.2.0 Feature Flags + AuthZ Control Plane** (v0.2.0)
@@ -123,6 +127,7 @@ Phases: 6 of 6 complete
 | 42 | Flow schema + backend (v0.4.0) | TBD | Not started | - |
 | 43 | Canvas renderer (v0.4.0) | TBD | Not started | - |
 | 44 | Trace overlay + search (v0.4.0) | TBD | Not started | - |
+| 45 | GDPR DSAR (v0.8.0) | TBD | Not started | - |
 
 ## Phase Details
 

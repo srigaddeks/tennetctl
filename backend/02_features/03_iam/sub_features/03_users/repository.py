@@ -45,6 +45,20 @@ async def get_by_id(conn: Any, user_id: str) -> dict | None:
     return dict(row) if row else None
 
 
+async def get_many(conn: Any, ids: list[str]) -> dict[str, dict]:
+    """Bulk-read by id — one query via ANY($1). Returns {id: row} for existing non-deleted rows; missing/deleted ids omitted (Plan 39-02)."""
+    if not ids:
+        return {}
+    rows = await conn.fetch(
+        'SELECT id, account_type, email, display_name, avatar_url, '
+        '       is_active, is_test, created_by, updated_by, created_at, updated_at '
+        'FROM "03_iam"."v_users" '
+        'WHERE id = ANY($1::varchar[]) AND deleted_at IS NULL',
+        ids,
+    )
+    return {r["id"]: dict(r) for r in rows}
+
+
 async def list_users(
     conn: Any,
     *,

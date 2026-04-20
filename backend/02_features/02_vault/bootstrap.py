@@ -64,6 +64,7 @@ async def ensure_bootstrap_secrets(pool: Any, vault_client: Any) -> int:
                     span_id=_core_id.uuid7(),
                     request_id=_core_id.uuid7(),
                     audit_category="setup",
+                    pool=pool,
                     extras={"pool": pool, "vault": vault_client},
                 )
                 ctx = replace(ctx, conn=conn)

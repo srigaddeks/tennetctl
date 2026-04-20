@@ -13,7 +13,6 @@ from .iam import IAM
 from .logs import Logs
 from .metrics import Metrics
 from .notify import Notify
-from .product_ops import ProductOps
 from .traces import Traces
 from .vault import Vault
 
@@ -53,7 +52,6 @@ class Tennetctl:
         self.traces = Traces(self._t)
         self.vault = Vault(self._t)
         self.catalog = Catalog(self._t)
-        self.product = ProductOps(self._t)
 
     @property
     def session_token(self) -> str | None:

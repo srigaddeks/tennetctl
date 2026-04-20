@@ -49,6 +49,7 @@ def _build_ctx(pool: Any, user_id: str | None, session_id: str | None, org_id: s
         span_id=_core_id.uuid7(),
         request_id=_core_id.uuid7(),
         audit_category="setup",
+        pool=pool,
         extras={"pool": pool},
     )
 

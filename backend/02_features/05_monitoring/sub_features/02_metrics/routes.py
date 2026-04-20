@@ -51,6 +51,7 @@ def _build_ctx(request: Request, pool: Any, *, audit_category: str = "setup") ->
             getattr(state, "request_id", None) or _core_id.uuid7()
         ),
         audit_category=audit_category,
+        pool=pool,
         extras={"pool": pool},
     )
 

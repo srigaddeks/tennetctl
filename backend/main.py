@@ -32,7 +32,6 @@ MODULE_ROUTERS: dict[str, str] = {
     "audit": "backend.02_features.04_audit.routes",
     "notify": "backend.02_features.06_notify.routes",
     "monitoring": "backend.02_features.05_monitoring.routes",
-    "product_ops": "backend.02_features.10_product_ops.routes",
 }
 
 
@@ -212,6 +211,7 @@ async def lifespan(application: FastAPI):
                         audit_category="setup",
                         trace_id=_id_local.uuid7(),
                         span_id=_id_local.uuid7(),
+                        pool=pool,
                         extras={"pool": pool},
                     )
                     await _catalog_local.run_node(

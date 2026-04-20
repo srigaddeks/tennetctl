@@ -32,6 +32,7 @@ def _build_ctx(request: Request, pool: Any) -> Any:
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),
         audit_category="setup",
+        pool=pool,
         extras={"pool": pool},
     )
 

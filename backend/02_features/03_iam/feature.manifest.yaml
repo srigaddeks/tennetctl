@@ -39,11 +39,24 @@ spec:
         - key: iam.orgs.get
           kind: control
           handler: sub_features.01_orgs.nodes.iam_orgs_get.OrgsGet
-          label: Get Organization
-          description: Read-only cross-sub-feature lookup for tenant scope validation; returns flat v_orgs row or None. Does not emit audit (kind=control).
+          label: Get Organization (v1, deprecated)
+          description: "DEPRECATED — replaced by iam.orgs.get_v2 on 2026-04-20 (Plan 39-03). Read-only cross-sub-feature lookup for tenant scope validation; returns flat v_orgs row or None. Does not emit audit (kind=control). See ADR-032 for the v1→v2 migration recipe."
           emits_audit: false
           version: 1
-          tags: [identity, read]
+          tags: [identity, read, deprecated, replaced_by=iam.orgs.get_v2]
+          deprecated_at: 2026-04-20T00:00:00Z
+          execution:
+            timeout_ms: 2000
+            retries: 0
+            tx: caller
+        - key: iam.orgs.get_v2
+          kind: control
+          handler: sub_features.01_orgs.nodes.iam_orgs_get_v2.OrgsGetV2
+          label: Get Organization (v2)
+          description: Read-only cross-sub-feature lookup returning {org, workspace_count}. First real v1→v2 migration (Plan 39-03, ADR-032). Does not emit audit (kind=control).
+          emits_audit: false
+          version: 2
+          tags: [identity, read, replaces=iam.orgs.get]
           execution:
             timeout_ms: 2000
             retries: 0
