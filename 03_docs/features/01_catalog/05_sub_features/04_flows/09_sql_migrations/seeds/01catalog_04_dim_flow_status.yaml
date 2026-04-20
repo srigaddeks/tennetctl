@@ -1,0 +1,18 @@
+schema: "01_catalog"
+table: "04_dim_flow_status"
+rows:
+  - id: 1
+    code: draft
+    label: Draft
+    description: Mutable flow definition in development
+    deprecated_at: null
+  - id: 2
+    code: published
+    label: Published
+    description: Immutable, frozen flow version ready for use
+    deprecated_at: null
+  - id: 3
+    code: archived
+    label: Archived
+    description: Deprecated or retired flow
+    deprecated_at: null

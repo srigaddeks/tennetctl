@@ -5,17 +5,17 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** Admin UI coverage pass v0.2.4 substantially complete. All three 🔴 critical gaps closed (Workspaces detail, Notify edit flows, System Health). Remaining: APISIX infra (33), traces autoinstrument (31-b), hardening (37-39), alerting (40-41), canvas (42-44).
+**Current focus:** v0.8.0 GDPR DSAR Phase 45 planning complete. Two plans drafted: 45-01 (operator API + backend export/delete, v0.8.0 gate), 45-02 (self-service portal + 30d recovery, deferred v1.0). Ready for 45-01 implementation.
 
 ## Current Position
 
-Milestone: **v0.1.8 Runtime Hardening** (Phase 38 ✅ complete; Phase 39 ✅ complete)
-Phase: **40 — Monitoring Alerting** (Queued)
-Plan: **40-01 PENDING** — TBD in phase directory
-Status: Devtools-platform scope only. Scope-creep cleanup completed 2026-04-20 — old phases 45–59 (product_ops/CDP) and the entire `10_product_ops` feature were removed from the codebase. kbio/kprotect ideas retired from roadmap. Phase 39 (NCP v1 Maturity) shipped all three plans: 39-01 (NodeContext.pool), 39-02 (get_many pattern), 39-03 (v1→v2 versioning demo + ADR-032). Remaining queued milestones: v0.3.0 monitoring alerting (40–41), v0.4.0 canvas (42–44), v0.8.0 GDPR DSAR (45).
-Last activity: 2026-04-20 — Phase 39-03 complete; v2 node coexists with v1, ADR-032 documents the migration pattern, manifest updated.
+Milestone: **v0.8.0 GDPR DSAR** (Phase 45)
+Phase: **45 — GDPR DSAR** (Planning complete)
+Plan: **45-01-PLAN.md + 45-02-PLAN.md** ✓ (ready for 45-01 apply)
+Status: Devtools-platform scope. v0.3.0 (monitoring alerting 40–41) shipped. v0.4.0 (canvas 42–44) shipped. Phase 45 planning complete 2026-04-21. Two plans: 45-01 (backend operator API + export/delete, v0.8.0 gate), 45-02 (self-service portal, deferred v1.0).
+Last activity: 2026-04-21 — Phase 45 PLAN complete: 45-01-PLAN.md (operator-triggered DSAR export/delete with audit + rate limit), 45-02-PLAN.md (self-service portal with 30d recovery, deferred). PLANNING-SUMMARY.md written. Ready for `paul:apply 45-01-PLAN.md`.
 
-Next action: Plan 40-01 (Monitoring Alerting) — TBD. Check `.paul/phases/40-monitoring-alerting/` for plan drafts.
+Next action: `paul:apply 45-01-PLAN.md` to implement backend export/delete logic (~90 min).
 
 Previously: v0.2.4 complete (multi-phase autonomous sweep — 35-01/35-02/35-03/36-01 + portal polish). 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap closed.
 Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions.
@@ -39,12 +39,13 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ○    [Phase 39 APPLY complete (39-01/02/03); UNIFY pending]
+  ✓        ✓        ✓    [Phase 39 UNIFY complete (39-01/02/03); v0.3.0 closed]
 ```
 
-Phase 39 closed: 39-01 (NodeContext.pool), 39-02 (get_many on orgs/workspaces/users), 39-03 (v1→v2 versioning + ADR-032). All three summaries written.
+Phase 40-41 closed: 40-01/02/03 (monitoring alerting), 41-01 (SLO definition). All summaries written. v0.3.0 shipped.  
+Phase 42-44 closed: 42-01/02 (canvas flow schema), 43-01/02 (backend), 44-01 (frontend). v0.4.0 shipped.
 
-Previous: Plan 38-02 closed 2026-04-20; Phase 38 substantively done.
+Current: Phase 45 PLAN complete (45-01 + 45-02-defer); PENDING-APPLY.
 
 **Phase 38 Auth Hardening — shipped across 2 plans:**
 - 38-01: session-fixation on login, IP rate limiter (PG-native), atomic single-use tokens

@@ -1,0 +1,33 @@
+schema: "01_catalog"
+table: "05_dim_trace_node_status"
+rows:
+  - id: 1
+    code: pending
+    label: Pending
+    description: Node is waiting to execute
+    deprecated_at: null
+  - id: 2
+    code: running
+    label: Running
+    description: Node is currently executing
+    deprecated_at: null
+  - id: 3
+    code: success
+    label: Success
+    description: Node completed successfully
+    deprecated_at: null
+  - id: 4
+    code: failure
+    label: Failure
+    description: Node failed with an error
+    deprecated_at: null
+  - id: 5
+    code: skipped
+    label: Skipped
+    description: Node was skipped due to upstream failure
+    deprecated_at: null
+  - id: 6
+    code: timed_out
+    label: Timed Out
+    description: Node execution exceeded timeout
+    deprecated_at: null

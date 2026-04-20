@@ -147,6 +147,7 @@ export const FEATURES: FeatureNav[] = [
     testId: "nav-feature-catalog",
     subFeatures: [
       { href: "/catalog", label: "Inventory", testId: "nav-catalog-inventory" },
+      { href: "/flows", label: "Flows", testId: "nav-catalog-flows" },
     ],
   },
   {

@@ -1,0 +1,28 @@
+schema: "01_catalog"
+table: "05_dim_flow_edge_kind"
+rows:
+  - id: 1
+    code: next
+    label: Next
+    description: Sequential flow (unconditional next step)
+    deprecated_at: null
+  - id: 2
+    code: success
+    label: Success
+    description: Taken when source node operation succeeds
+    deprecated_at: null
+  - id: 3
+    code: failure
+    label: Failure
+    description: Taken when source node operation fails
+    deprecated_at: null
+  - id: 4
+    code: true_branch
+    label: True Branch
+    description: Taken when condition evaluates to true
+    deprecated_at: null
+  - id: 5
+    code: false_branch
+    label: False Branch
+    description: Taken when condition evaluates to false
+    deprecated_at: null

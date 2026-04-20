@@ -1,0 +1,53 @@
+schema: "01_catalog"
+table: "06_dim_port_type"
+rows:
+  - id: 1
+    code: any
+    label: Any
+    description: Wildcard type — matches any other type
+    deprecated_at: null
+  - id: 2
+    code: string
+    label: String
+    description: Text data
+    deprecated_at: null
+  - id: 3
+    code: number
+    label: Number
+    description: Numeric data (int or float)
+    deprecated_at: null
+  - id: 4
+    code: boolean
+    label: Boolean
+    description: True/false value
+    deprecated_at: null
+  - id: 5
+    code: object
+    label: Object
+    description: Key-value dictionary or JSON object
+    deprecated_at: null
+  - id: 6
+    code: array
+    label: Array
+    description: Ordered list or sequence
+    deprecated_at: null
+  - id: 7
+    code: uuid
+    label: UUID
+    description: Universally Unique Identifier
+    deprecated_at: null
+  - id: 8
+    code: datetime
+    label: DateTime
+    description: Date and time value
+    deprecated_at: null
+  - id: 9
+    code: binary
+    label: Binary
+    description: Raw binary data
+    deprecated_at: null
+  - id: 10
+    code: error
+    label: Error
+    description: Error or exception object
+    deprecated_at: null

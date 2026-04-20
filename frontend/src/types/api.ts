@@ -2133,3 +2133,115 @@ export type SloBudgetSnapshot = {
   evaluated_at: string;
 };
 
+// ─── Catalog: Canvas / Flow Visualization ──────────────────────────────────
+
+export type PortType =
+  | "any"
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array"
+  | "uuid"
+  | "datetime"
+  | "binary"
+  | "error";
+
+export type CanvasPort = {
+  key: string;
+  type: PortType;
+  description?: string | null;
+};
+
+export type CanvasResolvedPorts = {
+  inputs: CanvasPort[];
+  outputs: CanvasPort[];
+  unresolved?: boolean;
+};
+
+export type CanvasNode = {
+  id: string;
+  instance_label: string;
+  node_key: string;
+  kind: NodeKind;
+  config_json: Record<string, unknown>;
+  position?: { x: number; y: number };
+};
+
+export type CanvasEdge = {
+  id: string;
+  from_node_id: string;
+  from_port: string;
+  to_node_id: string;
+  to_port: string;
+  kind: "next" | "success" | "failure" | "true_branch" | "false_branch";
+};
+
+export type CanvasLayoutEntry = {
+  x: number;
+  y: number;
+  lane?: number;
+};
+
+export type TraceNodeStatus =
+  | "pending"
+  | "running"
+  | "success"
+  | "failure"
+  | "skipped"
+  | "timed_out";
+
+export type CanvasTrace = {
+  node_status: Record<string, { status: TraceNodeStatus; started_at: string | null; finished_at: string | null }>;
+  edge_traversed: Record<string, boolean>;
+  started_at: string | null;
+  finished_at: string | null;
+  total_duration_ms: number | null;
+};
+
+export type CanvasPayload = {
+  nodes: CanvasNode[];
+  edges: CanvasEdge[];
+  ports: Record<string, CanvasResolvedPorts>;
+  layout: Record<string, CanvasLayoutEntry>;
+  trace: CanvasTrace | null;
+};
+
+export type Flow = {
+  id: string;
+  org_id: string;
+  slug: string;
+  display_name: string | null;
+  module: string;
+  sub_feature_key: string;
+  is_active: boolean;
+  latest_version_id: string | null;
+  version_count: number;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FlowVersion = {
+  id: string;
+  flow_id: string;
+  version_number: number;
+  status: "draft" | "published" | "archived";
+  definition_json: Record<string, unknown>;
+  published_at: string | null;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FlowRunSummary = {
+  id: string;
+  version_id: string;
+  started_at: string;
+  finished_at: string | null;
+  status: "pending" | "running" | "success" | "failure";
+  total_duration_ms: number | null;
+};
+
