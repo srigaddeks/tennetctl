@@ -217,6 +217,7 @@ async def signin(
     password: str,
     source_ip: str | None = None,
     user_agent: str | None = None,
+    previous_session_id: str | None = None,
 ) -> tuple[str, dict, dict]:
     user = await _find_user_by_email_and_type(
         conn, email=email, account_type="email_password",
@@ -359,6 +360,18 @@ async def signin(
         user_id=user["id"], org_id=org_id,
         user_agent=user_agent, ip_address=source_ip,
     )
+    # Session-fixation defense: if the client presented a pre-existing session
+    # cookie, revoke it now that a fresh session_id is live.
+    if previous_session_id and previous_session_id != session["id"]:
+        try:
+            await _sessions.rotate_on_login(
+                pool, conn, ctx,
+                previous_session_id=previous_session_id,
+                new_session_id=session["id"],
+                user_id=user["id"],
+            )
+        except Exception:
+            pass  # best-effort — never block signin on rotation audit
     await _emit_audit(
         pool, ctx,
         event_key="iam.auth.signin",

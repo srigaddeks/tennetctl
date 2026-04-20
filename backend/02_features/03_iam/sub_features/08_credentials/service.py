@@ -188,7 +188,9 @@ async def change_password(
     current_password: str,
     new_password: str,
     current_session_id: str | None = None,
-) -> int:
+    org_id: str | None = None,
+    workspace_id: str | None = None,
+) -> tuple[int, str | None, dict | None]:
     """Verify `current_password`, hash + upsert `new_password`, revoke OTHER live sessions.
 
     Returns the count of other sessions revoked so the caller can surface
@@ -243,4 +245,32 @@ async def change_password(
             },
         },
     )
-    return len(revoked_ids)
+
+    # Plan 38-02: rotate the caller's own session — the one kept alive above.
+    # The old session_id predates the new auth state (different password); a
+    # replayed cookie from a leaked pre-change trace must not remain valid.
+    new_token: str | None = None
+    new_session: dict | None = None
+    if current_session_id:
+        try:
+            from importlib import import_module as _im
+            _sessions = _im(
+                "backend.02_features.03_iam.sub_features.09_sessions.service"
+            )
+            new_token, new_session = await _sessions.rotate_on_privilege_escalation(
+                pool, conn, ctx,
+                previous_session_id=current_session_id,
+                user_id=user_id,
+                vault_client=vault_client,
+                org_id=org_id,
+                workspace_id=workspace_id,
+                reason="password_change",
+            )
+        except Exception:
+            # Rotation failure shouldn't fail the password change itself —
+            # caller still gets the old session (which the password-change
+            # flow kept alive by design). The audit emit inside the helper
+            # already handles its own try/except.
+            new_token, new_session = None, None
+
+    return len(revoked_ids), new_token, new_session

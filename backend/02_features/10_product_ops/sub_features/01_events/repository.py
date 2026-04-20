@@ -395,6 +395,79 @@ async def retention_matrix(
     return [dict(r) for r in rows]
 
 
+async def trend_query(
+    conn: Any,
+    *,
+    workspace_id: str,
+    event_name: str,
+    days: int = 30,
+    bucket: str = "day",
+    group_by: str | None = None,
+) -> list[dict]:
+    """
+    Time-series count of an event over a time window.
+    bucket: 'hour' | 'day' | 'week' | 'month'.
+    group_by: optional dotted JSONB path into metadata, e.g. 'utm_source' or 'plan'.
+              Series is broken out per distinct group value.
+
+    Returns: [{bucket: '2026-04-19', group: 'twitter', count: 42}, ...]
+    Group is NULL when group_by is not provided.
+    """
+    if bucket not in ("hour", "day", "week", "month"):
+        raise ValueError(f"unsupported bucket: {bucket!r}")
+
+    interval_table = {
+        "hour": "1 hour",
+        "day": "1 day",
+        "week": "7 day",
+        "month": "30 day",
+    }[bucket]
+    _ = interval_table  # noted for future use
+
+    # `group_by` resolves a JSONB path. We only support a single top-level key
+    # (no nested dot-paths) for simplicity. Whitelisted character set prevents
+    # SQL injection on the identifier expression.
+    group_expr_sql = "NULL::text"
+    if group_by:
+        # alphanumeric + underscore only
+        if not group_by.replace("_", "").isalnum() or len(group_by) > 64:
+            raise ValueError(f"invalid group_by key: {group_by!r}")
+        group_expr_sql = f"COALESCE(metadata->>'{group_by}', '(none)')"
+
+    sql = f"""
+        SELECT
+            date_trunc('{bucket}', occurred_at)::timestamp AS bucket,
+            {group_expr_sql} AS group_key,
+            COUNT(*)::int AS count
+          FROM "10_product_ops"."60_evt_product_events"
+         WHERE workspace_id = $1
+           AND event_name = $2
+           AND occurred_at >= CURRENT_DATE - ($3::int * INTERVAL '1 day')
+         GROUP BY bucket, group_key
+         ORDER BY bucket, group_key
+    """
+    rows = await conn.fetch(sql, workspace_id, event_name, days)
+    return [{"bucket": r["bucket"].isoformat(), "group": r["group_key"], "count": int(r["count"])} for r in rows]
+
+
+async def event_name_facets(conn: Any, workspace_id: str, *, days: int = 30) -> list[dict]:
+    """List distinct event_name values seen recently — populates UI dropdowns."""
+    rows = await conn.fetch(
+        """
+        SELECT event_name, COUNT(*)::int AS count
+          FROM "10_product_ops"."60_evt_product_events"
+         WHERE workspace_id = $1
+           AND event_name IS NOT NULL
+           AND occurred_at >= CURRENT_DATE - ($2::int * INTERVAL '1 day')
+         GROUP BY event_name
+         ORDER BY count DESC, event_name
+         LIMIT 200
+        """,
+        workspace_id, days,
+    )
+    return [{"event_name": r["event_name"], "count": int(r["count"])} for r in rows]
+
+
 async def utm_campaign_aggregate(
     conn: Any,
     *,

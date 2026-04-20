@@ -223,7 +223,19 @@ async def consume_magic_link(
             pass
         raise _errors.AppError("TOKEN_EXPIRED", "This magic link has expired. Please request a new one.", 401)
 
-    await _repo.mark_consumed(conn, row["id"])
+    # Atomic claim — loses the race if another concurrent redeem already
+    # consumed this token (or it just expired between the fetch above).
+    claimed = await _repo.mark_consumed(conn, row["id"])
+    if not claimed:
+        try:
+            await _catalog.run_node(
+                pool, _AUDIT_NODE_KEY, _detach(ctx),
+                {"event_key": "iam.magic_link.consume_failed", "outcome": "failure",
+                 "metadata": {"reason": "race_replay", "user_id": row["user_id"]}},
+            )
+        except Exception:
+            pass
+        raise _errors.AppError("TOKEN_ALREADY_USED", "This magic link has already been used.", 401)
 
     user = await _users_repo.get_by_id(conn, row["user_id"])
     if user is None:

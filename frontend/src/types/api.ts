@@ -2129,6 +2129,135 @@ export type CreateShortLinkBody = {
   utm_content?: string | null;
 };
 
+// ── Cohorts ───────────────────────────────────────────────────────
+
+export type CohortKind = "dynamic" | "static";
+
+export type Cohort = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  org_id: string;
+  workspace_id: string;
+  kind: CohortKind;
+  definition: Record<string, unknown>;
+  last_computed_at: string | null;
+  member_count: number;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+  last_refresh_duration_ms: number | null;
+  refresh_count: number | null;
+};
+
+export type CohortListResponse = { items: Cohort[]; total: number };
+
+export type CreateCohortBody = {
+  slug: string;
+  name: string;
+  description?: string;
+  workspace_id?: string;
+  kind: CohortKind;
+  definition?: Record<string, unknown>;
+};
+
+export type CohortMember = {
+  id: string;
+  anonymous_id: string;
+  user_id: string | null;
+  email: string | null;
+  name: string | null;
+  plan: string | null;
+  country: string | null;
+  joined_at: string;
+};
+
+export type CohortRefreshResponse = {
+  cohort_id: string;
+  members_added: number;
+  members_removed: number;
+  final_count: number;
+  duration_ms: number;
+};
+
+// ── Trends ────────────────────────────────────────────────────────
+
+export type TrendPoint = {
+  bucket: string;
+  group: string | null;
+  count: number;
+};
+
+export type TrendResponse = {
+  event_name: string;
+  days: number;
+  bucket: string;
+  group_by: string | null;
+  points: TrendPoint[];
+};
+
+export type EventNamesResponse = {
+  event_names: { event_name: string; count: number }[];
+  days: number;
+};
+
+// ── Destinations ──────────────────────────────────────────────────
+
+export type DestinationKind = "webhook" | "slack" | "custom";
+export type DeliveryStatus = "pending" | "success" | "failure" | "timeout" | "rejected_filter";
+
+export type Destination = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  org_id: string;
+  workspace_id: string;
+  kind: DestinationKind;
+  url: string;
+  has_secret: boolean;
+  headers: Record<string, string>;
+  filter_rule: Record<string, unknown>;
+  retry_policy: Record<string, unknown>;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+  delivery_count_30d: number;
+  success_count_30d: number;
+  failure_count_30d: number;
+};
+
+export type DestinationListResponse = { items: Destination[]; total: number };
+
+export type CreateDestinationBody = {
+  slug: string;
+  name: string;
+  description?: string;
+  workspace_id?: string;
+  kind: DestinationKind;
+  url: string;
+  secret?: string;
+  headers?: Record<string, string>;
+  filter_rule?: Record<string, unknown>;
+};
+
+export type DestinationDelivery = {
+  id: string;
+  destination_id: string;
+  event_id: string | null;
+  status: DeliveryStatus;
+  attempt: number;
+  response_code: number | null;
+  duration_ms: number | null;
+  error_message: string | null;
+  occurred_at: string;
+};
+
+export type DestinationDeliveryListResponse = { items: DestinationDelivery[]; total: number };
+
 export type Partner = {
   id: string;
   slug: string;

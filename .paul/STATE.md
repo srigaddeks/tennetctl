@@ -9,11 +9,11 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Milestone: **v0.5.0 Product Ops** (NEW — opened 2026-04-19) — Mixpanel/PostHog-class self-hostable product analytics + acquisition (events/UTM/funnels/links/referrals)
-Phase: **45 — Product SDK + Ingest + Attribution** — Planning (1 of 4 plans active)
-Plan: **45-01 PLAN.md created, awaiting approval** (`.paul/phases/45-product-sdk-ingest-attribution/45-01-PLAN.md`)
-Status: PLAN created, ready for APPLY. Backend foundation: 5 tables + 2 views + 3 nodes + POST /v1/track + admin live-tail page. Reuses Phase 10 SSE infra; calls audit.events.emit + vault.secrets.get via run_node (NCP v1 clean).
-Last activity: 2026-04-19 — Discussed phase 45, wrote ADR-030 (audit-vs-product-events split), drafted Plan 45-01 (3 tasks, standard track).
+Milestone: **v0.1.8 Runtime Hardening**
+Phase: **38 — Auth Hardening** — Plans 01 + 02 complete; phase substantively done
+Plan: **38-02 UNIFIED** (SUMMARY: `.paul/phases/38-auth-hardening/38-02-SUMMARY.md`)
+Status: Session rotation now covers all three OWASP privilege-escalation boundaries (login + password-change + MFA-enroll). Pyright + imports clean; live DB verification operator-deferred.
+Last activity: 2026-04-20 — UNIFY for 38-02. Phase 38 closed. Next: Phase 39 (NCP v1 maturity) to finish v0.1.8 milestone, or pause/commit.
 
 Progress:
 - Milestone v0.5.0: [░░░░░░░░░░] 0% (4 plans queued: 45-01 backend ingest + tail, 45-02 browser SDK + identify, 45-03 server-side SDK + UTM dashboard, 46/47/48 follow-on phases)
@@ -47,8 +47,32 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ○    [v0.5.0 Product Ops + v0.6.0 CDP/Partner milestone APPLY complete — 8 phases shipped end-to-end]
+  ✓        ✓        ✓    [Plan 38-02 closed 2026-04-20; Phase 38 substantively done]
 ```
+
+**Phase 38 Auth Hardening — shipped across 2 plans:**
+- 38-01: session-fixation on login, IP rate limiter (PG-native), atomic single-use tokens
+- 38-02: session rotation on password-change + TOTP enrollment (closes AC-1 across all 3 boundaries)
+
+
+Previous: Plan 38-01 closed 2026-04-20.
+
+**Plan 38-01 shipped:** session-fixation defense on login (rotate_on_login), Postgres-native per-IP rate limiter on /signin + /magic-link/request + /password-reset/request (10/5/3 per 60s), atomic race-close on token consumption. 9 files modified, 1 new module (rate_limit.py), 1 new migration (NNN 069).
+
+
+Previous loop closure (2026-04-20 milestone unify — v0.5.0+v0.6.0+v0.6.1+v0.7.0 reconciled; 18 retroactive PLAN stubs backfilled).
+
+
+**2026-04-20 Milestone UNIFY — what was reconciled:**
+
+| Gap category | Phases | Resolution |
+|---|---|---|
+| Shipped, SUMMARY only, no PLAN | 19, 30, 31, 32, 33, 34, 37-dx, 37-ux, 46, 47, 48, 49, 50, 51, 52, 53 | Retroactive PLAN stubs written; each points to SUMMARY as source-of-truth |
+| Shipped in code, empty phase dir | 54-trends, 55-destinations | PLAN stub + pointer SUMMARY created (real work documented in 53's combined SUMMARY) |
+| Empty placeholder future phases | 23, 35-admin-ui-build-missing, 36-admin-ui-polish-nav, 38, 39, 40, 41, 42, 43, 44 | Left as-is (future work, not yet started) |
+| Drift | 23R has 3 PLAN / 1 SUMMARY | Deferred — 23R was consumed into v0.2.0 rebase; plans 23R-02/03 remain open items but milestone closed via 23R-01 outcome |
+
+
 
 **v0.6.0 Customer Data Platform / Partner Management — APPLY complete (3 phases on top of v0.5.0):**
 
@@ -65,11 +89,26 @@ PLAN ──▶ APPLY ──▶ UNIFY
 - All 8 admin pages return HTTP 200 after auth redirect
 - Live data seeded: 1 visitor with full profile, 5 promo codes across 5 kinds, 1 active campaign with 2 weighted promos, 101 exposures, 3 redemption attempts
 
-**v0.7.0+ still planned (deferred placeholders):**
-- Audiences (saved cohorts driven by Phase 49 trait filters)
-- Destinations / Webhooks (CDP outbound — Segment-style fan-out)
-- Session Replay (rrweb + S3 blob + player UI)
-- Partner-facing dashboard, auto-payout calc worker, tier auto-promotion
+**v0.7.0 — Cohorts + Trends + Destinations ✅ (this turn's add)**
+- Phase 53 ✅ Cohorts: dynamic (rule-based) + static (manual list) + materialized membership; eligibility evaluator extended with `cohort_slugs` context fold (no new ops needed — cleanly reuses `exists`/`eq`); refresh diff-applies + audits
+- Phase 54 ✅ Trends: time-series count over any event_name with bucket (hour/day/week/month) + group-by JSONB key (whitelisted SQL); event_names facet endpoint; chart-as-table UI with bar widths
+- Phase 55 ✅ Destinations: Segment-style outbound webhooks; HMAC-SHA256 signing; filter_rule via shared eligibility evaluator; concurrent fan-out wired into `service.ingest_batch`; every attempt logged
+- Real bug caught + fixed live: datetime in event payload broke json.dumps for events that passed filter; added `_stringify` recursive ISO conversion
+- Live verified: trend query, cohort refresh (rule eval), webhook delivery with HMAC + filter all working end-to-end on running stack
+
+**Aggregate state: product_ops feature has 9 sub-features, 61 routes, 25 tables.**
+
+**v0.8.0+ still planned (deferred placeholders):**
+- Identity stitching backfill (Mixpanel-standard: retroactively assign user_id to pre-identify events)
+- Group analytics (org-level metrics, B2B SaaS critical)
+- Lexicon UI (event taxonomy governance)
+- Promo depth (stacking rules, bulk one-time codes, refund clawback)
+- Partner-facing portal (partner self-service)
+- Auto-payout via Stripe Connect
+- Session Replay (rrweb + S3 blob + player UI; whole new infra epic)
+- A/B experiment framework
+- Mobile SDKs (iOS/Android)
+- GDPR DSAR flows
 
 **v0.5.0 Product Ops — APPLY complete across 5 phases / 7 plans:**
 
@@ -258,7 +297,9 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-19 — AUTONOMOUS v0.5.0 + v0.6.0 sweep. v0.5.0 Product Ops (5 phases): Events/Visitors/Links/Referrals/UTM/Funnels with browser SDK + server SDK. v0.6.0 CDP + Partner Management (3 phases): Profiles/Promos/Partners. 10 SUMMARY files. ADR-030 written. 7 new SQL migrations (058–064). 6 catalog sub-features under product_ops (events, links, referrals, profiles, promos, partners) with 4 nodes + 37 routes. ~10,000 new lines across backend, frontend, SDKs.
+Last session: 2026-04-20 — Milestone UNIFY sweep. 18 retroactive PLAN stubs written, 2 pointer SUMMARYs (54, 55) created, STATE.md loop position advanced to UNIFY ✓. No code changes. Next action: pick next milestone (v0.8.0 identity stitching + group analytics + lexicon UI is the highest-value per v0.7.0 SUMMARY gap analysis; v0.1.8 hardening phases 38/39 is the next natural milestone on roadmap).
+
+Previously: 2026-04-19 — AUTONOMOUS v0.5.0 + v0.6.0 sweep. v0.5.0 Product Ops (5 phases): Events/Visitors/Links/Referrals/UTM/Funnels with browser SDK + server SDK. v0.6.0 CDP + Partner Management (3 phases): Profiles/Promos/Partners. 10 SUMMARY files. ADR-030 written. 7 new SQL migrations (058–064). 6 catalog sub-features under product_ops (events, links, referrals, profiles, promos, partners) with 4 nodes + 37 routes. ~10,000 new lines across backend, frontend, SDKs.
 Stopped at: v0.5.0 + v0.6.0 fully shipped in code. Operator verification deferred (live migrator + vault seed + Playwright MCP + SDK npm install).
 Next action:
   • Operator: apply migrations (058/059/060/061) + seed vault project_key

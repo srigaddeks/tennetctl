@@ -42,11 +42,25 @@ async def get_by_hash(conn: Any, token_hash: str) -> dict | None:
     return dict(row) if row else None
 
 
-async def mark_consumed(conn: Any, token_id: str) -> None:
-    await conn.execute(
-        f"UPDATE {_TABLE} SET consumed_at = CURRENT_TIMESTAMP WHERE id = $1",
+async def mark_consumed(conn: Any, token_id: str) -> bool:
+    """Atomically claim the token. Returns True iff this call did the consume.
+
+    The `AND consumed_at IS NULL AND expires_at > CURRENT_TIMESTAMP` guard
+    closes the TOCTOU window between get_by_hash() and mark_consumed() —
+    concurrent double-redeem: exactly one wins.
+    """
+    row = await conn.fetchrow(
+        f"""
+        UPDATE {_TABLE}
+           SET consumed_at = CURRENT_TIMESTAMP
+         WHERE id = $1
+           AND consumed_at IS NULL
+           AND expires_at > CURRENT_TIMESTAMP
+        RETURNING id
+        """,
         token_id,
     )
+    return row is not None
 
 
 async def count_recent_by_email(conn: Any, email: str, window_minutes: int = 15) -> int:

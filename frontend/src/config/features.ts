@@ -130,7 +130,10 @@ export const FEATURES: FeatureNav[] = [
       { href: "/product/profiles", label: "Profiles", testId: "nav-product-profiles" },
       { href: "/product/promos", label: "Promo Codes", testId: "nav-product-promos" },
       { href: "/product/partners", label: "Partners", testId: "nav-product-partners" },
-      { href: "/product/funnels", label: "Funnels & Retention", testId: "nav-product-funnels" },
+      { href: "/product/funnels", label: "Funnels & Retention", testId: "nav-product-funnels", group: "Analyze" },
+      { href: "/product/trends", label: "Trends", testId: "nav-product-trends", group: "Analyze" },
+      { href: "/product/cohorts", label: "Cohorts", testId: "nav-product-cohorts", group: "Analyze" },
+      { href: "/product/destinations", label: "Destinations", testId: "nav-product-destinations", group: "Integrate" },
     ],
   },
   {

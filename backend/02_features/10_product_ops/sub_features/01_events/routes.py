@@ -155,6 +155,55 @@ async def list_product_events_route(
     return _response.success(result)
 
 
+# ── GET /v1/product-events/trend ────────────────────────────────────
+
+@router.get("/v1/product-events/trend", status_code=200)
+async def trend_route(
+    request: Request,
+    event_name: str = Query(...),
+    workspace_id: str | None = Query(default=None),
+    days: int = Query(default=30, ge=1, le=365),
+    bucket: str = Query(default="day", pattern="^(hour|day|week|month)$"),
+    group_by: str | None = Query(default=None, max_length=64),
+) -> Any:
+    pool = request.app.state.pool
+    resolved_ws = _enforce_workspace_authz(request, workspace_id)
+    async with pool.acquire() as conn:
+        from importlib import import_module as _im
+        _repo: Any = _im(
+            "backend.02_features.10_product_ops.sub_features.01_events.repository"
+        )
+        try:
+            rows = await _repo.trend_query(
+                conn, workspace_id=resolved_ws, event_name=event_name,
+                days=days, bucket=bucket, group_by=group_by,
+            )
+        except ValueError as e:
+            raise _errors.AppError("BAD_REQUEST", str(e), status_code=400) from e
+    return _response.success({
+        "event_name": event_name, "days": days, "bucket": bucket,
+        "group_by": group_by, "points": rows,
+    })
+
+
+@router.get("/v1/product-events/event-names", status_code=200)
+async def event_names_route(
+    request: Request,
+    workspace_id: str | None = Query(default=None),
+    days: int = Query(default=30, ge=1, le=365),
+) -> Any:
+    """List distinct event_name values seen recently — for UI dropdowns."""
+    pool = request.app.state.pool
+    resolved_ws = _enforce_workspace_authz(request, workspace_id)
+    async with pool.acquire() as conn:
+        from importlib import import_module as _im
+        _repo: Any = _im(
+            "backend.02_features.10_product_ops.sub_features.01_events.repository"
+        )
+        rows = await _repo.event_name_facets(conn, resolved_ws, days=days)
+    return _response.success({"event_names": rows, "days": days})
+
+
 # ── POST /v1/product-events/funnel ──────────────────────────────────
 
 @router.post("/v1/product-events/funnel", status_code=200)

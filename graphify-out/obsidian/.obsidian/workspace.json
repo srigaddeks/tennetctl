@@ -11,10 +11,17 @@
             "id": "759bc1c27cb2717b",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "canvas",
+              "state": {
+                "file": "Untitled 1.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Untitled 1"
             }
           }
         ]
@@ -49,7 +56,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#community/Auth_&_Error_Handling",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -179,6 +186,7 @@
   },
   "active": "759bc1c27cb2717b",
   "lastOpenFiles": [
+    "Untitled 1.canvas",
     "_cache_put().md",
     "vault_configs_get.py.md",
     "Untitled 1.base",
@@ -207,7 +215,6 @@
     "_COMMUNITY_Lib Cn.md",
     "_COMMUNITY_Api Types Saved Query.md",
     "_COMMUNITY_Api Types Dashboard.md",
-    "_COMMUNITY_Api Types Metric.md",
-    "_COMMUNITY_Api Types Vault Config Meta.md"
+    "_COMMUNITY_Api Types Metric.md"
   ]
 }

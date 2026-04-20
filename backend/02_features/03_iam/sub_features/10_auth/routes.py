@@ -20,7 +20,7 @@ from dataclasses import replace
 from importlib import import_module
 from typing import Any
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 
 _response: Any = import_module("backend.01_core.response")
 _errors: Any = import_module("backend.01_core.errors")
@@ -32,6 +32,9 @@ _schemas: Any = import_module(
 )
 _service: Any = import_module(
     "backend.02_features.03_iam.sub_features.10_auth.service"
+)
+_rate_limit: Any = import_module(
+    "backend.02_features.03_iam.sub_features.10_auth.rate_limit"
 )
 _users_schemas: Any = import_module(
     "backend.02_features.03_iam.sub_features.03_users.schemas"
@@ -139,7 +142,13 @@ async def signup_route(request: Request, body: SignupBody) -> Response:
     return response
 
 
-@router.post("/signin", status_code=200)
+@router.post(
+    "/signin",
+    status_code=200,
+    dependencies=[Depends(_rate_limit.auth_rate_limit(
+        "auth.signin", max_requests=10, window_seconds=60,
+    ))],
+)
 async def signin_route(request: Request, body: SigninBody) -> Response:
     pool = request.app.state.pool
     vault = _vault(request)
@@ -151,6 +160,21 @@ async def signin_route(request: Request, body: SigninBody) -> Response:
     client_ip = xff.split(",")[0].strip() if xff else (
         request.client.host if request.client else None
     )
+    # Session-fixation defense: parse any pre-existing cookie's session_id so
+    # the service layer can revoke it after minting a fresh session (Plan 38-01).
+    previous_session_id = None
+    incoming_cookie = request.cookies.get(SESSION_COOKIE)
+    if incoming_cookie:
+        try:
+            _sessions_service: Any = import_module(
+                "backend.02_features.03_iam.sub_features.09_sessions.service"
+            )
+            signing_key = await _sessions_service._signing_key_bytes(vault)
+            previous_session_id = _sessions_service.parse_token(
+                incoming_cookie, signing_key,
+            )
+        except Exception:
+            previous_session_id = None  # tampered / invalid cookie — ignore
     async with pool.acquire() as conn:
         async with conn.transaction():
             ctx = replace(ctx_base, conn=conn)
@@ -161,6 +185,7 @@ async def signin_route(request: Request, body: SigninBody) -> Response:
                 password=body.password,
                 source_ip=client_ip,
                 user_agent=ua,
+                previous_session_id=previous_session_id,
             )
     payload = _build_response_payload(token, user, session)
     response = _response.success_response(payload, status_code=200)

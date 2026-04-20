@@ -32,6 +32,12 @@ _partners: Any = import_module(
 _campaigns: Any = import_module(
     "backend.02_features.10_product_ops.sub_features.07_campaigns.routes"
 )
+_cohorts: Any = import_module(
+    "backend.02_features.10_product_ops.sub_features.08_cohorts.routes"
+)
+_destinations: Any = import_module(
+    "backend.02_features.10_product_ops.sub_features.09_destinations.routes"
+)
 
 router = APIRouter()
 router.include_router(_events.router)
@@ -41,3 +47,5 @@ router.include_router(_profiles.router)
 router.include_router(_promos.router)
 router.include_router(_partners.router)
 router.include_router(_campaigns.router)
+router.include_router(_cohorts.router)
+router.include_router(_destinations.router)

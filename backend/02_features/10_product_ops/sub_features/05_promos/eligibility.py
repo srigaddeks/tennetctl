@@ -144,8 +144,15 @@ def build_context(
     visitor: dict | None = None,
     order: dict | None = None,
     promo: dict | None = None,
+    cohort_slugs: list[str] | set[str] | None = None,
     extra: dict | None = None,
 ) -> dict:
+    """Build evaluator context. cohort_slugs becomes ctx['cohorts'][slug] = True
+    so rules can reference cohort membership via the existing ops:
+        {"op": "exists", "field": "cohorts.power_users"}     # in cohort
+        {"op": "eq", "field": "cohorts.power_users", "value": true}
+    Caller is responsible for resolving the visitor's cohort membership
+    (typically a single SQL query against lnk_cohort_members)."""
     ctx: dict[str, Any] = {}
     if visitor is not None:
         ctx["visitor"] = visitor
@@ -153,6 +160,8 @@ def build_context(
         ctx["order"] = order
     if promo is not None:
         ctx["promo"] = promo
+    if cohort_slugs:
+        ctx["cohorts"] = {slug: True for slug in cohort_slugs}
     if extra:
         ctx.update(extra)
     return ctx

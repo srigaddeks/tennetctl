@@ -277,6 +277,110 @@ async def extend_my_session(
     return updated
 
 
+# ── Plan 38-01 + 38-02: Session rotation on privilege escalation ──────────────
+
+async def rotate_on_privilege_escalation(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    previous_session_id: str,
+    user_id: str,
+    vault_client: Any,
+    org_id: str | None = None,
+    workspace_id: str | None = None,
+    reason: str = "password_change",
+    user_agent: str | None = None,
+    ip_address: str | None = None,
+) -> tuple[str, dict]:
+    """Mint fresh session, revoke previous, audit the rotation.
+
+    Used at privilege boundaries where the effective auth state changes:
+      - "password_change": caller just rotated their password
+      - "mfa_enrolled":    caller just activated TOTP / MFA credential
+
+    The login path uses `rotate_on_login` (which only revokes — it mints through
+    the signin service's own code path). This helper is the combined mint + revoke
+    flow for post-auth boundaries.
+
+    Returns (new_token, new_session_meta). New session inherits (user_id, org_id,
+    workspace_id) from the caller — no re-login required.
+    """
+    new_token, new_session = await mint_session(
+        conn, vault_client=vault_client,
+        user_id=user_id, org_id=org_id, workspace_id=workspace_id,
+        user_agent=user_agent, ip_address=ip_address,
+    )
+    revoked = await _repo.revoke_session_by_reason(
+        conn, session_id=previous_session_id, updated_by=user_id,
+        reason=f"rotated_on_{reason}",
+    )
+    try:
+        await _catalog.run_node(
+            pool, "audit.events.emit", ctx,
+            {
+                "event_key": "iam.session.rotated",
+                "outcome": "success",
+                "metadata": {
+                    "reason": reason,
+                    "old_session_id": previous_session_id,
+                    "new_session_id": new_session["id"],
+                    "user_id": user_id,
+                    "previous_was_active": revoked,
+                },
+            },
+        )
+    except Exception:
+        pass  # rotation itself succeeded; audit is best-effort
+    return new_token, new_session
+
+
+async def rotate_on_login(
+    pool: Any,
+    conn: Any,
+    ctx: Any,
+    *,
+    previous_session_id: str,
+    new_session_id: str,
+    user_id: str,
+) -> bool:
+    """Revoke `previous_session_id` and audit the rotation.
+
+    Called from the signin path when the client presented a pre-existing session
+    cookie. Closes the classic session-fixation vector where an attacker plants
+    a session_id in the victim's browser and rides the authenticated session
+    after the victim signs in.
+
+    `new_session_id` is already live at this point (mint_session succeeded);
+    this helper only revokes + audits. If `previous_session_id == new_session_id`
+    this is a no-op (defensive; shouldn't happen since we mint before rotate).
+    """
+    if previous_session_id == new_session_id:
+        return False
+    revoked = await _repo.revoke_session_by_reason(
+        conn, session_id=previous_session_id, updated_by=user_id,
+        reason="rotated_on_login",
+    )
+    try:
+        await _catalog.run_node(
+            pool, "audit.events.emit", ctx,
+            {
+                "event_key": "iam.session.rotated",
+                "outcome": "success",
+                "metadata": {
+                    "reason": "login",
+                    "old_session_id": previous_session_id,
+                    "new_session_id": new_session_id,
+                    "user_id": user_id,
+                    "previous_was_active": revoked,
+                },
+            },
+        )
+    except Exception:
+        pass  # rotation itself must not fail on audit glitches
+    return revoked
+
+
 # ── Plan 20-04: Session policy enforcement ────────────────────────────────────
 
 async def enforce_session_limits(

@@ -187,7 +187,20 @@ async def complete_reset(
     if row is None:
         raise _errors.AppError("INVALID_TOKEN", "Reset link is invalid or has expired.", 401)
 
-    await _repo.mark_consumed(conn, row["id"])
+    # Atomic claim — loses the race if another concurrent reset already
+    # consumed this token (or it just expired between the fetch above).
+    claimed = await _repo.mark_consumed(conn, row["id"])
+    if not claimed:
+        try:
+            from dataclasses import replace as _replace
+            await _catalog.run_node(
+                pool, "audit.events.emit", _replace(ctx, conn=None),
+                {"event_key": "iam.password_reset.consume_failed", "outcome": "failure",
+                 "metadata": {"reason": "race_replay", "user_id": row["user_id"]}},
+            )
+        except Exception:
+            pass
+        raise _errors.AppError("INVALID_TOKEN", "Reset link is invalid or has expired.", 401)
 
     await _credentials_service.set_password(
         conn,

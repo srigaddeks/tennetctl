@@ -107,10 +107,11 @@ async def verify_otp_route(body: OtpVerify, request: Request) -> Response:
 # ─── TOTP ─────────────────────────────────────────────────────────────────────
 
 @router.post("/totp/setup", status_code=201)
-async def setup_totp_route(body: TotpSetupRequest, request: Request) -> dict:
+async def setup_totp_route(body: TotpSetupRequest, request: Request) -> Response:
     pool = request.app.state.pool
     vault = _vault(request)
     user_id = getattr(request.state, "user_id", None)
+    session_id = getattr(request.state, "session_id", None)
     if not user_id:
         raise _errors.AppError("UNAUTHENTICATED", "Authentication required.", 401)
     ctx_base = _build_ctx(request, pool)
@@ -120,8 +121,27 @@ async def setup_totp_route(body: TotpSetupRequest, request: Request) -> dict:
             result = await _service.setup_totp(
                 pool, conn, ctx,
                 user_id=user_id, device_name=body.device_name, vault_client=vault,
+                previous_session_id=session_id,
+                org_id=getattr(request.state, "org_id", None),
+                workspace_id=getattr(request.state, "workspace_id", None),
             )
-    return _response.success_response(result, status_code=201)
+    resp = _response.success_response(result, status_code=201)
+    # Plan 38-02: if rotation happened, carry the new session cookie in the response
+    new_token = result.get("token")
+    new_session = result.get("session")
+    if new_token and new_session:
+        from datetime import datetime, timezone
+        exp = new_session.get("expires_at")
+        if isinstance(exp, str):
+            delta = (
+                datetime.fromisoformat(exp).replace(tzinfo=None)
+                - datetime.now(timezone.utc).replace(tzinfo=None)
+            )
+            max_age = max(60, int(delta.total_seconds()))
+        else:
+            max_age = 7 * 24 * 3600
+        _set_session_cookie(request, resp, new_token, max_age)
+    return resp
 
 
 @router.post("/totp/verify", status_code=200)

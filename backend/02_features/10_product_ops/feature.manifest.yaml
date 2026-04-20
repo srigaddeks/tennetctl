@@ -324,3 +324,85 @@ spec:
         - path: /product/campaigns
           label: Promo Campaigns
           description: Bundle promos with shared schedule + audience + A/B weighting.
+    - key: product_ops.cohorts
+      number: 8
+      label: Cohorts
+      description: Saved visitor filter sets with materialized rolling membership. dynamic = re-computed from a rule (eligibility AST), static = fixed visitor_id list. Cohort membership is exposed to the eligibility evaluator via build_context(cohort_slugs=…) so promos and campaigns can target cohorts directly.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_cohorts"
+          - "40_lnk_cohort_members"
+          - "60_evt_cohort_computations"
+        views:
+          - "v_cohorts"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/cohorts
+          handler: sub_features.08_cohorts.routes.list_cohorts_route
+        - method: POST
+          path: /v1/cohorts
+          handler: sub_features.08_cohorts.routes.create_cohort_route
+        - method: GET
+          path: "/v1/cohorts/{cohort_id}"
+          handler: sub_features.08_cohorts.routes.get_cohort_route
+        - method: PATCH
+          path: "/v1/cohorts/{cohort_id}"
+          handler: sub_features.08_cohorts.routes.update_cohort_route
+        - method: DELETE
+          path: "/v1/cohorts/{cohort_id}"
+          handler: sub_features.08_cohorts.routes.delete_cohort_route
+        - method: POST
+          path: "/v1/cohorts/{cohort_id}/refresh"
+          handler: sub_features.08_cohorts.routes.refresh_cohort_route
+        - method: GET
+          path: "/v1/cohorts/{cohort_id}/members"
+          handler: sub_features.08_cohorts.routes.list_cohort_members_route
+        - method: POST
+          path: "/v1/cohorts/{cohort_id}/members"
+          handler: sub_features.08_cohorts.routes.add_cohort_members_route
+      ui_pages:
+        - path: /product/cohorts
+          label: Cohorts
+          description: Saved filter sets with rolling membership.
+    - key: product_ops.destinations
+      number: 9
+      label: Destinations / Webhooks
+      description: Outbound CDP fan-out (Segment-style). Operator registers webhook/Slack URLs with optional filter_rule (eligibility AST) + HMAC secret. Fan-out runs per-event after ingest, concurrent across destinations, fire-and-forget on a 2s timeout. Every attempt logged in evt_destination_deliveries.
+      owns:
+        schema: "10_product_ops"
+        tables:
+          - "10_fct_destinations"
+          - "60_evt_destination_deliveries"
+        views:
+          - "v_destinations"
+        seeds: []
+      nodes: []
+      routes:
+        - method: GET
+          path: /v1/destinations
+          handler: sub_features.09_destinations.routes.list_destinations_route
+        - method: POST
+          path: /v1/destinations
+          handler: sub_features.09_destinations.routes.create_destination_route
+        - method: GET
+          path: "/v1/destinations/{dest_id}"
+          handler: sub_features.09_destinations.routes.get_destination_route
+        - method: PATCH
+          path: "/v1/destinations/{dest_id}"
+          handler: sub_features.09_destinations.routes.update_destination_route
+        - method: DELETE
+          path: "/v1/destinations/{dest_id}"
+          handler: sub_features.09_destinations.routes.delete_destination_route
+        - method: POST
+          path: "/v1/destinations/{dest_id}/test"
+          handler: sub_features.09_destinations.routes.test_destination_route
+        - method: GET
+          path: "/v1/destinations/{dest_id}/deliveries"
+          handler: sub_features.09_destinations.routes.list_deliveries_route
+      ui_pages:
+        - path: /product/destinations
+          label: Destinations
+          description: Outbound webhooks + delivery log.

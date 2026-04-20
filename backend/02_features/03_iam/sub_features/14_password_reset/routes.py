@@ -6,7 +6,7 @@ from dataclasses import replace
 from importlib import import_module
 from typing import Any
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 
 _errors: Any = import_module("backend.01_core.errors")
 _response: Any = import_module("backend.01_core.response")
@@ -18,6 +18,9 @@ _schemas: Any = import_module(
 )
 _service: Any = import_module(
     "backend.02_features.03_iam.sub_features.14_password_reset.service"
+)
+_rate_limit: Any = import_module(
+    "backend.02_features.03_iam.sub_features.10_auth.rate_limit"
 )
 _users_schemas: Any = import_module(
     "backend.02_features.03_iam.sub_features.03_users.schemas"
@@ -63,7 +66,13 @@ def _set_session_cookie(request: Request, response: Response, token: str, max_ag
     )
 
 
-@router.post("/request", status_code=200)
+@router.post(
+    "/request",
+    status_code=200,
+    dependencies=[Depends(_rate_limit.auth_rate_limit(
+        "password_reset.request", max_requests=3, window_seconds=60,
+    ))],
+)
 async def request_reset(body: PasswordResetRequestBody, request: Request) -> dict:
     pool = request.app.state.pool
     vault = _vault(request)

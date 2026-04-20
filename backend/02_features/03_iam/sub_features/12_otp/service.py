@@ -217,6 +217,9 @@ async def setup_totp(
     user_id: str,
     device_name: str,
     vault_client: Any,
+    previous_session_id: str | None = None,
+    org_id: str | None = None,
+    workspace_id: str | None = None,
 ) -> dict:
     """Generate TOTP secret, encrypt, store. Return credential_id + otpauth URI."""
     secret = pyotp.random_base32()
@@ -253,12 +256,42 @@ async def setup_totp(
             conn, code_id=_core_id.uuid7(), user_id=user_id, code_hash=code_hash,
         )
 
-    return {
+    # Plan 38-02: rotate session on MFA enrollment boundary. The old session_id
+    # predates the strengthened auth state (no-MFA → MFA); replay must not give
+    # an attacker the same session_id across the credential-activation boundary.
+    new_token: str | None = None
+    new_session: dict | None = None
+    if previous_session_id:
+        try:
+            from importlib import import_module as _im
+            _sessions_mod = _im(
+                "backend.02_features.03_iam.sub_features.09_sessions.service"
+            )
+            new_token, new_session = await _sessions_mod.rotate_on_privilege_escalation(
+                pool, conn, ctx,
+                previous_session_id=previous_session_id,
+                user_id=user_id,
+                vault_client=vault_client,
+                org_id=org_id,
+                workspace_id=workspace_id,
+                reason="mfa_enrolled",
+            )
+        except Exception:
+            new_token, new_session = None, None
+
+    result: dict = {
         "credential_id": cred["id"],
         "otpauth_uri": otpauth_uri,
         "device_name": device_name,
         "backup_codes": backup_codes,
     }
+    if new_token and new_session:
+        result["token"] = new_token
+        result["session"] = {
+            "id": new_session.get("id"),
+            "expires_at": new_session.get("expires_at"),
+        }
+    return result
 
 
 async def verify_totp(

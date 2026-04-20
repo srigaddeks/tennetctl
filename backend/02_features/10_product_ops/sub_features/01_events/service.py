@@ -320,6 +320,19 @@ async def ingest_batch(
                         conn, visitor_id=vid, alias_anonymous_id=alias_aid, org_id=org_id,
                     )
 
+    # 7b. Fan out each event to active destinations (Phase 55).
+    # Imported lazily to keep cohort/destination optional; failures never
+    # affect ingest (try/except wraps the whole fan-out).
+    try:
+        from importlib import import_module as _im
+        _dest_svc: Any = _im(
+            "backend.02_features.10_product_ops.sub_features.09_destinations.service"
+        )
+        for r in event_rows:
+            await _dest_svc.fan_out_event(pool, workspace_id=workspace_id, event=r)
+    except Exception:
+        logger.info("destination fan-out failed; ingest continues", exc_info=True)
+
     # 8. ONE audit summary per batch (ADR-030 hot-path bypass).
     # We need a scoped ctx for audit emission. Use the resolved org/workspace,
     # mark category=integration (system-to-system event with no human actor),
