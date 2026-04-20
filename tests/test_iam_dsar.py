@@ -51,8 +51,8 @@ async def test_org_and_users(pool: Any) -> dict:
         # Create org
         org_id = _core_id.uuid7()
         await conn.execute(
-            'INSERT INTO "03_iam"."10_fct_orgs" (id, created_by, updated_by) VALUES ($1, $2, $2)',
-            org_id, "system",
+            'INSERT INTO "03_iam"."10_fct_orgs" (id, slug, created_by, updated_by) VALUES ($1, $2, $3, $3)',
+            org_id, f"test-org-{org_id[:8]}", "system",
         )
 
         # Create operator user
