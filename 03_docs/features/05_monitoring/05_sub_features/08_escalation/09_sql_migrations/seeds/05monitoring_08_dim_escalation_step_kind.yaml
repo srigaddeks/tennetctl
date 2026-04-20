@@ -1,0 +1,28 @@
+schema: "05_monitoring"
+table: "02_dim_escalation_step_kind"
+rows:
+  - id: 1
+    code: notify_user
+    label: Notify User
+    description: Send notification to a specific user
+    deprecated_at: null
+  - id: 2
+    code: notify_group
+    label: Notify Group
+    description: Send notification to all members of a group
+    deprecated_at: null
+  - id: 3
+    code: notify_oncall
+    label: Notify On-Call
+    description: Send notification to the user currently on-call for a schedule
+    deprecated_at: null
+  - id: 4
+    code: wait
+    label: Wait
+    description: Wait for a specified duration before advancing to next step
+    deprecated_at: null
+  - id: 5
+    code: repeat
+    label: Repeat
+    description: Loop back to first step (used as final step in circular escalations)
+    deprecated_at: null

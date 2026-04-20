@@ -230,6 +230,17 @@ class AlertEvaluatorWorker:
             labels=transition.labels or {}, annotations={},
             silenced=silence_id is not None, silence_id=silence_id,
         )
+        # Create escalation state if rule has escalation_policy_id
+        if rule.get("escalation_policy_id"):
+            _esc_repo: Any = import_module(
+                "backend.02_features.05_monitoring.sub_features.08_escalation.repository"
+            )
+            await _esc_repo.create_escalation_state(
+                conn,
+                alert_event_id=event_id,
+                policy_id=rule["escalation_policy_id"],
+                next_action_at=now,
+            )
         if silence_id is not None:
             return
         ok = await self._notify(rule, event_id, transition, "firing", ctx)
@@ -319,7 +330,7 @@ class AlertEvaluatorWorker:
                 """
                 SELECT id, org_id, name, description, target, dsl, condition,
                        severity_id, severity_code, notify_template_key,
-                       labels, is_active, paused_until
+                       labels, is_active, paused_until, escalation_policy_id
                   FROM "05_monitoring"."v_monitoring_alert_rules"
                  WHERE is_active = TRUE
                    AND (paused_until IS NULL OR paused_until < $1)

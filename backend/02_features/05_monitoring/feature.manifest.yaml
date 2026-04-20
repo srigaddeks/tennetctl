@@ -626,3 +626,119 @@ spec:
           path: "/v1/monitoring/alerts/{id}/silence"
           handler: sub_features.07_alerts.routes.silence_alert_route
       ui_pages: []
+
+    - key: monitoring.escalation
+      number: 8
+      label: Escalation Policies & On-Call Schedules
+      description: "Escalation policies define progressive paging chains (notify user, wait, escalate to manager). On-call schedules rotate members with timezone-aware handovers. Worker processes due escalations every 15s."
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "02_dim_escalation_step_kind"
+          - "10_fct_monitoring_escalation_policies"
+          - "40_lnk_monitoring_escalation_steps"
+          - "10_fct_monitoring_oncall_schedules"
+          - "40_lnk_monitoring_oncall_members"
+          - "20_dtl_monitoring_alert_escalation_state"
+        views:
+          - "v_monitoring_escalation_policies"
+          - "v_monitoring_oncall_schedules"
+      nodes:
+        - key: monitoring.escalation.policy_create
+          kind: effect
+          handler: sub_features.08_escalation.nodes.policy_create.PolicyCreate
+          label: Create Escalation Policy
+          description: Creates an escalation policy with ordered steps. Steps are immutable once created (UPDATE replaces entire set).
+          emits_audit: true
+          version: 1
+          tags: [monitoring, escalation, policies]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.escalation.policy_update
+          kind: effect
+          handler: sub_features.08_escalation.nodes.policy_update.PolicyUpdate
+          label: Update Escalation Policy
+          description: Updates policy name/description/is_active and optionally replaces step set.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, escalation, policies]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.escalation.policy_delete
+          kind: effect
+          handler: sub_features.08_escalation.nodes.policy_delete.PolicyDelete
+          label: Delete Escalation Policy
+          description: Soft-deletes an escalation policy. Fails with 409 if referenced by active alert rules.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, escalation, policies]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.escalation.advance
+          kind: effect
+          handler: sub_features.08_escalation.nodes.escalate.advance
+          label: Advance Escalation State
+          description: Worker entry point - loads policy step, resolves recipient, sends notification, advances to next step.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, escalation, worker]
+          execution:
+            timeout_ms: 10000
+            retries: 0
+            tx: own
+        - key: monitoring.oncall.resolve
+          kind: control
+          handler: sub_features.08_escalation.nodes.resolve_oncall.resolve
+          label: Resolve On-Call User
+          description: Determines who is currently on-call for a schedule using rotation math.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, escalation, oncall]
+          execution:
+            timeout_ms: 1000
+            retries: 0
+            tx: none
+      routes:
+        - method: GET
+          path: /v1/monitoring/escalation-policies
+          handler: sub_features.08_escalation.routes.list_escalation_policies
+        - method: POST
+          path: /v1/monitoring/escalation-policies
+          handler: sub_features.08_escalation.routes.create_escalation_policy
+        - method: GET
+          path: "/v1/monitoring/escalation-policies/{policy_id}"
+          handler: sub_features.08_escalation.routes.get_escalation_policy
+        - method: PATCH
+          path: "/v1/monitoring/escalation-policies/{policy_id}"
+          handler: sub_features.08_escalation.routes.update_escalation_policy
+        - method: DELETE
+          path: "/v1/monitoring/escalation-policies/{policy_id}"
+          handler: sub_features.08_escalation.routes.delete_escalation_policy
+        - method: GET
+          path: /v1/monitoring/oncall-schedules
+          handler: sub_features.08_escalation.routes.list_oncall_schedules
+        - method: POST
+          path: /v1/monitoring/oncall-schedules
+          handler: sub_features.08_escalation.routes.create_oncall_schedule
+        - method: GET
+          path: "/v1/monitoring/oncall-schedules/{schedule_id}"
+          handler: sub_features.08_escalation.routes.get_oncall_schedule
+        - method: PATCH
+          path: "/v1/monitoring/oncall-schedules/{schedule_id}"
+          handler: sub_features.08_escalation.routes.update_oncall_schedule
+        - method: DELETE
+          path: "/v1/monitoring/oncall-schedules/{schedule_id}"
+          handler: sub_features.08_escalation.routes.delete_oncall_schedule
+        - method: GET
+          path: "/v1/monitoring/oncall-schedules/{schedule_id}/whoami"
+          handler: sub_features.08_escalation.routes.oncall_whoami
+        - method: POST
+          path: "/v1/monitoring/alerts/{alert_id}/ack"
+          handler: sub_features.08_escalation.routes.ack_alert
+      ui_pages: []
