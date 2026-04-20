@@ -322,7 +322,7 @@ async def insert_alert_event(
     silenced: bool = False,
     silence_id: str | None = None,
 ) -> None:
-    """INSERT a new firing alert event row."""
+    """INSERT a new firing alert event row. Emits monitoring_alert_fired NOTIFY after commit."""
     await conn.execute(
         """
         INSERT INTO "05_monitoring"."60_evt_monitoring_alert_events"
@@ -333,6 +333,11 @@ async def insert_alert_event(
         """,
         id, rule_id, fingerprint, value, threshold, org_id, started_at,
         silenced, silence_id, labels, annotations or {},
+    )
+    # Notify incident grouper worker about new firing alert
+    await conn.execute(
+        "SELECT pg_notify('monitoring_alert_fired', $1)",
+        id,
     )
 
 

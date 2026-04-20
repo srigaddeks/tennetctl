@@ -1,0 +1,38 @@
+schema: "05_monitoring"
+table: "02_dim_monitoring_dashboard_share_event_kind"
+rows:
+  - id: 1
+    code: granted
+    label: Share Granted
+    description: Dashboard access granted to a user.
+    deprecated_at: null
+  - id: 2
+    code: viewed
+    label: Share Viewed
+    description: Dashboard viewed via share link.
+    deprecated_at: null
+  - id: 3
+    code: token_minted
+    label: Token Minted
+    description: Public share token created.
+    deprecated_at: null
+  - id: 4
+    code: token_rotated
+    label: Token Rotated
+    description: Public share token rotated (new token issued).
+    deprecated_at: null
+  - id: 5
+    code: revoked
+    label: Share Revoked
+    description: Dashboard share revoked/disabled.
+    deprecated_at: null
+  - id: 6
+    code: expired
+    label: Share Expired
+    description: Public share token expired.
+    deprecated_at: null
+  - id: 7
+    code: passphrase_failed
+    label: Passphrase Failed
+    description: Invalid passphrase attempt on protected share.
+    deprecated_at: null

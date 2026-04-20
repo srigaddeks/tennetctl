@@ -1,0 +1,23 @@
+schema: "05_monitoring"
+table: "03_dim_monitoring_action_kind"
+rows:
+  - id: 1
+    code: webhook
+    label: Webhook
+    description: HTTP POST to a custom URL with optional HMAC-SHA256 signing
+    deprecated_at: null
+  - id: 2
+    code: email
+    label: Email
+    description: Send email via configured SMTP (routes through Notify)
+    deprecated_at: null
+  - id: 3
+    code: slack
+    label: Slack
+    description: Post to Slack incoming webhook with blocks JSON support
+    deprecated_at: null
+  - id: 4
+    code: ms_teams
+    label: Microsoft Teams
+    description: Post to MS Teams incoming webhook with adaptive cards
+    deprecated_at: null

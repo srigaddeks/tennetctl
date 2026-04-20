@@ -1,0 +1,20 @@
+schema: "05_monitoring"
+table: "01_dim_monitoring_slo_indicator_kind"
+rows:
+  - id: 1
+    code: ratio
+    label: Success Ratio
+    description: Ratio of successful events to total events (e.g., 99.9% availability).
+    deprecated_at: null
+
+  - id: 2
+    code: threshold
+    label: Metric Threshold
+    description: SLO attainment based on a metric exceeding or falling below a threshold (e.g., latency < 100ms).
+    deprecated_at: null
+
+  - id: 3
+    code: latency_pct
+    label: Latency Percentile
+    description: SLO attainment based on percentile latency (e.g., p99 < 500ms in 99.5% of requests).
+    deprecated_at: null

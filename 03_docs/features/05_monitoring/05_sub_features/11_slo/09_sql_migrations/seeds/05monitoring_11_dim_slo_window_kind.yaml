@@ -1,0 +1,32 @@
+schema: "05_monitoring"
+table: "02_dim_monitoring_slo_window_kind"
+rows:
+  - id: 1
+    code: rolling_7d
+    label: Rolling 7 Days
+    description: Evaluation window is the past 7 days, recalculated every tick.
+    deprecated_at: null
+
+  - id: 2
+    code: rolling_28d
+    label: Rolling 28 Days
+    description: Evaluation window is the past 28 days, recalculated every tick.
+    deprecated_at: null
+
+  - id: 3
+    code: rolling_30d
+    label: Rolling 30 Days
+    description: Evaluation window is the past 30 days, recalculated every tick.
+    deprecated_at: null
+
+  - id: 4
+    code: calendar_month
+    label: Calendar Month
+    description: Evaluation window is the current calendar month.
+    deprecated_at: null
+
+  - id: 5
+    code: calendar_quarter
+    label: Calendar Quarter
+    description: Evaluation window is the current calendar quarter.
+    deprecated_at: null

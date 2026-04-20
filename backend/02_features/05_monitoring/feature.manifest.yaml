@@ -742,3 +742,257 @@ spec:
           path: "/v1/monitoring/alerts/{alert_id}/ack"
           handler: sub_features.08_escalation.routes.ack_alert
       ui_pages: []
+
+    - key: monitoring.actions
+      number: 9
+      label: Action Templates
+      description: "Reusable parameterized action templates for webhooks, email, and Slack. Jinja2 sandboxed rendering with HMAC-SHA256 signing. Retry with exponential backoff. Delivery audit log."
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "03_dim_monitoring_action_kind"
+          - "14_fct_monitoring_action_templates"
+          - "65_evt_monitoring_action_deliveries"
+        views:
+          - "v_monitoring_action_templates"
+          - "v_monitoring_action_deliveries"
+      nodes:
+        - key: monitoring.actions.template_create
+          kind: effect
+          handler: sub_features.09_action_templates.nodes.template_create.TemplateCreate
+          label: Create Action Template
+          description: Create a new action template with Jinja2 body. Validates syntax at create-time. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, actions]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.actions.template_update
+          kind: effect
+          handler: sub_features.09_action_templates.nodes.template_update.TemplateUpdate
+          label: Update Action Template
+          description: Update action template fields. Validates body syntax if changed. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, actions]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.actions.template_delete
+          kind: effect
+          handler: sub_features.09_action_templates.nodes.template_delete.TemplateDelete
+          label: Delete Action Template
+          description: Soft-delete an action template. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, actions]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.actions.render
+          kind: control
+          handler: sub_features.09_action_templates.nodes.render.RenderNode
+          label: Render Action Template
+          description: Pure control node - render template with variables. No I/O.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, actions]
+          execution:
+            timeout_ms: 500
+            retries: 0
+            tx: none
+        - key: monitoring.actions.dispatch
+          kind: effect
+          handler: sub_features.09_action_templates.nodes.dispatch.DispatchNode
+          label: Dispatch Action
+          description: Dispatch a rendered action (webhook/email/Slack). Updates delivery record. Worker-owned; tx=own.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, actions]
+          execution:
+            timeout_ms: 15000
+            retries: 0
+            tx: own
+      routes:
+        - method: GET
+          path: /v1/monitoring/action-templates
+          handler: sub_features.09_action_templates.routes.list_action_templates
+        - method: POST
+          path: /v1/monitoring/action-templates
+          handler: sub_features.09_action_templates.routes.create_action_template
+        - method: GET
+          path: "/v1/monitoring/action-templates/{template_id}"
+          handler: sub_features.09_action_templates.routes.get_action_template
+        - method: PATCH
+          path: "/v1/monitoring/action-templates/{template_id}"
+          handler: sub_features.09_action_templates.routes.update_action_template
+        - method: DELETE
+          path: "/v1/monitoring/action-templates/{template_id}"
+          handler: sub_features.09_action_templates.routes.delete_action_template
+        - method: POST
+          path: "/v1/monitoring/action-templates/{template_id}/test"
+          handler: sub_features.09_action_templates.routes.test_action_template
+        - method: GET
+          path: /v1/monitoring/action-deliveries
+          handler: sub_features.09_action_templates.routes.list_action_deliveries
+      ui_pages: []
+      workers:
+        - key: monitoring.action_dispatch_worker
+          description: "Subscribes to LISTEN monitoring_action_dispatch and polls for retries. Dispatches with bounded concurrency."
+          handler: workers.action_dispatch_worker.start_worker
+
+    - key: monitoring.incidents
+      number: 10
+      label: Incidents
+      description: "Incident aggregation layer above alerts. Groups firing alerts into durable incidents using configurable strategies (fingerprint, label_set, custom_key). State machine: open → acknowledged → resolved → closed. Escalation and actions fire at incident granularity."
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "01_dim_incident_state"
+          - "02_dim_incident_event_kind"
+          - "10_fct_monitoring_incidents"
+          - "40_lnk_monitoring_incident_alerts"
+          - "60_evt_monitoring_incident_timeline"
+          - "20_dtl_monitoring_incident_grouping_rules"
+        views:
+          - "v_monitoring_incidents"
+      nodes:
+        - key: monitoring.incidents.group
+          kind: effect
+          handler: sub_features.10_incidents.nodes.group.execute
+          label: Group Alert into Incident
+          description: Create or join alert to incident using configurable dedup strategy. Worker entry point. Emits audit.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, incidents, grouping, worker]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: own
+        - key: monitoring.incidents.transition
+          kind: effect
+          handler: sub_features.10_incidents.nodes.transition.execute
+          label: Incident State Transition
+          description: Change incident state (acknowledged, resolved, closed). Emits audit and timeline event.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, incidents, state]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+        - key: monitoring.incidents.comment_add
+          kind: effect
+          handler: sub_features.10_incidents.nodes.comment_add.execute
+          label: Add Incident Comment
+          description: Add user comment to incident timeline. Emits audit and timeline event.
+          emits_audit: true
+          version: 1
+          tags: [monitoring, incidents, comments]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/monitoring/incidents
+          handler: sub_features.10_incidents.routes.list_incidents_route
+        - method: POST
+          path: /v1/monitoring/incidents
+          handler: sub_features.10_incidents.routes.list_incidents_route
+        - method: GET
+          path: "/v1/monitoring/incidents/{id}"
+          handler: sub_features.10_incidents.routes.get_incident_route
+        - method: PATCH
+          path: "/v1/monitoring/incidents/{id}"
+          handler: sub_features.10_incidents.routes.update_incident_route
+        - method: POST
+          path: "/v1/monitoring/incidents/{id}/comments"
+          handler: sub_features.10_incidents.routes.add_incident_comment_route
+        - method: GET
+          path: "/v1/monitoring/incidents/{id}/timeline"
+          handler: sub_features.10_incidents.routes.get_incident_timeline_route
+        - method: POST
+          path: "/v1/monitoring/alert-rules/{id}/grouping"
+          handler: sub_features.10_incidents.routes.create_grouping_rule_route
+        - method: GET
+          path: "/v1/monitoring/alert-rules/{id}/grouping"
+          handler: sub_features.10_incidents.routes.get_grouping_rule_route
+      ui_pages:
+        - path: "/monitoring/incidents"
+          label: Incidents
+        - path: "/monitoring/incidents/[id]"
+          label: Incident Detail
+      workers:
+        - key: monitoring.incident_grouper_worker
+          description: "Subscribes to LISTEN monitoring_alert_fired and groups alert events into incidents using configurable strategies."
+          handler: workers.incident_grouper_worker.run
+
+    - key: monitoring.slo
+      number: 11
+      label: Service Level Objectives
+      description: "SLO definitions with target attainment, error budget tracking, and multi-window burn rate (Google SRE model). Evaluator worker computes attainment/budget/burn rates every 60s and emits synthetic alerts when burn thresholds crossed, reusing the alert→incident→escalation chain."
+      owns:
+        schema: "05_monitoring"
+        tables:
+          - "01_dim_monitoring_slo_indicator_kind"
+          - "02_dim_monitoring_slo_window_kind"
+          - "10_fct_monitoring_slos"
+          - "20_dtl_monitoring_slo_indicator"
+          - "21_dtl_monitoring_slo_burn_thresholds"
+          - "60_evt_monitoring_slo_evaluations"
+          - "61_evt_monitoring_slo_breaches"
+        views:
+          - "v_monitoring_slos"
+      nodes:
+        - key: monitoring.slo.evaluate
+          kind: effect
+          handler: sub_features.11_slo.nodes.evaluate.evaluate_slo_node
+          label: Evaluate SLO
+          description: Compute attainment, error budget remaining, and multi-window burn rate for an SLO. Persists evaluation row. Worker entry point.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, slo, worker]
+          execution:
+            timeout_ms: 10000
+            retries: 0
+            tx: own
+        - key: monitoring.slo.burn_alert
+          kind: effect
+          handler: sub_features.11_slo.nodes.burn_alert.emit_synthetic_alert
+          label: Emit SLO Burn Rate Alert
+          description: Create synthetic alert event for fast/slow burn breach, reusing the alert→incident→escalation chain.
+          emits_audit: false
+          version: 1
+          tags: [monitoring, slo, alerts]
+          execution:
+            timeout_ms: 5000
+            retries: 0
+            tx: caller
+      routes:
+        - method: GET
+          path: /v1/monitoring/slos
+          handler: sub_features.11_slo.routes.list_slos_route
+        - method: POST
+          path: /v1/monitoring/slos
+          handler: sub_features.11_slo.routes.create_slo_route
+        - method: GET
+          path: "/v1/monitoring/slos/{id}"
+          handler: sub_features.11_slo.routes.get_slo_route
+        - method: PATCH
+          path: "/v1/monitoring/slos/{id}"
+          handler: sub_features.11_slo.routes.update_slo_route
+        - method: DELETE
+          path: "/v1/monitoring/slos/{id}"
+          handler: sub_features.11_slo.routes.delete_slo_route
+        - method: GET
+          path: "/v1/monitoring/slos/{id}/evaluations"
+          handler: sub_features.11_slo.routes.list_evaluations_route
+        - method: GET
+          path: "/v1/monitoring/slos/{id}/budget"
+          handler: sub_features.11_slo.routes.get_budget_route
+      ui_pages: []

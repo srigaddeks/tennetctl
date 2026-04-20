@@ -1,0 +1,56 @@
+schema: "05_monitoring"
+table: "02_dim_incident_event_kind"
+rows:
+  - id: 1
+    code: created
+    label: Created
+    description: Incident was created from first firing alert
+    deprecated_at: null
+
+  - id: 2
+    code: alert_joined
+    label: Alert Joined
+    description: Additional alert event was dedup-joined to existing incident
+    deprecated_at: null
+
+  - id: 3
+    code: acknowledged
+    label: Acknowledged
+    description: Incident was acknowledged by on-call user
+    deprecated_at: null
+
+  - id: 4
+    code: escalated
+    label: Escalated
+    description: Escalation to next step in escalation policy
+    deprecated_at: null
+
+  - id: 5
+    code: action_dispatched
+    label: Action Dispatched
+    description: Action template was dispatched (notification, webhook, etc.)
+    deprecated_at: null
+
+  - id: 6
+    code: comment_added
+    label: Comment Added
+    description: User added a comment to the incident timeline
+    deprecated_at: null
+
+  - id: 7
+    code: resolved
+    label: Resolved
+    description: Incident resolved (all alerts resolved or manual resolve)
+    deprecated_at: null
+
+  - id: 8
+    code: closed
+    label: Closed
+    description: Incident closed with root cause and summary
+    deprecated_at: null
+
+  - id: 9
+    code: reopened
+    label: Reopened
+    description: Resolved incident was reopened when new alert arrived within reopen window
+    deprecated_at: null

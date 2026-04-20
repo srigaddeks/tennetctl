@@ -1,0 +1,26 @@
+schema: "05_monitoring"
+table: "01_dim_incident_state"
+rows:
+  - id: 1
+    code: open
+    label: Open
+    description: Incident is actively firing and requires attention
+    deprecated_at: null
+
+  - id: 2
+    code: acknowledged
+    label: Acknowledged
+    description: Incident has been acknowledged by on-call, paging stopped
+    deprecated_at: null
+
+  - id: 3
+    code: resolved
+    label: Resolved
+    description: All linked alerts have resolved (automated) or manually resolved
+    deprecated_at: null
+
+  - id: 4
+    code: closed
+    label: Closed
+    description: Incident closed after retention period with postmortem
+    deprecated_at: null

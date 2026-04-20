@@ -1,0 +1,13 @@
+schema: "05_monitoring"
+table: "01_dim_monitoring_dashboard_share_scope"
+rows:
+  - id: 1
+    code: internal_user
+    label: Internal User
+    description: Share with a known platform user in the same org.
+    deprecated_at: null
+  - id: 2
+    code: public_token
+    label: Public Token
+    description: Share via signed token URL (no login required).
+    deprecated_at: null

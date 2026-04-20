@@ -2006,3 +2006,130 @@ export type AttachViewBody = {
   view_id: number;
 };
 
+// ── SLO (Monitoring.SLO) ──────────────────────────────────────────────────
+
+export type SloIndicatorKind = "ratio" | "threshold" | "latency_pct";
+export type SloWindowKind =
+  | "rolling_7d"
+  | "rolling_28d"
+  | "rolling_30d"
+  | "calendar_month"
+  | "calendar_quarter";
+export type SloStatus = "healthy" | "warning" | "breaching";
+
+export type SloIndicatorRatio = {
+  good_query: string;
+  total_query: string;
+};
+
+export type SloIndicatorThreshold = {
+  threshold_metric_key: string;
+  threshold_value: number;
+  threshold_op: "lt" | "lte" | "gt" | "gte" | "eq";
+};
+
+export type SloIndicatorLatencyPct = {
+  good_query: string;
+  total_query: string;
+  latency_percentile: number;
+};
+
+export type SloBurnThresholds = {
+  fast_window_seconds?: number;
+  fast_burn_rate?: number;
+  slow_window_seconds?: number;
+  slow_burn_rate?: number;
+  page_on_fast?: boolean;
+  page_on_slow?: boolean;
+};
+
+export type SloCreateRequest = {
+  name: string;
+  slug: string;
+  description?: string;
+  indicator_kind: SloIndicatorKind;
+  indicator:
+    | SloIndicatorRatio
+    | SloIndicatorThreshold
+    | SloIndicatorLatencyPct;
+  window_kind: SloWindowKind;
+  target_pct: number;
+  severity?: string;
+  owner_user_id?: string | null;
+  burn_thresholds?: SloBurnThresholds | null;
+};
+
+export type SloUpdateRequest = {
+  name?: string;
+  description?: string;
+  target_pct?: number;
+  is_active?: boolean;
+  owner_user_id?: string | null;
+  severity?: string;
+  indicator?:
+    | SloIndicatorRatio
+    | SloIndicatorThreshold
+    | SloIndicatorLatencyPct
+    | null;
+  burn_thresholds?: SloBurnThresholds | null;
+};
+
+export type SloResponse = {
+  id: string;
+  org_id: string;
+  workspace_id: string | null;
+  name: string;
+  slug: string;
+  description: string;
+  indicator_kind_code: SloIndicatorKind;
+  window_kind_code: SloWindowKind;
+  target_pct: number;
+  severity_code: string;
+  owner_user_id: string | null;
+  is_active: boolean;
+  status: SloStatus;
+  attainment_pct: number;
+  budget_remaining_pct: number;
+  burn_rate_1h: number;
+  burn_rate_6h: number;
+  burn_rate_24h: number;
+  burn_rate_3d: number;
+  created_at: string;
+  updated_at: string;
+  good_query: string | null;
+  total_query: string | null;
+  threshold_metric_id: string | null;
+  threshold_value: number | null;
+  threshold_op: string | null;
+  latency_percentile: number | null;
+  fast_window_seconds: number;
+  fast_burn_rate: number;
+  slow_window_seconds: number;
+  slow_burn_rate: number;
+  page_on_fast: boolean;
+  page_on_slow: boolean;
+};
+
+export type SloEvaluationResponse = {
+  id: string;
+  slo_id: string;
+  window_start: string;
+  window_end: string;
+  good_count: number;
+  total_count: number;
+  attainment_pct: number;
+  budget_remaining_pct: number;
+  burn_rate_1h: number;
+  burn_rate_6h: number;
+  burn_rate_24h: number;
+  burn_rate_3d: number;
+  evaluated_at: string;
+};
+
+export type SloBudgetSnapshot = {
+  attainment_pct: number;
+  budget_remaining_pct: number;
+  status: SloStatus;
+  evaluated_at: string;
+};
+
