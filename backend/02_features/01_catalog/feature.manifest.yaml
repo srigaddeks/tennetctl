@@ -1,0 +1,45 @@
+---
+metadata:
+  module: "01_catalog"
+  feature_key: "catalog"
+  description: "Node catalog and flow definitions"
+  version: "1.0.0"
+  depends_on_modules: [core, iam, audit]
+  always_on: false
+
+sub_features:
+  - key: "nodes"
+    name: "Nodes Sub-feature"
+    description: "Node registry and metadata"
+  - key: "flows"
+    name: "Flows Sub-feature"
+    description: "DAG definitions and versioning"
+    routes:
+      - method: GET
+        path: "/v1/flows"
+        description: "List flows"
+        auth_required: true
+      - method: POST
+        path: "/v1/flows"
+        description: "Create flow"
+        auth_required: true
+      - method: GET
+        path: "/v1/flows/{id}"
+        description: "Get flow"
+        auth_required: true
+      - method: PATCH
+        path: "/v1/flows/{id}"
+        description: "Update flow (rename, archive, publish)"
+        auth_required: true
+      - method: DELETE
+        path: "/v1/flows/{id}"
+        description: "Soft-delete flow"
+        auth_required: true
+      - method: GET
+        path: "/v1/flows/{id}/versions/{version_id}"
+        description: "Get flow version with DAG"
+        auth_required: true
+      - method: PATCH
+        path: "/v1/flows/{id}/versions/{version_id}"
+        description: "Update draft version DAG"
+        auth_required: true

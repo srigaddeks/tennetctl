@@ -2245,3 +2245,107 @@ export type FlowRunSummary = {
   total_duration_ms: number | null;
 };
 
+// ─── Catalog: Flows (Schema Definition) ──────────────────────────
+
+/** Flow status lifecycle: draft → published → archived */
+export type FlowStatus = "draft" | "published" | "archived";
+
+/** Edge type: controls flow branches */
+export type EdgeKind =
+  | "next"
+  | "success"
+  | "failure"
+  | "true_branch"
+  | "false_branch";
+
+/** Port type system for typed edges */
+export type PortType =
+  | "any"
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array"
+  | "uuid"
+  | "datetime"
+  | "binary"
+  | "error";
+
+/** Node instance within a flow version (output model) */
+export type NodeInstance = {
+  id: string;
+  instance_label: string;
+  node_key: string;
+  config: Record<string, unknown>;
+  position?: { x: number; y: number };
+  inputs: Port[];
+  outputs: Port[];
+};
+
+/** Input or output port on a node */
+export type Port = {
+  key: string;
+  type: PortType;
+  description: string;
+};
+
+/** Edge connecting two node instances */
+export type FlowEdge = {
+  id: string;
+  from_node_id: string;
+  from_port_key: string;
+  to_node_id: string;
+  to_port_key: string;
+  kind: EdgeKind;
+};
+
+/** Flow definition with current version info */
+export type FlowDef = {
+  id: string;
+  org_id: string;
+  workspace_id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  current_version_id?: string;
+  status: FlowStatus;
+  current_version_number?: number;
+  node_count: number;
+  edge_count: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+};
+
+/** Flow version with full DAG */
+export type FlowVersionDef = {
+  id: string;
+  flow_id: string;
+  flow_slug: string;
+  flow_name: string;
+  version_number: number;
+  status: FlowStatus;
+  dag_hash?: string;
+  published_at?: string;
+  published_by_user_id?: string;
+  nodes: NodeInstance[];
+  edges: FlowEdge[];
+  created_at: string;
+  deleted_at?: string;
+};
+
+/** DAG validation error */
+export type DagValidationError = {
+  code: string;
+  node_id?: string;
+  node_label?: string;
+  port?: string;
+  details: string;
+};
+
+/** DAG validation result */
+export type DagValidation = {
+  ok: boolean;
+  errors: DagValidationError[];
+};
+
