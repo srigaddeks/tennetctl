@@ -9,13 +9,13 @@ See: .paul/PROJECT.md (updated 2026-04-16)
 
 ## Current Position
 
-Milestone: **v0.1.8 Runtime Hardening** (Phase 38 ✅ complete; Phase 39 in flight)
-Phase: **39 — NCP v1 Maturity**
-Plan: **39-01 PLANNED** — pool→first-class NodeContext field + NCP v1 §11 doc sync. Drafted, not yet applied.
-Status: Devtools-platform scope only. Scope-creep cleanup completed 2026-04-20 — old phases 45–59 (product_ops/CDP) and the entire `10_product_ops` feature were removed from the codebase. kbio/kprotect ideas retired from roadmap. Remaining queued milestones: v0.1.8 (39), v0.3.0 monitoring alerting (40–41), v0.4.0 canvas (42–44), v0.8.0 GDPR DSAR (45).
-Last activity: 2026-04-20 — Removed product_ops scope creep (15 phases, feature dir, frontend routes, SDK clients, tests, docs, browser SDK).
+Milestone: **v0.1.8 Runtime Hardening** (Phase 38 ✅ complete; Phase 39 ✅ complete)
+Phase: **40 — Monitoring Alerting** (Queued)
+Plan: **40-01 PENDING** — TBD in phase directory
+Status: Devtools-platform scope only. Scope-creep cleanup completed 2026-04-20 — old phases 45–59 (product_ops/CDP) and the entire `10_product_ops` feature were removed from the codebase. kbio/kprotect ideas retired from roadmap. Phase 39 (NCP v1 Maturity) shipped all three plans: 39-01 (NodeContext.pool), 39-02 (get_many pattern), 39-03 (v1→v2 versioning demo + ADR-032). Remaining queued milestones: v0.3.0 monitoring alerting (40–41), v0.4.0 canvas (42–44), v0.8.0 GDPR DSAR (45).
+Last activity: 2026-04-20 — Phase 39-03 complete; v2 node coexists with v1, ADR-032 documents the migration pattern, manifest updated.
 
-Next action: Resume Plan 39-01 (`.paul/phases/39-ncp-v1-maturity/`).
+Next action: Plan 40-01 (Monitoring Alerting) — TBD. Check `.paul/phases/40-monitoring-alerting/` for plan drafts.
 
 Previously: v0.2.4 complete (multi-phase autonomous sweep — 35-01/35-02/35-03/36-01 + portal polish). 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap closed.
 Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions.
@@ -39,8 +39,10 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○    [Plan 39-01 created — pool→first-class field + NCP v1 doc sync]
+  ✓        ✓        ○    [Phase 39 APPLY complete (39-01/02/03); UNIFY pending]
 ```
+
+Phase 39 closed: 39-01 (NodeContext.pool), 39-02 (get_many on orgs/workspaces/users), 39-03 (v1→v2 versioning + ADR-032). All three summaries written.
 
 Previous: Plan 38-02 closed 2026-04-20; Phase 38 substantively done.
 
