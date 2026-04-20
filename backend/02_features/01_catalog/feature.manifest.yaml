@@ -1,20 +1,41 @@
----
-metadata:
-  module: "01_catalog"
-  feature_key: "catalog"
-  description: "Node catalog and flow definitions"
-  version: "1.0.0"
-  depends_on_modules: [core, iam, audit]
-  always_on: false
+apiVersion: tennetctl/v1
+kind: Feature
 
-sub_features:
-  - key: "nodes"
-    name: "Nodes Sub-feature"
-    description: "Node registry and metadata"
-  - key: "flows"
-    name: "Flows Sub-feature"
-    description: "DAG definitions and versioning"
-    routes:
+metadata:
+  key: core
+  number: 1
+  module: core
+  always_on: true
+  label: Node Catalog & Flows
+  description: Node registry, flow definitions, and DAG versioning
+  manifest_version: 1
+
+spec:
+  depends_on_modules: []
+
+  sub_features:
+    - key: core.nodes
+      number: 1
+      label: Node Catalog
+      description: Node registry and metadata
+      owns:
+        schema: "01_catalog"
+        tables: []
+        views: []
+        seeds: []
+      nodes: []
+
+    - key: core.flows
+      number: 2
+      label: Flows
+      description: DAG definitions and versioning
+      owns:
+        schema: "01_catalog"
+        tables: []
+        views: []
+        seeds: []
+      nodes: []
+      routes:
       - method: GET
         path: "/v1/flows"
         description: "List flows"

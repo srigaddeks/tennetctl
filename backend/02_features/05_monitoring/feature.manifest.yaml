@@ -685,14 +685,14 @@ spec:
           handler: sub_features.08_escalation.nodes.escalate.advance
           label: Advance Escalation State
           description: Worker entry point - loads policy step, resolves recipient, sends notification, advances to next step.
-          emits_audit: false
+          emits_audit: true
           version: 1
           tags: [monitoring, escalation, worker]
           execution:
             timeout_ms: 10000
             retries: 0
             tx: own
-        - key: monitoring.oncall.resolve
+        - key: monitoring.escalation.resolve_oncall
           kind: control
           handler: sub_features.08_escalation.nodes.resolve_oncall.resolve
           label: Resolve On-Call User
@@ -810,7 +810,7 @@ spec:
           handler: sub_features.09_action_templates.nodes.dispatch.DispatchNode
           label: Dispatch Action
           description: Dispatch a rendered action (webhook/email/Slack). Updates delivery record. Worker-owned; tx=own.
-          emits_audit: false
+          emits_audit: true
           version: 1
           tags: [monitoring, actions]
           execution:
@@ -840,10 +840,6 @@ spec:
           path: /v1/monitoring/action-deliveries
           handler: sub_features.09_action_templates.routes.list_action_deliveries
       ui_pages: []
-      workers:
-        - key: monitoring.action_dispatch_worker
-          description: "Subscribes to LISTEN monitoring_action_dispatch and polls for retries. Dispatches with bounded concurrency."
-          handler: workers.action_dispatch_worker.start_worker
 
     - key: monitoring.incidents
       number: 10
@@ -927,10 +923,6 @@ spec:
           label: Incidents
         - path: "/monitoring/incidents/[id]"
           label: Incident Detail
-      workers:
-        - key: monitoring.incident_grouper_worker
-          description: "Subscribes to LISTEN monitoring_alert_fired and groups alert events into incidents using configurable strategies."
-          handler: workers.incident_grouper_worker.run
 
     - key: monitoring.slo
       number: 11
@@ -954,7 +946,7 @@ spec:
           handler: sub_features.11_slo.nodes.evaluate.evaluate_slo_node
           label: Evaluate SLO
           description: Compute attainment, error budget remaining, and multi-window burn rate for an SLO. Persists evaluation row. Worker entry point.
-          emits_audit: false
+          emits_audit: true
           version: 1
           tags: [monitoring, slo, worker]
           execution:
@@ -966,7 +958,7 @@ spec:
           handler: sub_features.11_slo.nodes.burn_alert.emit_synthetic_alert
           label: Emit SLO Burn Rate Alert
           description: Create synthetic alert event for fast/slow burn breach, reusing the alert→incident→escalation chain.
-          emits_audit: false
+          emits_audit: true
           version: 1
           tags: [monitoring, slo, alerts]
           execution:
