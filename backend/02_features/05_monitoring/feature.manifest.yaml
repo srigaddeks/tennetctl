@@ -682,7 +682,7 @@ spec:
             tx: caller
         - key: monitoring.escalation.advance
           kind: effect
-          handler: sub_features.08_escalation.nodes.escalate.advance
+          handler: sub_features.08_escalation.nodes.escalate.AdvanceEscalation
           label: Advance Escalation State
           description: Worker entry point - loads policy step, resolves recipient, sends notification, advances to next step.
           emits_audit: true
@@ -694,7 +694,7 @@ spec:
             tx: own
         - key: monitoring.escalation.resolve_oncall
           kind: control
-          handler: sub_features.08_escalation.nodes.resolve_oncall.resolve
+          handler: sub_features.08_escalation.nodes.resolve_oncall.ResolveOncall
           label: Resolve On-Call User
           description: Determines who is currently on-call for a schedule using rotation math.
           emits_audit: false
@@ -795,7 +795,7 @@ spec:
             tx: caller
         - key: monitoring.actions.render
           kind: control
-          handler: sub_features.09_action_templates.nodes.render.RenderNode
+          handler: sub_features.09_action_templates.nodes.render.RenderTemplate
           label: Render Action Template
           description: Pure control node - render template with variables. No I/O.
           emits_audit: false
@@ -807,7 +807,7 @@ spec:
             tx: none
         - key: monitoring.actions.dispatch
           kind: effect
-          handler: sub_features.09_action_templates.nodes.dispatch.DispatchNode
+          handler: sub_features.09_action_templates.nodes.dispatch.DispatchAction
           label: Dispatch Action
           description: Dispatch a rendered action (webhook/email/Slack). Updates delivery record. Worker-owned; tx=own.
           emits_audit: true
@@ -859,7 +859,7 @@ spec:
       nodes:
         - key: monitoring.incidents.group
           kind: effect
-          handler: sub_features.10_incidents.nodes.group.execute
+          handler: sub_features.10_incidents.nodes.group.GroupAlert
           label: Group Alert into Incident
           description: Create or join alert to incident using configurable dedup strategy. Worker entry point. Emits audit.
           emits_audit: true
@@ -871,7 +871,7 @@ spec:
             tx: own
         - key: monitoring.incidents.transition
           kind: effect
-          handler: sub_features.10_incidents.nodes.transition.execute
+          handler: sub_features.10_incidents.nodes.transition.TransitionIncident
           label: Incident State Transition
           description: Change incident state (acknowledged, resolved, closed). Emits audit and timeline event.
           emits_audit: true
@@ -883,7 +883,7 @@ spec:
             tx: caller
         - key: monitoring.incidents.comment_add
           kind: effect
-          handler: sub_features.10_incidents.nodes.comment_add.execute
+          handler: sub_features.10_incidents.nodes.comment_add.AddIncidentComment
           label: Add Incident Comment
           description: Add user comment to incident timeline. Emits audit and timeline event.
           emits_audit: true
@@ -943,7 +943,7 @@ spec:
       nodes:
         - key: monitoring.slo.evaluate
           kind: effect
-          handler: sub_features.11_slo.nodes.evaluate.evaluate_slo_node
+          handler: sub_features.11_slo.nodes.evaluate.EvaluateSLO
           label: Evaluate SLO
           description: Compute attainment, error budget remaining, and multi-window burn rate for an SLO. Persists evaluation row. Worker entry point.
           emits_audit: true
@@ -955,7 +955,7 @@ spec:
             tx: own
         - key: monitoring.slo.burn_alert
           kind: effect
-          handler: sub_features.11_slo.nodes.burn_alert.emit_synthetic_alert
+          handler: sub_features.11_slo.nodes.burn_alert.EmitBurnAlert
           label: Emit SLO Burn Rate Alert
           description: Create synthetic alert event for fast/slow burn breach, reusing the alert→incident→escalation chain.
           emits_audit: true

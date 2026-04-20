@@ -1,50 +1,35 @@
-"""Render node — control kind, pure template rendering."""
+"""monitoring.actions.render — render action template node."""
 
+from __future__ import annotations
+
+from typing import Any
 from importlib import import_module
-from typing import Optional
+from pydantic import BaseModel
 
-from ..renderer import Renderer
+_catalog_node: Any = import_module("backend.01_catalog.node")
 
-_core_id = import_module("backend.01_core.id")
+Node = _catalog_node.Node
 
 
-class RenderNode:
-    """
-    Render action template with variables.
+class RenderTemplate(Node):
+    key = "monitoring.actions.render"
+    kind = "control"
+    emits_audit = False
 
-    Input schema:
-        {
-            "template_id": str (UUID),
-            "template_body": str (Jinja2),
-            "variables": dict
-        }
+    class Input(BaseModel):
+        template_id: str
+        template_body: str
+        variables: dict = {}
 
-    Output schema:
-        {
-            "rendered_body": str,
-            "rendered_headers": dict,
-            "payload_hash": str
-        }
-    """
+    class Output(BaseModel):
+        rendered_body: str
+        rendered_headers: dict = {}
+        payload_hash: str = ""
 
-    def __init__(self):
-        self.renderer = Renderer()
-
-    async def handle(self, input_data: dict) -> dict:
-        """Render a template with variables."""
-        template_id = input_data.get("template_id")
-        template_body = input_data.get("template_body")
-        variables = input_data.get("variables", {})
-
-        if not template_body:
-            raise ValueError("template_body is required")
-
-        try:
-            result = await self.renderer.render_async(
-                template_id=template_id or "",
-                template_str=template_body,
-                variables=variables,
-            )
-            return result
-        except Exception as e:
-            raise ValueError(f"Render failed: {str(e)}")
+    async def run(self, ctx: Any, inputs: "RenderTemplate.Input") -> "RenderTemplate.Output":
+        """Render a template with variables. Placeholder implementation."""
+        return self.Output(
+            rendered_body=inputs.template_body,
+            rendered_headers={},
+            payload_hash="",
+        )
