@@ -147,42 +147,43 @@ async def update_flow(
 
         return {"flow": flow}
 
-    # Handle rename
-    if body.name is not None:
+    # Handle rename / description edit (strings live on dtl_flows)
+    if body.name is not None or body.description is not None:
+        await repo.update_flow_strings(
+            conn,
+            flow_id,
+            name=body.name,
+            description=body.description,
+        )
+        # Bump fct audit cols so v_flows.updated_at moves too.
         await conn.execute(
             """
             UPDATE "01_catalog"."10_fct_flows"
-            SET name = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP
+            SET updated_by = $2, updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             """,
-            flow_id, body.name, user_id,
+            flow_id, user_id,
         )
 
-        await _audit.emit_audit(
-            conn,
-            category="product",
-            event_key="flows.renamed",
-            user_id=user_id,
-            session_id=session_id,
-            org_id=org_id,
-            workspace_id=workspace_id,
-            target_id=flow_id,
-            metadata={"new_name": body.name},
-        )
+        if body.name is not None:
+            await _audit.emit_audit(
+                conn,
+                category="product",
+                event_key="flows.renamed",
+                user_id=user_id,
+                session_id=session_id,
+                org_id=org_id,
+                workspace_id=workspace_id,
+                target_id=flow_id,
+                metadata={"new_name": body.name},
+            )
 
     # Handle status change
     if body.status is not None:
         status_map = {"draft": 1, "published": 2, "archived": 3}
         status_id = status_map.get(body.status, 1)
 
-        await conn.execute(
-            """
-            UPDATE "01_catalog"."10_fct_flows"
-            SET status_id = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $1
-            """,
-            flow_id, status_id, user_id,
-        )
+        await repo.update_flow_status(conn, flow_id, status_id, user_id)
 
         await _audit.emit_audit(
             conn,

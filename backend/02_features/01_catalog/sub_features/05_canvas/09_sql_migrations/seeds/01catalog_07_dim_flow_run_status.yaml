@@ -1,0 +1,23 @@
+schema: "01_catalog"
+table: "07_dim_flow_run_status"
+rows:
+  - id: 1
+    code: running
+    label: Running
+    description: Flow run has started and is in progress
+    deprecated_at: null
+  - id: 2
+    code: completed
+    label: Completed
+    description: Flow run finished successfully
+    deprecated_at: null
+  - id: 3
+    code: failed
+    label: Failed
+    description: Flow run finished with an unhandled failure
+    deprecated_at: null
+  - id: 4
+    code: cancelled
+    label: Cancelled
+    description: Flow run was cancelled before completion
+    deprecated_at: null

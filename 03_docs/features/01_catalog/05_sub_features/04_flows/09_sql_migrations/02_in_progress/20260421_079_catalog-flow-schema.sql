@@ -2,11 +2,19 @@
 
 -- Catalog flow schema: DAG persistence for visual canvas.
 -- Flows are DAGs of node instances joined by typed edges.
--- Flows go through draft → publish → immutable-version lifecycle (ADR-020).
+-- Flows go through draft -> publish -> immutable-version lifecycle (ADR-020).
+--
+-- Structural split (Pure-EAV rule: no strings/JSONB on fct_*):
+--   10_fct_flows         -- identity only (ids + status_id + audit cols)
+--   20_dtl_flows         -- slug/name/description (one row per flow)
+--   11_fct_flow_versions -- version identity + hash + publish metadata
+--   Circular FK (fct_flows.current_version_id -> fct_flow_versions.id)
+--   is added at the end after both tables exist.
 
--- ── Dimension tables ────────────────────────────────────────────────
+-- -------------------------------------------------------------------
+-- Dimension tables
+-- -------------------------------------------------------------------
 
--- Flow status: draft=1, published=2, archived=3
 CREATE TABLE IF NOT EXISTS "01_catalog"."04_dim_flow_status" (
     id              SMALLINT NOT NULL,
     code            TEXT NOT NULL,
@@ -20,7 +28,6 @@ COMMENT ON TABLE  "01_catalog"."04_dim_flow_status" IS 'Flow lifecycle status: d
 COMMENT ON COLUMN "01_catalog"."04_dim_flow_status".id IS 'Permanent manual ID.';
 COMMENT ON COLUMN "01_catalog"."04_dim_flow_status".code IS 'Status code (draft | published | archived).';
 
--- Edge kinds: next=1, success=2, failure=3, true_branch=4, false_branch=5
 CREATE TABLE IF NOT EXISTS "01_catalog"."05_dim_flow_edge_kind" (
     id              SMALLINT NOT NULL,
     code            TEXT NOT NULL,
@@ -31,10 +38,7 @@ CREATE TABLE IF NOT EXISTS "01_catalog"."05_dim_flow_edge_kind" (
     CONSTRAINT uq_dim_flow_edge_kind_code UNIQUE (code)
 );
 COMMENT ON TABLE  "01_catalog"."05_dim_flow_edge_kind" IS 'Edge kinds for DAG connections: next | success | failure | true_branch | false_branch.';
-COMMENT ON COLUMN "01_catalog"."05_dim_flow_edge_kind".id IS 'Permanent manual ID.';
-COMMENT ON COLUMN "01_catalog"."05_dim_flow_edge_kind".code IS 'Edge kind code.';
 
--- Port types: any=1, string=2, number=3, boolean=4, object=5, array=6, uuid=7, datetime=8, binary=9, error=10
 CREATE TABLE IF NOT EXISTS "01_catalog"."06_dim_port_type" (
     id              SMALLINT NOT NULL,
     code            TEXT NOT NULL,
@@ -44,108 +48,119 @@ CREATE TABLE IF NOT EXISTS "01_catalog"."06_dim_port_type" (
     CONSTRAINT pk_dim_port_type PRIMARY KEY (id),
     CONSTRAINT uq_dim_port_type_code UNIQUE (code)
 );
-COMMENT ON TABLE  "01_catalog"."06_dim_port_type" IS 'Port type system for typed-edge validation: any | string | number | boolean | object | array | uuid | datetime | binary | error.';
-COMMENT ON COLUMN "01_catalog"."06_dim_port_type".id IS 'Permanent manual ID.';
-COMMENT ON COLUMN "01_catalog"."06_dim_port_type".code IS 'Port type code.';
+COMMENT ON TABLE  "01_catalog"."06_dim_port_type" IS 'Port type system for typed-edge validation.';
 
--- ── Flow fact table ────────────────────────────────────────────────
+-- -------------------------------------------------------------------
+-- Fact: flows (identity only - no strings, no JSONB)
+-- -------------------------------------------------------------------
 
--- fct_catalog_flows: the flow is the stable identity; versions are immutable snapshots
 CREATE TABLE IF NOT EXISTS "01_catalog"."10_fct_flows" (
     id                      VARCHAR(36) NOT NULL,
     org_id                  VARCHAR(36) NOT NULL,
     workspace_id            VARCHAR(36) NOT NULL,
-    slug                    TEXT NOT NULL,
-    name                    TEXT NOT NULL,
-    description             TEXT,
-    current_version_id      VARCHAR(36),
     status_id               SMALLINT NOT NULL,
+    current_version_id      VARCHAR(36),
+    is_active               BOOLEAN NOT NULL DEFAULT true,
     is_test                 BOOLEAN NOT NULL DEFAULT false,
-    created_by              VARCHAR(36),
-    updated_by              VARCHAR(36),
+    deleted_at              TIMESTAMP,
+    created_by              VARCHAR(36) NOT NULL,
+    updated_by              VARCHAR(36) NOT NULL,
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at              TIMESTAMP,
     CONSTRAINT pk_fct_flows PRIMARY KEY (id),
-    CONSTRAINT fk_fct_flows_status FOREIGN KEY (status_id) REFERENCES "01_catalog"."04_dim_flow_status"(id),
-    CONSTRAINT fk_fct_flows_org FOREIGN KEY (org_id) REFERENCES "03_iam"."10_fct_orgs"(id),
+    CONSTRAINT fk_fct_flows_status    FOREIGN KEY (status_id)    REFERENCES "01_catalog"."04_dim_flow_status"(id),
+    CONSTRAINT fk_fct_flows_org       FOREIGN KEY (org_id)       REFERENCES "03_iam"."10_fct_orgs"(id),
     CONSTRAINT fk_fct_flows_workspace FOREIGN KEY (workspace_id) REFERENCES "03_iam"."11_fct_workspaces"(id)
 );
-COMMENT ON TABLE  "01_catalog"."10_fct_flows" IS 'Persistent flow definitions. The flow is the stable identity; versions are immutable snapshots.';
+COMMENT ON TABLE  "01_catalog"."10_fct_flows" IS 'Persistent flow identity. Strings live in 20_dtl_flows.';
 COMMENT ON COLUMN "01_catalog"."10_fct_flows".id IS 'UUID v7 primary key.';
-COMMENT ON COLUMN "01_catalog"."10_fct_flows".slug IS 'User-supplied flow slug (stable identifier within org).';
-COMMENT ON COLUMN "01_catalog"."10_fct_flows".current_version_id IS 'FK to fct_catalog_flow_versions; current working version.';
-COMMENT ON COLUMN "01_catalog"."10_fct_flows".status_id IS 'Draft, published, or archived.';
+COMMENT ON COLUMN "01_catalog"."10_fct_flows".current_version_id IS 'FK to 11_fct_flow_versions; current working version. Circular FK added at end of migration.';
 
--- Partial unique index — replaces a partial UNIQUE constraint (unsupported by Postgres).
-CREATE UNIQUE INDEX uq_fct_flows_slug ON "01_catalog"."10_fct_flows" (org_id, slug) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_fct_flows_org_status ON "01_catalog"."10_fct_flows"(org_id, status_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_fct_flows_workspace  ON "01_catalog"."10_fct_flows"(workspace_id)      WHERE deleted_at IS NULL;
 
-CREATE INDEX idx_fct_flows_org_status ON "01_catalog"."10_fct_flows"(org_id, status_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_fct_flows_workspace ON "01_catalog"."10_fct_flows"(workspace_id) WHERE deleted_at IS NULL;
+-- -------------------------------------------------------------------
+-- Fact: flow versions
+-- -------------------------------------------------------------------
 
--- ── Detail tables ──────────────────────────────────────────────────
-
--- dtl_catalog_flow_nodes: instance metadata within a flow version
-CREATE TABLE IF NOT EXISTS "01_catalog"."20_dtl_flow_nodes" (
+CREATE TABLE IF NOT EXISTS "01_catalog"."11_fct_flow_versions" (
     id                      VARCHAR(36) NOT NULL,
-    flow_version_id         VARCHAR(36) NOT NULL,
-    node_key                TEXT NOT NULL,
-    instance_label          TEXT NOT NULL,
-    config_json             JSONB NOT NULL DEFAULT '{}',
-    position_x              INT,
-    position_y              INT,
-    sort_order              SMALLINT,
+    flow_id                 VARCHAR(36) NOT NULL,
+    org_id                  VARCHAR(36) NOT NULL,
+    version_number          INT NOT NULL,
+    status_id               SMALLINT NOT NULL,
+    dag_hash                CHAR(64),
+    published_at            TIMESTAMP,
+    published_by_user_id    VARCHAR(36),
+    is_active               BOOLEAN NOT NULL DEFAULT true,
+    is_test                 BOOLEAN NOT NULL DEFAULT false,
+    deleted_at              TIMESTAMP,
+    created_by              VARCHAR(36) NOT NULL,
+    updated_by              VARCHAR(36) NOT NULL,
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_dtl_flow_nodes PRIMARY KEY (id),
-    CONSTRAINT uq_dtl_flow_nodes_instance UNIQUE (flow_version_id, instance_label),
-    CONSTRAINT fk_dtl_flow_nodes_version FOREIGN KEY (flow_version_id) REFERENCES "01_catalog"."11_fct_flow_versions"(id)
+    updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_fct_flow_versions                 PRIMARY KEY (id),
+    CONSTRAINT uq_fct_flow_versions_flow_number     UNIQUE (flow_id, version_number),
+    CONSTRAINT fk_fct_flow_versions_flow            FOREIGN KEY (flow_id)              REFERENCES "01_catalog"."10_fct_flows"(id),
+    CONSTRAINT fk_fct_flow_versions_status          FOREIGN KEY (status_id)            REFERENCES "01_catalog"."04_dim_flow_status"(id),
+    CONSTRAINT fk_fct_flow_versions_org             FOREIGN KEY (org_id)               REFERENCES "03_iam"."10_fct_orgs"(id),
+    CONSTRAINT fk_fct_flow_versions_published_by    FOREIGN KEY (published_by_user_id) REFERENCES "03_iam"."12_fct_users"(id)
 );
-COMMENT ON TABLE  "01_catalog"."20_dtl_flow_nodes" IS 'Node instances within a flow version. node_key references live registry (no FK).';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".node_key IS 'Stable node key from live registry (e.g., iam.auth_required). Code-first, no FK.';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".instance_label IS 'User-supplied label for this node instance (e.g., auth, handler, audit).';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".config_json IS 'Per-instance config validated against node schema.';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".position_x IS 'Canvas X position (pixels, nullable for auto-layout).';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".position_y IS 'Canvas Y position (pixels, nullable for auto-layout).';
-COMMENT ON COLUMN "01_catalog"."20_dtl_flow_nodes".sort_order IS 'Rendering order hint.';
+COMMENT ON TABLE  "01_catalog"."11_fct_flow_versions" IS 'Immutable flow version snapshots. Only one draft per flow (enforced by partial index).';
+COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".version_number IS 'Monotonic sequence (1, 2, 3, ...).';
+COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".dag_hash IS 'SHA256 of canonical DAG (set on publish).';
 
-CREATE INDEX idx_dtl_flow_nodes_version ON "01_catalog"."20_dtl_flow_nodes"(flow_version_id);
+-- At most one draft per flow
+CREATE UNIQUE INDEX IF NOT EXISTS uq_fct_flow_versions_one_draft
+    ON "01_catalog"."11_fct_flow_versions"(flow_id)
+    WHERE status_id = 1 AND deleted_at IS NULL;
 
--- dtl_catalog_flow_edges: typed connections between node instances
-CREATE TABLE IF NOT EXISTS "01_catalog"."21_dtl_flow_edges" (
-    id                      VARCHAR(36) NOT NULL,
-    flow_version_id         VARCHAR(36) NOT NULL,
-    from_node_id            VARCHAR(36) NOT NULL,
-    from_port_key           TEXT NOT NULL,
-    to_node_id              VARCHAR(36) NOT NULL,
-    to_port_key             TEXT NOT NULL,
-    edge_kind_id            SMALLINT NOT NULL,
-    sort_order              SMALLINT,
-    created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_dtl_flow_edges PRIMARY KEY (id),
-    CONSTRAINT uq_dtl_flow_edges_connection UNIQUE (flow_version_id, from_node_id, from_port_key, to_node_id, to_port_key),
-    CONSTRAINT fk_dtl_flow_edges_version FOREIGN KEY (flow_version_id) REFERENCES "01_catalog"."11_fct_flow_versions"(id),
-    CONSTRAINT fk_dtl_flow_edges_from_node FOREIGN KEY (from_node_id) REFERENCES "01_catalog"."20_dtl_flow_nodes"(id),
-    CONSTRAINT fk_dtl_flow_edges_to_node FOREIGN KEY (to_node_id) REFERENCES "01_catalog"."20_dtl_flow_nodes"(id),
-    CONSTRAINT fk_dtl_flow_edges_kind FOREIGN KEY (edge_kind_id) REFERENCES "01_catalog"."05_dim_flow_edge_kind"(id)
+CREATE INDEX IF NOT EXISTS idx_fct_flow_versions_flow_status   ON "01_catalog"."11_fct_flow_versions"(flow_id, status_id);
+CREATE INDEX IF NOT EXISTS idx_fct_flow_versions_published_by  ON "01_catalog"."11_fct_flow_versions"(published_by_user_id);
+
+-- Circular FK from fct_flows.current_version_id to fct_flow_versions.id
+ALTER TABLE "01_catalog"."10_fct_flows"
+    ADD CONSTRAINT fk_fct_flows_current_version
+    FOREIGN KEY (current_version_id) REFERENCES "01_catalog"."11_fct_flow_versions"(id);
+
+-- -------------------------------------------------------------------
+-- Detail: flow strings (Pure-EAV split)
+-- -------------------------------------------------------------------
+-- Fixed-schema dtl (not dim_attr_defs EAV) - one row per flow,
+-- carries the human-facing strings. Partial unique on slug scoped
+-- to org, honoring soft-delete via local deleted_at mirror.
+
+CREATE TABLE IF NOT EXISTS "01_catalog"."20_dtl_flows" (
+    flow_id         VARCHAR(36) NOT NULL,
+    org_id          VARCHAR(36) NOT NULL,
+    slug            TEXT NOT NULL,
+    name            TEXT NOT NULL,
+    description     TEXT,
+    deleted_at      TIMESTAMP,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_dtl_flows      PRIMARY KEY (flow_id),
+    CONSTRAINT fk_dtl_flows_flow FOREIGN KEY (flow_id) REFERENCES "01_catalog"."10_fct_flows"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_dtl_flows_org  FOREIGN KEY (org_id)  REFERENCES "03_iam"."10_fct_orgs"(id)
 );
-COMMENT ON TABLE  "01_catalog"."21_dtl_flow_edges" IS 'Directed edges connecting node instances. Immutable once version is published.';
-COMMENT ON COLUMN "01_catalog"."21_dtl_flow_edges".from_port_key IS 'Output port on source node.';
-COMMENT ON COLUMN "01_catalog"."21_dtl_flow_edges".to_port_key IS 'Input port on target node.';
-COMMENT ON COLUMN "01_catalog"."21_dtl_flow_edges".edge_kind_id IS 'Type of connection: next | success | failure | true_branch | false_branch.';
+COMMENT ON TABLE  "01_catalog"."20_dtl_flows" IS 'String detail for flows: slug, name, description. One row per flow.';
+COMMENT ON COLUMN "01_catalog"."20_dtl_flows".slug IS 'User-supplied flow slug (stable identifier within org).';
 
-CREATE INDEX idx_dtl_flow_edges_version ON "01_catalog"."21_dtl_flow_edges"(flow_version_id);
-CREATE INDEX idx_dtl_flow_edges_from_node ON "01_catalog"."21_dtl_flow_edges"(from_node_id);
-CREATE INDEX idx_dtl_flow_edges_to_node ON "01_catalog"."21_dtl_flow_edges"(to_node_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_dtl_flows_org_slug
+    ON "01_catalog"."20_dtl_flows"(org_id, slug)
+    WHERE deleted_at IS NULL;
 
 -- DOWN ====
 
-DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_to_node;
-DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_from_node;
-DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_version;
-DROP TABLE IF EXISTS "01_catalog"."21_dtl_flow_edges";
+DROP INDEX IF EXISTS "01_catalog".uq_dtl_flows_org_slug;
+DROP TABLE IF EXISTS "01_catalog"."20_dtl_flows";
 
-DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_nodes_version;
-DROP TABLE IF EXISTS "01_catalog"."20_dtl_flow_nodes";
+ALTER TABLE "01_catalog"."10_fct_flows" DROP CONSTRAINT IF EXISTS fk_fct_flows_current_version;
+
+DROP INDEX IF EXISTS "01_catalog".idx_fct_flow_versions_published_by;
+DROP INDEX IF EXISTS "01_catalog".idx_fct_flow_versions_flow_status;
+DROP INDEX IF EXISTS "01_catalog".uq_fct_flow_versions_one_draft;
+DROP TABLE IF EXISTS "01_catalog"."11_fct_flow_versions";
 
 DROP INDEX IF EXISTS "01_catalog".idx_fct_flows_workspace;
 DROP INDEX IF EXISTS "01_catalog".idx_fct_flows_org_status;

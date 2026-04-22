@@ -1,111 +1,133 @@
 -- UP ====
 
--- Flow versions: immutable snapshots with draft→publish lifecycle.
--- Each flow has a "current_version_id" pointing to the latest working version.
--- Only one draft per flow (enforced by partial unique index).
+-- DAG detail tables and read-side views for flows.
+-- Prereq: 20260421_079 (schemas, fct_flows, fct_flow_versions, dtl_flows).
 
--- ── Flow versions fact table ────────────────────────────────────────
+-- -------------------------------------------------------------------
+-- Detail: node instances within a flow version
+-- -------------------------------------------------------------------
 
--- fct_catalog_flow_versions: immutable version snapshots
-CREATE TABLE IF NOT EXISTS "01_catalog"."11_fct_flow_versions" (
+CREATE TABLE IF NOT EXISTS "01_catalog"."21_dtl_flow_nodes" (
     id                      VARCHAR(36) NOT NULL,
-    flow_id                 VARCHAR(36) NOT NULL,
-    version_number          INT NOT NULL,
-    status_id               SMALLINT NOT NULL,
-    dag_hash                CHAR(64),
-    published_at            TIMESTAMP,
-    published_by_user_id    VARCHAR(36),
+    flow_version_id         VARCHAR(36) NOT NULL,
+    node_key                TEXT NOT NULL,
+    instance_label          TEXT NOT NULL,
+    config_json             JSONB NOT NULL DEFAULT '{}',
+    position_x              INT,
+    position_y              INT,
+    sort_order              SMALLINT,
     created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at              TIMESTAMP,
-    CONSTRAINT pk_fct_flow_versions PRIMARY KEY (id),
-    CONSTRAINT uq_fct_flow_versions_flow_number UNIQUE (flow_id, version_number),
-    CONSTRAINT fk_fct_flow_versions_flow FOREIGN KEY (flow_id) REFERENCES "01_catalog"."10_fct_flows"(id),
-    CONSTRAINT fk_fct_flow_versions_status FOREIGN KEY (status_id) REFERENCES "01_catalog"."04_dim_flow_status"(id),
-    CONSTRAINT fk_fct_flow_versions_published_by FOREIGN KEY (published_by_user_id) REFERENCES "03_iam"."12_fct_users"(id)
+    CONSTRAINT pk_dtl_flow_nodes               PRIMARY KEY (id),
+    CONSTRAINT uq_dtl_flow_nodes_instance      UNIQUE (flow_version_id, instance_label),
+    CONSTRAINT fk_dtl_flow_nodes_version       FOREIGN KEY (flow_version_id) REFERENCES "01_catalog"."11_fct_flow_versions"(id) ON DELETE CASCADE
 );
-COMMENT ON TABLE  "01_catalog"."11_fct_flow_versions" IS 'Immutable flow version snapshots. Only one draft per flow.';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".id IS 'UUID v7 primary key.';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".flow_id IS 'FK to fct_catalog_flows.';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".version_number IS 'Monotonic sequence (1, 2, 3, ...).';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".status_id IS 'Draft, published, or archived.';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".dag_hash IS 'SHA256 of canonical DAG (set on publish).';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".published_at IS 'Timestamp when version was published (NULL for draft).';
-COMMENT ON COLUMN "01_catalog"."11_fct_flow_versions".published_by_user_id IS 'User who published the version.';
+COMMENT ON TABLE  "01_catalog"."21_dtl_flow_nodes" IS 'Node instances within a flow version. node_key references the live registry (no FK).';
+COMMENT ON COLUMN "01_catalog"."21_dtl_flow_nodes".node_key IS 'Stable node key from live registry (e.g., iam.auth_required).';
+COMMENT ON COLUMN "01_catalog"."21_dtl_flow_nodes".instance_label IS 'User-supplied label for this node instance.';
+COMMENT ON COLUMN "01_catalog"."21_dtl_flow_nodes".config_json IS 'Per-instance config validated against node schema.';
 
--- Partial unique index: enforce at most one draft per flow
-CREATE UNIQUE INDEX idx_fct_flow_versions_one_draft
-    ON "01_catalog"."11_fct_flow_versions"(flow_id)
-    WHERE status_id = 1 AND deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_dtl_flow_nodes_version ON "01_catalog"."21_dtl_flow_nodes"(flow_version_id);
 
-CREATE INDEX idx_fct_flow_versions_flow_status ON "01_catalog"."11_fct_flow_versions"(flow_id, status_id);
-CREATE INDEX idx_fct_flow_versions_published_by ON "01_catalog"."11_fct_flow_versions"(published_by_user_id);
+-- -------------------------------------------------------------------
+-- Detail: typed edges between node instances
+-- -------------------------------------------------------------------
 
--- ── Views ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS "01_catalog"."22_dtl_flow_edges" (
+    id                      VARCHAR(36) NOT NULL,
+    flow_version_id         VARCHAR(36) NOT NULL,
+    from_node_id            VARCHAR(36) NOT NULL,
+    from_port_key           TEXT NOT NULL,
+    to_node_id              VARCHAR(36) NOT NULL,
+    to_port_key             TEXT NOT NULL,
+    edge_kind_id            SMALLINT NOT NULL,
+    sort_order              SMALLINT,
+    created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_dtl_flow_edges              PRIMARY KEY (id),
+    CONSTRAINT uq_dtl_flow_edges_connection   UNIQUE (flow_version_id, from_node_id, from_port_key, to_node_id, to_port_key),
+    CONSTRAINT fk_dtl_flow_edges_version      FOREIGN KEY (flow_version_id) REFERENCES "01_catalog"."11_fct_flow_versions"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_dtl_flow_edges_from_node    FOREIGN KEY (from_node_id)    REFERENCES "01_catalog"."21_dtl_flow_nodes"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_dtl_flow_edges_to_node      FOREIGN KEY (to_node_id)      REFERENCES "01_catalog"."21_dtl_flow_nodes"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_dtl_flow_edges_kind         FOREIGN KEY (edge_kind_id)    REFERENCES "01_catalog"."05_dim_flow_edge_kind"(id)
+);
+COMMENT ON TABLE  "01_catalog"."22_dtl_flow_edges" IS 'Directed edges connecting node instances. Immutable once version is published.';
+COMMENT ON COLUMN "01_catalog"."22_dtl_flow_edges".edge_kind_id IS 'Type of connection: next | success | failure | true_branch | false_branch.';
 
--- v_catalog_flows: read model for flow listings
+CREATE INDEX IF NOT EXISTS idx_dtl_flow_edges_version   ON "01_catalog"."22_dtl_flow_edges"(flow_version_id);
+CREATE INDEX IF NOT EXISTS idx_dtl_flow_edges_from_node ON "01_catalog"."22_dtl_flow_edges"(from_node_id);
+CREATE INDEX IF NOT EXISTS idx_dtl_flow_edges_to_node   ON "01_catalog"."22_dtl_flow_edges"(to_node_id);
+
+-- -------------------------------------------------------------------
+-- Views
+-- -------------------------------------------------------------------
+
 CREATE OR REPLACE VIEW "01_catalog".v_flows AS
 SELECT
     f.id,
     f.org_id,
     f.workspace_id,
-    f.slug,
-    f.name,
-    f.description,
+    d.slug,
+    d.name,
+    d.description,
     f.current_version_id,
-    s.code AS status,
+    f.status_id,
+    s.code  AS status,
     s.label AS status_label,
     COALESCE(fv.version_number, 0) AS current_version_number,
-    COUNT(DISTINCT n.id) FILTER (WHERE fv.deleted_at IS NULL) AS node_count,
-    COUNT(DISTINCT e.id) FILTER (WHERE fv.deleted_at IS NULL) AS edge_count,
+    (SELECT COUNT(*) FROM "01_catalog"."21_dtl_flow_nodes" n WHERE n.flow_version_id = fv.id) AS node_count,
+    (SELECT COUNT(*) FROM "01_catalog"."22_dtl_flow_edges" e WHERE e.flow_version_id = fv.id) AS edge_count,
+    f.is_active,
+    f.is_test,
+    f.created_by,
+    f.updated_by,
     f.created_at,
     f.updated_at,
     f.deleted_at
 FROM "01_catalog"."10_fct_flows" f
-LEFT JOIN "01_catalog"."04_dim_flow_status" s ON f.status_id = s.id
-LEFT JOIN "01_catalog"."11_fct_flow_versions" fv ON f.current_version_id = fv.id
-LEFT JOIN "01_catalog"."20_dtl_flow_nodes" n ON fv.id = n.flow_version_id
-LEFT JOIN "01_catalog"."21_dtl_flow_edges" e ON fv.id = e.flow_version_id
-GROUP BY f.id, f.org_id, f.workspace_id, f.slug, f.name, f.description,
-         f.current_version_id, s.code, s.label, fv.version_number,
-         f.created_at, f.updated_at, f.deleted_at;
+LEFT JOIN "01_catalog"."20_dtl_flows"        d  ON d.flow_id = f.id
+LEFT JOIN "01_catalog"."04_dim_flow_status"  s  ON f.status_id = s.id
+LEFT JOIN "01_catalog"."11_fct_flow_versions" fv ON f.current_version_id = fv.id;
 
-COMMENT ON VIEW "01_catalog".v_flows IS 'Read model: flows with resolved status, current version info, and aggregated node/edge counts.';
+COMMENT ON VIEW "01_catalog".v_flows IS 'Read model: flows joined to string detail, status, and current version aggregates.';
 
--- v_catalog_flow_versions: read model for version details
 CREATE OR REPLACE VIEW "01_catalog".v_flow_versions AS
 SELECT
     fv.id,
     fv.flow_id,
-    f.slug AS flow_slug,
-    f.name AS flow_name,
+    fv.org_id,
+    d.slug  AS flow_slug,
+    d.name  AS flow_name,
     fv.version_number,
-    s.code AS status,
+    fv.status_id,
+    s.code  AS status,
     s.label AS status_label,
     fv.dag_hash,
     fv.published_at,
     fv.published_by_user_id,
-    COUNT(DISTINCT n.id) AS node_count,
-    COUNT(DISTINCT e.id) AS edge_count,
+    (SELECT COUNT(*) FROM "01_catalog"."21_dtl_flow_nodes" n WHERE n.flow_version_id = fv.id) AS node_count,
+    (SELECT COUNT(*) FROM "01_catalog"."22_dtl_flow_edges" e WHERE e.flow_version_id = fv.id) AS edge_count,
+    fv.is_active,
+    fv.is_test,
+    fv.created_by,
+    fv.updated_by,
     fv.created_at,
+    fv.updated_at,
     fv.deleted_at
 FROM "01_catalog"."11_fct_flow_versions" fv
-JOIN "01_catalog"."10_fct_flows" f ON fv.flow_id = f.id
-LEFT JOIN "01_catalog"."04_dim_flow_status" s ON fv.status_id = s.id
-LEFT JOIN "01_catalog"."20_dtl_flow_nodes" n ON fv.id = n.flow_version_id
-LEFT JOIN "01_catalog"."21_dtl_flow_edges" e ON fv.id = e.flow_version_id
-GROUP BY fv.id, fv.flow_id, f.slug, f.name, fv.version_number,
-         s.code, s.label, fv.dag_hash, fv.published_at, fv.published_by_user_id,
-         fv.created_at, fv.deleted_at;
+JOIN       "01_catalog"."10_fct_flows" f ON fv.flow_id = f.id
+LEFT JOIN  "01_catalog"."20_dtl_flows" d ON d.flow_id  = f.id
+LEFT JOIN  "01_catalog"."04_dim_flow_status" s ON fv.status_id = s.id;
 
-COMMENT ON VIEW "01_catalog".v_flow_versions IS 'Read model: flow versions with resolved status and aggregated DAG metrics.';
+COMMENT ON VIEW "01_catalog".v_flow_versions IS 'Read model: flow versions with resolved status and denormalized flow strings.';
 
 -- DOWN ====
 
 DROP VIEW IF EXISTS "01_catalog".v_flow_versions;
 DROP VIEW IF EXISTS "01_catalog".v_flows;
 
-DROP INDEX IF EXISTS "01_catalog".idx_fct_flow_versions_published_by;
-DROP INDEX IF EXISTS "01_catalog".idx_fct_flow_versions_flow_status;
-DROP INDEX IF EXISTS "01_catalog".idx_fct_flow_versions_one_draft;
+DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_to_node;
+DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_from_node;
+DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_edges_version;
+DROP TABLE IF EXISTS "01_catalog"."22_dtl_flow_edges";
 
-DROP TABLE IF EXISTS "01_catalog"."11_fct_flow_versions";
+DROP INDEX IF EXISTS "01_catalog".idx_dtl_flow_nodes_version;
+DROP TABLE IF EXISTS "01_catalog"."21_dtl_flow_nodes";

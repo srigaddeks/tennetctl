@@ -108,7 +108,7 @@ async def freeze_draft(
     version = await conn.fetchrow(
         """
         SELECT
-            id, flow_id, version_number, status_id
+            id, flow_id, org_id, version_number, status_id
         FROM "01_catalog"."11_fct_flow_versions"
         WHERE id = $1
         FOR UPDATE
@@ -126,7 +126,7 @@ async def freeze_draft(
     nodes = await conn.fetch(
         """
         SELECT id, node_key, instance_label, config_json, position_x, position_y
-        FROM "01_catalog"."20_dtl_flow_nodes"
+        FROM "01_catalog"."21_dtl_flow_nodes"
         WHERE flow_version_id = $1
         """,
         version_id
@@ -136,7 +136,7 @@ async def freeze_draft(
         """
         SELECT
             id, from_node_id, from_port_key, to_node_id, to_port_key, edge_kind_id
-        FROM "01_catalog"."21_dtl_flow_edges"
+        FROM "01_catalog"."22_dtl_flow_edges"
         WHERE flow_version_id = $1
         """,
         version_id
@@ -176,10 +176,12 @@ async def freeze_draft(
         """
         UPDATE "01_catalog"."11_fct_flow_versions"
         SET
-            status_id = 2,  -- published
+            status_id = 2,
             dag_hash = $2,
             published_at = CURRENT_TIMESTAMP,
-            published_by_user_id = $3
+            published_by_user_id = $3,
+            updated_by = $3,
+            updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
         """,
         version_id,
@@ -197,12 +199,15 @@ async def freeze_draft(
     await conn.execute(
         """
         INSERT INTO "01_catalog"."11_fct_flow_versions"
-        (id, flow_id, version_number, status_id, created_at)
-        VALUES ($1, $2, $3, 1, CURRENT_TIMESTAMP)
+        (id, flow_id, org_id, version_number, status_id,
+         is_active, is_test, created_by, updated_by, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, 1, true, false, $5, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """,
         new_version_id,
         flow_id,
+        version["org_id"],
         new_version_number,
+        user_id,
     )
 
     # Copy nodes to new version
@@ -210,7 +215,7 @@ async def freeze_draft(
         new_node_id = _id.uuid7()
         await conn.execute(
             """
-            INSERT INTO "01_catalog"."20_dtl_flow_nodes"
+            INSERT INTO "01_catalog"."21_dtl_flow_nodes"
             (id, flow_version_id, node_key, instance_label, config_json, position_x, position_y, sort_order, created_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
             """,
@@ -222,7 +227,7 @@ async def freeze_draft(
             node["position_x"],
             node["position_y"],
             (await conn.fetchval(
-                "SELECT sort_order FROM \"01_catalog\".\"20_dtl_flow_nodes\" WHERE id = $1",
+                "SELECT sort_order FROM \"01_catalog\".\"21_dtl_flow_nodes\" WHERE id = $1",
                 node["id"]
             )),
         )
@@ -230,11 +235,11 @@ async def freeze_draft(
     # Map old node IDs to new node IDs for edge copying
     old_to_new_node = {}
     old_nodes = await conn.fetch(
-        "SELECT id, instance_label FROM \"01_catalog\".\"20_dtl_flow_nodes\" WHERE flow_version_id = $1",
+        "SELECT id, instance_label FROM \"01_catalog\".\"21_dtl_flow_nodes\" WHERE flow_version_id = $1",
         version_id
     )
     new_nodes = await conn.fetch(
-        "SELECT id, instance_label FROM \"01_catalog\".\"20_dtl_flow_nodes\" WHERE flow_version_id = $1",
+        "SELECT id, instance_label FROM \"01_catalog\".\"21_dtl_flow_nodes\" WHERE flow_version_id = $1",
         new_version_id
     )
 
@@ -252,7 +257,7 @@ async def freeze_draft(
         if new_from_node_id and new_to_node_id:
             await conn.execute(
                 """
-                INSERT INTO "01_catalog"."21_dtl_flow_edges"
+                INSERT INTO "01_catalog"."22_dtl_flow_edges"
                 (id, flow_version_id, from_node_id, from_port_key, to_node_id, to_port_key, edge_kind_id, sort_order, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
                 """,
@@ -264,7 +269,7 @@ async def freeze_draft(
                 edge["to_port_key"],
                 edge["edge_kind_id"],
                 (await conn.fetchval(
-                    "SELECT sort_order FROM \"01_catalog\".\"21_dtl_flow_edges\" WHERE id = $1",
+                    "SELECT sort_order FROM \"01_catalog\".\"22_dtl_flow_edges\" WHERE id = $1",
                     edge["id"]
                 )),
             )
@@ -273,9 +278,10 @@ async def freeze_draft(
     await conn.execute(
         """
         UPDATE "01_catalog"."10_fct_flows"
-        SET current_version_id = $2
+        SET current_version_id = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
         """,
         flow_id,
         new_version_id,
+        user_id,
     )

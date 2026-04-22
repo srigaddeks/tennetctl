@@ -1,5 +1,5 @@
 schema: "01_catalog"
-table: "05_dim_trace_node_status"
+table: "08_dim_trace_node_status"
 rows:
   - id: 1
     code: pending
@@ -29,5 +29,5 @@ rows:
   - id: 6
     code: timed_out
     label: Timed Out
-    description: Node execution exceeded timeout
+    description: Node exceeded its configured timeout
     deprecated_at: null

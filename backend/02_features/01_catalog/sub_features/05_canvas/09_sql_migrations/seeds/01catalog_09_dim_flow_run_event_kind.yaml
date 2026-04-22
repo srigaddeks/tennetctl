@@ -1,0 +1,38 @@
+schema: "01_catalog"
+table: "09_dim_flow_run_event_kind"
+rows:
+  - id: 1
+    code: started
+    label: Started
+    description: Node execution began
+    deprecated_at: null
+  - id: 2
+    code: success
+    label: Success
+    description: Node execution finished without error
+    deprecated_at: null
+  - id: 3
+    code: failure
+    label: Failure
+    description: Node execution failed with no recovery
+    deprecated_at: null
+  - id: 4
+    code: failure_handled
+    label: Failure Handled
+    description: Node failed but its failure edge was traversed
+    deprecated_at: null
+  - id: 5
+    code: skipped
+    label: Skipped
+    description: Node was skipped due to upstream failure or branch miss
+    deprecated_at: null
+  - id: 6
+    code: timed_out
+    label: Timed Out
+    description: Node exceeded its configured timeout
+    deprecated_at: null
+  - id: 7
+    code: finished
+    label: Finished
+    description: Flow run reached terminal state (emitted by run-level observer)
+    deprecated_at: null

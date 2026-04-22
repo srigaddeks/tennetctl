@@ -89,13 +89,13 @@ async def list_runs(
     query = """
     SELECT
         id,
-        version_id,
+        flow_version_id AS version_id,
         started_at,
         finished_at,
         status,
         EXTRACT(EPOCH FROM (finished_at - started_at)) * 1000 AS total_duration_ms
-    FROM "01_catalog"."fct_catalog_flow_runs"
-    WHERE version_id = $1
+    FROM "01_catalog".v_flow_runs
+    WHERE flow_version_id = $1 AND deleted_at IS NULL
     """
 
     params: list[Any] = [version_id]

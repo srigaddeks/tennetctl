@@ -3,7 +3,7 @@
 from importlib import import_module
 from typing import Any
 
-from .schemas import EdgeKind, FlowStatus, NodeInstanceOut, PortOut
+from .schemas import FlowStatus, NodeInstanceOut
 
 _id = import_module("backend.01_core.id")
 
@@ -59,38 +59,53 @@ async def create_flow(
     """
     Create a new flow with initial draft version.
 
+    Writes identity to 10_fct_flows, strings to 20_dtl_flows, then inserts
+    an initial v1 draft row into 11_fct_flow_versions.
+
     Returns:
         (flow_dict, version_dict)
     """
-    # Create flow
     flow_id = _id.uuid7()
+
     await conn.execute(
         """
         INSERT INTO "01_catalog"."10_fct_flows"
-        (id, org_id, workspace_id, slug, name, description, status_id, created_by, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, 1, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        (id, org_id, workspace_id, status_id, is_active, is_test,
+         created_by, updated_by, created_at, updated_at)
+        VALUES ($1, $2, $3, 1, true, false, $4, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """,
-        flow_id, org_id, workspace_id, slug, name, description, user_id,
+        flow_id, org_id, workspace_id, user_id,
     )
 
-    # Create initial draft version v1
+    await conn.execute(
+        """
+        INSERT INTO "01_catalog"."20_dtl_flows"
+        (flow_id, org_id, slug, name, description, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """,
+        flow_id, org_id, slug, name, description,
+    )
+
     version_id = _id.uuid7()
     await conn.execute(
         """
         INSERT INTO "01_catalog"."11_fct_flow_versions"
-        (id, flow_id, version_number, status_id, created_at)
-        VALUES ($1, $2, 1, 1, CURRENT_TIMESTAMP)
+        (id, flow_id, org_id, version_number, status_id,
+         is_active, is_test, created_by, updated_by, created_at, updated_at)
+        VALUES ($1, $2, $3, 1, 1, true, false, $4, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """,
-        version_id, flow_id,
+        version_id, flow_id, org_id, user_id,
     )
 
-    # Update flow.current_version_id
     await conn.execute(
-        'UPDATE "01_catalog"."10_fct_flows" SET current_version_id = $1 WHERE id = $2',
-        version_id, flow_id,
+        """
+        UPDATE "01_catalog"."10_fct_flows"
+        SET current_version_id = $1, updated_by = $3, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+        """,
+        version_id, flow_id, user_id,
     )
 
-    # Fetch and return
     flow = await conn.fetchrow(
         'SELECT * FROM "01_catalog".v_flows WHERE id = $1',
         flow_id
@@ -100,6 +115,62 @@ async def create_flow(
         version_id
     )
     return (flow, version)
+
+
+async def update_flow_strings(
+    conn: Any,
+    flow_id: str,
+    *,
+    name: str | None = None,
+    description: str | None = None,
+) -> None:
+    """Patch slug/name/description on 20_dtl_flows.
+
+    Only updates fields explicitly provided. Slug changes are not supported here
+    (would need uniqueness re-check) — reserved for a future dedicated endpoint.
+    """
+    set_parts: list[str] = []
+    params: list[Any] = []
+    idx = 1
+
+    if name is not None:
+        set_parts.append(f"name = ${idx}")
+        params.append(name)
+        idx += 1
+
+    if description is not None:
+        set_parts.append(f"description = ${idx}")
+        params.append(description)
+        idx += 1
+
+    if not set_parts:
+        return
+
+    set_parts.append("updated_at = CURRENT_TIMESTAMP")
+    params.append(flow_id)
+
+    query = (
+        f'UPDATE "01_catalog"."20_dtl_flows" SET {", ".join(set_parts)} '
+        f'WHERE flow_id = ${idx}'
+    )
+    await conn.execute(query, *params)
+
+
+async def update_flow_status(
+    conn: Any,
+    flow_id: str,
+    status_id: int,
+    user_id: str,
+) -> None:
+    """Update status_id on 10_fct_flows."""
+    await conn.execute(
+        """
+        UPDATE "01_catalog"."10_fct_flows"
+        SET status_id = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        """,
+        flow_id, status_id, user_id,
+    )
 
 
 async def get_version(conn: Any, version_id: str) -> dict[str, Any] | None:
@@ -116,27 +187,25 @@ async def get_version(conn: Any, version_id: str) -> dict[str, Any] | None:
     if not version:
         return None
 
-    # Fetch nodes
     nodes_raw = await conn.fetch(
         """
         SELECT
             id, instance_label, node_key, config_json,
             position_x, position_y
-        FROM "01_catalog"."20_dtl_flow_nodes"
+        FROM "01_catalog"."21_dtl_flow_nodes"
         WHERE flow_version_id = $1
         ORDER BY sort_order, created_at
         """,
         version_id
     )
 
-    # Fetch edges
     edges_raw = await conn.fetch(
         """
         SELECT
             dtl.id, dtl.from_node_id, dtl.from_port_key,
             dtl.to_node_id, dtl.to_port_key,
             dim.code AS edge_kind
-        FROM "01_catalog"."21_dtl_flow_edges" dtl
+        FROM "01_catalog"."22_dtl_flow_edges" dtl
         LEFT JOIN "01_catalog"."05_dim_flow_edge_kind" dim
             ON dtl.edge_kind_id = dim.id
         WHERE dtl.flow_version_id = $1
@@ -145,7 +214,6 @@ async def get_version(conn: Any, version_id: str) -> dict[str, Any] | None:
         version_id
     )
 
-    # Convert to output schemas (ports would be resolved in service layer)
     nodes = [
         NodeInstanceOut(
             id=n["id"],
@@ -153,8 +221,8 @@ async def get_version(conn: Any, version_id: str) -> dict[str, Any] | None:
             node_key=n["node_key"],
             config=n["config_json"] or {},
             position={"x": n["position_x"], "y": n["position_y"]} if n["position_x"] is not None else None,
-            inputs=[],  # Resolved in service layer
-            outputs=[],  # Resolved in service layer
+            inputs=[],
+            outputs=[],
         )
         for n in nodes_raw
     ]
@@ -189,34 +257,25 @@ async def replace_version_dag(
 
     Atomically clears and re-inserts. Used by PATCH endpoint.
     """
-    # Get current node IDs to delete
-    old_nodes = await conn.fetch(
-        'SELECT id FROM "01_catalog"."20_dtl_flow_nodes" WHERE flow_version_id = $1',
-        version_id
-    )
-
-    # Soft-clear edges first (foreign key dependency)
     await conn.execute(
-        'DELETE FROM "01_catalog"."21_dtl_flow_edges" WHERE flow_version_id = $1',
+        'DELETE FROM "01_catalog"."22_dtl_flow_edges" WHERE flow_version_id = $1',
         version_id
     )
-
-    # Soft-clear nodes
     await conn.execute(
-        'DELETE FROM "01_catalog"."20_dtl_flow_nodes" WHERE flow_version_id = $1',
+        'DELETE FROM "01_catalog"."21_dtl_flow_nodes" WHERE flow_version_id = $1',
         version_id
     )
 
-    # Insert new nodes and track label -> id mapping
-    label_to_id = {}
+    label_to_id: dict[str, str] = {}
     for i, node in enumerate(nodes):
         node_id = _id.uuid7()
         label_to_id[node["instance_label"]] = node_id
 
         await conn.execute(
             """
-            INSERT INTO "01_catalog"."20_dtl_flow_nodes"
-            (id, flow_version_id, node_key, instance_label, config_json, position_x, position_y, sort_order, created_at)
+            INSERT INTO "01_catalog"."21_dtl_flow_nodes"
+            (id, flow_version_id, node_key, instance_label, config_json,
+             position_x, position_y, sort_order, created_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
             """,
             node_id,
@@ -224,12 +283,11 @@ async def replace_version_dag(
             node["node_key"],
             node["instance_label"],
             node.get("config_json", {}),
-            node.get("position", {}).get("x"),
-            node.get("position", {}).get("y"),
+            (node.get("position") or {}).get("x"),
+            (node.get("position") or {}).get("y"),
             i,
         )
 
-    # Insert new edges, resolving instance_label to node_id
     edge_kind_id_map = {
         "next": 1,
         "success": 2,
@@ -239,18 +297,19 @@ async def replace_version_dag(
     }
 
     for i, edge in enumerate(edges):
-        from_node_id = edge.get("from_node_id") or label_to_id.get(edge["from_instance_label"])
-        to_node_id = edge.get("to_node_id") or label_to_id.get(edge["to_instance_label"])
+        from_node_id = edge.get("from_node_id") or label_to_id.get(edge.get("from_instance_label", ""))
+        to_node_id   = edge.get("to_node_id")   or label_to_id.get(edge.get("to_instance_label", ""))
 
         if not from_node_id or not to_node_id:
-            continue  # Skip invalid edges (would be caught by validation)
+            continue
 
         edge_kind_id = edge_kind_id_map.get(edge["kind"], 1)
 
         await conn.execute(
             """
-            INSERT INTO "01_catalog"."21_dtl_flow_edges"
-            (id, flow_version_id, from_node_id, from_port_key, to_node_id, to_port_key, edge_kind_id, sort_order, created_at)
+            INSERT INTO "01_catalog"."22_dtl_flow_edges"
+            (id, flow_version_id, from_node_id, from_port_key, to_node_id, to_port_key,
+             edge_kind_id, sort_order, created_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
             """,
             _id.uuid7(),
@@ -265,19 +324,12 @@ async def replace_version_dag(
 
 
 async def mark_archived(conn: Any, flow_id: str, user_id: str) -> None:
-    """Mark a flow as archived."""
-    await conn.execute(
-        """
-        UPDATE "01_catalog"."10_fct_flows"
-        SET status_id = 3, updated_by = $2, updated_at = CURRENT_TIMESTAMP
-        WHERE id = $1
-        """,
-        flow_id, user_id,
-    )
+    """Mark a flow as archived (status=3)."""
+    await update_flow_status(conn, flow_id, 3, user_id)
 
 
 async def soft_delete(conn: Any, flow_id: str, user_id: str) -> None:
-    """Soft-delete a flow."""
+    """Soft-delete a flow (updates both fct and dtl deleted_at)."""
     await conn.execute(
         """
         UPDATE "01_catalog"."10_fct_flows"
@@ -285,4 +337,12 @@ async def soft_delete(conn: Any, flow_id: str, user_id: str) -> None:
         WHERE id = $1
         """,
         flow_id, user_id,
+    )
+    await conn.execute(
+        """
+        UPDATE "01_catalog"."20_dtl_flows"
+        SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+        WHERE flow_id = $1
+        """,
+        flow_id,
     )
