@@ -2960,11 +2960,11 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `get()` connect `Community 6` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 15`, `Community 16`, `Community 17`, `Community 20`, `Community 21`, `Community 22`, `Community 24`, `Community 36`, `Community 42`?**
-  _High betweenness centrality (0.153) - this node is a cross-community bridge._
+  _High betweenness centrality (0.165) - this node is a cross-community bridge._
 - **Why does `asyncpg raw SQL for product_ops.profiles.` connect `Community 2` to `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 13`, `Community 15`, `Community 16`, `Community 17`, `Community 20`, `Community 21`, `Community 24`, `Community 30`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **Why does `Profile service: set traits + read profiles.` connect `Community 5` to `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 8`, `Community 13`, `Community 15`, `Community 16`, `Community 17`, `Community 20`, `Community 21`, `Community 24`, `Community 30`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+- **Why does `Filter` connect `Community 9` to `Community 0`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **Are the 258 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
   _`get()` has 258 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 3 inferred relationships involving `_build_ctx()` (e.g. with `NodeContext` and `get()`) actually correct?**
