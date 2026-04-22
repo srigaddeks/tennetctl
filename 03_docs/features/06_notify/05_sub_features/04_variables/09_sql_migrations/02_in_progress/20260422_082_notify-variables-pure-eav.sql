@@ -106,6 +106,9 @@ SELECT id, template_id, name, static_value, sql_template, param_bindings, descri
             WHERE d.variable_id = "06_notify"."13_fct_notify_template_variables".id
        );
 
+-- Drop the view first so it does not pin the columns we are about to drop.
+DROP VIEW IF EXISTS "06_notify"."v_notify_template_variables";
+
 -- Drop the constraints that reference columns we are about to drop.
 ALTER TABLE "06_notify"."13_fct_notify_template_variables"
     DROP CONSTRAINT IF EXISTS chk_notify_template_variables_type,
@@ -136,8 +139,7 @@ ALTER TABLE "06_notify"."13_fct_notify_template_variables"
         FOREIGN KEY (var_type_id)
         REFERENCES "06_notify"."06_dim_notify_variable_types"(id);
 
--- Rebuild the read view over the new shape.
-DROP VIEW IF EXISTS "06_notify"."v_notify_template_variables";
+-- Rebuild the read view over the new shape (it was dropped above).
 CREATE VIEW "06_notify"."v_notify_template_variables" AS
 SELECT
     v.id,
