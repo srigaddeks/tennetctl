@@ -1,0 +1,23 @@
+schema: "03_iam"
+table: "07_dim_dsar_statuses"
+rows:
+  - id: 1
+    code: requested
+    label: Requested
+    description: Job created, waiting for worker
+    deprecated_at: null
+  - id: 2
+    code: in_progress
+    label: In Progress
+    description: Worker picked up the job
+    deprecated_at: null
+  - id: 3
+    code: completed
+    label: Completed
+    description: Job finished successfully
+    deprecated_at: null
+  - id: 4
+    code: failed
+    label: Failed
+    description: Job finished with error; see error_detail
+    deprecated_at: null

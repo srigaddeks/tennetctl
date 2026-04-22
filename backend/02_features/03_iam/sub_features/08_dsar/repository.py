@@ -13,6 +13,7 @@ from typing import Any
 _JOBS_TABLE = '"03_iam"."65_evt_dsar_jobs"'
 _TYPES_DIM = '"03_iam"."08_dim_dsar_types"'
 _STATUSES_DIM = '"03_iam"."07_dim_dsar_statuses"'
+_PAYLOADS_TABLE = '"03_iam"."20_dtl_dsar_payloads"'
 
 
 async def _type_id(conn: Any, code: str) -> int:
@@ -109,11 +110,11 @@ async def update_dsar_job_status(
     status_id = await _status_id(conn, status)
     await conn.execute(
         f"UPDATE {_JOBS_TABLE} "
-        "SET status_id = $1, "
+        "SET status_id = $1::smallint, "
         "    row_counts = COALESCE($2::JSONB, row_counts), "
         "    result_location = COALESCE($3, result_location), "
         "    error_detail = COALESCE($4, error_detail), "
-        "    completed_at = CASE WHEN $1 IN (3, 4) AND completed_at IS NULL "
+        "    completed_at = CASE WHEN $1::smallint IN (3, 4) AND completed_at IS NULL "
         "                       THEN CURRENT_TIMESTAMP ELSE completed_at END "
         "WHERE id = $5",
         status_id, row_counts, result_location, error_detail, job_id,
@@ -197,7 +198,7 @@ async def export_user_data(pool: Any, subject_user_id: str, _org_id: str) -> dic
 
         # Sessions
         sessions = await conn.fetch(
-            'SELECT * FROM "03_iam"."12_fct_sessions" WHERE user_id = $1',
+            'SELECT * FROM "03_iam"."16_fct_sessions" WHERE user_id = $1',
             subject_user_id,
         )
         data["sessions"] = [dict(r) for r in sessions]
@@ -226,13 +227,43 @@ async def export_user_data(pool: Any, subject_user_id: str, _org_id: str) -> dic
 
         # Audit events (user as actor)
         audit_events = await conn.fetch(
-            'SELECT id, created_at, outcome, event_key, org_id FROM "04_audit"."60_evt_audit_events" '
+            'SELECT id, created_at, outcome, event_key, org_id FROM "04_audit"."60_evt_audit" '
             "WHERE actor_user_id = $1 LIMIT 10000",
             subject_user_id,
         )
         data["audit_events"] = [dict(r) for r in audit_events]
 
         return data
+
+
+async def insert_dsar_payload(
+    conn: Any,
+    *,
+    payload_id: str,
+    job_id: str,
+    ciphertext: bytes,
+    nonce: bytes,
+    dek_version: int,
+    byte_size: int,
+) -> str:
+    """Insert an encrypted DSAR export payload row; returns the row id."""
+    await conn.execute(
+        f"INSERT INTO {_PAYLOADS_TABLE} "
+        "(id, job_id, ciphertext, nonce, dek_version, byte_size) "
+        "VALUES ($1, $2, $3, $4, $5, $6)",
+        payload_id, job_id, ciphertext, nonce, dek_version, byte_size,
+    )
+    return payload_id
+
+
+async def get_dsar_payload(conn: Any, job_id: str) -> dict | None:
+    """Fetch the encrypted payload row for a job; returns dict with bytes fields or None."""
+    row = await conn.fetchrow(
+        f"SELECT id, job_id, ciphertext, nonce, dek_version, byte_size, created_at "
+        f"FROM {_PAYLOADS_TABLE} WHERE job_id = $1",
+        job_id,
+    )
+    return dict(row) if row else None
 
 
 async def delete_user_data(conn: Any, subject_user_id: str, _org_id: str) -> dict[str, int]:
@@ -245,7 +276,7 @@ async def delete_user_data(conn: Any, subject_user_id: str, _org_id: str) -> dic
 
     # Delete sessions
     c = await conn.execute(
-        'DELETE FROM "03_iam"."12_fct_sessions" WHERE user_id = $1',
+        'DELETE FROM "03_iam"."16_fct_sessions" WHERE user_id = $1',
         subject_user_id,
     )
     counts["sessions"] = int(c.split()[-1]) if "DELETE" in c else 0

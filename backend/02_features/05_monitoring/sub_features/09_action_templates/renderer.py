@@ -6,11 +6,10 @@ from typing import Optional
 import json
 
 from jinja2 import (
-    SandboxedEnvironment,
     TemplateError,
     TemplateSyntaxError,
 )
-from jinja2.sandbox import SandboxedEnvironment as SandboxEnv
+from jinja2.sandbox import SandboxedEnvironment
 
 
 class Renderer:

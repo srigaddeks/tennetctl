@@ -1,3 +1,0 @@
-# Robot Framework + Playwright Browser for E2E testing
-robotframework>=7.0
-robotframework-browser>=18.0

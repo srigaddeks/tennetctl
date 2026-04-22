@@ -108,6 +108,11 @@ def _enforce_env_contract() -> None:
     # Unknown non-secretish TENNETCTL_* vars are logged at startup, not blocking.
 
 
+def env_var(name: str, *, default: str | None = None) -> str | None:
+    """Read an environment variable with an optional default."""
+    return os.environ.get(name, default)
+
+
 def load_config() -> Config:
     """Load configuration from environment variables with sensible defaults."""
     _enforce_env_contract()

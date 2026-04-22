@@ -5,12 +5,8 @@
 
 "use client";
 
-import {
-  EdgeProps,
-  getBezierPath,
-  getEdgeCenter,
-  EdgeLabelRenderer,
-} from "react-flow-renderer";
+import type { EdgeProps, Edge } from "@xyflow/react";
+import { getBezierPath } from "@xyflow/react";
 import type { TennetEdgeData } from "../lib/canvas-transform";
 
 function kindStrokeColor(
@@ -42,8 +38,8 @@ export function CanvasEdgeComponent({
   targetPosition,
   data,
   markerEnd,
-}: EdgeProps<TennetEdgeData>) {
-  const [edgePath, labelX, labelY] = getBezierPath({
+}: EdgeProps<Edge<TennetEdgeData>>) {
+  const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -51,6 +47,10 @@ export function CanvasEdgeComponent({
     targetY,
     targetPosition,
   });
+
+  if (!data) {
+    return <path id={id} d={edgePath} stroke="currentColor" strokeWidth={2} fill="none" markerEnd={markerEnd} />;
+  }
 
   const strokeColor = kindStrokeColor(data.kind);
 

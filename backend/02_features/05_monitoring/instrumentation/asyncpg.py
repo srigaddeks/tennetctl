@@ -119,13 +119,18 @@ def make_query_logger() -> Any:
         try:
             import asyncio
             loop = asyncio.get_event_loop()
-            token = _in_monitoring_bridge.set(True)
 
             async def _run():
+                # Set + reset the re-entrancy guard in this task's own context;
+                # tokens created in the caller's context cannot be reset here.
+                token = _in_monitoring_bridge.set(True)
                 try:
                     await _publish_query_span(stmt, duration_ns, end_ns)
                 finally:
-                    _in_monitoring_bridge.reset(token)
+                    try:
+                        _in_monitoring_bridge.reset(token)
+                    except (LookupError, ValueError):
+                        pass
 
             loop.create_task(_run())
         except RuntimeError:

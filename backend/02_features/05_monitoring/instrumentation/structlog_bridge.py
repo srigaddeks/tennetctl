@@ -114,32 +114,34 @@ class MonitoringLogHandler(logging.Handler):
             return
 
         token = _in_monitoring_bridge.set(True)
+        scheduled = False
         try:
             try:
                 loop = asyncio.get_event_loop()
                 if loop.is_running():
-                    loop.create_task(_guarded_publish(payload, token))
-                    return  # token consumed by task
+                    loop.create_task(_guarded_publish(payload))
+                    scheduled = True
                 else:
                     loop.run_until_complete(_publish(payload))
             except RuntimeError:
                 _DROP_COUNT += 1
         finally:
-            # If we didn't schedule a task, reset now. If we did, task resets.
+            # Always reset in this (the original) context. The scheduled task
+            # runs in its own context where the token is invalid.
             try:
                 _in_monitoring_bridge.reset(token)
-            except (LookupError, ValueError):
+            except (LookupError, ValueError, RuntimeError):
                 pass
+            del scheduled  # silence unused warning
 
 
-async def _guarded_publish(payload: bytes, token: Any) -> None:
+async def _guarded_publish(payload: bytes) -> None:
+    # The contextvar guard is reset by the scheduling code in the original
+    # context — we don't touch it here.
     try:
         await _publish(payload)
-    finally:
-        try:
-            _in_monitoring_bridge.reset(token)
-        except (LookupError, ValueError):
-            pass
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def install() -> None:

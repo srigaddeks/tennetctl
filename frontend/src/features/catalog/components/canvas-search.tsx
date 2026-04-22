@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useReactFlow } from "react-flow-renderer";
+import { useReactFlow } from "@xyflow/react";
 import type { CanvasPayload } from "@/types/api";
 
 type SearchResult = {

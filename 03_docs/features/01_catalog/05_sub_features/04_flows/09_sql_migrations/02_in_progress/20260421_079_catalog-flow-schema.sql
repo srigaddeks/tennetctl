@@ -67,7 +67,6 @@ CREATE TABLE IF NOT EXISTS "01_catalog"."10_fct_flows" (
     updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at              TIMESTAMP,
     CONSTRAINT pk_fct_flows PRIMARY KEY (id),
-    CONSTRAINT uq_fct_flows_slug UNIQUE (org_id, slug) WHERE deleted_at IS NULL,
     CONSTRAINT fk_fct_flows_status FOREIGN KEY (status_id) REFERENCES "01_catalog"."04_dim_flow_status"(id),
     CONSTRAINT fk_fct_flows_org FOREIGN KEY (org_id) REFERENCES "03_iam"."10_fct_orgs"(id),
     CONSTRAINT fk_fct_flows_workspace FOREIGN KEY (workspace_id) REFERENCES "03_iam"."11_fct_workspaces"(id)
@@ -77,6 +76,9 @@ COMMENT ON COLUMN "01_catalog"."10_fct_flows".id IS 'UUID v7 primary key.';
 COMMENT ON COLUMN "01_catalog"."10_fct_flows".slug IS 'User-supplied flow slug (stable identifier within org).';
 COMMENT ON COLUMN "01_catalog"."10_fct_flows".current_version_id IS 'FK to fct_catalog_flow_versions; current working version.';
 COMMENT ON COLUMN "01_catalog"."10_fct_flows".status_id IS 'Draft, published, or archived.';
+
+-- Partial unique index — replaces a partial UNIQUE constraint (unsupported by Postgres).
+CREATE UNIQUE INDEX uq_fct_flows_slug ON "01_catalog"."10_fct_flows" (org_id, slug) WHERE deleted_at IS NULL;
 
 CREATE INDEX idx_fct_flows_org_status ON "01_catalog"."10_fct_flows"(org_id, status_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_fct_flows_workspace ON "01_catalog"."10_fct_flows"(workspace_id) WHERE deleted_at IS NULL;

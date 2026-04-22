@@ -5,11 +5,10 @@
 
 import type {
   CanvasPayload,
-  CanvasNode as PayloadNode,
-  CanvasEdge as PayloadEdge,
   CanvasTrace,
+  TraceNodeStatus,
 } from "@/types/api";
-import type { Node, Edge } from "react-flow-renderer";
+import type { Node, Edge } from "@xyflow/react";
 
 export type TennetNodeData = {
   label: string;
@@ -20,15 +19,17 @@ export type TennetNodeData = {
     inputs: Array<{ key: string; type: string }>;
     outputs: Array<{ key: string; type: string }>;
   };
-  status?: string;
+  status?: TraceNodeStatus;
   statusDurationMs?: number;
   unresolved: boolean;
+  [key: string]: unknown;
 };
 
 export type TennetEdgeData = {
   kind: "next" | "success" | "failure" | "true_branch" | "false_branch";
   traversed: boolean;
   hasTrace: boolean;
+  [key: string]: unknown;
 };
 
 export function toReactFlow(
@@ -56,7 +57,7 @@ export function toReactFlow(
           inputs: ports?.inputs ?? [],
           outputs: ports?.outputs ?? [],
         },
-        status: status || undefined,
+        status: status?.status ?? undefined,
         unresolved: ports?.unresolved ?? false,
       },
     };

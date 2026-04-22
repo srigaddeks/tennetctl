@@ -272,11 +272,23 @@ async def _oauth_route(request: Request, body: OAuthCallbackBody, provider: str)
     return response
 
 
-@router.post("/google", status_code=200)
+@router.post(
+    "/google",
+    status_code=200,
+    dependencies=[Depends(_rate_limit.auth_rate_limit(
+        "auth.oauth.google", max_requests=10, window_seconds=60,
+    ))],
+)
 async def google_oauth_route(request: Request, body: OAuthCallbackBody) -> Response:
     return await _oauth_route(request, body, "google")
 
 
-@router.post("/github", status_code=200)
+@router.post(
+    "/github",
+    status_code=200,
+    dependencies=[Depends(_rate_limit.auth_rate_limit(
+        "auth.oauth.github", max_requests=10, window_seconds=60,
+    ))],
+)
 async def github_oauth_route(request: Request, body: OAuthCallbackBody) -> Response:
     return await _oauth_route(request, body, "github")

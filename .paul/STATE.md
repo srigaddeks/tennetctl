@@ -5,17 +5,17 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.8.0 GDPR DSAR Phase 45 planning complete. Two plans drafted: 45-01 (operator API + backend export/delete, v0.8.0 gate), 45-02 (self-service portal + 30d recovery, deferred v1.0). Ready for 45-01 implementation.
+**Current focus:** v0.8.0 GDPR DSAR Phase 45-01c UNIFIED 2026-04-22 — ship gate closed (4/4 ACs static PASS). Live-stack verification + operator carry-forward (vault DEK seed + apply migration 083) remain before shipping v0.8.0.
 
 ## Current Position
 
 Milestone: **v0.8.0 GDPR DSAR** (Phase 45)
-Phase: **45 — GDPR DSAR** (Planning complete)
-Plan: **45-01-PLAN.md + 45-02-PLAN.md** ✓ (ready for 45-01 apply)
-Status: Devtools-platform scope. v0.3.0 (monitoring alerting 40–41) shipped. v0.4.0 (canvas 42–44) shipped. Phase 45 planning complete 2026-04-21. Two plans: 45-01 (backend operator API + export/delete, v0.8.0 gate), 45-02 (self-service portal, deferred v1.0).
-Last activity: 2026-04-21 — Phase 45 PLAN complete: 45-01-PLAN.md (operator-triggered DSAR export/delete with audit + rate limit), 45-02-PLAN.md (self-service portal with 30d recovery, deferred). PLANNING-SUMMARY.md written. Ready for `paul:apply 45-01-PLAN.md`.
+Phase: **45 — GDPR DSAR** (45-01c UNIFIED; 45-01d bonus triage not yet drafted; 45-02 deferred v1.0)
+Plan: **45-01 ✓** / **45-01b ✓** / **45-01c ✓ UNIFY 2026-04-22 (static PASS — grep + import + manifest parse; live-stack verify NOT YET performed)** / 45-01d not drafted / 45-02 deferred v1.0
+Status: 45-01c closes the v0.8.0 ship gate per SUMMARY: sessions-table reference fixed (16_fct_sessions), AES-256-GCM encrypted export payloads via new migration 20260422_083_dsar-payloads.sql with DEK from vault key `iam/dsar/export_dek_v1`, all 6 DSAR audit events now emit via `run_node("audit.events.emit", ...)` (zero direct audit INSERTs remain), `iam.dsar` sub-feature registered in manifest at number=29 with 2 effect nodes + 5 routes. Secondary bugs auto-fixed: `60_evt_audit_events` → `60_evt_audit` in export_user_data; main.py single-line wiring of vault client into worker. Mandatory carry-forward (unchanged from 45-01b): commit 482c981 deleted 12 migration files from 02_in_progress/; operator must confirm those landed in 01_migrated/ (monitoring 071–080 + IAM 053 + 043) before next migrator run.
+Last activity: 2026-04-22 — 45-01c UNIFY. STATE.md reconciled with pre-existing SUMMARY.md. 4/4 ACs PASS on static checks; live-stack verification pending. Operator carry-forward (seed vault key `iam/dsar/export_dek_v1` with 32-byte DEK, apply migration 083) is the only item blocking v0.8.0 ship.
 
-Next action: `paul:apply 45-01-PLAN.md` to implement backend export/delete logic (~90 min).
+Next action: operator live-stack verify of 45-01c end-to-end (seed vault DEK, apply migration 083, create export job via API, confirm encrypted payload persisted + download returns decrypted JSON). Then either `/paul:plan 45-01d-PLAN.md` (bonus triage: audit retention + authz helpers + catalog canvas polish + pytest suite under sub_features/08_dsar/tests/) OR close v0.8.0 milestone and move to v0.1.8 (Phase 38 ✓, Phase 39 NCP maturity remains) or v1.0 billing.
 
 Previously: v0.2.4 complete (multi-phase autonomous sweep — 35-01/35-02/35-03/36-01 + portal polish). 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap closed.
 Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions.
@@ -39,13 +39,20 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓    [Phase 39 UNIFY complete (39-01/02/03); v0.3.0 closed]
+  ✓        ✓        ✓    [Plan 45-01c UNIFIED 2026-04-22 — ready for next PLAN]
 ```
+
+**Plan 45-01c scope (v0.8.0 ship gate):**
+- Task 1: Fix sessions table name (12_fct_sessions → 16_fct_sessions) in DSAR repository
+- Task 2: AES-256-GCM encrypted export payloads in new 22_dtl_dsar_payloads table; DEK from vault
+- Task 3: Replace inline SQL audit INSERTs with run_node("audit.events.emit", ...)
+- Task 4: Register iam.dsar sub-feature in backend/02_features/03_iam/feature.manifest.yaml
+Bonus triage (audit retention + authz helpers out-of-plan code) deferred to 45-01d. Previous loop closure:
 
 Phase 40-41 closed: 40-01/02/03 (monitoring alerting), 41-01 (SLO definition). All summaries written. v0.3.0 shipped.  
 Phase 42-44 closed: 42-01/02 (canvas flow schema), 43-01/02 (backend), 44-01 (frontend). v0.4.0 shipped.
 
-Current: Phase 45 PLAN complete (45-01 + 45-02-defer); PENDING-APPLY.
+Current: Plan 45-01 shipped code but with structural drift; 45-01-SUMMARY.md documents 3 schema mismatches (migration/repo/tests), worker not wired, vault stubbed, audit bypasses run_node, + 3 bonus out-of-plan sub-features (audit retention, authz helpers). v0.8.0 gate BLOCKED pending 45-01-REWORK.
 
 **Phase 38 Auth Hardening — shipped across 2 plans:**
 - 38-01: session-fixation on login, IP rate limiter (PG-native), atomic single-use tokens
@@ -294,7 +301,11 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-20 — Milestone UNIFY sweep. 18 retroactive PLAN stubs written, 2 pointer SUMMARYs (54, 55) created, STATE.md loop position advanced to UNIFY ✓. No code changes. Next action: pick next milestone (v0.8.0 identity stitching + group analytics + lexicon UI is the highest-value per v0.7.0 SUMMARY gap analysis; v0.1.8 hardening phases 38/39 is the next natural milestone on roadmap).
+Last session: 2026-04-22 — Plan 45-01c UNIFY. SUMMARY.md already existed from APPLY (4/4 ACs static PASS); this session reconciled STATE.md + paul.json to reflect UNIFY ✓. No new code changes. Operator carry-forward (vault DEK seed + migration 083 apply + live-stack verify) remains before v0.8.0 can ship. Resume file: `.paul/phases/45-gdpr-dsar/45-01c-SUMMARY.md`.
+
+Previously: 2026-04-21 — Phase 45-01 UNIFY. Reconciled plan vs. actual after discovering 45-01 code was committed (a1fa4a0..a4604ec) but never verified. SUMMARY.md flags: migration 071 creates TEXT-CHECK schema; repository queries `65_evt_dsar_jobs` + `07_dim_dsar_statuses` + `08_dim_dsar_types` (none exist); tests use positional args against kwarg-only repo and insert columns (`org_id`/`user_id`) that don't match actual IAM schema; worker loop (`run_pending_dsar_exports/deletes`) not wired into main.py; vault storage is a TODO; audit emitted via direct SQL INSERT instead of `run_node("audit.events.emit")`. Commit 482c981 also deleted 12 monitoring + IAM migrations from `02_in_progress/` — verify these were already applied before 45-01-REWORK.
+
+Previously: 2026-04-20 — Milestone UNIFY sweep. 18 retroactive PLAN stubs written, 2 pointer SUMMARYs (54, 55) created, STATE.md loop position advanced to UNIFY ✓. No code changes. Next action: pick next milestone (v0.8.0 identity stitching + group analytics + lexicon UI is the highest-value per v0.7.0 SUMMARY gap analysis; v0.1.8 hardening phases 38/39 is the next natural milestone on roadmap).
 
 Previously: 2026-04-19 — AUTONOMOUS v0.5.0 + v0.6.0 sweep. v0.5.0 Product Ops (5 phases): Events/Visitors/Links/Referrals/UTM/Funnels with browser SDK + server SDK. v0.6.0 CDP + Partner Management (3 phases): Profiles/Promos/Partners. 10 SUMMARY files. ADR-030 written. 7 new SQL migrations (058–064). 6 catalog sub-features under product_ops (events, links, referrals, profiles, promos, partners) with 4 nodes + 37 routes. ~10,000 new lines across backend, frontend, SDKs.
 Stopped at: v0.5.0 + v0.6.0 fully shipped in code. Operator verification deferred (live migrator + vault seed + Playwright MCP + SDK npm install).

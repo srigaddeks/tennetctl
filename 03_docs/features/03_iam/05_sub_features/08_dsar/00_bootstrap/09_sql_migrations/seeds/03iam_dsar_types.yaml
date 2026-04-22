@@ -1,0 +1,13 @@
+schema: "03_iam"
+table: "08_dim_dsar_types"
+rows:
+  - id: 1
+    code: export
+    label: Export
+    description: Subject Access Request — export user data
+    deprecated_at: null
+  - id: 2
+    code: delete
+    label: Delete
+    description: Right to be Forgotten — erase user data
+    deprecated_at: null

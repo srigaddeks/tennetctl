@@ -5,7 +5,8 @@
 
 "use client";
 
-import { Handle, Position, NodeProps } from "react-flow-renderer";
+import { Handle, Position } from "@xyflow/react";
+import type { NodeProps, Node } from "@xyflow/react";
 import { colorFor } from "../lib/port-color";
 import { useCanvasInspectorStore } from "./canvas-node-inspector";
 import type { TennetNodeData } from "../lib/canvas-transform";
@@ -45,8 +46,7 @@ function statusRingColor(status: TraceNodeStatus | undefined): string {
 
 export function CanvasNodeComponent({
   data,
-  isConnected,
-}: NodeProps<TennetNodeData>) {
+}: NodeProps<Node<TennetNodeData>>) {
   const setInspectedNode = useCanvasInspectorStore(
     (state) => state.setNode
   );

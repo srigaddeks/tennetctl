@@ -641,6 +641,52 @@ spec:
           handler: sub_features.20_oidc_sso.routes.delete_oidc_provider
       ui_pages: []
 
+    - key: iam.dsar
+      number: 29
+      label: GDPR DSAR
+      description: Operator-triggered data subject access (export) and erasure (delete) jobs. Background worker transitions jobs through requested → in_progress → completed/failed; export payloads are AES-256-GCM encrypted with a vault-managed DEK and stored in dtl_dsar_payloads.
+      owns:
+        schema: "03_iam"
+        tables: ["65_evt_dsar_jobs", "20_dtl_dsar_payloads"]
+        views: ["v_dsar_jobs"]
+        seeds: []
+      nodes:
+        - key: iam.dsar.export.request
+          kind: effect
+          handler: sub_features.08_dsar.nodes.iam_dsar_export_request.DsarExportRequest
+          label: Request DSAR Export
+          description: Enqueues a DSAR export job at status=requested; emits audit iam.dsar.export_requested.
+          emits_audit: true
+          version: 1
+          tags: [gdpr, dsar, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+        - key: iam.dsar.delete.request
+          kind: effect
+          handler: sub_features.08_dsar.nodes.iam_dsar_delete_request.DsarDeleteRequest
+          label: Request DSAR Delete
+          description: Enqueues a DSAR delete job at status=requested; emits audit iam.dsar.delete_requested.
+          emits_audit: true
+          version: 1
+          tags: [gdpr, dsar, write]
+          execution: {timeout_ms: 5000, retries: 0, tx: caller}
+      routes:
+        - method: POST
+          path: /v1/dsar/export-request
+          handler: sub_features.08_dsar.routes.request_export
+        - method: POST
+          path: /v1/dsar/delete-request
+          handler: sub_features.08_dsar.routes.request_delete
+        - method: GET
+          path: "/v1/dsar/jobs/{job_id}"
+          handler: sub_features.08_dsar.routes.get_job
+        - method: GET
+          path: /v1/dsar/jobs
+          handler: sub_features.08_dsar.routes.list_jobs
+        - method: GET
+          path: "/v1/dsar/jobs/{job_id}/download"
+          handler: sub_features.08_dsar.routes.download_export
+      ui_pages: []
+
     - key: iam.portal_views
       number: 28
       label: Portal Views

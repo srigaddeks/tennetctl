@@ -19,6 +19,7 @@ _core_id: Any = import_module("backend.01_core.id")
 _catalog_ctx: Any = import_module("backend.01_catalog.context")
 _schemas: Any = import_module("backend.02_features.03_iam.sub_features.15_api_keys.schemas")
 _service: Any = import_module("backend.02_features.03_iam.sub_features.15_api_keys.service")
+_authz: Any = import_module("backend.02_features.03_iam.sub_features.29_authz_gates.authz_helpers")
 
 ApiKeyCreate = _schemas.ApiKeyCreate
 ApiKeyRow = _schemas.ApiKeyRow
@@ -95,10 +96,17 @@ async def create_api_key_route(request: Request, body: ApiKeyCreate) -> dict:
 
 @router.delete("/{key_id}", status_code=204)
 async def revoke_api_key_route(request: Request, key_id: str) -> None:
-    _require_session(request)
+    user_id, org_id = _require_session(request)
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
+        # Cross-org ownership check: the key must belong to the authenticated
+        # user in the session org. Prevents one user revoking another org's keys.
+        key_row = await _service._repo.get_by_id(conn, key_id=key_id)
+        if key_row is None:
+            raise _errors.NotFoundError(f"api key {key_id!r} not found or already revoked")
+        if key_row.get("user_id") != user_id or key_row.get("org_id") != (org_id or user_id):
+            raise _errors.ForbiddenError("Access denied: key does not belong to your account.")
         ctx2 = replace(ctx, conn=conn)
         deleted = await _service.revoke_api_key(conn, pool, ctx2, key_id=key_id)
     if not deleted:
@@ -107,11 +115,18 @@ async def revoke_api_key_route(request: Request, key_id: str) -> None:
 
 @router.post("/{key_id}/rotate", status_code=200)
 async def rotate_api_key_route(request: Request, key_id: str) -> dict:
-    _require_session(request)
+    user_id, org_id = _require_session(request)
     pool = request.app.state.pool
     vault = request.app.state.vault
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
+        # Cross-org ownership check: the key must belong to the authenticated
+        # user in the session org. Prevents one user rotating another org's keys.
+        key_row = await _service._repo.get_by_id(conn, key_id=key_id)
+        if key_row is None:
+            raise _errors.AppError("NOT_FOUND", f"api key {key_id!r} not found or already revoked.", 404)
+        if key_row.get("user_id") != user_id or key_row.get("org_id") != (org_id or user_id):
+            raise _errors.ForbiddenError("Access denied: key does not belong to your account.")
         ctx2 = replace(ctx, conn=conn)
         row = await _service.rotate_api_key(conn, pool, ctx2, vault, key_id=key_id)
     return _response.success(ApiKeyCreatedResponse(**row).model_dump())

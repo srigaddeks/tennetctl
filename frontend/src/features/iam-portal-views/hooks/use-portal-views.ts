@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ApiSuccess, PortalView, RoleViewAssignment } from "@/types/api";
+import { apiFetch } from "@/lib/api";
+import type { PortalView, RoleViewAssignment } from "@/types/api";
 
-const BASE = "/api/v1/iam";
+const BASE = "/v1/iam";
 
 // ─── Query keys ────────────────────────────────────────────────────────────────
 
@@ -17,12 +18,7 @@ export const portalViewsKeys = {
 export function usePortalViews() {
   return useQuery<PortalView[]>({
     queryKey: portalViewsKeys.all,
-    queryFn: async () => {
-      const res = await fetch(`${BASE}/portal-views`);
-      const data: ApiSuccess<PortalView[]> = await res.json();
-      if (!data.ok) throw new Error((data as unknown as { error: { message: string } }).error?.message);
-      return data.data;
-    },
+    queryFn: () => apiFetch<PortalView[]>(`${BASE}/portal-views`),
   });
 }
 
@@ -31,12 +27,7 @@ export function useRoleViews(roleId: string | undefined) {
   return useQuery<RoleViewAssignment[]>({
     queryKey: roleId ? portalViewsKeys.roleViews(roleId) : [],
     enabled: !!roleId,
-    queryFn: async () => {
-      const res = await fetch(`${BASE}/roles/${roleId}/views`);
-      const data: ApiSuccess<RoleViewAssignment[]> = await res.json();
-      if (!data.ok) throw new Error((data as unknown as { error: { message: string } }).error?.message);
-      return data.data;
-    },
+    queryFn: () => apiFetch<RoleViewAssignment[]>(`${BASE}/roles/${roleId}/views`),
   });
 }
 
@@ -45,14 +36,10 @@ export function useMyViews(orgId: string | undefined) {
   return useQuery<PortalView[]>({
     queryKey: orgId ? portalViewsKeys.myViews(orgId) : [],
     enabled: !!orgId,
-    queryFn: async () => {
-      const res = await fetch(`${BASE}/my-views`, {
+    queryFn: () =>
+      apiFetch<PortalView[]>(`${BASE}/my-views`, {
         headers: orgId ? { "x-org-id": orgId } : {},
-      });
-      const data: ApiSuccess<PortalView[]> = await res.json();
-      if (!data.ok) throw new Error((data as unknown as { error: { message: string } }).error?.message);
-      return data.data;
-    },
+      }),
   });
 }
 
@@ -62,16 +49,11 @@ export function useMyViews(orgId: string | undefined) {
 export function useAttachView(roleId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (viewId: number) => {
-      const res = await fetch(`${BASE}/roles/${roleId}/views`, {
+    mutationFn: (viewId: number) =>
+      apiFetch<RoleViewAssignment>(`${BASE}/roles/${roleId}/views`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ view_id: viewId }),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error?.message ?? "Failed to attach view");
-      return data.data as RoleViewAssignment;
-    },
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: portalViewsKeys.roleViews(roleId) });
     },
@@ -82,15 +64,10 @@ export function useAttachView(roleId: string) {
 export function useDetachView(roleId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (viewId: number) => {
-      const res = await fetch(`${BASE}/roles/${roleId}/views/${viewId}`, {
+    mutationFn: (viewId: number) =>
+      apiFetch<void>(`${BASE}/roles/${roleId}/views/${viewId}`, {
         method: "DELETE",
-      });
-      if (res.status !== 204) {
-        const data = await res.json();
-        throw new Error(data.error?.message ?? "Failed to detach view");
-      }
-    },
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: portalViewsKeys.roleViews(roleId) });
     },

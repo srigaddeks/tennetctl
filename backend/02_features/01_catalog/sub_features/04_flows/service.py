@@ -11,7 +11,61 @@ from .version_publish import freeze_draft as freeze_draft_tx
 
 _id = import_module("backend.01_core.id")
 _resp = import_module("backend.01_core.response")
-_audit = import_module("backend.02_features.04_audit.sub_features.01_events.service")
+_catalog = import_module("backend.01_catalog")
+_catalog_ctx = import_module("backend.01_catalog.context")
+
+_AUDIT_NODE_KEY = "audit.events.emit"
+
+
+class _AuditShim:
+    """Shim emit_audit(...) → run_node('audit.events.emit', ...).
+
+    The audit feature exposes the emit path as a node, not a service
+    function. Earlier code in this file imported `01_events.service` and
+    called `emit_audit(...)` which never existed — calls would raise
+    AttributeError at the first mutation. The shim preserves the existing
+    call sites (six of them in this module + routes.py) while routing
+    through the canonical node runner.
+    """
+
+    @staticmethod
+    async def emit_audit(
+        conn: Any,
+        *,
+        category: str,
+        event_key: str,
+        user_id: str | None = None,
+        session_id: str | None = None,
+        org_id: str | None = None,
+        workspace_id: str | None = None,
+        target_id: str | None = None,
+        metadata: dict | None = None,
+        outcome: str = "success",
+    ) -> None:
+        ctx = _catalog_ctx.NodeContext(
+            user_id=user_id,
+            session_id=session_id,
+            org_id=org_id,
+            workspace_id=workspace_id,
+            audit_category=category,
+            trace_id=_id.uuid7(),
+            span_id=_id.uuid7(),
+            request_id=_id.uuid7(),
+            conn=conn,
+        )
+        payload = {
+            "event_key": event_key,
+            "outcome": outcome,
+            "metadata": dict(metadata or {}, **({"target_id": target_id} if target_id else {})),
+        }
+        try:
+            await _catalog.run_node(None, _AUDIT_NODE_KEY, ctx, payload)
+        except Exception:  # noqa: BLE001
+            # Best-effort: never let audit failure break the underlying flow op.
+            pass
+
+
+_audit = _AuditShim()
 
 
 async def create_flow(

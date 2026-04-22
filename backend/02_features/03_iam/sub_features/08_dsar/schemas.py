@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 from enum import Enum
@@ -28,6 +28,8 @@ class DsarDeleteRequest(BaseModel):
 
 
 class DsarJobResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     job_id: UUID
     job_type: DsarJobType
     actor_user_id: UUID
@@ -40,9 +42,6 @@ class DsarJobResponse(BaseModel):
     created_at: datetime
     completed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-
 
 class DsarExportData(BaseModel):
     """Shape of exported user data (JSON format)"""
@@ -53,3 +52,13 @@ class DsarExportData(BaseModel):
     sessions: list[dict]
     audit_events: list[dict]
     notification_subscriptions: list[dict]
+
+
+class DsarPayloadCreated(BaseModel):
+    """Internal-only handoff between service and repository after encrypting a payload.
+    Never surfaced on the API — ciphertext must not leak outside the backend.
+    """
+    payload_id: UUID
+    job_id: UUID
+    dek_version: int
+    byte_size: int

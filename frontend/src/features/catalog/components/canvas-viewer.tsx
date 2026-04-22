@@ -5,16 +5,20 @@
 
 "use client";
 
-import ReactFlow, {
+import "@xyflow/react/dist/style.css";
+import {
+  ReactFlow,
   Controls,
   Background,
   MiniMap,
   useNodesState,
   useEdgesState,
-} from "react-flow-renderer";
+} from "@xyflow/react";
+import type { Node, Edge } from "@xyflow/react";
 import { useMemo, useCallback } from "react";
 import type { CanvasPayload } from "@/types/api";
 import { toReactFlow } from "../lib/canvas-transform";
+import type { TennetNodeData, TennetEdgeData } from "../lib/canvas-transform";
 import { CanvasNodeComponent } from "./canvas-node";
 import { CanvasEdgeComponent } from "./canvas-edge";
 
@@ -32,8 +36,8 @@ export function CanvasViewer({ payload }: { payload: CanvasPayload }) {
     return toReactFlow(payload, payload.trace);
   }, [payload]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(rfNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(rfEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<TennetNodeData>>(rfNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge<TennetEdgeData>>(rfEdges);
 
   // Update when payload changes
   useMemo(() => {

@@ -2258,19 +2258,6 @@ export type EdgeKind =
   | "true_branch"
   | "false_branch";
 
-/** Port type system for typed edges */
-export type PortType =
-  | "any"
-  | "string"
-  | "number"
-  | "boolean"
-  | "object"
-  | "array"
-  | "uuid"
-  | "datetime"
-  | "binary"
-  | "error";
-
 /** Node instance within a flow version (output model) */
 export type NodeInstance = {
   id: string;

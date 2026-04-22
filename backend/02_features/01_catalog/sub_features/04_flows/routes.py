@@ -8,6 +8,11 @@ from . import repository as repo
 from . import service
 from .schemas import FlowCreate, FlowUpdate
 
+# Reuse the audit shim defined in service.py — see FIX-28 for why this is
+# routed through a shim rather than calling _events.service.emit_audit
+# (which never existed and would have raised AttributeError).
+_audit = service._audit
+
 router = APIRouter(prefix="/v1/flows", tags=["flows"])
 
 
@@ -94,10 +99,6 @@ async def delete_flow(request: Request, id: str) -> dict[str, Any]:
 
     await repo.soft_delete(ctx.conn, id, ctx.user_id)
 
-    # Emit audit
-    _audit = __import__("importlib").import_module(
-        "backend.02_features.04_audit.sub_features.01_events.service"
-    )
     await _audit.emit_audit(
         ctx.conn,
         category="product",

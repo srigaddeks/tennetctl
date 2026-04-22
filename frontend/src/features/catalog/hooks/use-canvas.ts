@@ -33,12 +33,13 @@ export function useCanvas(
     },
     enabled: !!flowId && !!versionId,
     staleTime: traceId ? 0 : 60_000,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Poll every 2s while trace is active and not finished
+      const payload = query.state.data;
       if (
-        !data ||
-        !data.trace ||
-        data.trace.finished_at !== null ||
+        !payload ||
+        !payload.trace ||
+        payload.trace.finished_at !== null ||
         !traceId
       ) {
         return false;

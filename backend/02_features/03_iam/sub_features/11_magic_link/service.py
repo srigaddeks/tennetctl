@@ -38,6 +38,9 @@ _users_repo: Any = import_module(
 _sessions_service: Any = import_module(
     "backend.02_features.03_iam.sub_features.09_sessions.service"
 )
+_authz: Any = import_module(
+    "backend.02_features.03_iam.sub_features.29_authz_gates.authz_helpers"
+)
 
 _SIGNING_KEY_VAULT_KEY = "iam.magic_link_signing_key"
 _RATE_LIMIT_COUNT = 3
@@ -240,6 +243,13 @@ async def consume_magic_link(
     user = await _users_repo.get_by_id(conn, row["user_id"])
     if user is None:
         raise _errors.AppError("USER_NOT_FOUND", "User account not found.", 404)
+
+    # Cross-org leak guard: if the caller supplies an org context, verify the
+    # token's owner is actually a member of that org before minting a session
+    # scoped to it. A valid token for user A must not grant access to an org
+    # that user A does not belong to.
+    if ctx.org_id:
+        await _authz.require_org_member_or_raise(conn, row["user_id"], ctx.org_id)
 
     session_token, session = await _sessions_service.mint_session(
         conn,

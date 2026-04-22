@@ -150,6 +150,15 @@ async def request_otp(
     except Exception:
         pass
 
+    await _catalog.run_node(
+        pool, _AUDIT_NODE_KEY, ctx,
+        {
+            "event_key": "iam.otp.email.requested",
+            "outcome": "success",
+            "metadata": {"email": email, "user_id": user_id},
+        },
+    )
+
 
 async def verify_otp(
     pool: Any, conn: Any, ctx: Any,

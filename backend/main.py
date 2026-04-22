@@ -189,6 +189,36 @@ async def lifespan(application: FastAPI):
         )
         logger.info("GDPR worker started.")
 
+    # DSAR worker — operator-triggered SAR/RTBF jobs. Distinct from GDPR
+    # (self-service). Polls evt_dsar_jobs for status=requested every 60 s.
+    _dsar_worker_task = None
+    if "iam" in config.modules:
+        import asyncio as _asyncio_dsar
+        _iam_dsar_svc = import_module(
+            "backend.02_features.03_iam.sub_features.08_dsar.service"
+        )
+
+        async def _dsar_worker_loop(_pool: object) -> None:
+            _wlog = logging.getLogger("tennetctl.iam.dsar.worker")
+            _vault = getattr(app.state, "vault", None)
+            while True:
+                try:
+                    await _iam_dsar_svc.run_pending_dsar_exports(_pool, _vault)
+                except _asyncio_dsar.CancelledError:
+                    raise
+                except Exception:
+                    _wlog.exception("DSAR export worker tick failed")
+                try:
+                    await _iam_dsar_svc.run_pending_dsar_deletes(_pool)
+                except _asyncio_dsar.CancelledError:
+                    raise
+                except Exception:
+                    _wlog.exception("DSAR delete worker tick failed")
+                await _asyncio_dsar.sleep(60)
+
+        _dsar_worker_task = _asyncio_dsar.create_task(_dsar_worker_loop(pool))
+        logger.info("DSAR worker started.")
+
     # IAM active-sessions gauge — emitted every 30 s as best-effort background task.
     _iam_gauge_task = None
     if "iam" in config.modules:
@@ -288,6 +318,12 @@ async def lifespan(application: FastAPI):
         import asyncio as _asyncio_gdpr2
         await _asyncio_gdpr2.gather(_gdpr_worker_task, return_exceptions=True)
         logger.info("GDPR worker stopped.")
+
+    if _dsar_worker_task is not None:
+        _dsar_worker_task.cancel()
+        import asyncio as _asyncio_dsar2
+        await _asyncio_dsar2.gather(_dsar_worker_task, return_exceptions=True)
+        logger.info("DSAR worker stopped.")
 
     if _iam_gauge_task is not None:
         _iam_gauge_task.cancel()

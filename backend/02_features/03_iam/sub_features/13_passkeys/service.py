@@ -25,6 +25,7 @@ from webauthn.helpers.structs import (
 
 _errors: Any = import_module("backend.01_core.errors")
 _core_id: Any = import_module("backend.01_core.id")
+_catalog: Any = import_module("backend.01_catalog")
 _repo: Any = import_module(
     "backend.02_features.03_iam.sub_features.13_passkeys.repository"
 )
@@ -34,8 +35,27 @@ _users_repo: Any = import_module(
 _sessions_service: Any = import_module(
     "backend.02_features.03_iam.sub_features.09_sessions.service"
 )
+_authz: Any = import_module(
+    "backend.02_features.03_iam.sub_features.29_authz_gates.authz_helpers"
+)
 
+_AUDIT_NODE_KEY = "audit.events.emit"
 _CHALLENGE_TTL_SECONDS = 300  # 5 min
+
+
+async def _emit_audit(
+    pool: Any | None, ctx: Any | None, *, event_key: str, metadata: dict
+) -> None:
+    """Best-effort audit emit. Skips silently if pool/ctx not provided."""
+    if pool is None or ctx is None:
+        return
+    try:
+        await _catalog.run_node(
+            pool, _AUDIT_NODE_KEY, ctx,
+            {"event_key": event_key, "outcome": "success", "metadata": metadata},
+        )
+    except Exception:
+        pass
 
 
 def _rp_id() -> str:
@@ -120,6 +140,8 @@ async def register_complete(
     credential_json: str,
     device_name: str = "Passkey",
     vault_client: Any,
+    pool: Any = None,
+    ctx: Any = None,
 ) -> dict:
     """Verify registration response and store credential."""
     challenge_row = await _repo.get_challenge(conn, challenge_id, "registration")
@@ -152,6 +174,16 @@ async def register_complete(
         aaguid=str(verified.aaguid) if verified.aaguid else "",
         sign_count=verified.sign_count,
         device_name=device_name,
+    )
+
+    await _emit_audit(
+        pool, ctx,
+        event_key="iam.passkeys.registered",
+        metadata={
+            "credential_id": cred["id"],
+            "user_id": user_id,
+            "device_name": cred["device_name"],
+        },
     )
 
     return {"id": cred["id"], "device_name": cred["device_name"]}
@@ -211,6 +243,8 @@ async def auth_complete(
     credential_json: str,
     vault_client: Any,
     org_id: str | None,
+    pool: Any = None,
+    ctx: Any = None,
 ) -> tuple[str, dict, dict]:
     """Verify authentication assertion; mint session."""
     challenge_row = await _repo.get_challenge(conn, challenge_id, "authentication")
@@ -247,9 +281,24 @@ async def auth_complete(
     if user is None:
         raise _errors.AppError("USER_NOT_FOUND", "User not found.", 404)
 
+    # Cross-org leak guard: if a target org is requested, the authenticated
+    # passkey owner must be a member of that org before the session is scoped to it.
+    if org_id:
+        await _authz.require_org_member_or_raise(conn, stored["user_id"], org_id)
+
     session_token, session = await _sessions_service.mint_session(
         conn, vault_client=vault_client, user_id=stored["user_id"], org_id=org_id,
     )
+
+    await _emit_audit(
+        pool, ctx,
+        event_key="iam.passkeys.authenticated",
+        metadata={
+            "credential_id": stored["id"],
+            "user_id": stored["user_id"],
+        },
+    )
+
     return session_token, user, session
 
 
@@ -259,9 +308,17 @@ async def list_credentials(conn: Any, *, user_id: str) -> list[dict]:
     return await _repo.list_credentials(conn, user_id)
 
 
-async def delete_credential(conn: Any, *, cred_id: str, user_id: str) -> None:
+async def delete_credential(
+    conn: Any, *, cred_id: str, user_id: str,
+    pool: Any = None, ctx: Any = None,
+) -> None:
     existing = await _repo.get_credentials_for_user(conn, user_id)
     target = next((c for c in existing if c["id"] == cred_id), None)
     if target is None:
         raise _errors.AppError("NOT_FOUND", "Passkey not found.", 404)
     await _repo.delete_credential(conn, cred_id, user_id)
+    await _emit_audit(
+        pool, ctx,
+        event_key="iam.passkeys.deleted",
+        metadata={"credential_id": cred_id, "user_id": user_id},
+    )

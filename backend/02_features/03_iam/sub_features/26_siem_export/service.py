@@ -57,6 +57,14 @@ async def update_destination(
     )
     if dest is None:
         raise _errors.NotFoundError(f"SIEM destination {dest_id!r} not found")
+    changed = sorted(
+        k for k, v in (
+            ("label", label), ("config_jsonb", config_jsonb), ("is_active", is_active),
+        ) if v is not None
+    )
+    await _emit(pool, ctx, "iam.siem.destination_updated", {
+        "org_id": org_id, "dest_id": dest_id, "changed": changed,
+    })
     return dest
 
 

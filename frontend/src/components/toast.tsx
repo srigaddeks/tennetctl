@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 import { cn } from "@/lib/cn";
+import { registerToastFn, unregisterToastFn } from "@/lib/toast-bus";
 
 type ToastKind = "success" | "error" | "info" | "warning";
 type Toast = { id: string; kind: ToastKind; message: string };
@@ -24,6 +25,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const dismiss = useCallback((id: string) => {
     setToasts((t) => t.filter((x) => x.id !== id));
   }, []);
+
+  useEffect(() => {
+    registerToastFn(toast);
+    return () => unregisterToastFn();
+  }, [toast]);
 
   useEffect(() => {
     if (toasts.length === 0) return;

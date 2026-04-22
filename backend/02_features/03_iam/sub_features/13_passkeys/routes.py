@@ -87,14 +87,18 @@ async def register_complete(body: PasskeyRegisterCompleteRequest, request: Reque
     user_id = _require_auth(request)
     vault = _vault(request)
     pool = request.app.state.pool
+    ctx_base = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         async with conn.transaction():
+            ctx = replace(ctx_base, conn=conn)
             result = await _service.register_complete(
                 conn,
                 user_id=user_id,
                 challenge_id=body.challenge_id,
                 credential_json=body.credential_json,
                 vault_client=vault,
+                pool=pool,
+                ctx=ctx,
             )
     return _response.success_response(result, status_code=201)
 
@@ -121,6 +125,8 @@ async def auth_complete(body: PasskeyAuthCompleteRequest, request: Request) -> R
                 credential_json=body.credential_json,
                 vault_client=vault,
                 org_id=ctx.org_id,
+                pool=pool,
+                ctx=ctx,
             )
     user_clean = _users_schemas.UserRead(**user).model_dump()
     session_clean = _auth_schemas.SessionMeta(**session).model_dump()
@@ -150,7 +156,12 @@ async def list_passkeys(request: Request) -> dict:
 async def delete_passkey(cred_id: str, request: Request) -> Response:
     user_id = _require_auth(request)
     pool = request.app.state.pool
+    ctx_base = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         async with conn.transaction():
-            await _service.delete_credential(conn, cred_id=cred_id, user_id=user_id)
+            ctx = replace(ctx_base, conn=conn)
+            await _service.delete_credential(
+                conn, cred_id=cred_id, user_id=user_id,
+                pool=pool, ctx=ctx,
+            )
     return Response(status_code=204)
