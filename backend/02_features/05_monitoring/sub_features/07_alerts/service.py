@@ -120,6 +120,7 @@ async def update_rule(
     labels: dict[str, Any] | None = None,
     is_active: bool | None = None,
     paused_until: datetime | None = None,
+    clear_paused_until: bool = False,
 ) -> dict[str, Any] | None:
     existing = await _repo.get_rule(conn, rule_id=rule_id, org_id=org_id)
     if existing is None:
@@ -141,6 +142,7 @@ async def update_rule(
         name=name, description=description, dsl=dsl, condition=condition,
         severity_id=sev_id, notify_template_key=notify_template_key,
         labels=labels, is_active=is_active, paused_until=paused_until,
+        clear_paused_until=clear_paused_until,
     )
     changed = [
         k for k, v in {

@@ -35,8 +35,13 @@ _resp: Any = import_module("backend.01_core.response")
 _core_id: Any = import_module("backend.01_core.id")
 _catalog_ctx: Any = import_module("backend.01_catalog.context")
 _dsl: Any = import_module("backend.02_features.05_monitoring.query_dsl")
+_rate: Any = import_module("backend.01_core.rate_limit")
 
 router = APIRouter(prefix="/v1/monitoring", tags=["monitoring.logs"])
+
+# Per-source token bucket for OTLP intake. Sized for busy agents while still
+# shedding runaway producers: 200 requests/sec steady-state, 400 req burst.
+_otlp_logs_limiter = _rate.TokenBucketLimiter(capacity=400.0, refill_per_sec=200.0)
 
 
 def _build_response(rejected: int, content_type: str) -> Response:
@@ -80,6 +85,9 @@ async def otlp_logs(
 ) -> Response:
     """OTLP/HTTP logs ingest endpoint."""
     _check_auth(authorization)
+    key = _rate.client_key(request, prefix="otlp.logs")
+    if not await _otlp_logs_limiter.acquire(key):
+        raise HTTPException(status_code=429, detail="rate_limited")
     body = await request.body()
     content_type = request.headers.get("content-type", "application/x-protobuf")
 

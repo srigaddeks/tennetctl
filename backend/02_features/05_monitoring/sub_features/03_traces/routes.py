@@ -29,8 +29,12 @@ _resp: Any = import_module("backend.01_core.response")
 _core_id: Any = import_module("backend.01_core.id")
 _catalog_ctx: Any = import_module("backend.01_catalog.context")
 _dsl: Any = import_module("backend.02_features.05_monitoring.query_dsl")
+_rate: Any = import_module("backend.01_core.rate_limit")
 
 router = APIRouter(prefix="/v1/monitoring", tags=["monitoring.traces"])
+
+# Traces are spikier than logs at trace-emit time. Allow a larger burst.
+_otlp_traces_limiter = _rate.TokenBucketLimiter(capacity=600.0, refill_per_sec=300.0)
 
 
 def _build_response(rejected: int, content_type: str) -> Response:
@@ -67,6 +71,9 @@ async def otlp_traces(
     authorization: str | None = Header(default=None),
 ) -> Response:
     _check_auth(authorization)
+    key = _rate.client_key(request, prefix="otlp.traces")
+    if not await _otlp_traces_limiter.acquire(key):
+        raise HTTPException(status_code=429, detail="rate_limited")
     body = await request.body()
     content_type = request.headers.get("content-type", "application/x-protobuf")
 

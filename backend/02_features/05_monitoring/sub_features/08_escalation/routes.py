@@ -260,8 +260,11 @@ async def oncall_whoami(
 
 
 # ─ Alert Acknowledgment ─────────────────────────────────────────────────
+# PATCH /v1/monitoring/alerts/{alert_id} with body {"ack": true, "note": "..."}
+# is the canonical way to acknowledge an alert (per PATCH-handles-state-changes).
+# The path identifies the alert; the body describes the state transition.
 
-@router.post("/alerts/{alert_id}/ack", status_code=200)
+@router.patch("/alerts/{alert_id}", status_code=200)
 async def ack_alert(
     alert_id: str,
     req: schemas.AlertAckRequest,
@@ -269,8 +272,17 @@ async def ack_alert(
     current_org_id: str = Depends(_auth.require_org),
     conn: Any = Depends(_db.get_connection),
 ) -> dict[str, Any]:
-    """Acknowledge an alert, short-circuiting escalation."""
+    """Acknowledge an alert, short-circuiting escalation.
+
+    Body: `{"ack": true, "note": "..."}`. Only ack=true is supported today;
+    un-ack is intentionally not modelled since `evt_` rows are append-only.
+    """
     try:
+        if not getattr(req, "ack", True):
+            raise HTTPException(
+                status_code=422,
+                detail={"code": "UNSUPPORTED_OPERATION", "message": "only ack=true is supported"},
+            )
         # Fetch alert
         alert = await conn.fetchrow(
             '''SELECT * FROM "05_monitoring"."60_evt_monitoring_alert_events"

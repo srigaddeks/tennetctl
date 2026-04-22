@@ -146,6 +146,7 @@ async def update_alert_rule_route(
             labels=body.labels,
             is_active=body.is_active,
             paused_until=_naive(body.paused_until) if body.paused_until else None,
+            clear_paused_until=bool(body.clear_paused_until),
         )
     if row is None:
         raise _errors.NotFoundError(f"alert rule {id!r} not found")
@@ -170,38 +171,10 @@ async def delete_alert_rule_route(request: Request, id: str) -> Response:
     return Response(status_code=204)
 
 
-@router.post("/v1/monitoring/alert-rules/{id}/pause", status_code=200)
-async def pause_alert_rule_route(
-    request: Request, id: str, body: AlertRulePauseRequest,
-) -> dict:
-    pool = request.app.state.pool
-    org_id, _user = _scope(request)
-    ctx_base = _build_ctx(request)
-    async with pool.acquire() as conn:
-        ctx = replace(ctx_base, conn=conn)
-        row = await _service.pause_rule(
-            pool, conn, ctx,
-            org_id=org_id, rule_id=id,
-            paused_until=_naive(body.paused_until),
-        )
-    if row is None:
-        raise _errors.NotFoundError(f"alert rule {id!r} not found")
-    return _resp.success(AlertRuleResponse.from_row(row).model_dump(mode="json"))
-
-
-@router.post("/v1/monitoring/alert-rules/{id}/unpause", status_code=200)
-async def unpause_alert_rule_route(request: Request, id: str) -> dict:
-    pool = request.app.state.pool
-    org_id, _user = _scope(request)
-    ctx_base = _build_ctx(request)
-    async with pool.acquire() as conn:
-        ctx = replace(ctx_base, conn=conn)
-        row = await _service.unpause_rule(
-            pool, conn, ctx, org_id=org_id, rule_id=id,
-        )
-    if row is None:
-        raise _errors.NotFoundError(f"alert rule {id!r} not found")
-    return _resp.success(AlertRuleResponse.from_row(row).model_dump(mode="json"))
+# NOTE: `POST /alert-rules/{id}/pause` and `/unpause` were removed per the
+# PATCH-handles-all-state-changes rule. Clients should send:
+#   PATCH /v1/monitoring/alert-rules/{id}  body: {"paused_until": "..."}        # pause
+#   PATCH /v1/monitoring/alert-rules/{id}  body: {"clear_paused_until": true}   # unpause
 
 
 # ── Silence routes ────────────────────────────────────────────────────

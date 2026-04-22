@@ -48,6 +48,7 @@ class AlertRuleUpdateRequest(BaseModel):
     labels: dict[str, str] | None = None
     is_active: bool | None = None
     paused_until: datetime | None = None
+    clear_paused_until: bool | None = None
 
 
 class AlertRulePauseRequest(BaseModel):

@@ -181,7 +181,8 @@ class OncallWhoamiResponse(BaseModel):
 
 
 class AlertAckRequest(BaseModel):
-    """Acknowledge an alert."""
+    """PATCH body for acknowledging an alert."""
     model_config = ConfigDict(extra="forbid")
 
+    ack: bool = True
     note: str | None = Field(default=None, max_length=1000)
