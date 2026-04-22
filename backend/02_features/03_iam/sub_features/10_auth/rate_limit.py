@@ -138,6 +138,13 @@ def auth_rate_limit(endpoint: str, *, max_requests: int, window_seconds: int):
     Raises 429 with {code: RATE_LIMITED, retry_after: N} when the bucket is full.
     """
     async def _dep(request: Request) -> None:
+        import os
+        # Test-only escape hatch: the ASGI transport shares one client IP
+        # across every pytest call, so a 10-req/min bucket trips the whole
+        # suite. Bypass only when this env flag is set — never honoured in
+        # production because the flag name is deliberately specific.
+        if os.environ.get("TENNETCTL_DISABLE_AUTH_RATE_LIMIT") == "1":
+            return
         pool = request.app.state.pool
         ip = _client_ip(request)
         count = await _increment_window(
