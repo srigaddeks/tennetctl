@@ -15,20 +15,26 @@ router = APIRouter(prefix="/v1/flows", tags=["flows"])
 
 
 def _scope(request: Request) -> tuple[str, str, str | None, str | None]:
-    """Return (org_id, user_id, session_id, workspace_id) from request.state.
+    """Return (org_id, user_id, session_id, workspace_id).
 
-    Raises 401 if org_id or user_id aren't populated (no auth).
+    Pulls from request.state (set by SessionMiddleware). Falls back to
+    the x-workspace-id header when the session itself has no workspace
+    (common when the user hasn't picked a default yet).
     """
     state = request.state
     org_id = getattr(state, "org_id", None)
     user_id = getattr(state, "user_id", None)
     if not org_id or not user_id:
         raise HTTPException(status_code=401, detail={"code": "UNAUTHORIZED"})
+    workspace_id = (
+        getattr(state, "workspace_id", None)
+        or request.headers.get("x-workspace-id")
+    )
     return (
         org_id,
         user_id,
         getattr(state, "session_id", None),
-        getattr(state, "workspace_id", None),
+        workspace_id,
     )
 
 
@@ -61,7 +67,19 @@ async def create_flow(request: Request, body: FlowCreate) -> dict[str, Any]:
         result = await service.create_flow(
             conn, org_id, workspace_id, body, user_id, session_id or "",
         )
-    return {"ok": True, "data": result}
+    return {"ok": True, "data": _serialize(result)}
+
+
+def _serialize(obj: Any) -> Any:
+    """Recursively convert asyncpg Records / dicts to plain JSON-safe values."""
+    import asyncpg
+    if isinstance(obj, asyncpg.Record):
+        return {k: _serialize(obj[k]) for k in obj.keys()}
+    if isinstance(obj, dict):
+        return {k: _serialize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_serialize(v) for v in obj]
+    return obj
 
 
 @router.get("/{id}")
@@ -73,7 +91,7 @@ async def get_flow(request: Request, id: str) -> dict[str, Any]:
         flow = await repo.get_flow(conn, id)
     if not flow:
         raise HTTPException(status_code=404, detail="Flow not found")
-    return {"ok": True, "data": {"flow": dict(flow)}}
+    return {"ok": True, "data": {"flow": _serialize(flow)}}
 
 
 @router.patch("/{id}")
@@ -88,7 +106,7 @@ async def update_flow(request: Request, id: str, body: FlowUpdate) -> dict[str, 
         )
     if isinstance(result, dict) and result.get("ok") is False:
         raise HTTPException(status_code=422, detail=result)
-    return {"ok": True, "data": result}
+    return {"ok": True, "data": _serialize(result)}
 
 
 @router.delete("/{id}")
@@ -150,4 +168,4 @@ async def update_version_dag(
     if isinstance(result, dict) and result.get("ok") is False:
         status_code = 409 if result.get("code") == "VERSION_FROZEN" else 422
         raise HTTPException(status_code=status_code, detail=result)
-    return {"ok": True, "data": result}
+    return {"ok": True, "data": _serialize(result)}
