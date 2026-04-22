@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "05_monitoring"."63_evt_monitoring_dashboard_share_ev
     viewer_ua           TEXT NULL,
     payload             JSONB DEFAULT '{}'::jsonb,
     occurred_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT pk_evt_monitoring_dashboard_share_events PRIMARY KEY (id),
+    CONSTRAINT pk_evt_monitoring_dashboard_share_events PRIMARY KEY (id, occurred_at),
     CONSTRAINT fk_evt_monitoring_dashboard_share_events_share
         FOREIGN KEY (share_id)
         REFERENCES "05_monitoring"."12_fct_monitoring_dashboard_shares"(id),
@@ -62,10 +62,13 @@ COMMENT ON COLUMN "05_monitoring"."63_evt_monitoring_dashboard_share_events".occ
 CREATE INDEX idx_evt_monitoring_dashboard_share_events_share_time
     ON "05_monitoring"."63_evt_monitoring_dashboard_share_events" (share_id, occurred_at DESC);
 
--- Index for brute-force detector (viewer_ip, occurred_at for 10-minute window scans)
+-- Index for brute-force detector (viewer_ip, occurred_at for 10-minute window scans).
+-- kind_id = 7 is the passphrase_failed row seeded below in this same migration.
+-- Postgres disallows subqueries in partial-index predicates, so the id is
+-- inlined; if the seed order ever changes, update this constant too.
 CREATE INDEX idx_evt_monitoring_dashboard_share_events_viewer_ip
     ON "05_monitoring"."63_evt_monitoring_dashboard_share_events" (viewer_ip, occurred_at DESC)
-    WHERE kind_id = (SELECT id FROM "05_monitoring"."02_dim_monitoring_dashboard_share_event_kind" WHERE code = 'passphrase_failed');
+    WHERE kind_id = 7;
 
 -- Seed initial dimension records for share scopes
 INSERT INTO "05_monitoring"."01_dim_monitoring_dashboard_share_scope" (id, code, label, description, deprecated_at)

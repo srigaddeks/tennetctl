@@ -2,7 +2,7 @@
 -- UP ====
 
 CREATE TABLE "05_monitoring"."60_evt_monitoring_slo_evaluations" (
-  id                VARCHAR(36) PRIMARY KEY,
+  id                VARCHAR(36) NOT NULL,
   slo_id            VARCHAR(36) NOT NULL REFERENCES "05_monitoring"."10_fct_monitoring_slos"(id),
   org_id            VARCHAR(36) NOT NULL,
   window_start      TIMESTAMP NOT NULL,
@@ -15,7 +15,8 @@ CREATE TABLE "05_monitoring"."60_evt_monitoring_slo_evaluations" (
   burn_rate_6h      NUMERIC NOT NULL,
   burn_rate_24h     NUMERIC NOT NULL,
   burn_rate_3d      NUMERIC NOT NULL,
-  evaluated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  evaluated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id, evaluated_at)
 ) PARTITION BY RANGE (evaluated_at);
 
 COMMENT ON TABLE "05_monitoring"."60_evt_monitoring_slo_evaluations" IS
