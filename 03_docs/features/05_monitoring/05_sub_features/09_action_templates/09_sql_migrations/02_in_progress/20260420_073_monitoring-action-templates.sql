@@ -81,35 +81,10 @@ INSERT INTO "05_monitoring"."02_dim_escalation_step_kind" (id, code, label, desc
     VALUES (6, 'notify_action', 'Notify Action', 'Dispatch a named action template (webhook/email/Slack).')
     ON CONFLICT (id) DO NOTHING;
 
--- ── View for action templates ───────────────────────────────────────────────────
-CREATE VIEW "05_monitoring".v_monitoring_action_templates AS
-SELECT t.id, t.org_id, t.name, t.description,
-       t.kind_id, k.code AS kind_code, k.label AS kind_label,
-       t.target_url, t.target_address, t.body_template, t.headers_template,
-       t.signing_secret_vault_ref, t.retry_policy, t.is_active,
-       t.deleted_at, t.created_at, t.updated_at,
-       (t.deleted_at IS NOT NULL) AS is_deleted,
-       -- 24h success rate (derived from evt_monitoring_action_deliveries)
-       COALESCE(ROUND(
-           100.0 * (SELECT COUNT(*) FROM "05_monitoring"."65_evt_monitoring_action_deliveries"
-                     WHERE template_id = t.id
-                     AND started_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours'
-                     AND succeeded_at IS NOT NULL)
-           / NULLIF(
-               (SELECT COUNT(*) FROM "05_monitoring"."65_evt_monitoring_action_deliveries"
-                WHERE template_id = t.id
-                AND started_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours'),
-               0)
-       , 2), 0) AS success_rate_24h,
-       (SELECT MAX(completed_at) FROM "05_monitoring"."65_evt_monitoring_action_deliveries"
-        WHERE template_id = t.id AND succeeded_at IS NOT NULL) AS last_delivered_at
-  FROM "05_monitoring"."14_fct_monitoring_action_templates" t
-  JOIN "05_monitoring"."03_dim_monitoring_action_kind" k ON k.id = t.kind_id
- WHERE t.deleted_at IS NULL;
-COMMENT ON VIEW "05_monitoring".v_monitoring_action_templates IS 'Active action templates with kind label and 24h success rate.';
+-- View for action templates is created in 074 (depends on the deliveries evt
+-- table created there — this migration can't forward-ref it).
 
 -- DOWN ====
-DROP VIEW  IF EXISTS "05_monitoring".v_monitoring_action_templates;
 ALTER TABLE "05_monitoring"."12_fct_monitoring_alert_rules"
     DROP COLUMN IF EXISTS action_template_ids;
 DELETE FROM "05_monitoring"."02_dim_escalation_step_kind" WHERE id = 6;

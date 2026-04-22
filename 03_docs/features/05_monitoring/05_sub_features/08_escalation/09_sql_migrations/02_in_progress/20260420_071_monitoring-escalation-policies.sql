@@ -86,7 +86,9 @@ CREATE TABLE IF NOT EXISTS "05_monitoring"."20_dtl_monitoring_alert_escalation_s
     ack_at           TIMESTAMP,
     exhausted_at     TIMESTAMP,
     CONSTRAINT pk_dtl_monitoring_alert_escalation_state PRIMARY KEY (alert_event_id),
-    CONSTRAINT fk_dtl_monitoring_alert_escalation_state_alert_event FOREIGN KEY (alert_event_id) REFERENCES "05_monitoring"."60_evt_monitoring_alert_events"(id),
+    -- No FK to 60_evt_monitoring_alert_events: the evt table is partitioned on
+    -- started_at so its uniqueness is (id, started_at) — a single-column FK
+    -- cannot target it. evt_* tables are not FK targets per project convention.
     CONSTRAINT fk_dtl_monitoring_alert_escalation_state_policy FOREIGN KEY (policy_id) REFERENCES "05_monitoring"."10_fct_monitoring_escalation_policies"(id),
     CONSTRAINT fk_dtl_monitoring_alert_escalation_state_ack_user FOREIGN KEY (ack_user_id) REFERENCES "03_iam"."12_fct_users"(id)
 );
@@ -104,9 +106,9 @@ CREATE INDEX idx_dtl_monitoring_alert_escalation_state_policy ON "05_monitoring"
 
 -- ── Add escalation_policy_id FK to alert rules ──────────────────────────
 
-ALTER TABLE "05_monitoring"."10_fct_monitoring_alert_rules"
+ALTER TABLE "05_monitoring"."12_fct_monitoring_alert_rules"
     ADD COLUMN escalation_policy_id VARCHAR(36) REFERENCES "05_monitoring"."10_fct_monitoring_escalation_policies"(id);
-COMMENT ON COLUMN "05_monitoring"."10_fct_monitoring_alert_rules".escalation_policy_id IS 'Optional FK to escalation policy. If set, overrides notify_template_key single-recipient behavior. If NULL, uses legacy notify_template_key for backward compatibility.';
+COMMENT ON COLUMN "05_monitoring"."12_fct_monitoring_alert_rules".escalation_policy_id IS 'Optional FK to escalation policy. If set, overrides notify_template_key single-recipient behavior. If NULL, uses legacy notify_template_key for backward compatibility.';
 
 -- ── Read-model view for escalation policies ─────────────────────────────
 
@@ -144,7 +146,7 @@ COMMENT ON VIEW "05_monitoring"."v_monitoring_escalation_policies" IS 'Read-mode
 
 -- DOWN ====
 DROP VIEW IF EXISTS "05_monitoring"."v_monitoring_escalation_policies";
-ALTER TABLE "05_monitoring"."10_fct_monitoring_alert_rules"
+ALTER TABLE "05_monitoring"."12_fct_monitoring_alert_rules"
     DROP COLUMN IF EXISTS escalation_policy_id;
 DROP TABLE IF EXISTS "05_monitoring"."20_dtl_monitoring_alert_escalation_state";
 DROP TABLE IF EXISTS "05_monitoring"."40_lnk_monitoring_escalation_steps";

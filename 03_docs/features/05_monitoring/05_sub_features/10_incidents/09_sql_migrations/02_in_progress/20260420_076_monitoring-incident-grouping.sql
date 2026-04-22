@@ -32,16 +32,16 @@ CREATE INDEX "idx_dtl_escalation_state_incident" ON "05_monitoring"."20_dtl_moni
 COMMENT ON COLUMN "05_monitoring"."20_dtl_monitoring_alert_escalation_state".incident_id IS 'New: FK to incident (used when grouping enabled). Legacy rows with alert_event_id-only continue draining.';
 
 -- Back-compat: add incident_id FK to action deliveries table
-ALTER TABLE "05_monitoring"."40_lnk_monitoring_action_deliveries"
+ALTER TABLE "05_monitoring"."65_evt_monitoring_action_deliveries"
 ADD COLUMN incident_id VARCHAR(36) NULL REFERENCES "05_monitoring"."10_fct_monitoring_incidents"(id) ON DELETE CASCADE;
 
-CREATE INDEX "idx_lnk_action_deliveries_incident" ON "05_monitoring"."40_lnk_monitoring_action_deliveries"(incident_id) WHERE incident_id IS NOT NULL;
+CREATE INDEX "idx_lnk_action_deliveries_incident" ON "05_monitoring"."65_evt_monitoring_action_deliveries"(incident_id) WHERE incident_id IS NOT NULL;
 
-COMMENT ON COLUMN "05_monitoring"."40_lnk_monitoring_action_deliveries".incident_id IS 'New: FK to incident (used when actions dispatched on incident transitions). Legacy rows with alert_event_id-only continue draining.';
+COMMENT ON COLUMN "05_monitoring"."65_evt_monitoring_action_deliveries".incident_id IS 'New: FK to incident (used when actions dispatched on incident transitions). Legacy rows with alert_event_id-only continue draining.';
 
 -- DOWN ====
 DROP INDEX IF EXISTS "05_monitoring"."idx_lnk_action_deliveries_incident";
-ALTER TABLE "05_monitoring"."40_lnk_monitoring_action_deliveries"
+ALTER TABLE "05_monitoring"."65_evt_monitoring_action_deliveries"
 DROP COLUMN incident_id;
 
 DROP INDEX IF EXISTS "05_monitoring"."idx_dtl_escalation_state_incident";

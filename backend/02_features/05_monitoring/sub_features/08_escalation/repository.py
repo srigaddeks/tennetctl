@@ -177,7 +177,7 @@ async def soft_delete_escalation_policy(
 async def is_policy_in_use(conn: Any, policy_id: str) -> bool:
     """Check if policy is referenced by an active alert rule."""
     row = await conn.fetchrow(
-        '''SELECT COUNT(*) as cnt FROM "05_monitoring"."10_fct_monitoring_alert_rules"
+        '''SELECT COUNT(*) as cnt FROM "05_monitoring"."12_fct_monitoring_alert_rules"
            WHERE escalation_policy_id = $1 AND is_active = true AND deleted_at IS NULL''',
         policy_id,
     )

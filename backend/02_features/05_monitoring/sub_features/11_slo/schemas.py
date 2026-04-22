@@ -70,9 +70,10 @@ class SloCreateRequest(BaseModel):
     slug: str = Field(min_length=1, max_length=100, pattern=r"^[a-z0-9_-]+$")
     description: str = Field(default="", max_length=1000)
     indicator_kind: IndicatorKind
-    indicator: SloIndicatorRatio | SloIndicatorThreshold | SloIndicatorLatencyPct = Field(
-        discriminator="kind"  # Note: discriminator only for validation, actual union check done in service
-    )
+    # Union without a Pydantic discriminator: each variant lacks a literal `kind`
+    # field, and `indicator_kind` already carries the tag at the top level for
+    # the service to branch on.
+    indicator: SloIndicatorRatio | SloIndicatorThreshold | SloIndicatorLatencyPct
     window_kind: WindowKind
     target_pct: float = Field(gt=0, lt=100, description="Target attainment percentage")
     severity: str = Field(default="warning", description="Alert severity code")

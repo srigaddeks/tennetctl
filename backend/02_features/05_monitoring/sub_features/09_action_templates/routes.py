@@ -38,7 +38,7 @@ async def list_action_templates(
         service = ActionTemplateService(conn)
         rows = await service.repo.list_by_org(org_id, skip=skip, limit=limit, is_active=is_active)
     items = [dict(r) for r in rows]
-    return _response.ok(data={"templates": items, "total": len(items)})
+    return _response.success({"templates": items, "total": len(items)})
 
 
 @router.post("/action-templates", response_model=dict, status_code=status.HTTP_201_CREATED)
@@ -52,7 +52,7 @@ async def create_action_template(
     async with pool.acquire() as conn:
         service = ActionTemplateService(conn)
         row = await service.create(org_id, user_id, input_schema)
-    return _response.ok(data=dict(row) if row else {})
+    return _response.success(dict(row) if row else {})
 
 
 @router.get("/action-templates/{template_id}", response_model=dict)
@@ -68,7 +68,7 @@ async def get_action_template(
         row = await service.repo.get_by_id(template_id, org_id)
     if not row:
         raise _errors.AppError("NOT_FOUND", "Action template not found", 404)
-    return _response.ok(data=dict(row))
+    return _response.success(dict(row))
 
 
 @router.patch("/action-templates/{template_id}", response_model=dict)
@@ -83,7 +83,7 @@ async def update_action_template(
     async with pool.acquire() as conn:
         service = ActionTemplateService(conn)
         row = await service.update(template_id, org_id, user_id, input_schema)
-    return _response.ok(data=dict(row) if row else {})
+    return _response.success(dict(row) if row else {})
 
 
 @router.delete("/action-templates/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -115,7 +115,7 @@ async def test_action_template(
             org_id,
             input_schema.sample_variables,
         )
-    return _response.ok(data=result)
+    return _response.success(result)
 
 
 @router.get("/action-deliveries", response_model=dict)
@@ -141,4 +141,4 @@ async def list_action_deliveries(
         else:
             rows = []
     items = [dict(r) for r in rows]
-    return _response.ok(data={"deliveries": items, "total": len(items)})
+    return _response.success({"deliveries": items, "total": len(items)})

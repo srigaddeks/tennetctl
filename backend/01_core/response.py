@@ -36,6 +36,20 @@ def paginated(data: list, total: int, limit: int, offset: int) -> dict:
     }
 
 
+def success_list_response(
+    items: list,
+    *,
+    total: int | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
+) -> dict:
+    """Paginated list envelope. Items + count, plus optional pagination block."""
+    body: dict = {"ok": True, "data": {"items": items, "total": total if total is not None else len(items)}}
+    if limit is not None and offset is not None:
+        body["data"]["pagination"] = {"limit": limit, "offset": offset, "total": body["data"]["total"]}
+    return body
+
+
 def success_response(data: Any, status_code: int = 200) -> JSONResponse:
     """Return a JSONResponse with success envelope."""
     return JSONResponse(content=success(data), status_code=status_code)

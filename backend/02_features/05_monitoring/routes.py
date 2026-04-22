@@ -52,3 +52,28 @@ _alerts: Any = import_module(
     "backend.02_features.05_monitoring.sub_features.07_alerts.routes"
 )
 router.include_router(_alerts.router)
+
+_escalation: Any = import_module(
+    "backend.02_features.05_monitoring.sub_features.08_escalation.routes"
+)
+router.include_router(_escalation.router)
+
+_action_templates: Any = import_module(
+    "backend.02_features.05_monitoring.sub_features.09_action_templates.routes"
+)
+router.include_router(_action_templates.router)
+
+_incidents: Any = import_module(
+    "backend.02_features.05_monitoring.sub_features.10_incidents.routes"
+)
+router.include_router(_incidents.router)
+
+_slo: Any = import_module(
+    "backend.02_features.05_monitoring.sub_features.11_slo.routes"
+)
+router.include_router(_slo.router)
+
+_dashboard_sharing: Any = import_module(
+    "backend.02_features.05_monitoring.sub_features.12_dashboard_sharing.routes"
+)
+router.include_router(_dashboard_sharing.router)

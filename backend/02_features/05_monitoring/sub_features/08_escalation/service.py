@@ -13,7 +13,18 @@ from . import schemas
 _errors = import_module("backend.01_core.errors")
 _audit = import_module("backend.02_features.04_audit.service")
 _core_id = import_module("backend.01_core.id")
-_iam_repo = import_module("backend.02_features.03_iam.repository")
+_iam_users_repo = import_module("backend.02_features.03_iam.sub_features.03_users.repository")
+
+
+class _IamRepoShim:
+    """Thin compat shim: ``_iam_repo.get_user(conn, id)`` → users sub-feature."""
+
+    @staticmethod
+    async def get_user(conn: Any, user_id: str) -> dict | None:
+        return await _iam_users_repo.get_by_id(conn, user_id)
+
+
+_iam_repo = _IamRepoShim()
 
 
 async def create_escalation_policy(

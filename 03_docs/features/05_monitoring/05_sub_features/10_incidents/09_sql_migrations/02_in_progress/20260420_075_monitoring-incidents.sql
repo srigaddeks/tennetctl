@@ -85,7 +85,9 @@ COMMENT ON COLUMN "05_monitoring"."10_fct_monitoring_incidents".action_count IS 
 -- Link: incident to alert events (immutable many-to-many)
 CREATE TABLE "05_monitoring"."40_lnk_monitoring_incident_alerts" (
     incident_id VARCHAR(36) NOT NULL REFERENCES "05_monitoring"."10_fct_monitoring_incidents"(id) ON DELETE CASCADE,
-    alert_event_id VARCHAR(36) NOT NULL REFERENCES "05_monitoring"."60_evt_monitoring_alert_events"(id),
+    -- No FK: 60_evt_monitoring_alert_events is partitioned; its unique
+    -- constraint is (id, started_at) so a single-column FK cannot target it.
+    alert_event_id VARCHAR(36) NOT NULL,
     joined_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (incident_id, alert_event_id)
 );
@@ -99,13 +101,14 @@ COMMENT ON COLUMN "05_monitoring"."40_lnk_monitoring_incident_alerts".joined_at 
 
 -- Event: incident timeline (append-only, partitioned daily, 365-day retention)
 CREATE TABLE "05_monitoring"."60_evt_monitoring_incident_timeline" (
-    id VARCHAR(36) PRIMARY KEY,
+    id VARCHAR(36) NOT NULL,
     incident_id VARCHAR(36) NOT NULL REFERENCES "05_monitoring"."10_fct_monitoring_incidents"(id) ON DELETE CASCADE,
     kind_id SMALLINT NOT NULL REFERENCES "05_monitoring"."02_dim_incident_event_kind"(id),
     actor_user_id VARCHAR(36) NULL,
     payload JSONB NULL DEFAULT '{}'::jsonb,
     occurred_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id, occurred_at)
 ) PARTITION BY RANGE (occurred_at);
 
 -- Create initial partition for current date
@@ -152,7 +155,7 @@ SELECT
     i.updated_at,
     i.deleted_at
 FROM "05_monitoring"."10_fct_monitoring_incidents" i
-LEFT JOIN "05_monitoring"."01_dim_alert_severity" s ON i.severity_id = s.id
+LEFT JOIN "05_monitoring"."01_dim_monitoring_alert_severity" s ON i.severity_id = s.id
 LEFT JOIN "05_monitoring"."01_dim_incident_state" st ON i.state_id = st.id
 LEFT JOIN (
     SELECT incident_id, COUNT(*) AS cnt

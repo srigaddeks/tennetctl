@@ -11,8 +11,8 @@ from . import schemas
 
 _core_id = import_module("backend.01_core.id")
 _response = import_module("backend.01_core.response")
-_vault = import_module("backend.02_features.02_vault.sub_features.03_secrets.service")
-_audit = import_module("backend.02_features.04_audit.sub_features.01_audit.service")
+_vault = import_module("backend.02_features.02_vault.sub_features.01_secrets.service")
+_audit = import_module("backend.02_features.04_audit.service")
 
 
 class ActionTemplateService:

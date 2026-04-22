@@ -351,6 +351,39 @@ class SetupModeMiddleware(BaseHTTPMiddleware):
         )
 
 
+def get_pool(request: Request) -> Any:
+    """FastAPI dep: pull the asyncpg pool off ``app.state``."""
+    return request.app.state.pool
+
+
+def get_node_context(request: Request) -> Any:
+    """FastAPI dep: build a minimal NodeContext from request.state scope.
+
+    Used by routes that want a single dep for ``org_id``/``user_id``/
+    ``session_id`` / ``workspace_id`` without re-implementing header
+    fallbacks in each handler.
+    """
+    from importlib import import_module as _im
+    _ctx_mod = _im("backend.01_catalog.context")
+    _id = _im("backend.01_core.id")
+
+    state = request.state
+    org_id = getattr(state, "org_id", None) or request.headers.get("x-org-id")
+    user_id = getattr(state, "user_id", None) or request.headers.get("x-user-id")
+    session_id = getattr(state, "session_id", None) or request.headers.get("x-session-id")
+    workspace_id = getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id")
+    return _ctx_mod.NodeContext(
+        user_id=user_id,
+        session_id=session_id,
+        org_id=org_id,
+        workspace_id=workspace_id,
+        trace_id=_id.uuid7(),
+        span_id=_id.uuid7(),
+        request_id=getattr(state, "request_id", "") or _id.uuid7(),
+        audit_category="user",
+    )
+
+
 def register_middleware(app: FastAPI) -> None:
     """Register all middleware and exception handlers on the app."""
     app.add_exception_handler(_errors.AppError, _app_error_handler)

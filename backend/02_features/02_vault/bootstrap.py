@@ -49,10 +49,12 @@ async def ensure_bootstrap_secrets(pool: Any, vault_client: Any) -> int:
     for key, description in _BOOTSTRAP_KEYS:
         async with pool.acquire() as conn:
             async with conn.transaction():
-                existing = await _repo.get_metadata_by_scope_key(
+                # Include soft-deleted rows: the v0.2 vault does not allow
+                # recycling a key even after delete, so any row (live or
+                # tombstoned) means the bootstrap step is already done.
+                if await _repo.any_row_exists_at_scope(
                     conn, scope="global", org_id=None, workspace_id=None, key=key,
-                )
-                if existing is not None:
+                ):
                     continue
 
                 ctx = _catalog_ctx.NodeContext(

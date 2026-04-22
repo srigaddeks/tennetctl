@@ -136,10 +136,10 @@ SELECT
             ) ORDER BY m.member_order ASC
         )
         FROM "05_monitoring"."40_lnk_monitoring_oncall_members" m
-        LEFT JOIN "03_iam"."12_fct_users" u ON u.id = m.user_id
+        LEFT JOIN "03_iam".v_users u ON u.id = m.user_id
         WHERE m.schedule_id = s.id
     ) AS members,
-    "05_monitoring"."f_monitoring_resolve_oncall"(s.id, CURRENT_TIMESTAMP) AS current_oncall_user_id
+    "05_monitoring"."f_monitoring_resolve_oncall"(s.id, CURRENT_TIMESTAMP::timestamp) AS current_oncall_user_id
 FROM "05_monitoring"."10_fct_monitoring_oncall_schedules" s
 WHERE s.deleted_at IS NULL;
 COMMENT ON VIEW "05_monitoring"."v_monitoring_oncall_schedules" IS 'Read-model for on-call schedules: aggregates members and resolves current on-call user.';

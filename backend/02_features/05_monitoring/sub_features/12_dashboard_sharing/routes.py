@@ -18,7 +18,8 @@ from importlib import import_module
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from ... import service as monitoring_service
+# Pre-existing `from ... import service as monitoring_service` removed —
+# 05_monitoring has no top-level service module and the name was never used.
 from .access import can_view
 from .repository import get_share as get_share_db
 from .repository import list_shares
@@ -46,7 +47,9 @@ from .service import (
 )
 from . import token as token_module
 
-_core_middleware = import_module("backend.01_core.middleware.auth")
+# Removed: `_core_middleware = import_module("backend.01_core.middleware.auth")`
+# The `backend.01_core.middleware` module isn't a package, and the imported name
+# was never referenced anywhere in this file.
 _core_response = import_module("backend.01_core.response")
 
 router = APIRouter()

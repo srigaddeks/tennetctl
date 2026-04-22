@@ -496,6 +496,14 @@ async def health(request: Request):
 _catalog_routes = import_module("backend.01_catalog.routes")
 app.include_router(_catalog_routes.router)
 
+# Catalog sub-feature routers (flows + canvas) — always-on like the rest of
+# 01_catalog. Registered here because feature.manifest.yaml only *documents*
+# routes; actual APIRouter objects must be included explicitly.
+_catalog_flows_routes = import_module("backend.02_features.01_catalog.sub_features.04_flows.routes")
+app.include_router(_catalog_flows_routes.router)
+_catalog_canvas_routes = import_module("backend.02_features.01_catalog.sub_features.05_canvas.routes")
+app.include_router(_catalog_canvas_routes.router)
+
 # Setup routes — always mounted, unauthenticated, bypassed by SetupModeMiddleware.
 _setup_routes = import_module(
     "backend.02_features.03_iam.sub_features.18_setup.routes"

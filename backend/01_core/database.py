@@ -44,3 +44,20 @@ async def create_pool(dsn: str, min_size: int = 2, max_size: int = 10) -> asyncp
 async def close_pool(pool: asyncpg.Pool) -> None:
     """Close the connection pool."""
     await pool.close()
+
+
+def get_pool(request):  # noqa: ANN001 - FastAPI dep shape
+    """FastAPI dep: pull the pool off ``app.state``."""
+    return request.app.state.pool
+
+
+async def get_connection(request):  # noqa: ANN001 - FastAPI dep shape
+    """FastAPI dep: yield a pool-borrowed connection for the handler's lifetime.
+
+    Older routes use ``Depends(_db.get_connection)``. New code should acquire
+    the conn inside the handler body (`async with pool.acquire() as conn:`) so
+    the conn's lifetime is explicit.
+    """
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        yield conn

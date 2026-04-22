@@ -81,15 +81,87 @@ CREATE UNIQUE INDEX uq_evt_monitoring_slo_breaches_open
   ON "05_monitoring"."61_evt_monitoring_slo_breaches"(slo_id, breach_kind)
   WHERE resolved_at IS NULL;
 
-COMMENT ON INDEX uq_evt_monitoring_slo_breaches_open IS
+COMMENT ON INDEX "05_monitoring".uq_evt_monitoring_slo_breaches_open IS
   'Prevent duplicate open breaches of the same kind per SLO.';
 
 CREATE INDEX idx_evt_monitoring_slo_breaches_slo_occurred
   ON "05_monitoring"."61_evt_monitoring_slo_breaches"(slo_id, occurred_at DESC);
 
 
+-- ── View for SLOs (moved from 077 so evt_monitoring_slo_evaluations exists) ──
+CREATE OR REPLACE VIEW "05_monitoring".v_monitoring_slos AS
+SELECT
+  s.id,
+  s.org_id,
+  s.workspace_id,
+  s.name,
+  s.slug,
+  s.description,
+  ik.id AS indicator_kind_id,
+  ik.code AS indicator_kind_code,
+  wk.id AS window_kind_id,
+  wk.code AS window_kind_code,
+  s.target_pct,
+  s.severity_id,
+  sv.code AS severity_code,
+  s.owner_user_id,
+  s.is_active,
+  s.created_by,
+  s.created_at,
+  s.updated_at,
+  i.good_query,
+  i.total_query,
+  i.threshold_metric_id,
+  i.threshold_value,
+  i.threshold_op,
+  i.latency_percentile,
+  b.fast_window_seconds,
+  b.fast_burn_rate,
+  b.slow_window_seconds,
+  b.slow_burn_rate,
+  b.page_on_fast,
+  b.page_on_slow,
+  COALESCE(latest_eval.attainment_pct, 0) AS attainment_pct,
+  COALESCE(latest_eval.budget_remaining_pct, 100) AS budget_remaining_pct,
+  COALESCE(latest_eval.burn_rate_1h, 0) AS burn_rate_1h,
+  COALESCE(latest_eval.burn_rate_6h, 0) AS burn_rate_6h,
+  COALESCE(latest_eval.burn_rate_24h, 0) AS burn_rate_24h,
+  COALESCE(latest_eval.burn_rate_3d, 0) AS burn_rate_3d,
+  CASE
+    WHEN COALESCE(latest_eval.attainment_pct, 100) < s.target_pct THEN 'breaching'
+    WHEN COALESCE(latest_eval.burn_rate_1h, 0) >= b.fast_burn_rate THEN 'warning'
+    WHEN COALESCE(latest_eval.burn_rate_6h, 0) >= b.slow_burn_rate THEN 'warning'
+    ELSE 'healthy'
+  END AS status
+FROM "05_monitoring"."10_fct_monitoring_slos" s
+LEFT JOIN "05_monitoring"."01_dim_monitoring_slo_indicator_kind" ik
+  ON s.indicator_kind_id = ik.id
+LEFT JOIN "05_monitoring"."02_dim_monitoring_slo_window_kind" wk
+  ON s.window_kind_id = wk.id
+LEFT JOIN "05_monitoring"."01_dim_monitoring_alert_severity" sv
+  ON s.severity_id = sv.id
+LEFT JOIN "05_monitoring"."20_dtl_monitoring_slo_indicator" i
+  ON s.id = i.slo_id
+LEFT JOIN "05_monitoring"."21_dtl_monitoring_slo_burn_thresholds" b
+  ON s.id = b.slo_id
+LEFT JOIN LATERAL (
+  SELECT DISTINCT ON (slo_id)
+    slo_id, attainment_pct, budget_remaining_pct,
+    burn_rate_1h, burn_rate_6h, burn_rate_24h, burn_rate_3d
+  FROM "05_monitoring"."60_evt_monitoring_slo_evaluations"
+  WHERE slo_id = s.id AND evaluated_at IS NOT NULL
+  ORDER BY slo_id, evaluated_at DESC
+  LIMIT 1
+) latest_eval ON true
+WHERE s.deleted_at IS NULL;
+
+COMMENT ON VIEW "05_monitoring".v_monitoring_slos IS
+  'SLO list with latest evaluation metrics and computed status.';
+
+
 -- DOWN ====
 
+DROP VIEW IF EXISTS "05_monitoring".v_monitoring_slos;
 DROP TABLE IF EXISTS "05_monitoring"."61_evt_monitoring_slo_breaches";
 DROP TABLE IF EXISTS "05_monitoring"."60_evt_monitoring_slo_evaluations_2026_04_22";
 DROP TABLE IF EXISTS "05_monitoring"."60_evt_monitoring_slo_evaluations_2026_04_21";
