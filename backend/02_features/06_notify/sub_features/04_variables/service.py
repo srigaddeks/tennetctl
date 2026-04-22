@@ -41,6 +41,7 @@ async def create_variable(
             sql_template=data.get("sql_template"),
             param_bindings=data.get("param_bindings"),
             description=data.get("description"),
+            user_id=getattr(ctx, "user_id", None) or "system",
         )
     except asyncpg.UniqueViolationError as e:
         raise _errors.ConflictError(
@@ -65,7 +66,12 @@ async def update_variable(
     var_id: str,
     data: dict,
 ) -> dict | None:
-    row = await _repo.update_variable(conn, var_id=var_id, **data)
+    row = await _repo.update_variable(
+        conn,
+        var_id=var_id,
+        user_id=getattr(ctx, "user_id", None) or "system",
+        **data,
+    )
     if row:
         await _catalog.run_node(
             pool, "audit.events.emit", ctx,

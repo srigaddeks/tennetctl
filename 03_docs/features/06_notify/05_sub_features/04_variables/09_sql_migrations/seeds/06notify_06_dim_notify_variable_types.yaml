@@ -1,0 +1,13 @@
+schema: "06_notify"
+table: "06_dim_notify_variable_types"
+rows:
+  - id: 1
+    code: static
+    label: Static
+    description: Literal value injected into Jinja2 rendering
+    deprecated_at: null
+  - id: 2
+    code: dynamic_sql
+    label: Dynamic SQL
+    description: Safelisted SELECT query executed at render time with context params
+    deprecated_at: null

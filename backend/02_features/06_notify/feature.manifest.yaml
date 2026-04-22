@@ -127,6 +127,8 @@ spec:
         schema: "06_notify"
         tables:
           - "13_fct_notify_template_variables"
+          - "23_dtl_notify_template_variables"
+          - "06_dim_notify_variable_types"
         views:
           - "v_notify_template_variables"
       nodes: []

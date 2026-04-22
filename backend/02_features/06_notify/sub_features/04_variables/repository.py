@@ -5,13 +5,17 @@ from __future__ import annotations
 from typing import Any
 
 
+_VAR_TYPE_ID = {"static": 1, "dynamic_sql": 2}
+_DTL_FIELDS = {"name", "static_value", "sql_template", "param_bindings", "description"}
+
+
 async def list_variables(conn: Any, *, template_id: str) -> list[dict]:
     rows = await conn.fetch(
         """
-        SELECT id, template_id, name, var_type, static_value,
+        SELECT id, template_id, org_id, name, var_type, static_value,
                sql_template, param_bindings, description, created_at, updated_at
         FROM "06_notify"."v_notify_template_variables"
-        WHERE template_id = $1
+        WHERE template_id = $1 AND deleted_at IS NULL
         ORDER BY name ASC
         """,
         template_id,
@@ -22,10 +26,10 @@ async def list_variables(conn: Any, *, template_id: str) -> list[dict]:
 async def get_variable(conn: Any, *, var_id: str) -> dict | None:
     row = await conn.fetchrow(
         """
-        SELECT id, template_id, name, var_type, static_value,
+        SELECT id, template_id, org_id, name, var_type, static_value,
                sql_template, param_bindings, description, created_at, updated_at
         FROM "06_notify"."v_notify_template_variables"
-        WHERE id = $1
+        WHERE id = $1 AND deleted_at IS NULL
         """,
         var_id,
     )
@@ -43,64 +47,104 @@ async def create_variable(
     sql_template: str | None,
     param_bindings: dict | None,
     description: str | None,
+    user_id: str,
 ) -> dict:
-    row = await conn.fetchrow(
+    """Insert a variable across both fct (identity + type) and dtl (strings/JSONB).
+
+    Derives org_id from the owning template so callers don't have to plumb it.
+    """
+    var_type_id = _VAR_TYPE_ID.get(var_type)
+    if var_type_id is None:
+        raise ValueError(f"unknown var_type {var_type!r}")
+
+    template = await conn.fetchrow(
+        'SELECT org_id FROM "06_notify"."12_fct_notify_templates" WHERE id = $1',
+        template_id,
+    )
+    if template is None:
+        raise ValueError(f"template {template_id!r} not found")
+    org_id = template["org_id"]
+
+    await conn.execute(
         """
         INSERT INTO "06_notify"."13_fct_notify_template_variables"
-            (id, template_id, name, var_type, static_value, sql_template, param_bindings, description)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, template_id, name, var_type, static_value,
-                  sql_template, param_bindings, description, created_at, updated_at
+            (id, template_id, org_id, var_type_id,
+             is_active, is_test, created_by, updated_by, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, TRUE, FALSE, $5, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """,
-        var_id,
-        template_id,
-        name,
-        var_type,
-        static_value,
-        sql_template,
-        param_bindings,
-        description,
+        var_id, template_id, org_id, var_type_id, user_id,
     )
-    return dict(row)
+    await conn.execute(
+        """
+        INSERT INTO "06_notify"."23_dtl_notify_template_variables"
+            (variable_id, template_id, name, static_value, sql_template,
+             param_bindings, description, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """,
+        var_id, template_id, name, static_value, sql_template,
+        param_bindings, description,
+    )
+
+    row = await get_variable(conn, var_id=var_id)
+    assert row is not None  # just inserted
+    return row
 
 
 async def update_variable(
     conn: Any,
     *,
     var_id: str,
+    user_id: str | None = None,
     **fields: Any,
 ) -> dict | None:
-    allowed = {"static_value", "sql_template", "param_bindings", "description"}
-    updates = {k: v for k, v in fields.items() if k in allowed}
+    """Update dtl fields and bump fct audit cols.
+
+    Only dtl fields (static_value, sql_template, param_bindings, description)
+    are updatable here — name is immutable post-create to preserve template
+    references; var_type is modelled as a new-variable concern.
+    """
+    updates = {k: v for k, v in fields.items() if k in _DTL_FIELDS and k != "name"}
     if not updates:
         return await get_variable(conn, var_id=var_id)
 
     set_clauses = [f"{col} = ${i + 2}" for i, col in enumerate(updates)]
     set_clauses.append("updated_at = CURRENT_TIMESTAMP")
-    params = [var_id, *updates.values()]
+    params: list[Any] = [var_id, *updates.values()]
 
-    row = await conn.fetchrow(
+    await conn.execute(
         f"""
-        UPDATE "06_notify"."13_fct_notify_template_variables"
+        UPDATE "06_notify"."23_dtl_notify_template_variables"
         SET {', '.join(set_clauses)}
-        WHERE id = $1
-        RETURNING id, template_id, name, var_type, static_value,
-                  sql_template, param_bindings, description, created_at, updated_at
+        WHERE variable_id = $1
         """,
         *params,
     )
-    return dict(row) if row else None
+
+    # Bump fct audit cols so the view's updated_at tracks the edit.
+    if user_id is not None:
+        await conn.execute(
+            """
+            UPDATE "06_notify"."13_fct_notify_template_variables"
+            SET updated_by = $2, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            """,
+            var_id, user_id,
+        )
+
+    return await get_variable(conn, var_id=var_id)
 
 
 async def delete_variable(conn: Any, *, var_id: str) -> bool:
+    """Soft-delete: sets deleted_at on fct; FK cascade will also retire dtl on hard delete."""
     result = await conn.execute(
         """
-        DELETE FROM "06_notify"."13_fct_notify_template_variables"
-        WHERE id = $1
+        UPDATE "06_notify"."13_fct_notify_template_variables"
+        SET deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND deleted_at IS NULL
         """,
         var_id,
     )
-    return result == "DELETE 1"
+    return result.endswith(" 1")
 
 
 async def resolve_variables(
@@ -115,15 +159,12 @@ async def resolve_variables(
     Static variables: return static_value directly.
     Dynamic SQL: execute sql_template with params from context dict,
                  under SET LOCAL statement_timeout='2000' (2-second limit).
-
-    Returns {var_name: resolved_value} for all registered variables.
-    Caller's variables dict is merged AFTER this (caller overrides registered).
     """
     rows = await conn.fetch(
         """
         SELECT name, var_type, static_value, sql_template, param_bindings
         FROM "06_notify"."v_notify_template_variables"
-        WHERE template_id = $1
+        WHERE template_id = $1 AND deleted_at IS NULL
         ORDER BY name ASC
         """,
         template_id,
@@ -135,7 +176,6 @@ async def resolve_variables(
         if row["var_type"] == "static":
             result[name] = row["static_value"]
         else:
-            # dynamic_sql: build positional args from param_bindings + context
             bindings: dict[str, str] = dict(row["param_bindings"] or {})
             positional_args: list[Any] = []
             for i in range(1, len(bindings) + 1):
@@ -147,7 +187,6 @@ async def resolve_variables(
                 dyn_row = await conn.fetchrow(row["sql_template"], *positional_args)
                 result[name] = dyn_row[0] if dyn_row else None
             finally:
-                # Reset to no timeout so subsequent queries in this tx are unaffected
                 await conn.execute("SET LOCAL statement_timeout = '0'")
 
     return result
