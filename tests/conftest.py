@@ -259,6 +259,11 @@ async def admin_session(app) -> dict:
             signin_data = signin.json()["data"]
             admin["token"] = signin_data["token"]
             admin["workspace_id"] = signin_data["session"].get("workspace_id")
+            # In single-tenant mode the re-sign-in attaches the user to the
+            # "default" org (not the manually created "pytest" org). Keep
+            # admin["org_id"] consistent with the workspace's actual org.
+            if signin_data["session"].get("org_id"):
+                admin["org_id"] = signin_data["session"]["org_id"]
             auth = {"Authorization": f"Bearer {admin['token']}"}
 
         # Ensure a workspace exists under the admin's org.

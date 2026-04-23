@@ -141,16 +141,16 @@ async def list_active_for_user(conn: Any, *, user_id: str) -> list[dict]:
 
 
 async def revoke_session_by_reason(
-    conn: Any, *, session_id: str, updated_by: str, reason: str,
+    conn: Any, *, session_id: str, updated_by: str, reason: str = "",
 ) -> bool:
-    """Revoke a session and store the reason in updated_by for audit."""
+    """Revoke a session. reason is passed to the caller for audit metadata."""
     result = await conn.execute(
         'UPDATE "03_iam"."16_fct_sessions" '
         'SET revoked_at = CURRENT_TIMESTAMP, '
         '    updated_by = $1, '
         '    updated_at = CURRENT_TIMESTAMP '
         'WHERE id = $2 AND deleted_at IS NULL AND revoked_at IS NULL',
-        f"{updated_by}:{reason}", session_id,
+        updated_by, session_id,
     )
     return result.endswith(" 1")
 

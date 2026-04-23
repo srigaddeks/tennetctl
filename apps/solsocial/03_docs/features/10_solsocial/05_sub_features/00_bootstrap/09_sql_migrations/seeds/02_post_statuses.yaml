@@ -1,0 +1,27 @@
+schema: "10_solsocial"
+table: "02_dim_post_statuses"
+rows:
+  - id: 1
+    code: draft
+    label: Draft
+    description: Being composed; not yet queued or scheduled
+  - id: 2
+    code: queued
+    label: Queued
+    description: In a channel queue; will publish in the next open slot
+  - id: 3
+    code: scheduled
+    label: Scheduled
+    description: Has an explicit scheduled_at timestamp
+  - id: 4
+    code: publishing
+    label: Publishing
+    description: Publisher pipeline is currently running for this post
+  - id: 5
+    code: published
+    label: Published
+    description: Successfully published by the provider
+  - id: 6
+    code: failed
+    label: Failed
+    description: Publisher attempt failed; see evt_post_publishes for reason

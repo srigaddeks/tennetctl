@@ -1,0 +1,36 @@
+feature: "10_solsocial"
+label: "SolSocial"
+description: >
+  Lightweight Buffer alternative. Business logic only. Identity, RBAC scopes,
+  audit emission, notifications, vault, and feature flags are proxied to
+  tennetctl. Everything here is social-publishing domain: channels, posts,
+  queues, ideas, plus solsocial-local role/permission and feature registry.
+
+owners:
+  - solsocial-team
+
+depends_on:
+  platform:
+    - tennetctl.iam
+    - tennetctl.audit
+    - tennetctl.notify
+    - tennetctl.vault
+    - tennetctl.featureflags
+
+schema: "10_solsocial"
+
+sub_features:
+  - key: "00_bootstrap"
+    label: "Schema + dim tables"
+  - key: "10_channels"
+    label: "Connected social accounts"
+  - key: "20_posts"
+    label: "Posts (draft/queued/scheduled/published)"
+  - key: "30_queues"
+    label: "Per-channel posting queues"
+  - key: "50_ideas"
+    label: "Idea bucket"
+  - key: "70_rbac"
+    label: "SolSocial-local RBAC (roles + permissions)"
+  - key: "80_feature_registry"
+    label: "Per-workspace feature toggles"

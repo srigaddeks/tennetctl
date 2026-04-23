@@ -1,0 +1,15 @@
+schema: "10_solsocial"
+table: "01_dim_channel_providers"
+rows:
+  - id: 1
+    code: linkedin
+    label: LinkedIn
+    description: LinkedIn profile and company page publishing
+  - id: 2
+    code: twitter
+    label: Twitter / X
+    description: Twitter / X publishing via v2 API
+  - id: 3
+    code: instagram
+    label: Instagram
+    description: Instagram Business account publishing via Graph API

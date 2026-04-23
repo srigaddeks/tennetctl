@@ -409,6 +409,11 @@ async def _do_twitter_post(bearer_token: str, text: str) -> dict:
 
 # ── Metrics ───────────────────────────────────────────────────────────────────
 
+async def get_post_metrics(conn: Any, *, post_id: str) -> list[dict]:
+    """Return stored metrics rows for a post."""
+    return await _repo.get_post_metrics(conn, post_id=post_id)
+
+
 async def refresh_metrics(
     pool: Any,
     vault_client: Any,

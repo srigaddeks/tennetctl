@@ -168,7 +168,7 @@ async def publish_now_route(request: Request, post_id: str) -> dict:
 async def get_metrics_route(request: Request, post_id: str) -> dict:
     pool = request.app.state.pool
     async with pool.acquire() as conn:
-        items = await _service._repo.get_post_metrics(conn, post_id=post_id)
+        items = await _service.get_post_metrics(conn, post_id=post_id)
     return _response.success({"items": items, "total": len(items)})
 
 

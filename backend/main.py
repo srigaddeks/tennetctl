@@ -33,6 +33,7 @@ MODULE_ROUTERS: dict[str, str] = {
     "notify": "backend.02_features.06_notify.routes",
     "monitoring": "backend.02_features.05_monitoring.routes",
     "social_publisher": "backend.02_features.07_social_publisher.routes",
+    "social_capture": "backend.02_features.07_social_publisher.capture_routes",
 }
 
 
@@ -422,6 +423,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:51735", "http://localhost:51835", "http://localhost:51736"],
+    allow_origin_regex=r"^chrome-extension://.*$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
