@@ -2,176 +2,288 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SolSocial Collector</title>
+  <title>SolSocial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper:      #F4EEE1;
+      --paper-deep: #EAE1CC;
+      --paper-edge: #DDD2B7;
+      --ink:        #171512;
+      --ink-70:     #3A362E;
+      --ink-40:     #7A7166;
+      --ink-20:     #B6AD9D;
+      --rule:       #C8BCA0;
+      --ember:      #DC4B19;
+      --sage:       #556A3D;
+      --lapis:      #2C4A6B;
+    }
 
     body {
       width: 320px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", ui-sans-serif, sans-serif;
       font-size: 13px;
-      background: #060b17;
-      color: #dde5f4;
+      background-image: radial-gradient(ellipse at top, rgba(255,236,199,0.4), transparent 60%);
     }
 
+    /* ─ Header ─ */
     .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       padding: 14px 16px 10px;
-      border-bottom: 1px solid #1c2e45;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; gap: 10px;
     }
-    .header .logo {
-      width: 28px; height: 28px;
-      background: #2d7ef7;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+    .wordmark {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 15px; font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--ink);
     }
-    .header h1 { font-size: 14px; font-weight: 600; color: #dde5f4; }
-    .header .version { font-size: 11px; color: #3a5075; margin-left: auto; }
+    .wordmark span { color: var(--ember); }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 
-    /* ─── Auth form ─── */
+    /* ─ Stream pulse ─ */
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      display: inline-block;
+      background: var(--ink-20);
+      transition: background 0.3s;
+    }
+    .pulse-dot.active {
+      background: var(--sage);
+      animation: pulse-ring 1.6s ease-out infinite;
+    }
+    .pulse-dot.error { background: var(--ember); }
+    @keyframes pulse-ring {
+      0%  { box-shadow: 0 0 0 0 rgba(85,106,61,0.5); }
+      70% { box-shadow: 0 0 0 7px rgba(85,106,61,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(85,106,61,0); }
+    }
+    .stream-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px; color: var(--ink-40);
+    }
+    .stream-label.active { color: var(--sage); }
+
+    /* ─ Auth panel ─ */
     #auth-panel { padding: 16px; }
     .field { margin-bottom: 10px; }
-    .field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #7a92b8; margin-bottom: 5px; }
+    .field label {
+      display: block; font-size: 10px;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--ink-40); margin-bottom: 5px;
+    }
     .field input {
       width: 100%; padding: 7px 10px;
-      background: #0b1523; border: 1px solid #1c2e45;
-      border-radius: 5px; color: #dde5f4; font-size: 13px;
-      outline: none;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule); border-radius: 3px;
+      color: var(--ink); font-size: 13px;
+      font-family: inherit; outline: none;
+      transition: border-color 0.15s;
     }
-    .field input:focus { border-color: #2d7ef7; }
-    .field-small { margin-bottom: 6px; }
-    .field-small label { font-size: 10px; color: #3a5075; margin-bottom: 3px; }
-    .field-small input { padding: 5px 8px; font-size: 12px; }
+    .field input:focus { border-color: var(--lapis); }
+    .field-sm input { font-size: 11px; padding: 5px 8px; }
 
     .btn {
       width: 100%; padding: 8px;
-      background: #2d7ef7; color: #fff;
-      border: none; border-radius: 5px;
+      background: var(--ink); color: var(--paper);
+      border: none; border-radius: 3px;
       font-size: 13px; font-weight: 600;
-      cursor: pointer; margin-top: 4px;
+      font-family: inherit; cursor: pointer;
+      transition: background 0.15s;
     }
-    .btn:hover { background: #5596ff; }
-    .btn:disabled { background: #0d1f3c; color: #3a5075; cursor: not-allowed; }
-    .btn-danger { background: #1f0508; color: #ff3f55; border: 1px solid #ff3f55; }
-    .btn-danger:hover { background: #ff3f55; color: #fff; }
+    .btn:hover { background: var(--ember); }
+    .btn:disabled { background: var(--ink-20); color: var(--paper); cursor: not-allowed; }
+    .btn-outline {
+      background: transparent; color: var(--ink-40);
+      border: 1px solid var(--rule);
+    }
+    .btn-outline:hover { background: var(--paper-deep); color: var(--ink); }
+    .btn-danger { background: transparent; color: var(--ember); border: 1px solid var(--ember); }
+    .btn-danger:hover { background: var(--ember); color: var(--paper); }
 
-    .error { color: #ff3f55; font-size: 12px; margin-top: 6px; min-height: 16px; }
+    .error-msg { color: var(--ember); font-size: 11px; margin-top: 6px; min-height: 14px; }
 
-    /* ─── Status panel ─── */
+    /* ─ Status panel ─ */
     #status-panel { padding: 14px 16px; display: none; }
 
     .user-row {
-      display: flex; align-items: center; gap: 8px;
-      padding-bottom: 12px; border-bottom: 1px solid #1c2e45; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 12px; margin-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
     }
     .avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #0d1f3c; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: #2d7ef7;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--paper-edge);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 13px; color: var(--ink-70);
+      flex-shrink: 0;
     }
-    .user-info { flex: 1; }
     .user-name { font-weight: 600; font-size: 13px; }
-    .user-email { font-size: 11px; color: #7a92b8; }
+    .user-email { font-size: 10px; color: var(--ink-40); margin-top: 1px; }
 
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    /* ─ Stats ─ */
+    .stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px; margin-bottom: 12px;
+    }
     .stat {
-      background: #0b1523; border: 1px solid #1c2e45; border-radius: 6px;
       padding: 8px 10px;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule); border-radius: 3px;
     }
-    .stat-value { font-size: 20px; font-weight: 700; color: #2d7ef7; font-family: "SF Mono", monospace; }
-    .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #7a92b8; margin-top: 2px; }
+    .stat-val {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 22px; font-weight: 500; line-height: 1;
+      color: var(--ink);
+    }
+    .stat-label {
+      font-size: 9px; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--ink-40); margin-top: 3px;
+    }
 
+    /* ─ Stream status bar ─ */
+    .stream-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; margin-bottom: 10px;
+      background: var(--paper-deep); border: 1px solid var(--rule);
+      border-radius: 3px;
+    }
+    .stream-bar.active { border-color: var(--sage); background: rgba(85,106,61,0.06); }
+    .stream-info { flex: 1; }
+    .stream-title { font-size: 11px; font-weight: 600; }
+    .stream-sub { font-family: "IBM Plex Mono", monospace; font-size: 9px; color: var(--ink-40); margin-top: 2px; }
+
+    /* ─ Platform breakdown ─ */
+    .platforms { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+    .platform-pill {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px; padding: 2px 8px; border-radius: 2px;
+      border: 1px solid var(--rule); color: var(--ink-40);
+      background: var(--paper-deep);
+    }
+    .platform-pill.li { border-color: #0A66C280; color: #0A66C2; background: #0A66C210; }
+    .platform-pill.x  { border-color: #00000040; color: var(--ink-70); background: var(--paper-edge); }
+
+    /* ─ Toggle ─ */
     .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 10px;
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 10px;
     }
-    .toggle-label { font-size: 13px; }
+    .toggle-label { font-size: 12px; }
     .toggle {
-      width: 36px; height: 20px; border-radius: 10px;
-      background: #1c2e45; cursor: pointer; position: relative;
-      border: none; transition: background .2s;
+      width: 34px; height: 18px; border-radius: 9px;
+      background: var(--ink-20); cursor: pointer;
+      border: none; position: relative; transition: background 0.2s;
     }
-    .toggle.on { background: #2d7ef7; }
+    .toggle.on { background: var(--sage); }
     .toggle::after {
       content: ""; position: absolute;
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #fff; top: 3px; left: 3px; transition: left .2s;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--paper); top: 3px; left: 3px;
+      transition: left 0.2s;
     }
     .toggle.on::after { left: 19px; }
 
-    .platforms { display: flex; gap: 6px; margin-bottom: 12px; }
-    .platform-pill {
-      font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
-      padding: 3px 8px; border-radius: 10px;
-      background: #0d1f3c; color: #7a92b8; border: 1px solid #1c2e45;
-    }
-    .platform-pill.active { background: #051a12; color: #00c47a; border-color: #00c47a; }
+    /* ─ Actions ─ */
+    .actions { display: flex; flex-direction: column; gap: 5px; }
 
-    .btn-sm { font-size: 12px; padding: 6px; }
+    .divider { border: none; border-top: 1px solid var(--rule); margin: 10px 0; }
+
+    .open-app-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px; width: 100%;
+      background: var(--lapis); color: var(--paper);
+      border: none; border-radius: 3px; cursor: pointer;
+      font-size: 12px; font-weight: 600; font-family: inherit;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .open-app-btn:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="logo">S</div>
-    <h1>SolSocial Collector</h1>
-    <span class="version">v0.1</span>
+    <div class="wordmark">Sol<span>Social</span></div>
+    <div class="header-right">
+      <span class="pulse-dot" id="pulse"></span>
+      <span class="stream-label" id="stream-label">—</span>
+    </div>
   </div>
 
-  <!-- Sign-in form -->
+  <!-- Sign-in -->
   <div id="auth-panel">
-    <div class="field-small" style="margin-bottom:10px;">
+    <p style="font-size:12px; color:var(--ink-40); margin-bottom:14px; line-height:1.5;">
+      Sign in to start collecting posts, comments, and engagement data from your feeds.
+    </p>
+    <div class="field field-sm" style="margin-bottom:10px;">
       <label>Backend URL</label>
-      <input type="text" id="base-url" value="http://localhost:51734" placeholder="https://your-tennetctl.app" />
+      <input type="text" id="base-url" value="http://localhost:51734" />
     </div>
     <div class="field">
       <label>Email</label>
-      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com" />
     </div>
     <div class="field">
       <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      <input type="password" id="password" autocomplete="current-password" placeholder="••••••••" />
     </div>
-    <button class="btn" id="signin-btn">Sign in</button>
-    <div class="error" id="auth-error"></div>
+    <button class="btn" id="signin-btn">Sign in to SolSocial</button>
+    <div class="error-msg" id="auth-error"></div>
   </div>
 
-  <!-- Status panel -->
+  <!-- Status -->
   <div id="status-panel">
     <div class="user-row">
-      <div class="avatar" id="avatar">👤</div>
-      <div class="user-info">
+      <div class="avatar" id="avatar">?</div>
+      <div>
         <div class="user-name" id="display-name">—</div>
         <div class="user-email" id="display-email">—</div>
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-value" id="today-count">0</div>
-        <div class="stat-label">Captured today</div>
+    <!-- Stream status bar -->
+    <div class="stream-bar" id="stream-bar">
+      <span class="pulse-dot" id="stream-dot"></span>
+      <div class="stream-info">
+        <div class="stream-title" id="stream-title">Collector status</div>
+        <div class="stream-sub" id="stream-sub">—</div>
       </div>
-      <div class="stat">
-        <div class="stat-value" id="queue-size">0</div>
-        <div class="stat-label">In queue</div>
-      </div>
-    </div>
-
-    <div class="toggle-row">
-      <span class="toggle-label">Collection active</span>
       <button class="toggle" id="toggle-btn"></button>
     </div>
 
-    <div class="platforms">
-      <div class="platform-pill active" id="pill-linkedin">LinkedIn</div>
-      <div class="platform-pill active" id="pill-twitter">Twitter / X</div>
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val" id="today-count">0</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="queue-size">0</div>
+        <div class="stat-label">Queued</div>
+      </div>
     </div>
 
-    <button class="btn btn-sm" id="flush-btn" style="margin-bottom:8px;">Flush queue now</button>
-    <button class="btn btn-sm btn-danger" id="signout-btn">Sign out</button>
+    <!-- Platform breakdown -->
+    <div class="platforms" id="platform-pills"></div>
+
+    <hr class="divider" />
+
+    <!-- Open SolSocial -->
+    <a class="open-app-btn" id="open-app" href="http://localhost:51835/intelligence" target="_blank">
+      View in SolSocial ↗
+    </a>
+
+    <hr class="divider" />
+
+    <div class="actions">
+      <button class="btn btn-outline btn-sm" id="flush-btn" style="font-size:12px;">Flush queue now</button>
+      <button class="btn btn-danger" id="signout-btn" style="font-size:12px;">Sign out</button>
+    </div>
   </div>
 
   <script src="popup.js"></script>

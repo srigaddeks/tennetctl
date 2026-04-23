@@ -1,63 +1,94 @@
 /**
- * LinkedIn feed extractor — pure DOM functions, no Chrome APIs.
- * Anchors only on data-urn and ARIA attributes (stable across deploys).
- *
- * Export: { extractPosts, VERSION }
+ * LinkedIn feed extractor — multiple selector fallbacks for DOM resilience.
  */
 
-const VERSION = "linkedin-v1";
+const VERSION = "linkedin-v2";
 
-/**
- * Extract all visible feed posts from a given root element (default: document).
- * Returns an array of raw capture objects (not yet sent to backend).
- */
 function extractPosts(root = document) {
   const posts = [];
 
-  // data-urn="urn:li:activity:..." is LinkedIn's stable post identity
-  const containers = root.querySelectorAll("[data-urn^='urn:li:activity:']");
+  // Strategy 1: data-urn (classic, most stable)
+  let containers = Array.from(root.querySelectorAll("[data-urn^='urn:li:activity:']"));
+
+  // Strategy 2: feed update containers (fallback if data-urn not present)
+  if (containers.length === 0) {
+    containers = Array.from(root.querySelectorAll(
+      ".feed-shared-update-v2, " +
+      "[data-id^='urn:li:activity:'], " +
+      "div[class*='occludable-update']"
+    ));
+  }
+
+  // Strategy 3: any article-like element with a LinkedIn activity link
+  if (containers.length === 0) {
+    const activityLinks = root.querySelectorAll("a[href*='/feed/update/urn:li:activity:']");
+    const seen = new Set();
+    for (const link of activityLinks) {
+      const container = link.closest("div[class*='update'], div[class*='feed'], li, article") || link.parentElement?.parentElement;
+      if (container && !seen.has(container)) {
+        seen.add(container);
+        containers.push(container);
+      }
+    }
+  }
+
+  console.log(`[SolSocial] LinkedIn extractor: found ${containers.length} containers (${VERSION})`);
 
   for (const el of containers) {
     try {
-      const urn = el.getAttribute("data-urn");
-      if (!urn) continue;
+      // Get post ID from data-urn, data-id, or activity URL
+      let urn = el.getAttribute("data-urn") || el.getAttribute("data-id");
+      if (!urn) {
+        const actLink = el.querySelector("a[href*='/feed/update/urn:li:activity:']");
+        if (actLink) {
+          const m = actLink.getAttribute("href").match(/(urn:li:activity:[^/?#&]+)/);
+          if (m) urn = decodeURIComponent(m[1]);
+        }
+      }
+      if (!urn || !urn.startsWith("urn:li:")) continue;
 
-      // Author: first profile link inside the post
-      let authorHandle = null;
-      let authorName = null;
+      // Author
+      let authorHandle = null, authorName = null;
       const authorLink = el.querySelector("a[href*='/in/']");
       if (authorLink) {
         const href = authorLink.getAttribute("href") || "";
-        const match = href.match(/\/in\/([^/?#]+)/);
-        if (match) authorHandle = match[1];
-        // Name is in the link text or a child span
-        authorName = authorLink.querySelector("span[aria-hidden='true']")?.textContent?.trim()
-          || authorLink.textContent?.trim()
-          || null;
+        const m = href.match(/\/in\/([^/?#]+)/);
+        if (m) authorHandle = m[1];
+        authorName = (
+          authorLink.querySelector("span[aria-hidden='true']")?.textContent?.trim() ||
+          authorLink.textContent?.trim() || ""
+        ).slice(0, 100) || null;
       }
 
-      // Text: first large text block (aria-hidden=false spans, not inside buttons)
+      // Text — try multiple approaches
       let textExcerpt = null;
-      const textSpans = el.querySelectorAll("span[dir='ltr']");
-      for (const span of textSpans) {
+
+      // Try span[dir=ltr] first
+      for (const span of el.querySelectorAll("span[dir='ltr']")) {
         if (span.closest("button")) continue;
         const t = span.textContent?.trim();
-        if (t && t.length > 20) {
-          textExcerpt = t.slice(0, 512);
-          break;
+        if (t && t.length > 20) { textExcerpt = t.slice(0, 512); break; }
+      }
+      // Fallback: any paragraph-like element with substantial text
+      if (!textExcerpt) {
+        for (const p of el.querySelectorAll("p, [class*='commentary'], [class*='body']")) {
+          const t = p.textContent?.trim();
+          if (t && t.length > 20) { textExcerpt = t.slice(0, 512); break; }
         }
       }
 
-      // Engagement counts via ARIA labels (accessibility contract — stable)
+      // Engagement via ARIA
       const likeCount = _parseAriaCount(el, "button[aria-label*='reaction']") ??
                         _parseAriaCount(el, "button[aria-label*='like']");
       const replyCount = _parseAriaCount(el, "button[aria-label*='comment']");
       const repostCount = _parseAriaCount(el, "button[aria-label*='repost']");
 
-      // Post URL
-      const postLink = el.querySelector(`a[href*='/feed/update/${urn.replace(/:/g, '%3A')}/']`)
-        || el.querySelector(`a[href*='${urn}']`);
-      const url = postLink ? new URL(postLink.getAttribute("href"), location.origin).href : null;
+      // URL
+      const postLink = el.querySelector("a[href*='/feed/update/']") ||
+                       el.querySelector(`a[href*='${urn}']`);
+      const url = postLink
+        ? new URL(postLink.getAttribute("href"), location.origin).href
+        : null;
 
       posts.push({
         platform: "linkedin",
@@ -73,31 +104,20 @@ function extractPosts(root = document) {
         reply_count: replyCount,
         repost_count: repostCount,
         view_count: null,
-        is_own: false,  // caller sets this after comparing to cached own-handle
+        is_own: false,
         raw_attrs: {},
       });
-    } catch (err) {
-      // Skip broken posts silently — never crash the observer
-    }
+    } catch (_) {}
   }
 
   return posts;
 }
 
-/**
- * Extract engagement count from a button's aria-label.
- * e.g. "42 reactions" → 42
- */
 function _parseAriaCount(root, selector) {
   const btn = root.querySelector(selector);
   if (!btn) return null;
-  const label = btn.getAttribute("aria-label") || "";
-  const match = label.match(/(\d[\d,]*)/);
-  if (!match) return null;
-  return parseInt(match[1].replace(/,/g, ""), 10) || null;
+  const m = (btn.getAttribute("aria-label") || "").match(/(\d[\d,]*)/);
+  return m ? parseInt(m[1].replace(/,/g, ""), 10) || null : null;
 }
 
-// Expose for content script (module export would be preferred but MV3
-// content scripts support module syntax when using import maps, so we
-// attach to globalThis as a fallback for simplicity)
 globalThis.LinkedInExtractor = { extractPosts, VERSION };

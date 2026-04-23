@@ -52,11 +52,24 @@ async function flush() {
       await enqueue(items.slice(100));
     }
 
-    // Update today's count in storage
+    // Update today's count, last flush time, platform breakdown
     const today = new Date().toISOString().slice(0, 10);
     const storageKey = `count_${today}`;
-    const { [storageKey]: prev = 0 } = await chrome.storage.local.get(storageKey);
-    await chrome.storage.local.set({ [storageKey]: prev + Math.min(items.length, 100) });
+    const { [storageKey]: prev = 0, solsocial_platform_breakdown: prevBreakdown = {} } =
+      await chrome.storage.local.get([storageKey, "solsocial_platform_breakdown"]);
+
+    const flushed = Math.min(items.length, 100);
+    const newBreakdown = { ...prevBreakdown };
+    for (const item of items.slice(0, 100)) {
+      const p = item.platform || "unknown";
+      newBreakdown[p] = (newBreakdown[p] ?? 0) + 1;
+    }
+
+    await chrome.storage.local.set({
+      [storageKey]: prev + flushed,
+      solsocial_last_flush_at: Date.now(),
+      solsocial_platform_breakdown: newBreakdown,
+    });
 
   } catch (err) {
     // Put items back on failure — don't lose data
@@ -146,7 +159,11 @@ async function handle(msg) {
       const auth = await getAuth();
       const today = new Date().toISOString().slice(0, 10);
       const storageKey = `count_${today}`;
-      const { [storageKey]: todayCount = 0 } = await chrome.storage.local.get(storageKey);
+      const {
+        [storageKey]: todayCount = 0,
+        solsocial_last_flush_at: lastFlushAt = 0,
+        solsocial_platform_breakdown: platformBreakdown = {},
+      } = await chrome.storage.local.get([storageKey, "solsocial_last_flush_at", "solsocial_platform_breakdown"]);
       const queueSize = await size();
       return {
         ok: true,
@@ -155,6 +172,8 @@ async function handle(msg) {
         user: auth?.user ?? null,
         todayCount,
         queueSize,
+        lastFlushAt,
+        platformBreakdown,
         baseUrl: auth?.baseUrl ?? "http://localhost:51734",
       };
     }
