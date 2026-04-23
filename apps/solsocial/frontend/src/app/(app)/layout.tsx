@@ -7,12 +7,13 @@ import { getToken, setToken } from "@/lib/api";
 import { Wordmark } from "@/components/sun-mark";
 
 const NAV = [
-  { href: "/",          label: "Front", short: "Front" },
-  { href: "/composer",  label: "Compose" },
-  { href: "/posts",     label: "Posts" },
-  { href: "/queue",     label: "Queue" },
-  { href: "/calendar",  label: "Calendar" },
-  { href: "/ideas",     label: "Ideas" },
+  { href: "/",               label: "Front",        short: "Front" },
+  { href: "/composer",       label: "Compose" },
+  { href: "/posts",          label: "Posts" },
+  { href: "/queue",          label: "Queue" },
+  { href: "/calendar",       label: "Calendar" },
+  { href: "/ideas",          label: "Ideas" },
+  { href: "/intelligence",   label: "Intelligence" },
   { href: "/channels",  label: "Channels" },
 ];
 

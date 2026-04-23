@@ -95,6 +95,43 @@ export type WorkspaceApp = {
   updated_at: string;
 };
 
+// ── Social Capture (collected by the browser extension) ──────────────────────
+export type CapturePlatform = "linkedin" | "x" | "twitter" | "instagram";
+export type CaptureType =
+  | "feed_post_seen"
+  | "own_post_published"
+  | "comment_seen"
+  | "own_comment"
+  | "profile_viewed";
+
+export type SocialCapture = {
+  id: string;
+  user_id: string;
+  org_id: string;
+  platform: CapturePlatform;
+  type: CaptureType;
+  platform_post_id: string;
+  observed_at: string;
+  extractor_version: string;
+  author_handle: string | null;
+  author_name: string | null;
+  text_excerpt: string | null;
+  url: string | null;
+  like_count: number | null;
+  reply_count: number | null;
+  repost_count: number | null;
+  view_count: number | null;
+  is_own: boolean;
+  created_at: string;
+};
+
+export type CaptureStats = {
+  total: number;
+  by_platform: Record<string, number>;
+  by_type: Record<string, number>;
+  own_posts: number;
+};
+
 export type QueueSlot = { id: string; queue_id: string; day_of_week: number; hour: number; minute: number; created_at: string };
 export type Queue = {
   id: string;
