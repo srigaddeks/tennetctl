@@ -34,6 +34,7 @@ async def _assert_org(pool: Any, ctx: Any, org_id: str) -> None:
 async def create_group(
     pool: Any, conn: Any, ctx: Any, *,
     org_id: str, code: str, label: str, description: str | None = None,
+    application_id: str | None = None,
 ) -> dict:
     await _assert_org(pool, ctx, org_id)
 
@@ -46,6 +47,7 @@ async def create_group(
     try:
         await _repo.insert_group(
             conn, id=group_id, org_id=org_id, created_by=(ctx.user_id or "sys"),
+            application_id=application_id,
         )
     except asyncpg.UniqueViolationError as e:
         raise _errors.ConflictError(
@@ -76,9 +78,11 @@ async def list_groups(
     conn: Any, _ctx: Any, *,
     limit: int = 50, offset: int = 0,
     org_id: str | None = None, is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> tuple[list[dict], int]:
     return await _repo.list_groups(
-        conn, limit=limit, offset=offset, org_id=org_id, is_active=is_active,
+        conn, limit=limit, offset=offset, org_id=org_id,
+        is_active=is_active, application_id=application_id,
     )
 
 

@@ -45,6 +45,7 @@ async def list_applications(
     limit: int, offset: int,
     org_id: str | None = None,
     is_active: bool | None = None,
+    code: str | None = None,
 ) -> tuple[list[dict], int]:
     where = ["deleted_at IS NULL"]
     params: list[Any] = []
@@ -54,6 +55,9 @@ async def list_applications(
     if is_active is not None:
         params.append(is_active)
         where.append(f"is_active = ${len(params)}")
+    if code is not None:
+        params.append(code)
+        where.append(f"code = ${len(params)}")
     where_sql = " AND ".join(where)
 
     total = await conn.fetchval(
@@ -118,7 +122,29 @@ async def touch_application(conn: Any, *, id: str, updated_by: str) -> bool:
     return result.endswith(" 1")
 
 
+_SCOPE_TABLE_CHECKED = False
+_SCOPE_TABLE_EXISTS = False
+
+
+async def _scope_table_exists(conn: Any) -> bool:
+    # `45_lnk_application_scopes` was dropped by 20260418_050 in some installs.
+    # Checking inside a transaction via try/except poisons the tx; probe first
+    # via information_schema so the caller's tx stays clean.
+    global _SCOPE_TABLE_CHECKED, _SCOPE_TABLE_EXISTS
+    if _SCOPE_TABLE_CHECKED:
+        return _SCOPE_TABLE_EXISTS
+    row = await conn.fetchval(
+        "SELECT 1 FROM information_schema.tables "
+        "WHERE table_schema = '03_iam' AND table_name = '45_lnk_application_scopes'"
+    )
+    _SCOPE_TABLE_EXISTS = row is not None
+    _SCOPE_TABLE_CHECKED = True
+    return _SCOPE_TABLE_EXISTS
+
+
 async def list_scope_ids(conn: Any, application_id: str) -> list[int]:
+    if not await _scope_table_exists(conn):
+        return []
     rows = await conn.fetch(
         'SELECT scope_id FROM "03_iam"."45_lnk_application_scopes" '
         'WHERE application_id = $1 ORDER BY scope_id',
@@ -130,6 +156,8 @@ async def list_scope_ids(conn: Any, application_id: str) -> list[int]:
 async def list_scope_ids_many(conn: Any, application_ids: list[str]) -> dict[str, list[int]]:
     if not application_ids:
         return {}
+    if not await _scope_table_exists(conn):
+        return {aid: [] for aid in application_ids}
     rows = await conn.fetch(
         'SELECT application_id, scope_id '
         'FROM "03_iam"."45_lnk_application_scopes" '

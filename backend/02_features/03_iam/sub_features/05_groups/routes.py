@@ -50,12 +50,14 @@ async def list_groups_route(
     offset: int = 0,
     org_id: str | None = None,
     is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> dict:
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool, audit_category="system")
     async with pool.acquire() as conn:
         items, total = await _service.list_groups(
-            conn, ctx, limit=limit, offset=offset, org_id=org_id, is_active=is_active,
+            conn, ctx, limit=limit, offset=offset,
+            org_id=org_id, is_active=is_active, application_id=application_id,
         )
     data = [GroupRead(**r).model_dump() for r in items]
     return _response.paginated(data, total=total, limit=limit, offset=offset)
@@ -71,6 +73,7 @@ async def create_group_route(request: Request, body: GroupCreate) -> dict:
             g = await _service.create_group(
                 pool, conn, ctx,
                 org_id=body.org_id,
+                application_id=body.application_id,
                 code=body.code,
                 label=body.label,
                 description=body.description,

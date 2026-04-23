@@ -36,6 +36,7 @@ async def list_suppressions_route(request: Request) -> dict:
         raise _errors.ValidationError("org_id is required")
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         items = await _service.list_suppressions(conn, org_id=org_id)
     data = [SuppressionRow(**r).model_dump() for r in items]
@@ -49,6 +50,7 @@ async def add_suppression_route(request: Request, body: SuppressionAdd) -> dict:
         raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await _service.add_suppression(
             conn,
@@ -70,6 +72,7 @@ async def delete_suppression_route(request: Request, id: str) -> None:
         raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
             'SELECT org_id, email FROM "06_notify"."v_notify_suppressions" WHERE id = $1',
@@ -96,6 +99,7 @@ async def _apply_unsubscribe(
 ) -> tuple[str, str]:
     """Validate token, flip preferences, add to suppression list. Returns (email, category_code)."""
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     vault = request.app.state.vault
     if vault is None:
         raise _errors.AppError("SERVICE_UNAVAILABLE", "Vault not ready.", 503)

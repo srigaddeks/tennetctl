@@ -32,6 +32,7 @@ MODULE_ROUTERS: dict[str, str] = {
     "audit": "backend.02_features.04_audit.routes",
     "notify": "backend.02_features.06_notify.routes",
     "monitoring": "backend.02_features.05_monitoring.routes",
+    "social_publisher": "backend.02_features.07_social_publisher.routes",
 }
 
 
@@ -311,6 +312,19 @@ async def lifespan(application: FastAPI):
         )
         logger.info("APISIX sync worker started.")
 
+    # Social publisher scheduler — finds due scheduled posts and publishes them.
+    # Requires vault module to be enabled (tokens are stored in vault).
+    _social_scheduler_task = None
+    if "social_publisher" in config.modules and "vault" in config.modules:
+        import asyncio as _asyncio_social
+        _social_worker_mod = import_module(
+            "backend.02_features.07_social_publisher.worker"
+        )
+        _social_scheduler_task = _asyncio_social.create_task(
+            _social_worker_mod.run_scheduler_loop(pool, application.state.vault)
+        )
+        logger.info("Social publisher scheduler started.")
+
     yield
 
     if _gdpr_worker_task is not None:
@@ -353,6 +367,12 @@ async def lifespan(application: FastAPI):
         import asyncio as _asyncio_apisix2
         await _asyncio_apisix2.gather(_apisix_worker_task, return_exceptions=True)
         logger.info("APISIX sync worker stopped.")
+
+    if _social_scheduler_task is not None:
+        _social_scheduler_task.cancel()
+        import asyncio as _asyncio_social2
+        await _asyncio_social2.gather(_social_scheduler_task, return_exceptions=True)
+        logger.info("Social publisher scheduler stopped.")
 
     if _notify_worker_task is not None:
         _notify_worker_task.cancel()
@@ -401,7 +421,7 @@ app = FastAPI(
 # CORS — allow frontend dev server
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:51735"],
+    allow_origins=["http://localhost:51735", "http://localhost:51835", "http://localhost:51736"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -112,37 +112,58 @@ MIGRATION_TEMPLATE = """-- UP ====
 # ── File discovery ────────────────────────────────────────────────────
 
 
+def _is_under_apps(path: Path, root_dir: Path) -> bool:
+    """True if `path` is under `{root_dir}/apps/` — sibling-app trees.
+
+    Sibling SaaS apps (apps/solsocial/, apps/foo/) keep their migrations in
+    their own 03_docs/features/ subtree but run against a different DB. The
+    tennetctl default migrator must not pick them up, so we exclude the
+    apps/ directory when scanning from the project root.
+    """
+    try:
+        rel = path.relative_to(root_dir)
+    except ValueError:
+        return False
+    return bool(rel.parts) and rel.parts[0] == "apps"
+
+
 def discover_pending(root_dir: Path) -> list[Path]:
     """
     Recursively find all .sql files in 09_sql_migrations/02_in_progress/
-    directories under root_dir.
-
-    Sorted globally by filename (YYYYMMDD_NNN_desc.sql convention ensures order).
+    directories under root_dir. Excludes apps/* sibling trees.
     """
-    files = list(root_dir.rglob("09_sql_migrations/02_in_progress/*.sql"))
+    files = [
+        p for p in root_dir.rglob("09_sql_migrations/02_in_progress/*.sql")
+        if not _is_under_apps(p, root_dir)
+    ]
     return sorted(files, key=lambda p: p.name)
 
 
 def discover_migrated(root_dir: Path) -> dict[str, Path]:
     """
     Recursively find all .sql files in 09_sql_migrations/01_migrated/
-    directories under root_dir.
-
-    Returns {filename: full_path} mapping for rollback lookups.
+    directories under root_dir. Excludes apps/* sibling trees.
     """
-    files = root_dir.rglob("09_sql_migrations/01_migrated/*.sql")
+    files = [
+        f for f in root_dir.rglob("09_sql_migrations/01_migrated/*.sql")
+        if not _is_under_apps(f, root_dir)
+    ]
     return {f.name: f for f in files}
 
 
 def discover_seeds(root_dir: Path) -> list[Path]:
     """
-    Recursively find all seed files (*.yaml, *.json) in
-    09_sql_migrations/seeds/ directories under root_dir.
-
-    Sorted by filename for deterministic order.
+    Recursively find seed files under 09_sql_migrations/seeds/.
+    Excludes apps/* sibling trees.
     """
-    yaml_files = list(root_dir.rglob("09_sql_migrations/seeds/*.yaml"))
-    json_files = list(root_dir.rglob("09_sql_migrations/seeds/*.json"))
+    yaml_files = [
+        p for p in root_dir.rglob("09_sql_migrations/seeds/*.yaml")
+        if not _is_under_apps(p, root_dir)
+    ]
+    json_files = [
+        p for p in root_dir.rglob("09_sql_migrations/seeds/*.json")
+        if not _is_under_apps(p, root_dir)
+    ]
     return sorted(yaml_files + json_files, key=lambda p: p.name)
 
 

@@ -131,13 +131,18 @@ async def any_row_exists_at_scope(
     workspace_id: str | None,
     key: str,
 ) -> bool:
-    """True iff any row (live or soft-deleted) exists at the exact (scope, key)."""
+    """True iff a LIVE row exists at the exact (scope, key).
+
+    Soft-deleted rows don't block re-creation — we're checking whether the
+    slot is occupied today, not whether it ever was. This matches the
+    semantics of `GET /v1/vault` and the HTTP 4xx caller expects.
+    """
     row = await conn.fetchrow(
         'SELECT 1 FROM "02_vault"."10_fct_vault_entries" '
         'WHERE scope_id = $1 '
         '  AND org_id IS NOT DISTINCT FROM $2 '
         '  AND workspace_id IS NOT DISTINCT FROM $3 '
-        '  AND key = $4 LIMIT 1',
+        '  AND key = $4 AND deleted_at IS NULL LIMIT 1',
         _scope_id(scope), org_id, workspace_id, key,
     )
     return row is not None

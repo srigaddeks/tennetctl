@@ -21,6 +21,7 @@ class NodeContext:
     session_id: str | None = None
     org_id: str | None = None
     workspace_id: str | None = None
+    application_id: str | None = None  # Set when the call originates from a SaaS app.
 
     # Tracing
     trace_id: str = ""

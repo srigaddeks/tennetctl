@@ -26,6 +26,7 @@ async def send_transactional(
     deep_link: str | None = None,
     idempotency_key: str | None = None,
     scheduled_at: Any = None,
+    application_id: str | None = None,
 ) -> tuple[str, bool]:
     """Create a transactional delivery. Returns (delivery_id, was_new).
 
@@ -71,6 +72,7 @@ async def send_transactional(
         conn,
         subscription_id=None,
         org_id=org_id,
+        application_id=application_id,
         template_id=template["id"],
         recipient_user_id=recipient_user_id,
         channel_id=channel_id,

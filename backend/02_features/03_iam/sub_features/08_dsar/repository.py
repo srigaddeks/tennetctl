@@ -152,7 +152,7 @@ async def list_pending_deletes(conn: Any, limit: int = 10) -> list[dict]:
 async def user_belongs_to_org(conn: Any, user_id: str, org_id: str) -> bool:
     """Check if a user has any membership in the org."""
     row = await conn.fetchval(
-        'SELECT 1 FROM "03_iam"."40_lnk_org_members" '
+        'SELECT 1 FROM "03_iam"."40_lnk_user_orgs" '
         "WHERE org_id = $1 AND user_id = $2 LIMIT 1",
         org_id, user_id,
     )
@@ -205,7 +205,7 @@ async def export_user_data(pool: Any, subject_user_id: str, _org_id: str) -> dic
 
         # Credentials (hashed, PII-minimal but keep for audit)
         creds = await conn.fetch(
-            'SELECT id, user_id, kind_id, created_at FROM "03_iam"."11_fct_credentials" '
+            'SELECT user_id, created_at, updated_at FROM "03_iam"."22_dtl_credentials" '
             "WHERE user_id = $1",
             subject_user_id,
         )
@@ -213,14 +213,14 @@ async def export_user_data(pool: Any, subject_user_id: str, _org_id: str) -> dic
 
         # Org memberships
         memberships = await conn.fetch(
-            'SELECT * FROM "03_iam"."40_lnk_org_members" WHERE user_id = $1',
+            'SELECT * FROM "03_iam"."40_lnk_user_orgs" WHERE user_id = $1',
             subject_user_id,
         )
         data["org_memberships"] = [dict(r) for r in memberships]
 
         # Role assignments
         role_assigns = await conn.fetch(
-            'SELECT * FROM "03_iam"."41_lnk_role_assignments" WHERE user_id = $1',
+            'SELECT * FROM "03_iam"."42_lnk_user_roles" WHERE user_id = $1',
             subject_user_id,
         )
         data["role_assignments"] = [dict(r) for r in role_assigns]
@@ -283,21 +283,21 @@ async def delete_user_data(conn: Any, subject_user_id: str, _org_id: str) -> dic
 
     # Delete credentials
     c = await conn.execute(
-        'DELETE FROM "03_iam"."11_fct_credentials" WHERE user_id = $1',
+        'DELETE FROM "03_iam"."22_dtl_credentials" WHERE user_id = $1',
         subject_user_id,
     )
     counts["credentials"] = int(c.split()[-1]) if "DELETE" in c else 0
 
     # Delete org memberships
     c = await conn.execute(
-        'DELETE FROM "03_iam"."40_lnk_org_members" WHERE user_id = $1',
+        'DELETE FROM "03_iam"."40_lnk_user_orgs" WHERE user_id = $1',
         subject_user_id,
     )
     counts["org_memberships"] = int(c.split()[-1]) if "DELETE" in c else 0
 
     # Delete role assignments
     c = await conn.execute(
-        'DELETE FROM "03_iam"."41_lnk_role_assignments" WHERE user_id = $1',
+        'DELETE FROM "03_iam"."42_lnk_user_roles" WHERE user_id = $1',
         subject_user_id,
     )
     counts["role_assignments"] = int(c.split()[-1]) if "DELETE" in c else 0

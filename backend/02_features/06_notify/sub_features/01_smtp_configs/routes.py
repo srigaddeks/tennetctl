@@ -46,8 +46,9 @@ def _build_ctx(request: Request, pool: Any, *, audit_category: str = "setup") ->
 
 
 @router.get("/v1/notify/smtp-configs", status_code=200)
-async def list_smtp_configs_route(request: Request, org_id: str) -> dict:
+async def list_smtp_configs_route(request: Request, org_id: str | None = None) -> dict:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         items = await _service.list_smtp_configs(conn, org_id=org_id)
     data = [SmtpConfigRow(**r).model_dump() for r in items]
@@ -57,6 +58,7 @@ async def list_smtp_configs_route(request: Request, org_id: str) -> dict:
 @router.post("/v1/notify/smtp-configs", status_code=201)
 async def create_smtp_config_route(request: Request, body: SmtpConfigCreate) -> dict:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)
@@ -67,6 +69,7 @@ async def create_smtp_config_route(request: Request, body: SmtpConfigCreate) -> 
 @router.get("/v1/notify/smtp-configs/{config_id}", status_code=200)
 async def get_smtp_config_route(request: Request, config_id: str) -> dict:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await _service.get_smtp_config(conn, config_id=config_id)
     if row is None:
@@ -79,6 +82,7 @@ async def update_smtp_config_route(
     request: Request, config_id: str, body: SmtpConfigUpdate
 ) -> dict:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)
@@ -94,6 +98,7 @@ async def update_smtp_config_route(
 @router.delete("/v1/notify/smtp-configs/{config_id}", status_code=204)
 async def delete_smtp_config_route(request: Request, config_id: str) -> None:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)

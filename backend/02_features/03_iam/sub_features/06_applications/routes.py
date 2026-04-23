@@ -50,12 +50,14 @@ async def list_applications_route(
     offset: int = 0,
     org_id: str | None = None,
     is_active: bool | None = None,
+    code: str | None = None,
 ) -> dict:
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool, audit_category="system")
     async with pool.acquire() as conn:
         items, total = await _service.list_applications(
-            conn, ctx, limit=limit, offset=offset, org_id=org_id, is_active=is_active,
+            conn, ctx, limit=limit, offset=offset,
+            org_id=org_id, is_active=is_active, code=code,
         )
     data = [ApplicationRead(**r).model_dump() for r in items]
     return _response.paginated(data, total=total, limit=limit, offset=offset)

@@ -44,9 +44,19 @@ _credentials: Any = import_module(
 _sessions: Any = import_module(
     "backend.02_features.03_iam.sub_features.09_sessions.service"
 )
+_workspaces_service: Any = import_module(
+    "backend.02_features.03_iam.sub_features.02_workspaces.service"
+)
+_workspaces_repo: Any = import_module(
+    "backend.02_features.03_iam.sub_features.02_workspaces.repository"
+)
 
 DEFAULT_ORG_SLUG = "default"
 DEFAULT_ORG_DISPLAY_NAME = "Default Organization"
+# Every newly-attached user also gets a personal workspace in the default org.
+# Slug is derived from the user id (first 12 chars of the uuid) so it's stable
+# per user and collision-free across signups.
+PERSONAL_WORKSPACE_SLUG_PREFIX = "user-"
 
 _AUDIT_NODE_KEY  = "audit.events.emit"
 _METRIC_NODE_KEY = "monitoring.metrics.increment"
@@ -139,13 +149,44 @@ async def _ensure_default_org(pool: Any, conn: Any, ctx: Any) -> dict:
     )
 
 
+async def _ensure_personal_workspace(
+    pool: Any, conn: Any, ctx: Any, *, user_id: str, org_id: str, display_name: str,
+) -> str:
+    """Fetch or create a per-user workspace in the given org; ensure membership.
+
+    Returns the workspace_id. The slug is derived from the first 12 chars of
+    user_id (lowercased) so it's stable across signins and collision-free.
+    """
+    slug = f"{PERSONAL_WORKSPACE_SLUG_PREFIX}{user_id[:12].lower().replace('-', '')}"
+    existing = await _workspaces_repo.get_by_org_slug(conn, org_id, slug)
+    if existing is not None:
+        workspace_id = existing["id"]
+    else:
+        ws = await _workspaces_service.create_workspace(
+            pool, conn, ctx,
+            org_id=org_id, slug=slug,
+            display_name=f"{display_name}'s workspace",
+        )
+        workspace_id = ws["id"]
+
+    existing_mem = await _memberships_repo.get_workspace_membership_by_pair(
+        conn, user_id, workspace_id,
+    )
+    if existing_mem is None:
+        await _memberships_service.assign_workspace(
+            pool, conn, ctx, user_id=user_id, workspace_id=workspace_id,
+        )
+    return workspace_id
+
+
 async def _attach_to_default_org_if_needed(
-    pool: Any, conn: Any, ctx: Any, *, user_id: str,
-) -> str | None:
-    """In single-tenant mode, ensure user is a member of the default org and return org_id."""
+    pool: Any, conn: Any, ctx: Any, *, user_id: str, display_name: str,
+) -> tuple[str | None, str | None]:
+    """In single-tenant mode, ensure user is a member of the default org AND has
+    a personal workspace inside it. Returns (org_id, workspace_id)."""
     config = _config_mod.load_config()
     if not config.single_tenant:
-        return None
+        return None, None
     org = await _ensure_default_org(pool, conn, ctx)
     org_id = org["id"]
     existing = await _memberships_repo.get_org_membership_by_pair(conn, user_id, org_id)
@@ -153,7 +194,11 @@ async def _attach_to_default_org_if_needed(
         await _memberships_service.assign_org(
             pool, conn, ctx, user_id=user_id, org_id=org_id,
         )
-    return org_id
+    workspace_id = await _ensure_personal_workspace(
+        pool, conn, ctx,
+        user_id=user_id, org_id=org_id, display_name=display_name,
+    )
+    return org_id, workspace_id
 
 
 # ── Signup ─────────────────────────────────────────────────────────
@@ -190,11 +235,13 @@ async def signup(
         conn, vault_client=vault_client, user_id=user_id, value=password,
     )
 
-    org_id = await _attach_to_default_org_if_needed(pool, conn, ctx, user_id=user_id)
+    org_id, workspace_id = await _attach_to_default_org_if_needed(
+        pool, conn, ctx, user_id=user_id, display_name=display_name,
+    )
 
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
-        user_id=user_id, org_id=org_id,
+        user_id=user_id, org_id=org_id, workspace_id=workspace_id,
     )
 
     await _emit_audit(
@@ -335,8 +382,9 @@ async def signin(
             metadata={"user_id": user["id"], "email": email},
             outcome="success",
         )
-    org_id = await _attach_to_default_org_if_needed(
+    org_id, workspace_id = await _attach_to_default_org_if_needed(
         pool, conn, ctx, user_id=user["id"],
+        display_name=user.get("display_name") or user.get("email") or "user",
     )
 
     # MFA enforcement gate — check before minting session.
@@ -357,7 +405,7 @@ async def signin(
 
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
-        user_id=user["id"], org_id=org_id,
+        user_id=user["id"], org_id=org_id, workspace_id=workspace_id,
         user_agent=user_agent, ip_address=source_ip,
     )
     # Session-fixation defense: if the client presented a pre-existing session
@@ -571,12 +619,13 @@ async def oauth_signin(
             avatar_url=profile.get("avatar_url"),
         )
 
-    org_id = await _attach_to_default_org_if_needed(
+    org_id, workspace_id = await _attach_to_default_org_if_needed(
         pool, conn, ctx, user_id=user["id"],
+        display_name=profile["display_name"],
     )
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
-        user_id=user["id"], org_id=org_id,
+        user_id=user["id"], org_id=org_id, workspace_id=workspace_id,
     )
     await _emit_audit(
         pool, ctx,

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ActionTemplateBase(BaseModel):
@@ -47,6 +47,8 @@ class ActionTemplateUpdate(BaseModel):
 class ActionTemplate(ActionTemplateBase):
     """Full action template with metadata."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     org_id: str
     kind_code: str
@@ -56,12 +58,11 @@ class ActionTemplate(ActionTemplateBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class ActionDelivery(BaseModel):
     """Action delivery record."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     id: str
     template_id: str
@@ -78,9 +79,6 @@ class ActionDelivery(BaseModel):
     succeeded_at: Optional[datetime] = None
     kind_code: str
     kind_label: str
-
-    class Config:
-        from_attributes = True
 
 
 class RenderRequest(BaseModel):

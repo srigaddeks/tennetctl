@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # TennetCTL — Claude Code Guide
 
 ## What This Is
@@ -6,8 +10,39 @@ TennetCTL is a self-hostable, workflow-native developer platform. It replaces th
 
 Every product capability — IAM, auditing, feature flags, monitoring, analytics — is modeled as nodes. Developers define features → sub-features → nodes in Python code. A visual canvas (React Flow) reads the live node registry and renders the workflow so developers can trace exactly what happens at every step.
 
-**License:** AGPL-3  
-**Status:** Rebuilding from scratch — no existing backend or frontend code yet.
+**License:** AGPL-3
+
+---
+
+## Commands
+
+```bash
+# Backend (from repo root)
+.venv/bin/python -m uvicorn backend.main:app --port 51734 --host 0.0.0.0 --reload
+
+# Frontend
+cd frontend && npm run dev        # port 51735
+cd frontend && npm run build
+cd frontend && npm run lint
+
+# Tests — real Postgres, no mocks
+.venv/bin/pytest tests/ -v
+.venv/bin/pytest tests/test_iam_users.py -v          # single file
+.venv/bin/pytest tests/test_iam_users.py::test_name  # single test
+.venv/bin/pytest --cov=backend --cov-report=term-missing
+
+# Migrations
+.venv/bin/python -m backend.01_migrator.runner apply
+.venv/bin/python -m backend.01_migrator.runner status
+.venv/bin/python -m backend.01_migrator.runner new --name create-iam-schema --feature 03_iam --sub 00_bootstrap
+.venv/bin/python -m backend.01_migrator.runner seed
+```
+
+Test DB (session-scoped, drops+recreates `tennetctl_test` on each run):
+- Host: `localhost:5434`, user: `tennetctl`, pass: `tennetctl_dev`
+- Override via env: `TENNETCTL_TEST_PG_HOST/PORT/USER/PASS/DB`
+
+Dev DB (for the running server): `postgresql://tennetctl:tennetctl_dev@localhost:5434/tennetctl`
 
 ---
 
@@ -159,6 +194,11 @@ new_uuid = _core_id.uuid7()   # NOT uuid4(), NOT new_id()
 cd tennetctl && .venv/bin/python -m uvicorn backend.main:app --port 51734 --host 0.0.0.0 --reload
 ```
 
+Frontend dev server:
+```bash
+cd tennetctl/frontend && npm run dev   # starts on port 51735
+```
+
 ### TypeScript: one types file
 All shared TS types in `frontend/src/types/api.ts`. No scattered type files.
 
@@ -255,6 +295,16 @@ tennetctl/
 ```
 
 Backend sub-feature = exactly 5 files: `__init__.py`, `schemas.py`, `repository.py`, `service.py`, `routes.py`.
+
+### Catalog Boot Sequence
+
+On every startup, `backend.01_catalog` scans all `feature.manifest.yaml` files, validates node contracts, and upserts features/sub-features/nodes into the `01_catalog` DB schema. This is the live node registry — it runs before any module routers mount. Adding a new node requires a manifest entry; the catalog runner resolves `handler` strings to Python classes at boot and caches them. Hot-reload is active in DEBUG mode (`DEBUG=true` env var) and watches manifests for changes without restart.
+
+Module routers are gated by `TENNETCTL_MODULES` — only listed modules mount their `routes.py`. `core + iam + audit` are always-on. The setup route (`/v1/setup/initial-admin`) is always mounted and bypasses auth via `SetupModeMiddleware`.
+
+### Next.js Version Warning
+
+Read `node_modules/next/dist/docs/` before writing any frontend code — this version has breaking changes from training data. Heed deprecation notices.
 
 ---
 

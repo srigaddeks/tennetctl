@@ -57,13 +57,14 @@ class EmitAudit(_node_mod.Node):
             """
             INSERT INTO "04_audit"."60_evt_audit"
               (id, event_key,
-               actor_user_id, actor_session_id, org_id, workspace_id,
+               actor_user_id, actor_session_id, org_id, workspace_id, application_id,
                trace_id, span_id, parent_span_id,
                audit_category, outcome, metadata)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             """,
             audit_id, inputs.event_key,
             ctx.user_id, ctx.session_id, ctx.org_id, ctx.workspace_id,
+            getattr(ctx, "application_id", None),
             ctx.trace_id, ctx.span_id, ctx.parent_span_id,
             ctx.audit_category, inputs.outcome, inputs.metadata,
         )

@@ -26,6 +26,8 @@ import io
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Literal
 
 _response: Any = import_module("backend.01_core.response")
 _errors: Any = import_module("backend.01_core.errors")
@@ -386,3 +388,52 @@ async def get_audit_event_route(request: Request, event_id: str) -> dict:
         )
 
     return _response.success(AuditEventRow(**row).model_dump())
+
+
+# ── External emit endpoint ────────────────────────────────────────────────
+# Added for SaaS apps (solsocial, etc.) that can't run catalog nodes in-process.
+# The same validation + DB insert runs via the audit.events.emit node.
+
+class _EmitAuditRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    event_key: str
+    outcome: Literal["success", "failure"] = "success"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    application_id: str | None = None
+    org_id: str | None = None
+    workspace_id: str | None = None
+    actor_user_id: str | None = None  # end-user on whose behalf the app acted
+
+
+@router.post("/v1/audit-events", status_code=201)
+async def emit_audit_event_route(request: Request, body: _EmitAuditRequest) -> dict:
+    """Emit an audit event from an external SaaS app.
+
+    The caller's API key (or session) provides the service identity; the body
+    carries end-user context on whose behalf the app is acting.
+    """
+    pool = request.app.state.pool
+    s = _session_scope(request)
+    ctx = _catalog_ctx.NodeContext(
+        user_id=body.actor_user_id or s["user_id"],
+        session_id=s["session_id"],
+        org_id=body.org_id or s["org_id"],
+        workspace_id=body.workspace_id or s["workspace_id"],
+        application_id=body.application_id,
+        trace_id=_core_id.uuid7(),
+        span_id=_core_id.uuid7(),
+        request_id=getattr(request.state, "request_id", "") or _core_id.uuid7(),
+        audit_category="integration",
+        pool=pool,
+    )
+    async with pool.acquire() as conn:
+        ctx2 = replace(ctx, conn=conn)
+        result = await _catalog.run_node(
+            pool, "audit.events.emit", ctx2,
+            {
+                "event_key": body.event_key,
+                "outcome": body.outcome,
+                "metadata": body.metadata,
+            },
+        )
+    return _response.success(result)

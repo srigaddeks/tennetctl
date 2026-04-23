@@ -21,6 +21,7 @@ def _validate_code(v: str) -> str:
 class GroupCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     org_id: str
+    application_id: str | None = None
     code: str
     label: str
     description: str | None = None
@@ -42,6 +43,7 @@ class GroupRead(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     org_id: str
+    application_id: str | None = None
     code: str | None = None
     label: str | None = None
     description: str | None = None

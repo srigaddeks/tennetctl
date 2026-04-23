@@ -20,7 +20,7 @@ async def _attr_def_id(conn: Any, code: str) -> int:
 
 async def get_by_id(conn: Any, group_id: str) -> dict | None:
     row = await conn.fetchrow(
-        'SELECT id, org_id, code, label, description, is_active, is_test, '
+        'SELECT id, org_id, application_id, code, label, description, is_active, is_test, '
         '       created_by, updated_by, created_at, updated_at '
         'FROM "03_iam"."v_groups" '
         'WHERE id = $1 AND deleted_at IS NULL',
@@ -31,7 +31,7 @@ async def get_by_id(conn: Any, group_id: str) -> dict | None:
 
 async def get_by_org_code(conn: Any, org_id: str, code: str) -> dict | None:
     row = await conn.fetchrow(
-        'SELECT id, org_id, code, label, description, is_active, is_test, '
+        'SELECT id, org_id, application_id, code, label, description, is_active, is_test, '
         '       created_by, updated_by, created_at, updated_at '
         'FROM "03_iam"."v_groups" '
         'WHERE org_id = $1 AND code = $2 AND deleted_at IS NULL',
@@ -45,6 +45,7 @@ async def list_groups(
     limit: int, offset: int,
     org_id: str | None = None,
     is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> tuple[list[dict], int]:
     where = ["deleted_at IS NULL"]
     params: list[Any] = []
@@ -54,6 +55,9 @@ async def list_groups(
     if is_active is not None:
         params.append(is_active)
         where.append(f"is_active = ${len(params)}")
+    if application_id is not None:
+        params.append(application_id)
+        where.append(f"application_id = ${len(params)}")
     where_sql = " AND ".join(where)
 
     total = await conn.fetchval(
@@ -64,7 +68,7 @@ async def list_groups(
     limit_idx = len(params_page) - 1
     offset_idx = len(params_page)
     rows = await conn.fetch(
-        f'SELECT id, org_id, code, label, description, is_active, is_test, '
+        f'SELECT id, org_id, application_id, code, label, description, is_active, is_test, '
         f'       created_by, updated_by, created_at, updated_at '
         f'FROM "03_iam"."v_groups" WHERE {where_sql} '
         f'ORDER BY created_at DESC, id DESC '
@@ -74,12 +78,15 @@ async def list_groups(
     return [dict(r) for r in rows], int(total or 0)
 
 
-async def insert_group(conn: Any, *, id: str, org_id: str, created_by: str) -> None:
+async def insert_group(
+    conn: Any, *, id: str, org_id: str, created_by: str,
+    application_id: str | None = None,
+) -> None:
     await conn.execute(
         'INSERT INTO "03_iam"."14_fct_groups" '
-        '    (id, org_id, created_by, updated_by) '
-        'VALUES ($1, $2, $3, $3)',
-        id, org_id, created_by,
+        '    (id, org_id, application_id, created_by, updated_by) '
+        'VALUES ($1, $2, $3, $4, $4)',
+        id, org_id, application_id, created_by,
     )
 
 

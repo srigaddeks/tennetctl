@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 from enum import Enum
@@ -26,6 +26,8 @@ class RetentionPolicyUpdate(BaseModel):
 
 
 class RetentionPolicyRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     policy_id: UUID
     org_id: UUID
     retention_days: int
@@ -34,12 +36,9 @@ class RetentionPolicyRead(BaseModel):
     status: RetentionPolicyStatus
     last_purge_at: Optional[datetime]
     next_purge_scheduled_at: Optional[datetime]
-    purge_count: int  # Total events purged under this policy
+    purge_count: int
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class PurgeJobStatus(str, Enum):
@@ -50,6 +49,8 @@ class PurgeJobStatus(str, Enum):
 
 
 class PurgeJobRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     job_id: UUID
     policy_id: UUID
     status: PurgeJobStatus
@@ -57,6 +58,3 @@ class PurgeJobRead(BaseModel):
     error_message: Optional[str]
     created_at: datetime
     completed_at: Optional[datetime]
-
-    class Config:
-        from_attributes = True

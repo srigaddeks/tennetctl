@@ -63,6 +63,7 @@ async def send_transactional_route(request: Request, body: TransactionalSendRequ
             pool,
             ctx2,
             org_id=body.org_id,
+            application_id=body.application_id,
             template_key=body.template_key,
             recipient_user_id=body.recipient_user_id,
             channel_code=body.channel_code,

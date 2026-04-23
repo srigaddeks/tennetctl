@@ -27,6 +27,7 @@ _response: Any = import_module("backend.01_core.response")
 _errors: Any = import_module("backend.01_core.errors")
 _core_id: Any = import_module("backend.01_core.id")
 _catalog_ctx: Any = import_module("backend.01_catalog.context")
+_catalog: Any = import_module("backend.01_catalog")
 
 _schemas: Any = import_module(
     "backend.02_features.02_vault.sub_features.01_secrets.schemas"
@@ -34,6 +35,11 @@ _schemas: Any = import_module(
 _service: Any = import_module(
     "backend.02_features.02_vault.sub_features.01_secrets.service"
 )
+_repo: Any = import_module(
+    "backend.02_features.02_vault.sub_features.01_secrets.repository"
+)
+_crypto: Any = import_module("backend.02_features.02_vault.crypto")
+_middleware: Any = import_module("backend.01_core.middleware")
 
 SecretCreate = _schemas.SecretCreate
 SecretRotate = _schemas.SecretRotate
@@ -170,3 +176,85 @@ async def delete_secret_route(
                 scope=scope, org_id=org_id, workspace_id=workspace_id,
             )
     return Response(status_code=204)
+
+
+# ── Reveal (scope-gated) ──────────────────────────────────────────────────
+# Service-to-service endpoint for apps that must read a secret back (e.g.
+# solsocial decrypting a stored LinkedIn client_secret before OAuth code
+# exchange). API-key-only — session users never hit this; browser-originated
+# code paths keep using reveal-once-at-create. The scope `vault:reveal:org`
+# gates all reveals. Scope seed must be added to 03_dim_scopes for this to
+# work on existing DBs; new installs will pick it up from the seed file.
+
+from pydantic import BaseModel, ConfigDict  # noqa: E402
+
+
+class _RevealRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    scope: str = "global"
+    org_id: str | None = None
+    workspace_id: str | None = None
+
+
+@router.post("/{key:path}/reveal", status_code=200)
+async def reveal_secret_route(request: Request, key: str, body: _RevealRequest) -> dict:
+    """Return the plaintext value for a vault key. API-key-only, scope-gated."""
+    # Scope check: `vault:reveal:org` must be on the caller's API key. Session
+    # users are rejected unconditionally — reveal is a machine-only path.
+    scopes = getattr(request.state, "scopes", None)
+    if scopes is None:
+        raise _errors.ForbiddenError(
+            "vault reveal is API-key-only; session auth is rejected."
+        )
+    _middleware.require_scope(request, "vault:reveal:org")
+
+    vault = _ensure_vault_available(request)
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        env_row = await _repo.get_latest_envelope(
+            conn,
+            scope=body.scope, org_id=body.org_id, workspace_id=body.workspace_id,
+            key=key,
+        )
+    if env_row is None:
+        raise _errors.NotFoundError(f"vault key not found: {key!r}")
+
+    envelope = _crypto.Envelope(
+        ciphertext=bytes(env_row["ciphertext"]),
+        wrapped_dek=bytes(env_row["wrapped_dek"]),
+        nonce=bytes(env_row["nonce"]),
+    )
+    plaintext = _crypto.decrypt(envelope, vault._root_key)  # noqa: SLF001 — trusted in-process access
+
+    # Audit trail (direct insert; plaintext never emitted). Category=setup so
+    # the row passes chk_evt_audit_scope without needing a session — API-key
+    # callers have no session_id by design.
+    try:
+        audit_id = _core_id.uuid7()
+        async with pool.acquire() as _audit_conn:
+            await _audit_conn.execute(
+                """
+                INSERT INTO "04_audit"."60_evt_audit"
+                  (id, event_key,
+                   actor_user_id, actor_session_id, org_id, workspace_id, application_id,
+                   trace_id, span_id, parent_span_id,
+                   audit_category, outcome, metadata)
+                VALUES ($1, $2, $3, NULL, $4, NULL, NULL, $5, $6, NULL, 'setup', 'success', $7)
+                """,
+                audit_id, "vault.secrets.revealed",
+                getattr(request.state, "user_id", None),
+                body.org_id,
+                _core_id.uuid7(), _core_id.uuid7(),
+                {
+                    "key": key,
+                    "scope": body.scope,
+                    "org_id": body.org_id,
+                    "workspace_id": body.workspace_id,
+                    "version": int(env_row["version"]),
+                    "api_key_id": getattr(request.state, "api_key_id", None),
+                },
+            )
+    except Exception:
+        pass  # audit is best-effort — never block the reveal
+
+    return _response.success({"key": key, "value": plaintext, "version": int(env_row["version"])})

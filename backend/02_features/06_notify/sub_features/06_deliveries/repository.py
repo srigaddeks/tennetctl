@@ -60,6 +60,7 @@ async def create_delivery(
     deep_link: str | None = None,
     idempotency_key: str | None = None,
     scheduled_at: Any = None,
+    application_id: str | None = None,
 ) -> dict | None:
     """Insert a delivery row. Returns None when the subscription-level idempotency
     guard (subscription_id, audit_outbox_id, channel_id) hits an existing row.
@@ -82,8 +83,8 @@ async def create_delivery(
         INSERT INTO {_FCT}
             (id, org_id, subscription_id, template_id, recipient_user_id,
              channel_id, priority_id, resolved_variables, audit_outbox_id,
-             deep_link, idempotency_key, scheduled_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+             deep_link, idempotency_key, scheduled_at, application_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         ON CONFLICT (subscription_id, audit_outbox_id, channel_id)
             WHERE subscription_id IS NOT NULL AND audit_outbox_id IS NOT NULL
         DO NOTHING
@@ -91,7 +92,7 @@ async def create_delivery(
         """,
         delivery_id, org_id, subscription_id, template_id, recipient_user_id,
         channel_id, priority_id, resolved_variables, audit_outbox_id,
-        deep_link, idempotency_key, scheduled_at,
+        deep_link, idempotency_key, scheduled_at, application_id,
     )
     if row is None:
         # Duplicate subscription/outbox/channel tuple.

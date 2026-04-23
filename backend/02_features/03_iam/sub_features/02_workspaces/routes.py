@@ -58,13 +58,15 @@ async def list_workspaces_route(
 ) -> dict:
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool, audit_category="system")
+    # Default to the session's org — prevents cross-org workspace leakage
+    resolved_org_id = org_id or ctx.org_id
     async with pool.acquire() as conn:
         items, total = await _service.list_workspaces(
             conn,
             ctx,
             limit=limit,
             offset=offset,
-            org_id=org_id,
+            org_id=resolved_org_id,
             is_active=is_active,
         )
     data = [WorkspaceRead(**row).model_dump() for row in items]

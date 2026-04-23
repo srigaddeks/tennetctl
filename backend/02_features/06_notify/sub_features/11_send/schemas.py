@@ -10,6 +10,10 @@ from pydantic import BaseModel, Field, model_validator
 
 class TransactionalSendRequest(BaseModel):
     org_id: str
+    application_id: str | None = Field(
+        default=None,
+        description="Optional SaaS application that triggered this send. Persisted on fct_notify_deliveries.application_id.",
+    )
     template_key: str = Field(..., min_length=1, max_length=64)
     recipient_user_id: str = Field(..., min_length=1, description="User ID or direct email address")
     channel_code: Literal["email", "webpush", "in_app"] = "email"

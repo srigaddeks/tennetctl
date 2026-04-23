@@ -26,6 +26,7 @@ def _validate_code(v: str) -> str:
 class RoleCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     org_id: str | None = None  # None = global role
+    application_id: str | None = None  # None = platform/org role; set = app-scoped
     role_type: str  # 'system' | 'custom'
     code: str
     label: str
@@ -49,6 +50,7 @@ class RoleRead(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     org_id: str | None
+    application_id: str | None = None
     role_type: str
     code: str | None = None
     label: str | None = None

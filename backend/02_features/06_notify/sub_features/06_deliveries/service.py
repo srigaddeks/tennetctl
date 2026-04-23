@@ -61,6 +61,7 @@ async def create_delivery(
     deep_link: str | None = None,
     idempotency_key: str | None = None,
     scheduled_at: Any = None,
+    application_id: str | None = None,
 ) -> dict | None:
     """
     Internal — called by the worker and the transactional API. No audit emit.
@@ -88,6 +89,7 @@ async def create_delivery(
         deep_link=deep_link,
         idempotency_key=idempotency_key,
         scheduled_at=scheduled_at,
+        application_id=application_id,
     )
     # Dedup hit: an existing row was returned instead of a new insert.
     if row is not None and row["id"] != delivery_id:

@@ -80,9 +80,11 @@ async def list_applications(
     conn: Any, _ctx: Any, *,
     limit: int = 50, offset: int = 0,
     org_id: str | None = None, is_active: bool | None = None,
+    code: str | None = None,
 ) -> tuple[list[dict], int]:
     items, total = await _repo.list_applications(
-        conn, limit=limit, offset=offset, org_id=org_id, is_active=is_active,
+        conn, limit=limit, offset=offset, org_id=org_id,
+        is_active=is_active, code=code,
     )
     if items:
         scopes = await _repo.list_scope_ids_many(conn, [r["id"] for r in items])

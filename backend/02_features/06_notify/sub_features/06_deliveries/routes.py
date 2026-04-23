@@ -41,6 +41,7 @@ async def unread_count_route(request: Request) -> dict:
         raise _errors.ValidationError("org_id is required")
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         count = await _service.unread_count(
             conn, org_id=org_id, recipient_user_id=user_id,
@@ -63,6 +64,7 @@ async def list_deliveries_route(request: Request) -> dict:
         raise _errors.ValidationError("limit and offset must be integers")
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         items = await _service.list_deliveries(
             conn,
@@ -80,6 +82,7 @@ async def list_deliveries_route(request: Request) -> dict:
 @router.get("/v1/notify/deliveries/{delivery_id}", status_code=200)
 async def get_delivery_route(request: Request, delivery_id: str) -> dict:
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await _service.get_delivery(conn, delivery_id=delivery_id)
     if row is None:
@@ -101,6 +104,7 @@ async def retry_delivery_route(request: Request, delivery_id: str) -> dict:
         raise _errors.AppError("UNAUTHORIZED", "org scope required", 401)
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         updated = await _service.retry_delivery(
             conn, delivery_id=delivery_id, org_id=org_id,
@@ -127,6 +131,7 @@ async def patch_delivery_route(
         )
 
     pool = request.app.state.pool
+    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         updated = await _service.mark_read(
             conn, delivery_id=delivery_id, user_id=user_id

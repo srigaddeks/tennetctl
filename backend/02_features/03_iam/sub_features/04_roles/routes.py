@@ -51,6 +51,7 @@ async def list_roles_route(
     org_id: str | None = None,
     role_type: str | None = None,
     is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> dict:
     pool = request.app.state.pool
     ctx = _build_ctx(request, pool, audit_category="system")
@@ -59,6 +60,7 @@ async def list_roles_route(
             conn, ctx,
             limit=limit, offset=offset,
             org_id=org_id, role_type=role_type, is_active=is_active,
+            application_id=application_id,
         )
     data = [RoleRead(**r).model_dump() for r in items]
     return _response.paginated(data, total=total, limit=limit, offset=offset)
@@ -74,6 +76,7 @@ async def create_role_route(request: Request, body: RoleCreate) -> dict:
             role = await _service.create_role(
                 pool, conn, ctx,
                 org_id=body.org_id,
+                application_id=body.application_id,
                 role_type=body.role_type,
                 code=body.code,
                 label=body.label,

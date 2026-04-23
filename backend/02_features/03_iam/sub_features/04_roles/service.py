@@ -43,6 +43,7 @@ async def create_role(
     code: str,
     label: str,
     description: str | None = None,
+    application_id: str | None = None,
 ) -> dict:
     await _assert_org_if_set(pool, ctx, org_id)
 
@@ -64,7 +65,8 @@ async def create_role(
 
     try:
         await _repo.insert_role(
-            conn, id=role_id, org_id=org_id, role_type_id=role_type_id, created_by=created_by,
+            conn, id=role_id, org_id=org_id, role_type_id=role_type_id,
+            created_by=created_by, application_id=application_id,
         )
     except asyncpg.UniqueViolationError as e:
         raise _errors.ConflictError(
@@ -79,7 +81,10 @@ async def create_role(
     await _emit(
         pool, ctx,
         event_key="iam.roles.created",
-        metadata={"role_id": role_id, "org_id": org_id, "code": code, "role_type": role_type},
+        metadata={
+            "role_id": role_id, "org_id": org_id, "code": code,
+            "role_type": role_type, "application_id": application_id,
+        },
     )
 
     created = await _repo.get_by_id(conn, role_id)
@@ -98,10 +103,12 @@ async def list_roles(
     org_id: str | None = None,
     role_type: str | None = None,
     is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> tuple[list[dict], int]:
     return await _repo.list_roles(
         conn, limit=limit, offset=offset,
         org_id=org_id, role_type=role_type, is_active=is_active,
+        application_id=application_id,
     )
 
 

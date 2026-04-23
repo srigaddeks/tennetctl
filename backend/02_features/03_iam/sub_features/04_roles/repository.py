@@ -27,7 +27,7 @@ async def get_role_type_id(conn: Any, code: str) -> int | None:
 
 async def get_by_id(conn: Any, role_id: str) -> dict | None:
     row = await conn.fetchrow(
-        'SELECT id, org_id, role_type, code, label, description, '
+        'SELECT id, org_id, application_id, role_type, code, label, description, '
         '       is_active, is_test, created_by, updated_by, created_at, updated_at '
         'FROM "03_iam"."v_roles" '
         'WHERE id = $1 AND deleted_at IS NULL',
@@ -39,7 +39,7 @@ async def get_by_id(conn: Any, role_id: str) -> dict | None:
 async def get_by_org_code(conn: Any, org_id: str | None, code: str) -> dict | None:
     # IS NOT DISTINCT FROM handles NULL equality for global roles.
     row = await conn.fetchrow(
-        'SELECT id, org_id, role_type, code, label, description, '
+        'SELECT id, org_id, application_id, role_type, code, label, description, '
         '       is_active, is_test, created_by, updated_by, created_at, updated_at '
         'FROM "03_iam"."v_roles" '
         'WHERE org_id IS NOT DISTINCT FROM $1 AND code = $2 AND deleted_at IS NULL',
@@ -56,6 +56,7 @@ async def list_roles(
     org_id: str | None = None,
     role_type: str | None = None,
     is_active: bool | None = None,
+    application_id: str | None = None,
 ) -> tuple[list[dict], int]:
     where = ["deleted_at IS NULL"]
     params: list[Any] = []
@@ -68,6 +69,9 @@ async def list_roles(
     if is_active is not None:
         params.append(is_active)
         where.append(f"is_active = ${len(params)}")
+    if application_id is not None:
+        params.append(application_id)
+        where.append(f"application_id = ${len(params)}")
     where_sql = " AND ".join(where)
 
     total = await conn.fetchval(
@@ -78,7 +82,7 @@ async def list_roles(
     limit_idx = len(params_page) - 1
     offset_idx = len(params_page)
     rows = await conn.fetch(
-        f'SELECT id, org_id, role_type, code, label, description, '
+        f'SELECT id, org_id, application_id, role_type, code, label, description, '
         f'       is_active, is_test, created_by, updated_by, created_at, updated_at '
         f'FROM "03_iam"."v_roles" WHERE {where_sql} '
         f'ORDER BY created_at DESC, id DESC '
@@ -95,12 +99,13 @@ async def insert_role(
     org_id: str | None,
     role_type_id: int,
     created_by: str,
+    application_id: str | None = None,
 ) -> None:
     await conn.execute(
         'INSERT INTO "03_iam"."13_fct_roles" '
-        '    (id, org_id, role_type_id, created_by, updated_by) '
-        'VALUES ($1, $2, $3, $4, $4)',
-        id, org_id, role_type_id, created_by,
+        '    (id, org_id, application_id, role_type_id, created_by, updated_by) '
+        'VALUES ($1, $2, $3, $4, $5, $5)',
+        id, org_id, application_id, role_type_id, created_by,
     )
 
 
