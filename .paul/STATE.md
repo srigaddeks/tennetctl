@@ -5,17 +5,25 @@
 See: .paul/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Any team can self-host one platform that replaces PostHog, Unleash, GrowthBook, Windmill, and their entire SaaS toolchain — building and running products as visual node workflows with enterprise capabilities built in.
-**Current focus:** v0.8.0 GDPR DSAR Phase 45-01c UNIFIED 2026-04-22 — ship gate closed (4/4 ACs static PASS). Live-stack verification + operator carry-forward (vault DEK seed + apply migration 083) remain before shipping v0.8.0.
+**Current focus:** v0.8.0 GDPR DSAR — SHIPPED 2026-04-23. Live-stack verified end-to-end: export job created → worker processed in <10s → encrypted payload (3396B ciphertext, 12B nonce) persisted in 20_dtl_dsar_payloads → download returns decrypted JSON → 6 DSAR audit events via run_node confirmed. Next: v0.9.0 planning or 45-01d bonus triage.
 
 ## Current Position
 
 Milestone: **v0.8.0 GDPR DSAR** (Phase 45)
 Phase: **45 — GDPR DSAR** (45-01c UNIFIED; 45-01d bonus triage not yet drafted; 45-02 deferred v1.0)
-Plan: **45-01 ✓** / **45-01b ✓** / **45-01c ✓ UNIFY 2026-04-22 (static PASS — grep + import + manifest parse; live-stack verify NOT YET performed)** / 45-01d not drafted / 45-02 deferred v1.0
-Status: 45-01c closes the v0.8.0 ship gate per SUMMARY: sessions-table reference fixed (16_fct_sessions), AES-256-GCM encrypted export payloads via new migration 20260422_083_dsar-payloads.sql with DEK from vault key `iam.dsar.export_dek_v1`, all 6 DSAR audit events now emit via `run_node("audit.events.emit", ...)` (zero direct audit INSERTs remain), `iam.dsar` sub-feature registered in manifest at number=29 with 2 effect nodes + 5 routes. Secondary bugs auto-fixed: `60_evt_audit_events` → `60_evt_audit` in export_user_data; main.py single-line wiring of vault client into worker. Mandatory carry-forward (unchanged from 45-01b): commit 482c981 deleted 12 migration files from 02_in_progress/; operator must confirm those landed in 01_migrated/ (monitoring 071–080 + IAM 053 + 043) before next migrator run.
-Last activity: 2026-04-22 — 45-01c UNIFY. STATE.md reconciled with pre-existing SUMMARY.md. 4/4 ACs PASS on static checks; live-stack verification pending. Operator carry-forward (seed vault key `iam.dsar.export_dek_v1` with 32-byte DEK, apply migration 083) is the only item blocking v0.8.0 ship.
+Plan: **45-01 ✓** / **45-01b ✓** / **45-01c ✓ LIVE VERIFIED 2026-04-23** / 45-01d not drafted / 45-02 deferred v1.0
+Status: v0.8.0 SHIPPED. Live verification passed all 4 ACs end-to-end on running stack:
+- AC1 ✓ 16_fct_sessions referenced correctly in DSAR repo (sessions exported)
+- AC2 ✓ Encrypted payload persisted: 3396B ciphertext + 12B nonce in 20_dtl_dsar_payloads
+- AC3 ✓ Download endpoint decrypts correctly — returns full user JSON (user, attrs, sessions, credentials, org_memberships, role_assignments, audit_events)
+- AC4 ✓ 6 DSAR audit events via run_node: export_requested + export_downloaded confirmed in /v1/audit-events
+Vault keys confirmed: auth.argon2.pepper + iam.dsar.export_dek_v1 present in 02_vault schema.
+Migration 083 applied 2026-04-22. All 17 migrations applied, DB up to date.
+Frontend redesign also committed: 86 files, Palantir operational UI across 62 pages (IBM Plex fonts, CSS design system, WorkspaceContext, cross-feature navigation, StatCards).
 
-Next action: operator live-stack verify of 45-01c end-to-end (seed vault DEK, apply migration 083, create export job via API, confirm encrypted payload persisted + download returns decrypted JSON). Then either `/paul:plan 45-01d-PLAN.md` (bonus triage: audit retention + authz helpers + catalog canvas polish + pytest suite under sub_features/08_dsar/tests/) OR close v0.8.0 milestone and move to v0.1.8 (Phase 38 ✓, Phase 39 NCP maturity remains) or v1.0 billing.
+Last activity: 2026-04-23 — v0.8.0 live-stack verified + shipped. Frontend UI redesign committed.
+
+Next action: `/paul:plan 45-01d` (bonus triage: audit retention + authz helpers + DSAR pytest suite) OR plan v0.9.0 (next milestone). Consider: Phase 39 NCP maturity, v1.0 billing sprint, or kbio/kprotect integration.
 
 Previously: v0.2.4 complete (multi-phase autonomous sweep — 35-01/35-02/35-03/36-01 + portal polish). 10 phase summaries. 151 SDK tests green. Every 🔴-severity admin UI gap closed.
 Previously: v0.2.0 complete via 23R rebase (commits ec93b58 → eab604b → d874a14). Unified schema — roles bundle (feature_flag × action) permissions.
