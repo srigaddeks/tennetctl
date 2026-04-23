@@ -5,12 +5,19 @@ import { useMemo, useState } from "react";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import {
+  Badge,
   Button,
   EmptyState,
   ErrorState,
   Field,
   Input,
   Skeleton,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
   Textarea,
 } from "@/components/ui";
 import {
@@ -19,6 +26,15 @@ import {
   useDeleteSilence,
   useSilences,
 } from "@/features/monitoring/hooks/use-alerts";
+
+function expiryCountdown(endsAt: string): string {
+  const ms = new Date(endsAt).getTime() - Date.now();
+  if (ms <= 0) return "expired";
+  const h = Math.floor(ms / 3_600_000);
+  const m = Math.floor((ms % 3_600_000) / 60_000);
+  if (h > 0) return `${h}h ${m}m remaining`;
+  return `${m}m remaining`;
+}
 
 export default function SilencesPage() {
   const [open, setOpen] = useState(false);
@@ -64,98 +80,170 @@ export default function SilencesPage() {
     setHours("4");
   };
 
+  const items = data?.items ?? [];
+  const activeCount = items.filter((s) => {
+    const now = Date.now();
+    return (
+      s.is_active &&
+      new Date(s.starts_at).getTime() <= now &&
+      new Date(s.ends_at).getTime() > now
+    );
+  }).length;
+  const expiredCount = items.length - activeCount;
+
   return (
     <>
       <PageHeader
         title="Silences"
         description="Suppress alert notifications for matching rules or labels over a time window."
         testId="heading-monitoring-silences"
+        breadcrumbs={[
+          { label: "Monitoring", href: "/monitoring" },
+          { label: "Alerts", href: "/monitoring/alerts" },
+          { label: "Silences" },
+        ]}
         actions={
           <Button
+            variant="accent"
             onClick={() => setOpen(true)}
             data-testid="monitoring-silence-new"
           >
-            New silence
+            + New silence
           </Button>
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        {isLoading && (
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
-        )}
-        {isError && (
-          <ErrorState
-            message={error instanceof Error ? error.message : "Load failed"}
-            retry={() => refetch()}
-          />
-        )}
-        {data && data.items.length === 0 && (
-          <EmptyState
-            title="No silences"
-            description="Silences mute notifications for matching alert events over a time window."
-          />
-        )}
-        {data && data.items.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-            <table className="min-w-full text-sm">
-              <thead className="bg-zinc-50 text-left text-xs font-medium uppercase tracking-wide text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
+        <div className="flex flex-col gap-5">
+
+          {/* Stats strip */}
+          {!isLoading && items.length > 0 && (
+            <div className="flex items-center gap-4 rounded border px-4 py-3"
+              style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="label-caps" style={{ color: "var(--text-muted)" }}>Active</span>
+                <span className="font-mono-data text-[18px] font-semibold" style={{ color: "var(--warning)" }}>{activeCount}</span>
+              </div>
+              <span className="h-4 w-px" style={{ background: "var(--border)" }} />
+              <div className="flex items-center gap-2">
+                <span className="label-caps" style={{ color: "var(--text-muted)" }}>Expired</span>
+                <span className="font-mono-data text-[18px] font-semibold" style={{ color: "var(--text-secondary)" }}>{expiredCount}</span>
+              </div>
+              <span className="h-4 w-px" style={{ background: "var(--border)" }} />
+              <div className="flex items-center gap-2">
+                <span className="label-caps" style={{ color: "var(--text-muted)" }}>Total</span>
+                <span className="font-mono-data text-[18px] font-semibold" style={{ color: "var(--text-primary)" }}>{items.length}</span>
+              </div>
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
+            </div>
+          )}
+
+          {isError && (
+            <ErrorState
+              message={error instanceof Error ? error.message : "Load failed"}
+              retry={() => refetch()}
+            />
+          )}
+
+          {data && items.length === 0 && (
+            <EmptyState
+              title="No silences"
+              description="Silences mute notifications for matching alert events over a time window."
+              action={
+                <Button onClick={() => setOpen(true)}>New silence</Button>
+              }
+            />
+          )}
+
+          {items.length > 0 && (
+            <Table>
+              <THead>
                 <tr>
-                  <th className="px-4 py-3">Matcher</th>
-                  <th className="px-4 py-3">Reason</th>
-                  <th className="px-4 py-3">Starts</th>
-                  <th className="px-4 py-3">Ends</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <TH>Matcher</TH>
+                  <TH>Reason</TH>
+                  <TH>Window</TH>
+                  <TH>Expires</TH>
+                  <TH>Status</TH>
+                  <TH className="text-right">Actions</TH>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {data.items.map((s) => {
+              </THead>
+              <TBody>
+                {items.map((s) => {
                   const now = Date.now();
                   const active =
                     s.is_active &&
                     new Date(s.starts_at).getTime() <= now &&
                     new Date(s.ends_at).getTime() > now;
+
                   return (
-                    <tr
+                    <TR
                       key={s.id}
                       data-testid={`monitoring-silence-row-${s.id}`}
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-zinc-600 dark:text-zinc-400">
-                        {s.matcher.rule_id ? (
-                          <div>rule: {s.matcher.rule_id.slice(0, 8)}</div>
-                        ) : null}
-                        {s.matcher.labels &&
-                          Object.entries(s.matcher.labels).map(([k, v]) => (
-                            <div key={k}>
-                              {k}={v}
+                      <TD>
+                        <div
+                          className="font-mono-data text-[11px] flex flex-col gap-0.5"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          {s.matcher.rule_id ? (
+                            <div style={{ color: "#9d6ef8" }}>
+                              rule: {s.matcher.rule_id.slice(0, 12)}…
                             </div>
-                          ))}
-                      </td>
-                      <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                        {s.reason}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-zinc-500">
-                        {new Date(s.starts_at).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-zinc-500">
-                        {new Date(s.ends_at).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
+                          ) : null}
+                          {s.matcher.labels &&
+                            Object.entries(s.matcher.labels).map(([k, v]) => (
+                              <div key={k}>
+                                <span style={{ color: "var(--text-muted)" }}>{k}</span>
+                                <span style={{ color: "var(--text-primary)" }}>={v}</span>
+                              </div>
+                            ))}
+                          {!s.matcher.rule_id && (!s.matcher.labels || Object.keys(s.matcher.labels).length === 0) && (
+                            <span style={{ color: "var(--text-muted)" }}>all alerts</span>
+                          )}
+                        </div>
+                      </TD>
+                      <TD>
+                        <span
+                          className="text-[13px]"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          {s.reason}
+                        </span>
+                      </TD>
+                      <TD>
+                        <div
+                          className="font-mono-data text-[11px] flex flex-col gap-0.5"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          <div>{new Date(s.starts_at).toLocaleString()}</div>
+                          <div>→ {new Date(s.ends_at).toLocaleString()}</div>
+                        </div>
+                      </TD>
+                      <TD>
+                        <span
+                          className="font-mono-data text-[11px]"
+                          style={{
+                            color: active ? "var(--warning)" : "var(--text-muted)",
+                          }}
+                        >
+                          {expiryCountdown(s.ends_at)}
+                        </span>
+                      </TD>
+                      <TD>
                         {active ? (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-                            active
-                          </span>
+                          <Badge tone="warning" dot>active</Badge>
                         ) : (
-                          <span className="rounded-full bg-zinc-200 px-2 py-0.5 text-[10px] dark:bg-zinc-800">
-                            expired
-                          </span>
+                          <Badge tone="default">expired</Badge>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-right">
+                      </TD>
+                      <TD className="text-right">
                         <button
                           type="button"
                           onClick={() => {
@@ -164,19 +252,28 @@ export default function SilencesPage() {
                             }
                           }}
                           data-testid={`monitoring-silence-delete-${s.id}`}
-                          className="rounded-md px-2 py-1 text-xs text-zinc-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-300"
+                          className="flex h-7 w-7 items-center justify-center rounded text-[11px] transition-colors"
+                          style={{ color: "var(--text-muted)" }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "var(--danger-muted)";
+                            (e.currentTarget as HTMLButtonElement).style.color = "var(--danger)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                            (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)";
+                          }}
                           aria-label="Delete silence"
                         >
                           ✕
                         </button>
-                      </td>
-                    </tr>
+                      </TD>
+                    </TR>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </TBody>
+            </Table>
+          )}
+        </div>
       </div>
 
       <Modal
@@ -191,7 +288,12 @@ export default function SilencesPage() {
               id="silence-rule"
               value={ruleId}
               onChange={(e) => setRuleId(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-full rounded border px-3 py-1.5 text-[13px] transition-all duration-150 focus:outline-none focus:ring-1"
+              style={{
+                background: "var(--bg-surface)",
+                borderColor: "var(--border)",
+                color: "var(--text-primary)",
+              }}
               data-testid="monitoring-silence-form-rule"
             >
               <option value="">— any rule —</option>

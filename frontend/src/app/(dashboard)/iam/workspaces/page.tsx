@@ -18,6 +18,7 @@ import {
   Input,
   Select,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -58,6 +59,11 @@ export default function WorkspacesPage() {
     org_id: filterOrgId || undefined,
   });
 
+  const allItems = data?.items ?? [];
+  const totalWorkspaces = allItems.length;
+  const activeWorkspaces = allItems.filter((w) => w.is_active).length;
+  const inactiveWorkspaces = allItems.filter((w) => !w.is_active).length;
+
   return (
     <>
       <PageHeader
@@ -66,6 +72,7 @@ export default function WorkspacesPage() {
         testId="heading-workspaces"
         actions={
           <Button
+            variant="primary"
             onClick={() => setOpenCreate(true)}
             data-testid="open-create-workspace"
           >
@@ -73,9 +80,40 @@ export default function WorkspacesPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="workspaces-body">
-        <div className="mb-4 flex items-center gap-2">
-          <label className="text-xs text-zinc-500">Filter by org</label>
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in" data-testid="workspaces-body">
+
+        {/* Stat cards */}
+        {!isLoading && !isError && (
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            <StatCard
+              label="Total Workspaces"
+              value={totalWorkspaces}
+              sub={filterOrgId ? "in selected org" : "across all orgs"}
+              accent="blue"
+            />
+            <StatCard
+              label="Active"
+              value={activeWorkspaces}
+              sub="currently enabled"
+              accent="green"
+            />
+            <StatCard
+              label="Inactive"
+              value={inactiveWorkspaces}
+              sub="disabled or archived"
+              accent="red"
+            />
+          </div>
+        )}
+
+        {/* Filter bar */}
+        <div className="mb-4 flex items-center gap-3">
+          <span
+            className="label-caps"
+            style={{ color: "var(--text-muted)" }}
+          >
+            ORG
+          </span>
           <Select
             value={filterOrgId}
             onChange={(e) => setFilterOrgId(e.target.value)}
@@ -89,19 +127,50 @@ export default function WorkspacesPage() {
               </option>
             ))}
           </Select>
+          {filterOrgId && (
+            <button
+              type="button"
+              onClick={() => {
+                setFilterOrgId("");
+              }}
+              className="text-xs hover:underline"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Clear filter
+            </button>
+          )}
+          {data && (
+            <span
+              className="ml-auto rounded px-2 py-0.5 text-xs font-mono"
+              style={{
+                background: "var(--bg-elevated)",
+                color: "var(--text-secondary)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {allItems.length} workspaces
+            </span>
+          )}
         </div>
+
+        {/* Loading */}
         {isLoading && (
           <div className="flex flex-col gap-2">
-            <Skeleton className="h-9 w-full" />
-            <Skeleton className="h-9 w-full" />
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-11 w-full" />
+            ))}
           </div>
         )}
+
+        {/* Error */}
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
+        {/* Empty */}
         {data && data.items.length === 0 && (
           <EmptyState
             title="No workspaces"
@@ -111,12 +180,14 @@ export default function WorkspacesPage() {
                 : "Create a workspace to organise work inside an org."
             }
             action={
-              <Button onClick={() => setOpenCreate(true)}>
+              <Button variant="primary" onClick={() => setOpenCreate(true)}>
                 + New workspace
               </Button>
             }
           />
         )}
+
+        {/* Table */}
         {data && data.items.length > 0 && (
           <Table>
             <THead>
@@ -125,6 +196,7 @@ export default function WorkspacesPage() {
                 <TH>Name</TH>
                 <TH>Org</TH>
                 <TH>Status</TH>
+                <TH>Created</TH>
               </tr>
             </THead>
             <TBody>
@@ -137,20 +209,37 @@ export default function WorkspacesPage() {
                     data-testid={`workspace-row-${ws.id}`}
                   >
                     <TD>
-                      <span className="font-mono text-xs">{ws.slug}</span>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--accent)" }}
+                      >
+                        {ws.slug}
+                      </span>
                     </TD>
                     <TD>
-                      {ws.display_name ?? <span className="text-zinc-400">—</span>}
+                      {ws.display_name ? (
+                        <span style={{ color: "var(--text-primary)" }}>{ws.display_name}</span>
+                      ) : (
+                        <span style={{ color: "var(--text-muted)" }}>—</span>
+                      )}
                     </TD>
                     <TD>
-                      <span className="text-xs text-zinc-500">
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {org?.slug ?? ws.org_id.slice(0, 8)}
                       </span>
                     </TD>
                     <TD>
-                      <Badge tone={ws.is_active ? "emerald" : "zinc"}>
+                      <Badge tone={ws.is_active ? "success" : "default"} dot={ws.is_active}>
                         {ws.is_active ? "active" : "inactive"}
                       </Badge>
+                    </TD>
+                    <TD>
+                      <span className="font-mono-data text-xs" style={{ color: "var(--text-secondary)" }}>
+                        {ws.created_at.slice(0, 10)}
+                      </span>
                     </TD>
                   </TR>
                 );
@@ -278,6 +367,7 @@ function CreateWorkspaceDialog({
           </Button>
           <Button
             type="submit"
+            variant="primary"
             loading={create.isPending}
             data-testid="create-workspace-submit"
           >

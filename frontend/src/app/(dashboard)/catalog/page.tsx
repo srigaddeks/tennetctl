@@ -11,6 +11,7 @@ import {
   Input,
   Select,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -56,16 +57,44 @@ export default function CatalogPage() {
   }, [subFeatures.data, featureFilter, search]);
 
   const featureKeys = (features.data ?? []).map((f) => f.feature_key);
+  const totalNodes = (features.data ?? []).reduce((acc, f) => acc + f.node_count, 0);
+  const totalSubs = (features.data ?? []).reduce((acc, f) => acc + f.sub_feature_count, 0);
 
   return (
     <>
       <PageHeader
         title="Catalog"
-        description="Platform inventory: every feature + sub-feature currently registered. Boot-time snapshot from feature.manifest.yaml files."
+        description="Platform inventory: every feature + sub-feature registered at boot from feature.manifest.yaml files."
         testId="heading-catalog"
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="catalog-body">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+      <div
+        className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in"
+        data-testid="catalog-body"
+      >
+        {/* Stat row */}
+        <div className="mb-6 grid grid-cols-3 gap-3">
+          <StatCard
+            label="Features"
+            value={(features.data ?? []).length}
+            accent="blue"
+          />
+          <StatCard
+            label="Sub-features"
+            value={totalSubs}
+            accent="blue"
+          />
+          <StatCard
+            label="Nodes"
+            value={totalNodes}
+            accent="green"
+          />
+        </div>
+
+        {/* Toolbar */}
+        <div
+          className="mb-5 flex flex-wrap items-center gap-3 rounded border px-4 py-3"
+          style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }}
+        >
           <Input
             type="search"
             placeholder="Search key or module…"
@@ -75,7 +104,12 @@ export default function CatalogPage() {
             data-testid="catalog-search"
           />
           <div className="flex items-center gap-2">
-            <label className="text-xs text-zinc-500">Feature</label>
+            <span
+              className="label-caps text-[11px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Feature
+            </span>
             <Select
               value={featureFilter}
               onChange={(e) => setFeatureFilter(e.target.value)}
@@ -92,16 +126,36 @@ export default function CatalogPage() {
           </div>
           <Link
             href="/nodes"
-            className="ml-auto text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+            className="ml-auto text-xs transition-colors"
+            style={{ color: "var(--text-secondary)" }}
           >
-            → Browse nodes
+            Browse nodes →
           </Link>
         </div>
 
+        {/* Features section */}
         <section className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            Features ({filteredFeatures.length})
-          </h2>
+          <div
+            className="mb-3 flex items-center gap-2 border-b pb-2"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ background: "#7ef7c8" }}
+            />
+            <h2
+              className="label-caps text-xs"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Features
+            </h2>
+            <span
+              className="font-mono-data ml-auto text-[11px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {filteredFeatures.length}
+            </span>
+          </div>
 
           {features.isLoading && <Skeleton className="h-40 w-full" />}
           {features.isError && (
@@ -137,17 +191,26 @@ export default function CatalogPage() {
                     key={f.feature_key}
                     data-testid={`catalog-feature-${f.feature_key}`}
                     onClick={() => setFeatureFilter(f.feature_key)}
+                    style={{ cursor: "pointer" }}
                   >
                     <TD>
-                      <span className="font-mono text-xs text-zinc-500">
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         {String(f.feature_number).padStart(2, "0")}
                       </span>
                     </TD>
                     <TD>
-                      <span className="font-mono text-xs">{f.feature_key}</span>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "#7ef7c8" }}
+                      >
+                        {f.feature_key}
+                      </span>
                     </TD>
                     <TD>
-                      <Badge tone="blue">{f.module}</Badge>
+                      <Badge tone="cyan">{f.module}</Badge>
                     </TD>
                     <TD className="text-right text-xs">{f.sub_feature_count}</TD>
                     <TD className="text-right text-xs">{f.node_count}</TD>
@@ -158,18 +221,36 @@ export default function CatalogPage() {
           )}
         </section>
 
+        {/* Sub-features section */}
         <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              Sub-features ({filteredSubs.length})
+          <div
+            className="mb-3 flex items-center gap-2 border-b pb-2"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ background: "#7ef7c8", opacity: 0.5 }}
+            />
+            <h2
+              className="label-caps text-xs"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Sub-features
             </h2>
+            <span
+              className="font-mono-data ml-auto text-[11px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {filteredSubs.length}
+            </span>
             {featureFilter && (
               <button
                 type="button"
                 onClick={() => setFeatureFilter("")}
-                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                className="text-xs transition-colors"
+                style={{ color: "var(--text-secondary)" }}
               >
-                Clear feature filter
+                Clear filter ×
               </button>
             )}
           </div>
@@ -208,15 +289,23 @@ export default function CatalogPage() {
                     data-testid={`catalog-sub-${sf.feature_key}-${sf.sub_feature_key}`}
                   >
                     <TD>
-                      <span className="font-mono text-xs text-zinc-500">
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         {sf.feature_key}
                       </span>
                     </TD>
                     <TD>
-                      <span className="font-mono text-xs">{sf.sub_feature_key}</span>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "#7ef7c8" }}
+                      >
+                        {sf.sub_feature_key}
+                      </span>
                     </TD>
                     <TD>
-                      <Badge tone="blue">{sf.module}</Badge>
+                      <Badge tone="cyan">{sf.module}</Badge>
                     </TD>
                     <TD className="text-right text-xs">{sf.node_count}</TD>
                   </TR>

@@ -12,23 +12,100 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-zinc-950">
-      <div className="w-full max-w-sm">
-        <Link href="/" className="mb-6 flex items-center gap-2" data-testid="auth-logo">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-sm font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
+    <main
+      className="relative flex min-h-dvh items-center justify-center px-4 py-12 overflow-hidden"
+      style={{ background: "var(--bg-base)" }}
+    >
+      {/* Background grid */}
+      <div
+        className="absolute inset-0 bg-grid-dots opacity-30 pointer-events-none"
+        aria-hidden
+      />
+
+      {/* Radial glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(45,126,247,0.06) 0%, transparent 100%)",
+        }}
+        aria-hidden
+      />
+
+      <div className="relative w-full max-w-sm animate-slide-up">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="mb-8 flex items-center gap-3 group"
+          data-testid="auth-logo"
+        >
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded text-sm font-bold tracking-widest transition-all duration-200 group-hover:shadow-[0_0_16px_rgba(45,126,247,0.5)]"
+            style={{
+              background: "var(--accent)",
+              color: "white",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
             T
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-semibold">TennetCTL</div>
-            <div className="text-[10px] text-zinc-500 dark:text-zinc-400">v0.1 · self-hosted</div>
+            <div
+              className="text-[15px] font-semibold tracking-wide"
+              style={{ color: "var(--text-primary)" }}
+            >
+              TennetCTL
+            </div>
+            <div
+              className="text-[9px] tracking-widest uppercase"
+              style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}
+            >
+              v0.1 · self-hosted
+            </div>
           </div>
         </Link>
-        <div className="rounded-2xl border border-zinc-200 bg-white px-7 py-7 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h1 className="text-xl font-semibold" data-testid="auth-title">{title}</h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{subtitle}</p>
-          <div className="mt-6">{children}</div>
+
+        {/* Card */}
+        <div
+          className="rounded border px-7 py-6"
+          style={{
+            background: "var(--bg-surface)",
+            borderColor: "var(--border)",
+            boxShadow: "0 0 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02)",
+          }}
+        >
+          {/* Header */}
+          <div className="mb-6">
+            <div
+              className="h-px w-8 rounded-full mb-3"
+              style={{ background: "var(--accent)" }}
+              aria-hidden
+            />
+            <h1
+              className="text-lg font-semibold tracking-wide"
+              style={{ color: "var(--text-primary)" }}
+              data-testid="auth-title"
+            >
+              {title}
+            </h1>
+            <p
+              className="mt-1 text-[12px] leading-relaxed"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {subtitle}
+            </p>
+          </div>
+
+          {children}
         </div>
-        {footer ? <div className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">{footer}</div> : null}
+
+        {footer ? (
+          <div
+            className="mt-4 text-center text-[12px]"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {footer}
+          </div>
+        ) : null}
       </div>
     </main>
   );

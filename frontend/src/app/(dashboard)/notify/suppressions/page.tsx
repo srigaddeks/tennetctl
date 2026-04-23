@@ -38,12 +38,19 @@ const REASON_OPTIONS: { code: NotifySuppressionReasonCode; label: string }[] = [
 
 const REASON_TONE: Record<
   NotifySuppressionReasonCode,
-  "red" | "amber" | "zinc" | "blue"
+  "danger" | "warning" | "default" | "info"
 > = {
-  hard_bounce: "red",
-  complaint: "amber",
-  manual: "zinc",
-  unsubscribe: "blue",
+  hard_bounce: "danger",
+  complaint: "warning",
+  manual: "default",
+  unsubscribe: "info",
+};
+
+const REASON_DESCRIPTIONS: Record<NotifySuppressionReasonCode, string> = {
+  hard_bounce: "Permanent delivery failure — address is unreachable.",
+  complaint:   "Recipient marked the message as spam.",
+  manual:      "Manually added by an operator.",
+  unsubscribe: "Recipient opted out.",
 };
 
 export default function NotifySuppressionsPage() {
@@ -56,11 +63,16 @@ export default function NotifySuppressionsPage() {
 
   const items = list.data?.items ?? [];
 
+  const byReason = REASON_OPTIONS.reduce(
+    (acc, r) => ({ ...acc, [r.code]: items.filter((i) => i.reason_code === r.code).length }),
+    {} as Record<NotifySuppressionReasonCode, number>,
+  );
+
   return (
     <>
       <PageHeader
-        title="Notify Suppressions"
-        description="Email addresses that cannot receive notifications — bounced, complained, unsubscribed, or manually held."
+        title="Suppression List"
+        description="Addresses blocked from receiving notifications. Hard bounces and complaints are added automatically — manually added entries require operator review to remove."
         testId="heading-notify-suppressions"
         actions={
           <Button
@@ -72,7 +84,99 @@ export default function NotifySuppressionsPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="suppressions-body">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px" }}
+        data-testid="suppressions-body"
+      >
+        {/* Reason breakdown */}
+        {items.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              marginBottom: 24,
+              flexWrap: "wrap",
+            }}
+          >
+            {REASON_OPTIONS.map((r) => {
+              const count = byReason[r.code] ?? 0;
+              const tone = REASON_TONE[r.code];
+              const color =
+                tone === "danger" ? "var(--danger)"
+                : tone === "warning" ? "var(--warning)"
+                : tone === "info" ? "var(--info)"
+                : "var(--text-secondary)";
+              const bg =
+                tone === "danger" ? "var(--danger-muted)"
+                : tone === "warning" ? "var(--warning-muted)"
+                : tone === "info" ? "var(--info-muted)"
+                : "var(--bg-elevated)";
+
+              return (
+                <div
+                  key={r.code}
+                  style={{
+                    flex: 1,
+                    minWidth: 140,
+                    padding: "12px 16px",
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    background: "var(--bg-surface)",
+                    borderLeft: `3px solid ${color}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "var(--text-muted)",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {r.label}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'IBM Plex Mono', monospace",
+                      fontSize: 24,
+                      fontWeight: 700,
+                      color,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {count}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Notice */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 12px",
+            borderRadius: 6,
+            border: "1px solid var(--warning)",
+            background: "var(--warning-muted)",
+            fontSize: 12,
+            color: "var(--warning)",
+            marginBottom: 20,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+            <path d="M7 1L1 12h12L7 1z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+            <path d="M7 5.5v3M7 10h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+          Sending to suppressed addresses will permanently damage deliverability. Hard bounces and complaints are added automatically and should not be removed without verifying the address is valid.
+        </div>
+
         {list.isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -105,41 +209,83 @@ export default function NotifySuppressionsPage() {
               </tr>
             </THead>
             <TBody>
-              {items.map((s) => (
-                <TR key={s.id} data-testid={`suppression-row-${s.id}`}>
-                  <TD>
-                    <span className="font-mono text-xs">{s.email}</span>
-                  </TD>
-                  <TD>
-                    <Badge tone={REASON_TONE[s.reason_code] ?? "zinc"}>
-                      {s.reason_code}
-                    </Badge>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-zinc-500">{s.notes ?? "—"}</span>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-zinc-500">
-                      {s.created_at.slice(0, 10)}
-                    </span>
-                  </TD>
-                  <TD>
-                    <button
-                      type="button"
-                      data-testid={`suppression-remove-${s.id}`}
-                      disabled={remove.isPending}
-                      onClick={() => {
-                        if (confirm(`Remove ${s.email} from the suppression list?`)) {
-                          remove.mutate(s.id);
-                        }
-                      }}
-                      className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
-                    >
-                      Remove
-                    </button>
-                  </TD>
-                </TR>
-              ))}
+              {items.map((s) => {
+                const tone = REASON_TONE[s.reason_code] ?? "default";
+                const rowBg =
+                  tone === "danger" ? "rgba(255, 63, 85, 0.03)"
+                  : tone === "warning" ? "rgba(245, 166, 35, 0.03)"
+                  : undefined;
+
+                return (
+                  <TR
+                    key={s.id}
+                    data-testid={`suppression-row-${s.id}`}
+                    style={rowBg ? { background: rowBg } : undefined}
+                  >
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 12,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {s.email}
+                      </span>
+                    </TD>
+                    <TD>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                        <Badge tone={tone}>
+                          {s.reason_code}
+                        </Badge>
+                        <span style={{ fontSize: 10, color: "var(--text-muted)" }}>
+                          {REASON_DESCRIPTIONS[s.reason_code]}
+                        </span>
+                      </div>
+                    </TD>
+                    <TD>
+                      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                        {s.notes ?? "—"}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 11,
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        {s.created_at.slice(0, 10)}
+                      </span>
+                    </TD>
+                    <TD>
+                      <button
+                        type="button"
+                        data-testid={`suppression-remove-${s.id}`}
+                        disabled={remove.isPending}
+                        onClick={() => {
+                          if (confirm(`Remove ${s.email} from the suppression list?`)) {
+                            remove.mutate(s.id);
+                          }
+                        }}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: "var(--danger)",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          opacity: remove.isPending ? 0.5 : 1,
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </TD>
+                  </TR>
+                );
+              })}
             </TBody>
           </Table>
         )}
@@ -240,7 +386,7 @@ function AddSuppressionDialog({
             data-testid="add-suppression-notes"
           />
         </Field>
-        {err && <p className="text-xs text-red-500">{err}</p>}
+        {err && <p style={{ fontSize: 12, color: "var(--danger)" }}>{err}</p>}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancel

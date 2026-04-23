@@ -11,6 +11,7 @@ import {
   Field,
   Select,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -38,6 +39,13 @@ export default function MembershipsPage() {
   const [tab, setTab] = useState<Tab>("org");
   const [openAssign, setOpenAssign] = useState(false);
 
+  const { data: orgRows } = useOrgMemberships();
+  const { data: wsRows } = useWorkspaceMemberships();
+
+  const totalOrg = orgRows?.items.length ?? 0;
+  const totalWs = wsRows?.items.length ?? 0;
+  const totalMemberships = totalOrg + totalWs;
+
   return (
     <>
       <PageHeader
@@ -46,6 +54,7 @@ export default function MembershipsPage() {
         testId="heading-memberships"
         actions={
           <Button
+            variant="primary"
             onClick={() => setOpenAssign(true)}
             data-testid="open-assign-membership"
           >
@@ -53,21 +62,68 @@ export default function MembershipsPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        <div className="mb-4 inline-flex gap-1 rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in">
+
+        {/* Stat cards */}
+        <div className="mb-6 grid grid-cols-3 gap-4">
+          <StatCard
+            label="Total Memberships"
+            value={totalMemberships}
+            sub="org + workspace"
+            accent="blue"
+          />
+          <StatCard
+            label="Org Memberships"
+            value={totalOrg}
+            sub="users in orgs"
+            accent="green"
+          />
+          <StatCard
+            label="Workspace Memberships"
+            value={totalWs}
+            sub="users in workspaces"
+            accent="blue"
+          />
+        </div>
+
+        {/* Tab switcher */}
+        <div
+          className="mb-5 inline-flex gap-1 rounded-lg p-1"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
+        >
           {(["org", "workspace"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               data-testid={`tab-${t}`}
               className={cn(
-                "rounded-md px-3 py-1.5 text-xs font-medium transition",
-                tab === t
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                  : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+                "rounded-md px-4 py-1.5 text-xs font-medium transition",
               )}
+              style={
+                tab === t
+                  ? {
+                      background: "var(--accent)",
+                      color: "#fff",
+                    }
+                  : {
+                      background: "transparent",
+                      color: "var(--text-secondary)",
+                    }
+              }
             >
               {t === "org" ? "Org memberships" : "Workspace memberships"}
+              <span
+                className="ml-2 rounded px-1.5 py-0.5 font-mono-data"
+                style={{
+                  background: tab === t ? "rgba(255,255,255,0.15)" : "var(--bg-elevated)",
+                  fontSize: "10px",
+                }}
+              >
+                {t === "org" ? totalOrg : totalWs}
+              </span>
             </button>
           ))}
         </div>
@@ -93,7 +149,15 @@ function OrgMembersTable() {
   const { data: users } = useUsers({ limit: 500 });
   const del = useDeleteOrgMembership();
 
-  if (isLoading) return <Skeleton className="h-12 w-full" />;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Skeleton key={i} className="h-11 w-full" />
+        ))}
+      </div>
+    );
+
   if (!rows || rows.items.length === 0)
     return (
       <EmptyState
@@ -108,6 +172,7 @@ function OrgMembersTable() {
         <tr>
           <TH>User</TH>
           <TH>Org</TH>
+          <TH>Membership ID</TH>
           <TH>Assigned</TH>
           <TH />
         </tr>
@@ -116,16 +181,53 @@ function OrgMembersTable() {
         {rows.items.map((m) => {
           const user = users?.items.find((u) => u.id === m.user_id);
           const org = orgs?.items.find((o) => o.id === m.org_id);
+          const initial = (user?.display_name || user?.email || m.user_id)
+            .slice(0, 1)
+            .toUpperCase();
           return (
             <TR key={m.id}>
-              <TD>{user?.display_name ?? user?.email ?? m.user_id.slice(0, 8)}</TD>
               <TD>
-                <span className="font-mono text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold"
+                    style={{
+                      background: "var(--accent-muted)",
+                      color: "var(--accent)",
+                      border: "1px solid var(--accent-dim)",
+                    }}
+                  >
+                    {initial}
+                  </div>
+                  <span style={{ color: "var(--text-primary)" }}>
+                    {user?.display_name ?? user?.email ?? (
+                      <span className="font-mono-data text-xs" style={{ color: "var(--text-muted)" }}>
+                        {m.user_id.slice(0, 8)}…
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </TD>
+              <TD>
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--accent)" }}
+                >
                   {org?.slug ?? m.org_id.slice(0, 8)}
                 </span>
               </TD>
               <TD>
-                <span className="text-xs text-zinc-500">
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {m.id.slice(0, 8)}…
+                </span>
+              </TD>
+              <TD>
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {m.created_at.slice(0, 10)}
                 </span>
               </TD>
@@ -163,9 +265,18 @@ function WorkspaceMembersTable() {
   const { data: rows, isLoading } = useWorkspaceMemberships();
   const { data: wss } = useWorkspaces({ limit: 500 });
   const { data: users } = useUsers({ limit: 500 });
+  const { data: orgs } = useOrgs({ limit: 500 });
   const del = useDeleteWorkspaceMembership();
 
-  if (isLoading) return <Skeleton className="h-12 w-full" />;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-2">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Skeleton key={i} className="h-11 w-full" />
+        ))}
+      </div>
+    );
+
   if (!rows || rows.items.length === 0)
     return (
       <EmptyState
@@ -189,21 +300,54 @@ function WorkspaceMembersTable() {
         {rows.items.map((m) => {
           const user = users?.items.find((u) => u.id === m.user_id);
           const ws = wss?.items.find((w) => w.id === m.workspace_id);
+          const org = orgs?.items.find((o) => o.id === m.org_id);
+          const initial = (user?.display_name || user?.email || m.user_id)
+            .slice(0, 1)
+            .toUpperCase();
           return (
             <TR key={m.id}>
-              <TD>{user?.display_name ?? user?.email ?? m.user_id.slice(0, 8)}</TD>
               <TD>
-                <span className="font-mono text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold"
+                    style={{
+                      background: "var(--accent-muted)",
+                      color: "var(--accent)",
+                      border: "1px solid var(--accent-dim)",
+                    }}
+                  >
+                    {initial}
+                  </div>
+                  <span style={{ color: "var(--text-primary)" }}>
+                    {user?.display_name ?? user?.email ?? (
+                      <span className="font-mono-data text-xs" style={{ color: "var(--text-muted)" }}>
+                        {m.user_id.slice(0, 8)}…
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </TD>
+              <TD>
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--accent)" }}
+                >
                   {ws?.slug ?? m.workspace_id.slice(0, 8)}
                 </span>
               </TD>
               <TD>
-                <span className="text-xs text-zinc-500">
-                  {m.org_id.slice(0, 8)}…
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {org?.slug ?? m.org_id.slice(0, 8)}…
                 </span>
               </TD>
               <TD>
-                <span className="text-xs text-zinc-500">
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {m.created_at.slice(0, 10)}
                 </span>
               </TD>
@@ -288,18 +432,24 @@ function AssignDialog({
   return (
     <Modal open={open} onClose={onClose} title="Assign membership">
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <div className="inline-flex gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-800 dark:bg-zinc-900">
+        <div
+          className="inline-flex gap-1 rounded-lg p-1"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--border)",
+          }}
+        >
           {(["org", "workspace"] as Tab[]).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setMode(t)}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-xs font-medium transition",
+              className="rounded-md px-3 py-1.5 text-xs font-medium transition"
+              style={
                 mode === t
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                  : "text-zinc-600 dark:text-zinc-400"
-              )}
+                  ? { background: "var(--accent)", color: "#fff" }
+                  : { color: "var(--text-secondary)" }
+              }
             >
               {t === "org" ? "To org" : "To workspace"}
             </button>
@@ -381,6 +531,7 @@ function AssignDialog({
           </Button>
           <Button
             type="submit"
+            variant="primary"
             loading={submitting}
             data-testid="assign-submit"
           >

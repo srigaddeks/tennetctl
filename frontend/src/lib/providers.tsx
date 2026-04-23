@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { ToastProvider } from "@/components/toast";
 import { busToast } from "@/lib/toast-bus";
+import { WorkspaceProvider } from "@/lib/workspace-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -35,7 +36,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>{children}</ToastProvider>
+      <WorkspaceProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </WorkspaceProvider>
     </QueryClientProvider>
   );
 }

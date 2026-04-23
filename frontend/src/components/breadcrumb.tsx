@@ -20,32 +20,41 @@ export function Breadcrumb({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn(
-        "flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400",
-        className,
-      )}
+      className={cn("flex items-center gap-1 text-[11px]", className)}
+      style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}
       data-testid="breadcrumb"
     >
       {items.map((item, i) => {
         const last = i === items.length - 1;
         return (
-          <span key={`${item.label}-${i}`} className="flex items-center gap-1">
+          <span
+            key={`${item.label}-${i}`}
+            className="flex items-center gap-1"
+          >
             {item.href && !last ? (
               <Link
                 href={item.href}
-                className="hover:text-zinc-900 dark:hover:text-zinc-100 transition"
+                className="transition-colors duration-100 hover:text-[var(--text-primary)]"
               >
                 {item.label}
               </Link>
             ) : (
               <span
                 aria-current={last ? "page" : undefined}
-                className={cn(last && "text-zinc-900 dark:text-zinc-100 font-medium")}
+                style={last ? { color: "var(--text-secondary)" } : undefined}
               >
                 {item.label}
               </span>
             )}
-            {!last && <span aria-hidden>›</span>}
+            {!last && (
+              <span
+                aria-hidden
+                style={{ color: "var(--border-bright)" }}
+                className="text-[10px]"
+              >
+                /
+              </span>
+            )}
           </span>
         );
       })}

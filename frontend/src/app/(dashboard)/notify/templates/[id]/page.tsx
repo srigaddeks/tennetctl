@@ -26,23 +26,56 @@ const PRIORITY_OPTIONS: Array<{ id: number; label: string }> = [
   { id: 4, label: "Critical" },
 ];
 
-function AnalyticsCard({ label, value, tone }: { label: string; value: number; tone?: "red" }) {
+function AnalyticsCard({ label, value, tone }: { label: string; value: number; tone?: "red" | "success" }) {
+  const valueColor =
+    tone === "red"
+      ? "var(--danger)"
+      : tone === "success"
+      ? "var(--success)"
+      : "var(--info)";
+
   return (
     <div
-      className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        padding: "8px 12px",
+        borderRadius: 6,
+        border: "1px solid var(--border)",
+        background: "var(--bg-surface)",
+        minWidth: 72,
+      }}
       data-testid={`analytics-${label.toLowerCase()}`}
     >
-      <div className="text-[10px] uppercase tracking-wide text-zinc-500">{label}</div>
-      <div className={tone === "red" ? "text-sm font-semibold text-red-600" : "text-sm font-semibold"}>
+      <div
+        style={{
+          fontSize: 10,
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+          color: "var(--text-muted)",
+          fontWeight: 600,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "'IBM Plex Mono', monospace",
+          fontSize: 18,
+          fontWeight: 700,
+          color: valueColor,
+          lineHeight: 1,
+        }}
+      >
         {value.toLocaleString()}
       </div>
     </div>
   );
 }
 
-
-function varTypeTone(t: NotifyVarType): "zinc" | "blue" {
-  return t === "static" ? "zinc" : "blue";
+function varTypeTone(t: NotifyVarType): "default" | "cyan" {
+  return t === "static" ? "default" : "cyan";
 }
 
 function renderPreview(html: string, resolved: Record<string, string>): string {
@@ -76,7 +109,19 @@ function AddVariableForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900">
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        borderRadius: 8,
+        border: "1px solid var(--border-bright)",
+        background: "var(--bg-elevated)",
+        padding: 12,
+        marginTop: 8,
+      }}
+    >
       <Field label="Name" htmlFor="var-name">
         <Input
           id="var-name"
@@ -86,25 +131,29 @@ function AddVariableForm({
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
       </Field>
-      <div className="flex gap-3">
-        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
-          <input
-            type="radio"
-            data-testid="radio-var-type-static"
-            checked={form.var_type === "static"}
-            onChange={() => setForm((f) => ({ ...f, var_type: "static" }))}
-          />
-          Static
-        </label>
-        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
-          <input
-            type="radio"
-            data-testid="radio-var-type-dynamic"
-            checked={form.var_type === "dynamic_sql"}
-            onChange={() => setForm((f) => ({ ...f, var_type: "dynamic_sql" }))}
-          />
-          Dynamic SQL
-        </label>
+      <div style={{ display: "flex", gap: 16 }}>
+        {(["static", "dynamic_sql"] as NotifyVarType[]).map((vt) => (
+          <label
+            key={vt}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 12,
+              color: form.var_type === vt ? "var(--text-primary)" : "var(--text-secondary)",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="radio"
+              data-testid={`radio-var-type-${vt === "static" ? "static" : "dynamic"}`}
+              checked={form.var_type === vt}
+              onChange={() => setForm((f) => ({ ...f, var_type: vt }))}
+              style={{ accentColor: "var(--accent)" }}
+            />
+            {vt === "static" ? "Static" : "Dynamic SQL"}
+          </label>
+        ))}
       </div>
       {form.var_type === "static" ? (
         <Field label="Value" htmlFor="var-static-value">
@@ -135,8 +184,8 @@ function AddVariableForm({
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
         />
       </Field>
-      {err && <p className="text-xs text-red-500">{err}</p>}
-      <div className="flex justify-end gap-2">
+      {err && <p style={{ fontSize: 12, color: "var(--danger)" }}>{err}</p>}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button type="button" variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
         <Button type="submit" size="sm" data-testid="btn-submit-variable" disabled={create.isPending}>
           {create.isPending ? "Saving…" : "Add variable"}
@@ -184,7 +233,9 @@ function TestSendDialog({
             onChange={(e) => setEmail(e.target.value)}
           />
         </Field>
-        {result && <p className="text-xs text-zinc-600 dark:text-zinc-400">{result}</p>}
+        {result && (
+          <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>{result}</p>
+        )}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>Close</Button>
           <Button type="submit" data-testid="btn-send-test" disabled={send.isPending || !email}>
@@ -214,11 +265,8 @@ export default function TemplateDesignerPage({
   const resolve = useResolveVariables();
   const analytics = useTemplateAnalytics(id);
 
-  // Channel selector — which channel's body the editor is currently authoring.
-  // 1 = email (html + text + preheader), 2 = webpush (text only), 3 = in-app (text only).
   const [channelId, setChannelId] = useState<number>(1);
 
-  // Per-channel body state. Switching tabs preserves in-progress edits.
   const [bodiesByChannel, setBodiesByChannel] = useState<
     Record<number, { body_html: string; body_text: string }>
   >({ 1: { body_html: "", body_text: "" }, 2: { body_html: "", body_text: "" }, 3: { body_html: "", body_text: "" } });
@@ -268,7 +316,6 @@ export default function TemplateDesignerPage({
   }
 
   function handleSaveBody() {
-    // Save all authored bodies (only channels with any content).
     const authored = Object.entries(bodiesByChannel)
       .filter(([, body]) => body.body_html || body.body_text)
       .map(([chId, body]) => ({
@@ -313,21 +360,66 @@ export default function TemplateDesignerPage({
   }
 
   if (!template) {
-    return <div className="p-8 text-zinc-500">Template not found.</div>;
+    return (
+      <div style={{ padding: 32, color: "var(--text-secondary)" }}>
+        Template not found.
+      </div>
+    );
   }
 
+  const CHANNELS = [
+    { id: 1, label: "Email" },
+    { id: 2, label: "Web Push" },
+    { id: 3, label: "In-app" },
+  ];
+
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col" data-testid="designer-page">
+    <div
+      style={{ display: "flex", height: "calc(100vh - 64px)", flexDirection: "column" }}
+      data-testid="designer-page"
+    >
       {/* Header bar */}
-      <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex items-center gap-3">
-          <Link href="/notify/templates" className="text-sm text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "10px 24px",
+          borderBottom: "1px solid var(--border)",
+          background: "var(--bg-surface)",
+          flexShrink: 0,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Link
+            href="/notify/templates"
+            style={{
+              fontSize: 13,
+              color: "var(--text-muted)",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
             ← Templates
           </Link>
-          <span className="text-zinc-300 dark:text-zinc-600">/</span>
-          <span className="font-mono text-sm font-medium">{template.key}</span>
+          <span style={{ color: "var(--border-bright)" }}>/</span>
+          <span
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+            }}
+          >
+            {template.key}
+          </span>
+          <Badge tone={template.is_active ? "emerald" : "default"} dot={template.is_active}>
+            {template.is_active ? "Active" : "Inactive"}
+          </Badge>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Button
             variant="ghost"
             size="sm"
@@ -346,7 +438,7 @@ export default function TemplateDesignerPage({
             {resolve.isPending ? "Resolving…" : "Preview"}
           </Button>
           <Button
-            variant="ghost"
+            variant="accent"
             size="sm"
             data-testid="btn-test-send"
             onClick={() => setTestSendOpen(true)}
@@ -356,26 +448,65 @@ export default function TemplateDesignerPage({
         </div>
       </div>
 
-      {/* Analytics summary — counts across the template's deliveries */}
+      {/* Analytics summary */}
       {analytics.data && analytics.data.total_deliveries > 0 && (
-        <div className="flex flex-wrap items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900/50" data-testid="template-analytics">
-          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Analytics</span>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 24px",
+            borderBottom: "1px solid var(--border)",
+            background: "var(--bg-base)",
+            flexShrink: 0,
+          }}
+          data-testid="template-analytics"
+        >
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              color: "var(--text-muted)",
+              marginRight: 4,
+            }}
+          >
+            Delivery Analytics
+          </span>
           <AnalyticsCard label="Total" value={analytics.data.total_deliveries} />
           <AnalyticsCard label="Sent" value={analytics.data.by_status.sent ?? 0} />
-          <AnalyticsCard label="Delivered" value={analytics.data.by_status.delivered ?? 0} />
-          <AnalyticsCard label="Opened" value={(analytics.data.by_status.opened ?? 0) + (analytics.data.by_event_type.open ?? 0)} />
-          <AnalyticsCard label="Clicked" value={(analytics.data.by_status.clicked ?? 0) + (analytics.data.by_event_type.click ?? 0)} />
+          <AnalyticsCard label="Delivered" value={analytics.data.by_status.delivered ?? 0} tone="success" />
+          <AnalyticsCard label="Opened" value={(analytics.data.by_status.opened ?? 0) + (analytics.data.by_event_type.open ?? 0)} tone="success" />
+          <AnalyticsCard label="Clicked" value={(analytics.data.by_status.clicked ?? 0) + (analytics.data.by_event_type.click ?? 0)} tone="success" />
           <AnalyticsCard label="Bounced" value={analytics.data.by_status.bounced ?? 0} tone="red" />
           <AnalyticsCard label="Failed" value={analytics.data.by_status.failed ?? 0} tone="red" />
         </div>
       )}
 
       {/* Body */}
-      <div className="flex flex-1 overflow-hidden">
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         {/* Left — editor */}
-        <div className="flex w-[55%] flex-col overflow-y-auto border-r border-zinc-200 dark:border-zinc-800">
+        <div
+          style={{
+            width: "55%",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            borderRight: "1px solid var(--border)",
+          }}
+        >
           {/* Metadata */}
-          <div className="grid grid-cols-2 gap-4 border-b border-zinc-200 p-5 dark:border-zinc-800">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+              borderBottom: "1px solid var(--border)",
+              padding: 20,
+            }}
+          >
             <Field label="Subject" htmlFor="meta-subject">
               <Input
                 id="meta-subject"
@@ -414,33 +545,47 @@ export default function TemplateDesignerPage({
             </Field>
           </div>
 
-          {/* Channel tabs — Email (HTML + text), Web Push (text), In-app (text). */}
-          <div className="flex border-b border-zinc-200 dark:border-zinc-800">
-            {[
-              { id: 1, label: "Email" },
-              { id: 2, label: "Web Push" },
-              { id: 3, label: "In-app" },
-            ].map((ch) => (
+          {/* Channel tabs */}
+          <div style={{ display: "flex", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
+            {CHANNELS.map((ch) => (
               <button
                 key={ch.id}
                 type="button"
                 data-testid={`channel-tab-${ch.id}`}
                 onClick={() => setChannelId(ch.id)}
-                className={
-                  channelId === ch.id
-                    ? "border-b-2 border-zinc-900 px-5 py-2 text-sm font-medium dark:border-zinc-50"
-                    : "px-5 py-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50"
-                }
+                style={{
+                  padding: "8px 20px",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: channelId === ch.id ? "var(--text-primary)" : "var(--text-muted)",
+                  background: "none",
+                  border: "none",
+                  borderBottom: channelId === ch.id ? "2px solid var(--info)" : "2px solid transparent",
+                  cursor: "pointer",
+                  transition: "color 0.15s",
+                }}
               >
                 {ch.label}
               </button>
             ))}
           </div>
 
-          <div className="flex flex-1 flex-col gap-3 p-5">
+          <div style={{ display: "flex", flex: 1, flexDirection: "column", gap: 12, padding: 20 }}>
             {channelId === 1 && (
               <div>
-                <label className="mb-1 block text-xs font-medium text-zinc-500">HTML body</label>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: 6,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  HTML body
+                </label>
                 <Textarea
                   ref={htmlRef}
                   data-testid="textarea-body-html"
@@ -454,7 +599,17 @@ export default function TemplateDesignerPage({
               </div>
             )}
             <div>
-              <label className="mb-1 block text-xs font-medium text-zinc-500">
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: 6,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  color: "var(--text-muted)",
+                }}
+              >
                 {channelId === 1 ? "Plain text" : channelId === 2 ? "Push notification body" : "In-app body"}
               </label>
               <Textarea
@@ -473,7 +628,7 @@ export default function TemplateDesignerPage({
                 onFocus={() => { activeTextareaRef.current = textRef.current; }}
               />
             </div>
-            <div className="flex justify-end">
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 data-testid="btn-save-body"
                 onClick={handleSaveBody}
@@ -486,33 +641,89 @@ export default function TemplateDesignerPage({
         </div>
 
         {/* Right — preview + variables */}
-        <div className="flex w-[45%] flex-col overflow-y-auto">
+        <div
+          style={{
+            width: "45%",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            background: "var(--bg-base)",
+          }}
+        >
           {/* Preview pane */}
-          <div className="flex-1 p-5">
-            <p className="mb-2 text-xs font-medium text-zinc-500">Preview</p>
+          <div style={{ flex: 1, padding: 20 }}>
+            <p
+              style={{
+                marginBottom: 10,
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                color: "var(--text-muted)",
+              }}
+            >
+              Rendered Preview
+            </p>
             {previewHtml ? (
               <div
                 data-testid="preview-pane"
-                className="min-h-[200px] rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900"
-                // DOMPurify not available server-side; rendered HTML is from our own DB + Jinja substitution
+                style={{
+                  minHeight: 200,
+                  borderRadius: 8,
+                  border: "1px solid var(--border)",
+                  background: "#ffffff",
+                  padding: 16,
+                  color: "#111",
+                }}
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{ __html: previewHtml }}
               />
             ) : (
               <div
                 data-testid="preview-pane"
-                className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed border-zinc-200 dark:border-zinc-700"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 200,
+                  borderRadius: 8,
+                  border: "1px dashed var(--border-bright)",
+                  gap: 8,
+                }}
               >
-                <p className="text-sm text-zinc-400">Click &quot;Preview&quot; to render</p>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5C6.48 5 2 12 2 12s4.48 7 10 7 10-7 10-7S17.52 5 12 5z" stroke="var(--text-muted)" strokeWidth="1.5"/>
+                  <circle cx="12" cy="12" r="3" stroke="var(--text-muted)" strokeWidth="1.5"/>
+                </svg>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                  Click &quot;Preview&quot; to render
+                </p>
               </div>
             )}
           </div>
 
           {/* Variable panel */}
           {showVars && (
-            <div className="border-t border-zinc-200 p-5 dark:border-zinc-800">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-xs font-medium text-zinc-500">Variables — click to insert at cursor</p>
+            <div
+              style={{
+                borderTop: "1px solid var(--border)",
+                padding: 20,
+                background: "var(--bg-surface)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  Variables — click to insert at cursor
+                </p>
                 <Button
                   size="sm"
                   variant="ghost"
@@ -527,28 +738,55 @@ export default function TemplateDesignerPage({
                 <AddVariableForm templateId={id} onDone={() => setAddingVar(false)} />
               )}
 
-              <div className="mt-2 flex flex-col gap-1.5">
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                 {(vars.data?.items ?? []).map((v: NotifyTemplateVariable) => (
                   <button
                     key={v.id}
                     type="button"
                     data-testid={`var-pill-${v.name}`}
-                    className="flex items-center gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-left hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 12px",
+                      borderRadius: 6,
+                      border: "1px solid var(--border)",
+                      background: "var(--bg-elevated)",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "border-color 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--info)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
+                    }}
                     onClick={() => insertVariable(v.name)}
                   >
-                    <code className="text-xs font-mono text-zinc-800 dark:text-zinc-200">
+                    <code
+                      style={{
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: 12,
+                        color: "var(--info)",
+                      }}
+                    >
                       {`{{ ${v.name} }}`}
                     </code>
-                    <Badge tone={varTypeTone(v.var_type)} >
+                    <Badge tone={varTypeTone(v.var_type)}>
                       {v.var_type === "static" ? "static" : "SQL"}
                     </Badge>
                     {v.description && (
-                      <span className="ml-auto text-xs text-zinc-400">{v.description}</span>
+                      <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--text-muted)" }}>
+                        {v.description}
+                      </span>
                     )}
                   </button>
                 ))}
                 {vars.data?.items.length === 0 && (
-                  <p className="text-xs text-zinc-400">No variables registered for this template.</p>
+                  <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                    No variables registered for this template.
+                  </p>
                 )}
               </div>
             </div>

@@ -1,17 +1,13 @@
 "use client";
 
-/**
- * Shared UI primitives. Tailwind v4; accessible by default.
- */
-
 import { forwardRef } from "react";
 
 import { cn } from "@/lib/cn";
 
-// ─── Button ───────────────────────────────────────────────────────
+// ─── Button ────────────────────────────────────────────────────────────────
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-type ButtonSize = "sm" | "md";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "accent";
+type ButtonSize = "sm" | "md" | "lg";
 
 export const Button = forwardRef<
   HTMLButtonElement,
@@ -22,35 +18,37 @@ export const Button = forwardRef<
   }
 >(function Button(
   { className, variant = "primary", size = "md", loading, children, disabled, ...rest },
-  ref
+  ref,
 ) {
   return (
     <button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2",
-        "dark:focus-visible:ring-zinc-100 dark:focus-visible:ring-offset-zinc-950",
-        "disabled:cursor-not-allowed disabled:opacity-60",
-        size === "sm" && "h-8 px-3 text-xs",
-        size === "md" && "h-10 px-4 text-sm",
+        "relative inline-flex items-center justify-center gap-1.5 font-medium transition-all duration-150 select-none",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--bg-base)]",
+        "disabled:cursor-not-allowed disabled:opacity-40",
+        size === "sm" && "h-7 rounded px-2.5 text-xs tracking-wide",
+        size === "md" && "h-8 rounded px-3.5 text-[13px] tracking-wide",
+        size === "lg" && "h-10 rounded px-5 text-sm tracking-wide",
         variant === "primary" &&
-          "bg-zinc-900 text-white hover:bg-zinc-800 active:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200",
+          "border border-[var(--border-bright)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:border-[var(--accent)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-hover)]",
+        variant === "accent" &&
+          "border border-[var(--accent)] bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:border-[var(--accent-hover)] shadow-[0_0_12px_rgba(45,126,247,0.35)]",
         variant === "secondary" &&
-          "border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
+          "border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-bright)] hover:text-[var(--text-primary)]",
         variant === "ghost" &&
-          "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800",
+          "border border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]",
         variant === "danger" &&
-          "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
-        className
+          "border border-[var(--danger)] bg-[var(--danger-muted)] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white",
+        className,
       )}
       {...rest}
     >
       {loading && (
         <span
           aria-hidden
-          className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"
+          className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent"
         />
       )}
       {children}
@@ -58,7 +56,7 @@ export const Button = forwardRef<
   );
 });
 
-// ─── Input ────────────────────────────────────────────────────────
+// ─── Input ─────────────────────────────────────────────────────────────────
 
 export const Input = forwardRef<
   HTMLInputElement,
@@ -68,21 +66,19 @@ export const Input = forwardRef<
     <input
       ref={ref}
       className={cn(
-        "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm transition",
-        "placeholder:text-zinc-400",
-        "focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900",
-        "disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-500",
-        "dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500",
-        "dark:focus:border-zinc-100 dark:focus:ring-zinc-100",
-        "dark:disabled:bg-zinc-800",
-        className
+        "w-full rounded border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-1.5 text-[13px] text-[var(--text-primary)] transition-all duration-150",
+        "placeholder:text-[var(--text-muted)] font-[var(--font-sans)]",
+        "focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:bg-[var(--bg-elevated)]",
+        "disabled:cursor-not-allowed disabled:opacity-40",
+        "hover:border-[var(--border-bright)]",
+        className,
       )}
       {...rest}
     />
   );
 });
 
-// ─── Select ───────────────────────────────────────────────────────
+// ─── Select ────────────────────────────────────────────────────────────────
 
 export const Select = forwardRef<
   HTMLSelectElement,
@@ -92,12 +88,11 @@ export const Select = forwardRef<
     <select
       ref={ref}
       className={cn(
-        "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm transition",
-        "focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900",
-        "disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-500",
-        "dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50",
-        "dark:focus:border-zinc-100 dark:focus:ring-zinc-100",
-        className
+        "w-full rounded border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-1.5 text-[13px] text-[var(--text-primary)] transition-all duration-150",
+        "focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]",
+        "disabled:cursor-not-allowed disabled:opacity-40",
+        "hover:border-[var(--border-bright)]",
+        className,
       )}
       {...rest}
     >
@@ -106,7 +101,7 @@ export const Select = forwardRef<
   );
 });
 
-// ─── Textarea ─────────────────────────────────────────────────────
+// ─── Textarea ──────────────────────────────────────────────────────────────
 
 export const Textarea = forwardRef<
   HTMLTextAreaElement,
@@ -116,19 +111,18 @@ export const Textarea = forwardRef<
     <textarea
       ref={ref}
       className={cn(
-        "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm transition",
-        "placeholder:text-zinc-400",
-        "focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900",
-        "dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500",
-        "dark:focus:border-zinc-100 dark:focus:ring-zinc-100",
-        className
+        "w-full rounded border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-[13px] text-[var(--text-primary)] transition-all duration-150",
+        "placeholder:text-[var(--text-muted)] font-[var(--font-mono)]",
+        "focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]",
+        "hover:border-[var(--border-bright)]",
+        className,
       )}
       {...rest}
     />
   );
 });
 
-// ─── Label ────────────────────────────────────────────────────────
+// ─── Label ─────────────────────────────────────────────────────────────────
 
 export function Label({
   htmlFor,
@@ -146,24 +140,22 @@ export function Label({
   return (
     <label
       htmlFor={htmlFor}
-      className={cn("flex flex-col gap-1.5 text-sm", className)}
+      className={cn("flex flex-col gap-1.5 text-[13px]", className)}
     >
       <span className="flex items-baseline justify-between">
-        <span className="font-medium text-zinc-800 dark:text-zinc-200">
+        <span className="font-medium text-[var(--text-secondary)] tracking-wide">
           {children}
-          {required && <span className="ml-0.5 text-red-600">*</span>}
+          {required && <span className="ml-0.5 text-[var(--danger)]">*</span>}
         </span>
         {hint && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {hint}
-          </span>
+          <span className="text-[11px] text-[var(--text-muted)]">{hint}</span>
         )}
       </span>
     </label>
   );
 }
 
-// ─── Field ────────────────────────────────────────────────────────
+// ─── Field ─────────────────────────────────────────────────────────────────
 
 export function Field({
   label,
@@ -187,17 +179,20 @@ export function Field({
       </Label>
       {children}
       {error && (
-        <span className="text-xs text-red-600 dark:text-red-400">{error}</span>
+        <span className="text-[11px] text-[var(--danger)]">{error}</span>
       )}
     </div>
   );
 }
 
-// ─── Checkbox ────────────────────────────────────────────────────
+// ─── Checkbox ──────────────────────────────────────────────────────────────
 
 export const Checkbox = forwardRef<
   HTMLInputElement,
-  Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & { label?: string; hint?: string }
+  Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
+    label?: string;
+    hint?: string;
+  }
 >(function Checkbox({ className, label, hint, id, ...rest }, ref) {
   const el = (
     <input
@@ -205,77 +200,103 @@ export const Checkbox = forwardRef<
       type="checkbox"
       id={id}
       className={cn(
-        "h-4 w-4 rounded border-zinc-300 text-zinc-900 transition",
-        "focus:ring-2 focus:ring-zinc-900 focus:ring-offset-1",
-        "disabled:cursor-not-allowed disabled:opacity-60",
-        "dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:ring-zinc-100",
-        className
+        "h-4 w-4 rounded-[3px] border border-[var(--border-bright)] bg-[var(--bg-surface)] transition",
+        "checked:border-[var(--accent)] checked:bg-[var(--accent)]",
+        "focus:ring-1 focus:ring-[var(--accent)] focus:ring-offset-1 focus:ring-offset-[var(--bg-base)]",
+        "disabled:cursor-not-allowed disabled:opacity-40",
+        className,
       )}
       {...rest}
     />
   );
   if (!label) return el;
   return (
-    <label htmlFor={id} className="flex items-start gap-2 text-sm cursor-pointer">
+    <label
+      htmlFor={id}
+      className="flex items-start gap-2 text-[13px] cursor-pointer"
+    >
       {el}
       <span className="flex flex-col gap-0.5">
-        <span className="font-medium text-zinc-800 dark:text-zinc-200">
-          {label}
-        </span>
+        <span className="font-medium text-[var(--text-primary)]">{label}</span>
         {hint && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {hint}
-          </span>
+          <span className="text-[11px] text-[var(--text-muted)]">{hint}</span>
         )}
       </span>
     </label>
   );
 });
 
-// ─── Badge ────────────────────────────────────────────────────────
+// ─── Badge ─────────────────────────────────────────────────────────────────
 
 type BadgeTone =
+  | "default"
   | "zinc"
   | "emerald"
   | "red"
   | "blue"
   | "amber"
-  | "purple";
+  | "purple"
+  | "cyan"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info";
 
 export function Badge({
-  tone = "zinc",
+  tone = "default",
   children,
   className,
+  dot,
 }: {
   tone?: BadgeTone;
   children: React.ReactNode;
   className?: string;
+  dot?: boolean;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-        tone === "zinc" &&
-          "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-        tone === "emerald" &&
-          "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-        tone === "red" &&
-          "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-        tone === "blue" &&
-          "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-        tone === "amber" &&
-          "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+        "inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
+        (tone === "default" || tone === "zinc") &&
+          "border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]",
+        (tone === "emerald" || tone === "success") &&
+          "border border-[var(--success)]/30 bg-[var(--success-muted)] text-[var(--success)]",
+        (tone === "red" || tone === "danger") &&
+          "border border-[var(--danger)]/30 bg-[var(--danger-muted)] text-[var(--danger)]",
+        (tone === "blue") &&
+          "border border-[var(--accent)]/30 bg-[var(--accent-muted)] text-[var(--accent-hover)]",
+        (tone === "amber" || tone === "warning") &&
+          "border border-[var(--warning)]/30 bg-[var(--warning-muted)] text-[var(--warning)]",
         tone === "purple" &&
-          "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-        className
+          "border border-purple-500/30 bg-purple-950/40 text-purple-400",
+        (tone === "cyan" || tone === "info") &&
+          "border border-[var(--info)]/30 bg-[var(--info-muted)] text-[var(--info)]",
+        className,
       )}
     >
+      {dot && (
+        <span
+          className="status-dot inline-block"
+          style={{
+            background:
+              tone === "emerald" || tone === "success"
+                ? "var(--success)"
+                : tone === "red" || tone === "danger"
+                ? "var(--danger)"
+                : tone === "amber" || tone === "warning"
+                ? "var(--warning)"
+                : tone === "blue"
+                ? "var(--accent)"
+                : "var(--text-muted)",
+          }}
+        />
+      )}
       {children}
     </span>
   );
 }
 
-// ─── Empty state ─────────────────────────────────────────────────
+// ─── Empty state ────────────────────────────────────────────────────────────
 
 export function EmptyState({
   title,
@@ -287,21 +308,37 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-6 py-12 text-center dark:border-zinc-700 dark:bg-zinc-900/50">
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-        {title}
-      </h3>
-      {description && (
-        <p className="max-w-md text-xs text-zinc-500 dark:text-zinc-400">
-          {description}
-        </p>
-      )}
-      {action && <div className="mt-2">{action}</div>}
+    <div
+      className="flex flex-col items-center justify-center gap-3 rounded border border-dashed px-6 py-14 text-center"
+      style={{
+        borderColor: "var(--border)",
+        background: "var(--bg-muted)",
+      }}
+    >
+      <div
+        className="h-8 w-8 rounded border flex items-center justify-center text-[var(--text-muted)]"
+        style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}
+        aria-hidden
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="3" y="3" width="10" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" />
+          <line x1="6" y1="8" x2="10" y2="8" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      </div>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
+        {description && (
+          <p className="max-w-xs text-[12px] text-[var(--text-muted)] leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }
 
-// ─── Error state ─────────────────────────────────────────────────
+// ─── Error state ────────────────────────────────────────────────────────────
 
 export function ErrorState({
   message,
@@ -311,11 +348,15 @@ export function ErrorState({
   retry?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-6 py-10 text-center dark:border-red-900/40 dark:bg-red-950/30">
-      <h3 className="text-sm font-semibold text-red-900 dark:text-red-200">
-        Something went wrong
-      </h3>
-      <p className="max-w-md text-xs text-red-700 dark:text-red-300">
+    <div
+      className="flex flex-col items-center justify-center gap-3 rounded border px-6 py-10 text-center"
+      style={{
+        borderColor: "rgba(255, 63, 85, 0.25)",
+        background: "var(--danger-muted)",
+      }}
+    >
+      <h3 className="text-sm font-semibold text-[var(--danger)]">Error</h3>
+      <p className="max-w-md text-[12px] text-[var(--text-secondary)] leading-relaxed">
         {message}
       </p>
       {retry && (
@@ -327,33 +368,39 @@ export function ErrorState({
   );
 }
 
-// ─── Skeleton ────────────────────────────────────────────────────
+// ─── Skeleton ───────────────────────────────────────────────────────────────
 
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={cn(
-        "animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800",
-        className
-      )}
+      className={cn("rounded skeleton-shimmer", className)}
     />
   );
 }
 
-// ─── Table ────────────────────────────────────────────────────────
+// ─── Table ──────────────────────────────────────────────────────────────────
 
 export function Table({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <table className="w-full text-sm">{children}</table>
+    <div
+      className="overflow-hidden rounded border"
+      style={{ borderColor: "var(--border)", background: "var(--bg-surface)" }}
+    >
+      <table className="w-full text-[13px]">{children}</table>
     </div>
   );
 }
 
 export function THead({ children }: { children: React.ReactNode }) {
   return (
-    <thead className="border-b border-zinc-200 bg-zinc-50 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+    <thead
+      className="border-b text-left"
+      style={{
+        borderColor: "var(--border)",
+        background: "var(--bg-elevated)",
+      }}
+    >
       {children}
     </thead>
   );
@@ -376,27 +423,30 @@ export function TH({
   onSort?: () => void;
   testId?: string;
 }) {
+  const base = cn(
+    "whitespace-nowrap px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.08em]",
+    className,
+  );
+  const style = { color: "var(--text-muted)" };
+
   if (sortable) {
     return (
-      <th
-        scope="col"
-        className={cn("whitespace-nowrap px-4 py-2 font-medium", className)}
-      >
+      <th scope="col" className={base} style={style}>
         <button
           type="button"
           onClick={onSort}
           data-testid={testId}
           className={cn(
-            "inline-flex items-center gap-1 rounded transition",
-            "hover:text-zinc-900 dark:hover:text-zinc-100",
-            sortDir && "text-zinc-900 dark:text-zinc-50",
+            "inline-flex items-center gap-1 transition-colors duration-100",
+            "hover:text-[var(--text-primary)]",
+            sortDir && "text-[var(--text-secondary)]",
           )}
         >
           {children}
           <span
             aria-hidden
             className={cn(
-              "inline-block text-[10px] transition",
+              "inline-block text-[9px] transition-opacity",
               sortDir ? "opacity-100" : "opacity-30",
             )}
           >
@@ -407,10 +457,7 @@ export function TH({
     );
   }
   return (
-    <th
-      scope="col"
-      className={cn("whitespace-nowrap px-4 py-2 font-medium", className)}
-    >
+    <th scope="col" className={base} style={style}>
       {children}
     </th>
   );
@@ -418,7 +465,14 @@ export function TH({
 
 export function TBody({ children }: { children: React.ReactNode }) {
   return (
-    <tbody className="divide-y divide-zinc-100 text-zinc-900 dark:divide-zinc-900 dark:text-zinc-100">
+    <tbody
+      className="divide-y"
+      style={{
+        color: "var(--text-primary)",
+        borderColor: "var(--border)",
+        ["--tw-divide-opacity" as string]: "1",
+      }}
+    >
       {children}
     </tbody>
   );
@@ -437,10 +491,16 @@ export function TR({
   return (
     <tr
       onClick={onClick}
+      style={
+        selected
+          ? { background: "var(--accent-muted)", borderLeft: "2px solid var(--accent)" }
+          : undefined
+      }
       className={cn(
+        "border-b transition-colors duration-100",
         onClick &&
-          "cursor-pointer transition hover:bg-zinc-50 dark:hover:bg-zinc-900/60",
-        selected && "bg-zinc-100 dark:bg-zinc-900"
+          "cursor-pointer hover:bg-[var(--bg-elevated)]",
+        !selected && "border-[var(--border)]",
       )}
       {...rest}
     >
@@ -457,8 +517,121 @@ export function TD({
   className?: string;
 }) {
   return (
-    <td className={cn("whitespace-nowrap px-4 py-2.5", className)}>
+    <td
+      className={cn(
+        "whitespace-nowrap px-4 py-2.5 text-[13px] text-[var(--text-primary)]",
+        className,
+      )}
+    >
       {children}
     </td>
+  );
+}
+
+// ─── Stat card ──────────────────────────────────────────────────────────────
+
+export function StatCard({
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  label: string;
+  value: React.ReactNode;
+  sub?: React.ReactNode;
+  accent?: "blue" | "green" | "amber" | "red";
+}) {
+  const accentColor =
+    accent === "green"
+      ? "var(--success)"
+      : accent === "amber"
+      ? "var(--warning)"
+      : accent === "red"
+      ? "var(--danger)"
+      : "var(--accent)";
+
+  return (
+    <div
+      className="rounded border px-4 py-3 flex flex-col gap-1"
+      style={{
+        borderColor: "var(--border)",
+        background: "var(--bg-surface)",
+        borderTop: `2px solid ${accentColor}`,
+      }}
+    >
+      <span className="label-caps">{label}</span>
+      <span
+        className="font-mono-data text-xl font-semibold"
+        style={{ color: "var(--text-primary)" }}
+      >
+        {value}
+      </span>
+      {sub && (
+        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+          {sub}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ─── Card ────────────────────────────────────────────────────────────────────
+
+export function Card({
+  children,
+  className,
+  padding = true,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  padding?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded border",
+        padding && "p-4",
+        className,
+      )}
+      style={{
+        borderColor: "var(--border)",
+        background: "var(--bg-surface)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Section header ──────────────────────────────────────────────────────────
+
+export function SectionHeader({
+  title,
+  description,
+  actions,
+}: {
+  title: string;
+  description?: string;
+  actions?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="flex flex-col gap-0.5">
+        <h2
+          className="text-sm font-semibold tracking-wide"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {title}
+        </h2>
+        {description && (
+          <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+            {description}
+          </p>
+        )}
+      </div>
+      {actions && (
+        <div className="flex items-center gap-2 shrink-0">{actions}</div>
+      )}
+    </div>
   );
 }

@@ -27,6 +27,26 @@ async function apiFetch(path: string, options?: RequestInit) {
   return data.data;
 }
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "var(--bg-elevated)",
+  border: "1px solid var(--border)",
+  borderRadius: "6px",
+  padding: "9px 12px",
+  fontSize: "13px",
+  color: "var(--text-primary)",
+  outline: "none",
+  transition: "border-color 0.15s, box-shadow 0.15s",
+  fontFamily: "var(--font-sans)",
+};
+
+const sectionStyle: React.CSSProperties = {
+  background: "var(--bg-surface)",
+  border: "1px solid var(--border)",
+  borderRadius: "8px",
+  padding: "20px 24px",
+};
+
 export default function PrivacyPage() {
   const [exportBanner, setExportBanner] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -38,6 +58,16 @@ export default function PrivacyPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  function fieldStyle(name: string): React.CSSProperties {
+    return {
+      ...inputStyle,
+      borderColor: focusedField === name ? "var(--accent)" : "var(--border)",
+      boxShadow: focusedField === name ? "0 0 0 3px var(--accent-muted)" : "none",
+    };
+  }
 
   async function handleExport() {
     setExportBanner(null);
@@ -78,12 +108,33 @@ export default function PrivacyPage() {
 
   if (deleteSuccess) {
     return (
-      <div className="max-w-xl mx-auto py-12 px-4">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-          <h2 className="text-lg font-semibold text-red-700 mb-2">Account deletion requested</h2>
-          <p className="text-sm text-red-600">
-            Your account has been pseudonymized and your sessions revoked. You have 30 days to
-            recover your account via the link in your confirmation email. After 30 days all
+      <div
+        className="flex flex-1 flex-col items-center justify-center px-8 py-12 animate-fade-in"
+        style={{ background: "var(--bg-base)" }}
+      >
+        <div
+          className="w-full max-w-md rounded-lg px-8 py-10 text-center"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--danger)",
+          }}
+        >
+          <div
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full text-xl mb-4"
+            style={{ background: "var(--danger-muted)", color: "var(--danger)" }}
+          >
+            ⚠
+          </div>
+          <h2
+            className="text-lg font-semibold mb-2"
+            style={{ color: "var(--danger)" }}
+          >
+            Account deletion requested
+          </h2>
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+            Your account has been pseudonymized and your sessions revoked. You have{" "}
+            <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>30 days</span>{" "}
+            to recover your account via the link in your confirmation email. After 30 days all
             remaining personal data will be permanently purged.
           </p>
         </div>
@@ -92,124 +143,324 @@ export default function PrivacyPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-12 px-4 space-y-8">
-      <h1 className="text-2xl font-bold">Privacy</h1>
-
-      {/* Export */}
-      <section className="rounded-lg border border-neutral-200 p-6 space-y-3">
-        <h2 className="font-semibold text-base">Download my data</h2>
-        <p className="text-sm text-neutral-600">
-          Request a copy of all personal data we hold about you (GDPR Article 15). You will
-          receive an email with a download link when the export is ready.
-        </p>
-        {exportBanner && (
-          <div className="rounded bg-blue-50 border border-blue-200 px-3 py-2 text-sm text-blue-700">
-            {exportBanner}
-          </div>
-        )}
-        {exportError && (
-          <div className="rounded bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
-            {exportError}
-          </div>
-        )}
-        <button
-          onClick={handleExport}
-          className="rounded bg-neutral-800 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 transition-colors"
+    <div className="flex flex-1 flex-col animate-fade-in">
+      {/* Page header */}
+      <div
+        className="border-b px-8 py-5"
+        style={{
+          background: "var(--bg-surface)",
+          borderColor: "var(--border)",
+        }}
+      >
+        <div className="label-caps mb-1" style={{ color: "var(--text-muted)" }}>
+          Account
+        </div>
+        <h1
+          className="text-xl font-semibold tracking-tight"
+          style={{ color: "var(--text-primary)" }}
         >
-          Download my data
-        </button>
-      </section>
-
-      {/* Erasure */}
-      <section className="rounded-lg border border-red-200 p-6 space-y-3">
-        <h2 className="font-semibold text-base text-red-700">Delete my account</h2>
-        <p className="text-sm text-neutral-600">
-          Permanently delete your account and all personal data (GDPR Article 17). A 30-day
-          recovery window applies — after that all data is irreversibly purged.
+          Privacy
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
+          Your data rights under GDPR — export or permanently delete your account.
         </p>
-        <button
-          onClick={() => setShowDeleteModal(true)}
-          className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors"
+      </div>
+
+      <div className="mx-auto w-full max-w-2xl px-8 py-6 space-y-5">
+
+        {/* GDPR info banner */}
+        <div
+          className="flex items-start gap-3 rounded px-4 py-3 text-xs"
+          style={{
+            background: "var(--info-muted)",
+            border: "1px solid var(--info)",
+            color: "var(--text-secondary)",
+          }}
         >
-          Delete my account
-        </button>
-      </section>
+          <span style={{ color: "var(--info)", fontSize: "14px", flexShrink: 0 }}>ⓘ</span>
+          <span>
+            Under GDPR Articles 15 and 17, you have the right to access all personal data we hold
+            and to request permanent erasure. Export requests are processed within 72 hours.
+          </span>
+        </div>
+
+        {/* Export section */}
+        <section style={sectionStyle}>
+          <div className="label-caps mb-1" style={{ color: "var(--text-muted)" }}>
+            GDPR Article 15 — Right of access
+          </div>
+          <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+            Download my data
+          </h2>
+          <p className="text-xs mb-4" style={{ color: "var(--text-secondary)" }}>
+            Request a copy of all personal data we hold about you. You will receive an email with
+            a download link when the export is ready (within 72 hours).
+          </p>
+
+          {exportBanner && (
+            <div
+              className="flex items-center gap-2 rounded px-3 py-2 text-xs mb-3"
+              style={{
+                background: "var(--success-muted)",
+                border: "1px solid var(--success)",
+                color: "var(--success)",
+              }}
+            >
+              <span>✓</span>
+              {exportBanner}
+            </div>
+          )}
+          {exportError && (
+            <div
+              className="flex items-center gap-2 rounded px-3 py-2 text-xs mb-3"
+              style={{
+                background: "var(--danger-muted)",
+                border: "1px solid var(--danger)",
+                color: "var(--danger)",
+              }}
+            >
+              <span>⚠</span>
+              {exportError}
+            </div>
+          )}
+
+          <button
+            onClick={handleExport}
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-bright)",
+              borderRadius: "6px",
+              padding: "8px 16px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              transition: "border-color 0.15s, background 0.15s",
+              fontFamily: "var(--font-sans)",
+            }}
+          >
+            Download my data
+          </button>
+        </section>
+
+        {/* Erasure section */}
+        <section
+          style={{
+            ...sectionStyle,
+            borderColor: "rgba(255,63,85,0.25)",
+          }}
+        >
+          <div className="label-caps mb-1" style={{ color: "var(--danger)" }}>
+            GDPR Article 17 — Right to erasure
+          </div>
+          <h2 className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+            Delete my account
+          </h2>
+          <p className="text-xs mb-4" style={{ color: "var(--text-secondary)" }}>
+            Permanently delete your account and all personal data. A{" "}
+            <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>30-day recovery window</span>{" "}
+            applies — after that all data is irreversibly purged and cannot be recovered.
+          </p>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            style={{
+              background: "var(--danger-muted)",
+              border: "1px solid var(--danger)",
+              borderRadius: "6px",
+              padding: "8px 16px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "var(--danger)",
+              cursor: "pointer",
+              transition: "background 0.15s",
+              fontFamily: "var(--font-sans)",
+            }}
+          >
+            Delete my account
+          </button>
+        </section>
+
+      </div>
 
       {/* Delete modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-md rounded-xl bg-white shadow-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-red-700">Confirm account deletion</h3>
-            <p className="text-sm text-neutral-600">
-              This will immediately revoke all your sessions and pseudonymize your account. You
-              have 30 days to recover before permanent purge. This action cannot be undone after
-              the recovery window.
-            </p>
-            <form onSubmit={handleDeleteSubmit} className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium mb-1">Current password</label>
-                <input
-                  type="password"
-                  required
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  className="w-full rounded border border-neutral-300 px-3 py-2 text-sm"
-                  placeholder="Your current password"
-                />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+        >
+          <div
+            className="w-full max-w-md rounded-lg shadow-2xl animate-slide-up"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--danger)",
+            }}
+          >
+            {/* Modal header */}
+            <div
+              className="flex items-center gap-3 px-6 py-4 border-b"
+              style={{ borderColor: "rgba(255,63,85,0.2)" }}
+            >
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded text-sm"
+                style={{ background: "var(--danger-muted)", color: "var(--danger)" }}
+              >
+                ⚠
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  TOTP code{" "}
-                  <span className="text-neutral-400 font-normal">(if enrolled)</span>
-                </label>
-                <input
-                  type="text"
-                  value={totpCode}
-                  onChange={(e) => setTotpCode(e.target.value)}
-                  className="w-full rounded border border-neutral-300 px-3 py-2 text-sm"
-                  placeholder="6-digit code"
-                  maxLength={6}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Type <span className="font-mono font-bold">DELETE</span> to confirm
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={deleteConfirm}
-                  onChange={(e) => setDeleteConfirm(e.target.value)}
-                  className="w-full rounded border border-neutral-300 px-3 py-2 text-sm"
-                  placeholder="DELETE"
-                />
-              </div>
-              {deleteError && (
-                <p className="text-sm text-red-600">{deleteError}</p>
-              )}
-              <div className="flex gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setDeleteError(null);
-                    setDeletePassword("");
-                    setTotpCode("");
-                    setDeleteConfirm("");
-                  }}
-                  className="flex-1 rounded border border-neutral-300 px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting || deleteConfirm !== "DELETE"}
-                  className="flex-1 rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submitting ? "Deleting…" : "Delete my account"}
-                </button>
-              </div>
-            </form>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--danger)" }}>
+                Confirm account deletion
+              </h3>
+            </div>
+
+            <div className="px-6 py-5">
+              <p className="text-xs mb-5" style={{ color: "var(--text-secondary)" }}>
+                This will immediately revoke all your sessions and pseudonymize your account. You
+                have{" "}
+                <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>30 days</span> to
+                recover before permanent purge. This action cannot be undone after the recovery
+                window.
+              </p>
+
+              <form onSubmit={handleDeleteSubmit} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    className="label-caps"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Current password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    onFocus={() => setFocusedField("deletePassword")}
+                    onBlur={() => setFocusedField(null)}
+                    style={fieldStyle("deletePassword")}
+                    placeholder="Your current password"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    className="label-caps"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    TOTP code{" "}
+                    <span style={{ color: "var(--text-muted)", textTransform: "none", letterSpacing: "normal" }}>
+                      (if enrolled)
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value)}
+                    onFocus={() => setFocusedField("totpCode")}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      ...fieldStyle("totpCode"),
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.2em",
+                    }}
+                    placeholder="000000"
+                    maxLength={6}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    className="label-caps"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Type{" "}
+                    <code
+                      className="font-mono-data normal-case"
+                      style={{
+                        background: "var(--danger-muted)",
+                        border: "1px solid var(--danger)",
+                        borderRadius: "3px",
+                        padding: "1px 5px",
+                        color: "var(--danger)",
+                        letterSpacing: "0.15em",
+                      }}
+                    >
+                      DELETE
+                    </code>
+                    {" "}to confirm
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={deleteConfirm}
+                    onChange={(e) => setDeleteConfirm(e.target.value)}
+                    onFocus={() => setFocusedField("deleteConfirm")}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      ...fieldStyle("deleteConfirm"),
+                      borderColor: deleteConfirm && deleteConfirm !== "DELETE"
+                        ? "var(--danger)"
+                        : focusedField === "deleteConfirm"
+                        ? "var(--accent)"
+                        : "var(--border)",
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.1em",
+                    }}
+                    placeholder="DELETE"
+                  />
+                </div>
+
+                {deleteError && (
+                  <p className="text-xs" style={{ color: "var(--danger)" }}>
+                    ⚠ {deleteError}
+                  </p>
+                )}
+
+                <div className="flex gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setDeleteError(null);
+                      setDeletePassword("");
+                      setTotpCode("");
+                      setDeleteConfirm("");
+                    }}
+                    style={{
+                      flex: 1,
+                      background: "var(--bg-elevated)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "6px",
+                      padding: "9px 16px",
+                      fontSize: "13px",
+                      color: "var(--text-secondary)",
+                      cursor: "pointer",
+                      fontFamily: "var(--font-sans)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting || deleteConfirm !== "DELETE"}
+                    style={{
+                      flex: 1,
+                      background: "var(--danger)",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "9px 16px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "white",
+                      cursor: (submitting || deleteConfirm !== "DELETE") ? "not-allowed" : "pointer",
+                      opacity: (submitting || deleteConfirm !== "DELETE") ? 0.5 : 1,
+                      transition: "opacity 0.15s",
+                      fontFamily: "var(--font-sans)",
+                    }}
+                  >
+                    {submitting ? "Deleting…" : "Delete my account"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

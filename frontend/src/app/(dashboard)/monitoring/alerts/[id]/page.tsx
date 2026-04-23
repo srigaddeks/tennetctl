@@ -19,24 +19,18 @@ import {
   Button,
   ErrorState,
   Skeleton,
+  StatCard,
 } from "@/components/ui";
 import { useAlertEvent } from "@/features/monitoring/hooks/use-alerts";
 import { useMetricsQuery } from "@/features/monitoring/hooks/use-metrics-query";
 import { SilenceDialog } from "@/features/monitoring/_components/silence-dialog";
-import { cn } from "@/lib/cn";
 import type { AlertSeverity, MetricsQuery } from "@/types/api";
 
-function severityClass(sev: AlertSeverity | null): string {
-  if (sev === "critical" || sev === "error") {
-    return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300";
-  }
-  if (sev === "warn") {
-    return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300";
-  }
-  if (sev === "info") {
-    return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
-  }
-  return "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+function severityTone(sev: AlertSeverity | null): "danger" | "warning" | "info" | "default" {
+  if (sev === "critical" || sev === "error") return "danger";
+  if (sev === "warn") return "warning";
+  if (sev === "info") return "info";
+  return "default";
 }
 
 export default function AlertDetailPage({
@@ -54,14 +48,11 @@ export default function AlertDetailPage({
   );
   const [silenceOpen, setSilenceOpen] = useState(false);
 
-  // When we have alert data with metric rule info in annotations.dsl (if available),
-  // run a metrics query for the last hour to show context.
   const metricKey =
     (data?.annotations &&
       typeof data.annotations === "object" &&
       "metric_key" in data.annotations &&
-      typeof (data.annotations as Record<string, unknown>).metric_key ===
-        "string"
+      typeof (data.annotations as Record<string, unknown>).metric_key === "string"
       ? ((data.annotations as Record<string, unknown>).metric_key as string)
       : null) ?? null;
 
@@ -91,12 +82,15 @@ export default function AlertDetailPage({
         title={data?.rule_name ?? "Alert"}
         description={
           data
-            ? `Alert ${id.slice(0, 8)} · started ${new Date(
-                data.started_at,
-              ).toLocaleString()}`
+            ? `Alert ${id.slice(0, 8)} · started ${new Date(data.started_at).toLocaleString()}`
             : "Loading alert detail…"
         }
         testId="heading-monitoring-alert-detail"
+        breadcrumbs={[
+          { label: "Monitoring", href: "/monitoring" },
+          { label: "Alerts", href: "/monitoring/alerts" },
+          { label: data?.rule_name ?? id.slice(0, 8) },
+        ]}
         actions={
           data ? (
             <Button
@@ -109,144 +103,260 @@ export default function AlertDetailPage({
           ) : null
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
         {isLoading && (
           <div className="flex flex-col gap-3">
-            <Skeleton className="h-10 w-80" />
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-20 w-full" />
+            <div className="grid grid-cols-3 gap-3">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-20 w-full" />
+              ))}
+            </div>
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-32 w-full" />
           </div>
         )}
+
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
         {data && (
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={cn(
-                  "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase",
-                  severityClass(data.severity),
-                )}
-                data-testid={`alert-severity-${data.severity ?? "unknown"}`}
-              >
-                {data.severity ?? "n/a"}
-              </span>
-              <Badge tone={data.state === "firing" ? "red" : "emerald"}>
+          <div className="flex flex-col gap-5">
+
+            {/* Alert state banner */}
+            <div
+              className="flex flex-wrap items-center gap-2 rounded border px-4 py-3"
+              style={{
+                background: data.state === "firing" ? "var(--danger-muted)" : "var(--success-muted)",
+                borderColor: data.state === "firing" ? "rgba(255,63,85,0.3)" : "rgba(0,196,122,0.3)",
+              }}
+            >
+              <Badge tone={data.state === "firing" ? "danger" : "success"} dot>
                 {data.state}
               </Badge>
+              {data.severity && (
+                <Badge tone={severityTone(data.severity)}>
+                  {data.severity}
+                </Badge>
+              )}
               {data.silenced && (
                 <Badge tone="purple">
                   <span data-testid="alert-silenced-badge">silenced</span>
                 </Badge>
               )}
-              <span className="text-xs text-zinc-500">
-                fingerprint {data.fingerprint.slice(0, 10)}…
+              <span
+                className="font-mono-data text-[11px]"
+                style={{ color: "var(--text-muted)" }}
+              >
+                fingerprint {data.fingerprint.slice(0, 12)}…
+              </span>
+              <span
+                className="ml-auto font-mono-data text-[11px]"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                started {new Date(data.started_at).toLocaleString()}
               </span>
             </div>
 
+            {/* Stat cards */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-                  Value
-                </span>
-                <div className="text-2xl font-semibold">
-                  {data.value ?? "—"}
-                </div>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-                  Threshold
-                </span>
-                <div className="text-2xl font-semibold">
-                  {data.threshold ?? "—"}
-                </div>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-                  Notifications
-                </span>
-                <div className="text-2xl font-semibold">
-                  {data.notification_count}
-                </div>
-                {data.last_notified_at && (
-                  <span className="text-[11px] text-zinc-500">
-                    Last {new Date(data.last_notified_at).toLocaleString()}
-                  </span>
-                )}
-              </div>
+              <StatCard
+                label="Current value"
+                value={data.value ?? "—"}
+                sub="Observed metric value"
+                accent={data.state === "firing" ? "red" : "green"}
+              />
+              <StatCard
+                label="Threshold"
+                value={data.threshold ?? "—"}
+                sub="Alert trigger threshold"
+                accent="amber"
+              />
+              <StatCard
+                label="Notifications"
+                value={String(data.notification_count)}
+                sub={data.last_notified_at
+                  ? `Last ${new Date(data.last_notified_at).toLocaleString()}`
+                  : "None sent yet"
+                }
+                accent="blue"
+              />
             </div>
 
+            {/* Metric chart */}
             {metricsDsl && chartData.length > 0 && (
               <div
-                className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                className="rounded border"
+                style={{
+                  background: "var(--bg-surface)",
+                  borderColor: "var(--border)",
+                }}
                 data-testid="alert-detail-chart"
               >
-                <h3 className="mb-2 text-sm font-semibold">
-                  {metricKey} · last 1h
-                </h3>
-                <div className="h-64 w-full">
-                  <ResponsiveContainer>
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                      <XAxis dataKey="tsLabel" tick={{ fontSize: 10 }} />
-                      <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip />
-                      {data.threshold !== null && (
-                        <ReferenceLine
-                          y={data.threshold}
-                          stroke="#ef4444"
-                          strokeDasharray="4 2"
+                <div
+                  className="border-b px-4 py-3"
+                  style={{ borderColor: "var(--border)" }}
+                >
+                  <span
+                    className="font-mono-data text-[13px] font-semibold"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {metricKey}
+                  </span>
+                  <span
+                    className="ml-2 label-caps"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    last 1h
+                  </span>
+                </div>
+                <div className="p-4">
+                  <div className="h-56 w-full">
+                    <ResponsiveContainer>
+                      <LineChart data={chartData}>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="rgba(28,46,69,0.8)"
                         />
-                      )}
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#2563eb"
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                        <XAxis
+                          dataKey="tsLabel"
+                          tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+                          axisLine={{ stroke: "var(--border)" }}
+                          tickLine={false}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 10, fill: "var(--text-muted)" }}
+                          axisLine={{ stroke: "var(--border)" }}
+                          tickLine={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            background: "var(--bg-elevated)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "4px",
+                            fontSize: "11px",
+                            color: "var(--text-primary)",
+                          }}
+                        />
+                        {data.threshold !== null && (
+                          <ReferenceLine
+                            y={data.threshold}
+                            stroke="var(--danger)"
+                            strokeDasharray="4 2"
+                            label={{
+                              value: "threshold",
+                              fontSize: 10,
+                              fill: "var(--danger)",
+                            }}
+                          />
+                        )}
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="var(--accent)"
+                          strokeWidth={1.5}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-              <h3 className="mb-2 text-sm font-semibold">Labels</h3>
-              {Object.keys(data.labels ?? {}).length === 0 ? (
-                <p className="text-xs text-zinc-500">No labels.</p>
-              ) : (
-                <table className="w-full text-sm">
-                  <tbody>
-                    {Object.entries(data.labels).map(([k, v]) => (
-                      <tr
-                        key={k}
-                        className="border-b border-zinc-100 last:border-0 dark:border-zinc-900"
-                      >
-                        <td className="py-1 pr-4 font-mono text-xs text-zinc-500">
-                          {k}
-                        </td>
-                        <td className="py-1 font-mono text-xs">
-                          {String(v)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+            {/* Labels */}
+            <div
+              className="rounded border"
+              style={{
+                background: "var(--bg-surface)",
+                borderColor: "var(--border)",
+              }}
+            >
+              <div
+                className="border-b px-4 py-3"
+                style={{ borderColor: "var(--border)" }}
+              >
+                <span
+                  className="text-[13px] font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Labels
+                </span>
+              </div>
+              <div className="p-4">
+                {Object.keys(data.labels ?? {}).length === 0 ? (
+                  <span
+                    className="text-[12px]"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    No labels.
+                  </span>
+                ) : (
+                  <table className="w-full text-[13px]">
+                    <tbody>
+                      {Object.entries(data.labels).map(([k, v]) => (
+                        <tr
+                          key={k}
+                          className="border-b"
+                          style={{ borderColor: "var(--border)" }}
+                        >
+                          <td
+                            className="py-1.5 pr-4 font-mono-data text-[11px]"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            {k}
+                          </td>
+                          <td
+                            className="py-1.5 font-mono-data text-[11px]"
+                            style={{ color: "var(--text-primary)" }}
+                          >
+                            {String(v)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-              <h3 className="mb-2 text-sm font-semibold">Annotations</h3>
-              <pre
-                className="overflow-auto rounded-md bg-zinc-50 p-3 text-[11px] text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
-                data-testid="alert-detail-annotations"
+            {/* Annotations */}
+            <div
+              className="rounded border"
+              style={{
+                background: "var(--bg-surface)",
+                borderColor: "var(--border)",
+              }}
+            >
+              <div
+                className="border-b px-4 py-3"
+                style={{ borderColor: "var(--border)" }}
               >
-                {JSON.stringify(data.annotations, null, 2)}
-              </pre>
+                <span
+                  className="text-[13px] font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  Annotations
+                </span>
+              </div>
+              <div className="p-4">
+                <pre
+                  className="overflow-auto rounded text-[11px] p-3"
+                  style={{
+                    background: "var(--bg-base)",
+                    color: "var(--text-secondary)",
+                    border: "1px solid var(--border)",
+                    fontFamily: "var(--font-mono)",
+                  }}
+                  data-testid="alert-detail-annotations"
+                >
+                  {JSON.stringify(data.annotations, null, 2)}
+                </pre>
+              </div>
             </div>
           </div>
         )}

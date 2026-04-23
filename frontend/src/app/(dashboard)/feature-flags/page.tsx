@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Flag,
   Globe,
@@ -34,17 +35,17 @@ import type { Flag as FlagType, FlagScope } from "@/types/api";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SCOPE_META: Record<FlagScope, { label: string; icon: typeof Globe; borderCls: string; numCls: string; badgeTone: "amber" | "blue" | "purple" }> = {
-  global:      { label: "Global",      icon: Globe,     borderCls: "border-l-amber-500",  numCls: "text-amber-600 dark:text-amber-400",  badgeTone: "amber"  },
-  org:         { label: "Org",         icon: Building2, borderCls: "border-l-blue-500",   numCls: "text-blue-600 dark:text-blue-400",    badgeTone: "blue"   },
-  application: { label: "Application", icon: Package,   borderCls: "border-l-purple-500", numCls: "text-purple-600 dark:text-purple-400",badgeTone: "purple" },
+const SCOPE_META: Record<FlagScope, { label: string; icon: typeof Globe; accentColor: string; badgeTone: "amber" | "blue" | "purple" }> = {
+  global:      { label: "Global",      icon: Globe,     accentColor: "var(--warning)",  badgeTone: "amber"  },
+  org:         { label: "Org",         icon: Building2, accentColor: "var(--accent)",   badgeTone: "blue"   },
+  application: { label: "Application", icon: Package,   accentColor: "#a855f7",         badgeTone: "purple" },
 };
 
 const VALUE_TYPE_COLORS: Record<string, string> = {
-  boolean: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  string:  "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  number:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  json:    "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  boolean: "emerald",
+  string:  "blue",
+  number:  "amber",
+  json:    "purple",
 };
 
 // ─── Confirm dialog ───────────────────────────────────────────────────────────
@@ -68,9 +69,9 @@ function ConfirmDialog({
   if (!action) return null;
 
   const colorsMap = {
-    info:    { icon: Info,          iconColor: "text-blue-600",  bg: "bg-blue-50 dark:bg-blue-950/40",   border: "border-blue-200 dark:border-blue-900/50"  },
-    warning: { icon: AlertTriangle, iconColor: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-900/50" },
-    danger:  { icon: AlertTriangle, iconColor: "text-red-600",   bg: "bg-red-50 dark:bg-red-950/40",     border: "border-red-200 dark:border-red-900/50"     },
+    info:    { icon: Info,          iconColor: "var(--info)",    bg: "var(--info-muted)",    border: "var(--info)"    },
+    warning: { icon: AlertTriangle, iconColor: "var(--warning)", bg: "var(--warning-muted)", border: "var(--warning)" },
+    danger:  { icon: AlertTriangle, iconColor: "var(--danger)",  bg: "var(--danger-muted)",  border: "var(--danger)"  },
   };
   const colors = colorsMap[action.variant];
   const IconComp = colors.icon;
@@ -84,21 +85,35 @@ function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(6,11,23,0.85)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       data-testid="confirm-dialog"
     >
-      <div className="mx-4 w-full max-w-md rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
+      <div
+        className="mx-4 w-full max-w-md rounded-2xl"
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-bright)",
+          boxShadow: "0 25px 50px rgba(0,0,0,0.6)",
+        }}
+      >
         <div className="flex items-start gap-3 p-6 pb-4">
-          <div className={cn("shrink-0 rounded-xl p-2", colors.bg, colors.border, "border")}>
-            <IconComp className={cn("h-5 w-5", colors.iconColor)} />
+          <div
+            className="shrink-0 rounded-xl p-2"
+            style={{ background: colors.bg, border: `1px solid ${colors.border}` }}
+          >
+            <IconComp className="h-5 w-5" style={{ color: colors.iconColor }} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">{action.title}</h2>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{action.body}</p>
+            <h2 className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>{action.title}</h2>
+            <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>{action.body}</p>
           </div>
         </div>
-        <div className="flex justify-end gap-2 border-t border-zinc-200 px-6 py-4 dark:border-zinc-800">
+        <div
+          className="flex justify-end gap-2 px-6 py-4"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
           <Button variant="secondary" size="sm" onClick={onClose} disabled={running}>Cancel</Button>
           <Button
             size="sm"
@@ -123,7 +138,7 @@ function InlinePicker<T extends string>({
   disabled,
 }: {
   current: T;
-  options: { value: T; label: string; className: string }[];
+  options: { value: T; label: string; active: boolean }[];
   onPick: (v: T) => void;
   disabled?: boolean;
 }) {
@@ -138,19 +153,26 @@ function InlinePicker<T extends string>({
             key={o.value}
             type="button"
             onClick={() => { setOpen(false); onPick(o.value); }}
-            className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium transition",
-              o.className,
-              o.value === current && "ring-2 ring-offset-1 ring-zinc-900 dark:ring-zinc-100"
-            )}
+            className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition"
+            style={o.active ? {
+              background: "var(--success-muted)",
+              border: "1px solid var(--success)",
+              color: "var(--success)",
+            } : {
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+              color: "var(--text-muted)",
+            }}
           >
+            {o.active && <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />}
             {o.label}
           </button>
         ))}
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="ml-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          style={{ color: "var(--text-muted)" }}
+          className="hover:opacity-80 transition"
         >
           <X className="h-3 w-3" />
         </button>
@@ -163,12 +185,20 @@ function InlinePicker<T extends string>({
       type="button"
       onClick={() => !disabled && setOpen(true)}
       title="Click to change"
-      className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium transition hover:opacity-80",
-        cur.className,
-        disabled && "cursor-default opacity-60"
-      )}
+      className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition hover:opacity-90"
+      style={cur.active ? {
+        background: "var(--success-muted)",
+        border: "1px solid var(--success)",
+        color: "var(--success)",
+        cursor: disabled ? "default" : "pointer",
+      } : {
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--border)",
+        color: "var(--text-muted)",
+        cursor: disabled ? "default" : "pointer",
+      }}
     >
+      {cur.active && <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />}
       {cur.label}
     </button>
   );
@@ -176,37 +206,118 @@ function InlinePicker<T extends string>({
 
 // ─── Stat cards ──────────────────────────────────────────────────────────────
 
-type StatCard = {
+type StatCardData = {
   label: string;
   value: number;
   icon: typeof Flag;
-  borderCls: string;
-  numCls: string;
+  accentColor: string;
   testId: string;
 };
 
-function StatCards({ cards }: { cards: StatCard[] }) {
+function StatCards({ cards }: { cards: StatCardData[] }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-      {cards.map(({ label, value, icon: Icon, borderCls, numCls, testId }) => (
+      {cards.map(({ label, value, icon: Icon, accentColor, testId }) => (
         <div
           key={label}
-          className={cn(
-            "flex items-center gap-3 rounded-xl border border-l-[3px] bg-white px-4 py-3 dark:bg-zinc-950",
-            borderCls,
-            "border-zinc-200 dark:border-zinc-800"
-          )}
+          className="flex items-center gap-3 rounded-xl px-4 py-3"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            borderLeft: `3px solid ${accentColor}`,
+          }}
           data-testid={testId}
         >
-          <div className="shrink-0 rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
-            <Icon className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+          <div
+            className="shrink-0 rounded-lg p-2"
+            style={{ background: "var(--bg-elevated)" }}
+          >
+            <Icon className="h-4 w-4" style={{ color: accentColor }} />
           </div>
           <div className="min-w-0">
-            <span className={cn("block text-2xl font-bold tabular-nums leading-none", numCls)}>{value}</span>
-            <span className="mt-0.5 block truncate text-[11px] text-zinc-500 dark:text-zinc-400">{label}</span>
+            <span
+              className="block text-2xl font-bold tabular-nums leading-none font-mono-data"
+              style={{ color: accentColor }}
+            >
+              {value}
+            </span>
+            <span
+              className="mt-0.5 block truncate text-[11px] label-caps"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {label}
+            </span>
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ─── Scope filter banner ──────────────────────────────────────────────────────
+
+function ScopeFilterBanner({
+  orgId,
+  appId,
+  onClear,
+}: {
+  orgId: string;
+  appId: string | null;
+  onClear: () => void;
+}) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3"
+      style={{
+        background: "var(--accent-muted)",
+        border: "1px solid var(--accent-dim)",
+      }}
+      data-testid="scope-filter-banner"
+    >
+      <Building2 className="h-4 w-4 shrink-0" style={{ color: "var(--accent)" }} />
+      <div className="flex-1 min-w-0 text-xs" style={{ color: "var(--text-secondary)" }}>
+        <span className="font-medium" style={{ color: "var(--accent)" }}>Scope filter active. </span>
+        Showing flags for org:{" "}
+        <code
+          className="rounded px-1.5 py-0.5 text-[11px]"
+          style={{
+            background: "var(--bg-elevated)",
+            color: "var(--text-primary)",
+            fontFamily: "var(--font-mono)",
+          }}
+        >
+          {orgId}
+        </code>
+        {appId && (
+          <>
+            {" "}· application:{" "}
+            <code
+              className="rounded px-1.5 py-0.5 text-[11px]"
+              style={{
+                background: "var(--bg-elevated)",
+                color: "var(--text-primary)",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              {appId}
+            </code>
+          </>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={onClear}
+        className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+        style={{
+          background: "var(--bg-elevated)",
+          border: "1px solid var(--border-bright)",
+          color: "var(--text-secondary)",
+        }}
+        data-testid="clear-scope-filter"
+      >
+        <X className="h-3 w-3" />
+        Clear scope filter
+      </button>
     </div>
   );
 }
@@ -223,23 +334,25 @@ function FlagRow({
   onDelete: (flag: FlagType) => void;
 }) {
   const scopeMeta = SCOPE_META[flag.scope];
-  const ScopeIcon = scopeMeta.icon;
 
   return (
     <div
       className={cn(
-        "grid grid-cols-[auto_1fr_auto] items-start gap-x-3 border-b border-l-[3px] border-zinc-100 px-4 py-3 last:border-b-0",
-        "transition hover:bg-zinc-50 dark:border-zinc-900 dark:hover:bg-zinc-900/40",
-        scopeMeta.borderCls,
-        !flag.is_active && "opacity-60"
+        "grid grid-cols-[auto_1fr_auto] items-start gap-x-3 px-4 py-3 last:border-b-0 transition animate-fade-in",
+        !flag.is_active && "opacity-50"
       )}
+      style={{
+        borderBottom: "1px solid var(--border)",
+        borderLeft: `3px solid ${scopeMeta.accentColor}`,
+      }}
     >
       {/* Scope icon */}
       <div
-        className="row-span-2 mt-0.5 shrink-0 rounded-lg bg-zinc-100 p-1.5 dark:bg-zinc-800"
+        className="row-span-2 mt-0.5 shrink-0 rounded-lg p-1.5"
+        style={{ background: "var(--bg-elevated)" }}
         title={`${scopeMeta.label} scope`}
       >
-        <ScopeIcon className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+        <scopeMeta.icon className="h-3.5 w-3.5" style={{ color: scopeMeta.accentColor }} />
       </div>
 
       {/* Flag key + description */}
@@ -247,22 +360,21 @@ function FlagRow({
         <div className="flex items-center gap-2">
           <Link
             href={`/feature-flags/${flag.id}`}
-            className="font-mono text-xs font-semibold text-zinc-900 underline-offset-2 hover:underline dark:text-zinc-50"
+            className="font-mono text-xs font-semibold transition hover:opacity-80"
+            style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}
             data-testid={`test-flag-key-${flag.flag_key}`}
           >
             {flag.flag_key}
           </Link>
-          <span
-            className={cn(
-              "inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium",
-              VALUE_TYPE_COLORS[flag.value_type] ?? VALUE_TYPE_COLORS.string
-            )}
-          >
+          <Badge tone={(VALUE_TYPE_COLORS[flag.value_type] ?? "default") as "emerald" | "blue" | "amber" | "purple"}>
             {flag.value_type}
-          </span>
+          </Badge>
         </div>
         {flag.description && (
-          <p className="mt-0.5 max-w-lg truncate text-xs text-zinc-500 dark:text-zinc-400">
+          <p
+            className="mt-0.5 max-w-lg truncate text-xs"
+            style={{ color: "var(--text-muted)" }}
+          >
             {flag.description}
           </p>
         )}
@@ -273,40 +385,41 @@ function FlagRow({
         <InlinePicker
           current={flag.is_active ? "active" : "inactive"}
           options={[
-            {
-              value: "active",
-              label: "active",
-              className:
-                "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-300",
-            },
-            {
-              value: "inactive",
-              label: "inactive",
-              className:
-                "bg-zinc-100 border-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400",
-            },
+            { value: "active",   label: "enabled",  active: true  },
+            { value: "inactive", label: "disabled", active: false },
           ]}
           onPick={() => onToggleActive(flag)}
         />
-        <span className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700" />
-        <code className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+        <span className="h-3.5 w-px" style={{ background: "var(--border)" }} />
+        <code
+          className="rounded px-1.5 py-0.5 text-[10px]"
+          style={{
+            background: "var(--bg-elevated)",
+            color: "var(--text-secondary)",
+            fontFamily: "var(--font-mono)",
+          }}
+        >
           {JSON.stringify(flag.default_value)}
         </code>
-        <span className="h-3.5 w-px bg-zinc-200 dark:bg-zinc-700" />
+        <span className="h-3.5 w-px" style={{ background: "var(--border)" }} />
         <button
           type="button"
           onClick={() => onDelete(flag)}
           title="Delete flag"
-          className="rounded-md p-1 text-zinc-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+          className="rounded-md p-1 transition"
+          style={{ color: "var(--text-muted)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--danger)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
           data-testid={`delete-flag-${flag.flag_key}`}
         >
           <X className="h-3.5 w-3.5" />
         </button>
         <Link
           href={`/feature-flags/${flag.id}`}
-          className="rounded-md px-2 py-1 text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+          className="rounded-md px-2 py-1 text-xs font-medium transition"
+          style={{ color: "var(--text-secondary)" }}
         >
-          Manage
+          Manage →
         </Link>
       </div>
     </div>
@@ -328,7 +441,6 @@ function ScopeSection({
 }) {
   const [open, setOpen] = useState(true);
   const meta = SCOPE_META[scope];
-  const ScopeIcon = meta.icon;
   const activeCount = flags.filter((f) => f.is_active).length;
 
   return (
@@ -336,29 +448,42 @@ function ScopeSection({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition"
+        style={{ color: "var(--text-primary)" }}
         data-testid={`group-header-${scope}`}
       >
         {open
-          ? <FolderOpen className="h-4 w-4 shrink-0 text-zinc-700 dark:text-zinc-300" />
-          : <Folder className="h-4 w-4 shrink-0 text-zinc-400" />}
-        <ScopeIcon className="h-3.5 w-3.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
-        <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          ? <FolderOpen className="h-4 w-4 shrink-0" style={{ color: "var(--text-secondary)" }} />
+          : <Folder className="h-4 w-4 shrink-0" style={{ color: "var(--text-muted)" }} />}
+        <meta.icon className="h-3.5 w-3.5 shrink-0" style={{ color: meta.accentColor }} />
+        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
           {meta.label}
         </span>
-        <span className="ml-auto text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+        <span
+          className="ml-auto text-xs tabular-nums"
+          style={{ color: "var(--text-muted)" }}
+        >
           {flags.length}
         </span>
-        <span className={cn("text-[11px] font-medium tabular-nums", meta.numCls)}>
+        <span
+          className="text-[11px] font-medium tabular-nums"
+          style={{ color: meta.accentColor }}
+        >
           {activeCount} active
         </span>
         {open
-          ? <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
-          : <ChevronRight className="h-3.5 w-3.5 text-zinc-400" />}
+          ? <ChevronDown className="h-3.5 w-3.5" style={{ color: "var(--text-muted)" }} />
+          : <ChevronRight className="h-3.5 w-3.5" style={{ color: "var(--text-muted)" }} />}
       </button>
 
       {open && (
-        <div className="mb-3 ml-4 overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <div
+          className="mb-3 ml-4 overflow-hidden rounded-xl"
+          style={{
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+          }}
+        >
           {flags.map((flag) => (
             <FlagRow
               key={flag.id}
@@ -373,16 +498,25 @@ function ScopeSection({
   );
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
+// ─── Inner page (needs useSearchParams) ──────────────────────────────────────
 
-export default function FlagsListPage() {
+function FlagsListInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlOrgId = searchParams.get("org_id");
+  const urlAppId = searchParams.get("application_id");
+
   const [scopeFilter, setScopeFilter] = useState<"all" | FlagScope>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useFlags({ limit: 500 });
+  const { data, isLoading, isError, error, refetch } = useFlags({
+    limit: 500,
+    org_id: urlOrgId ?? undefined,
+    application_id: urlAppId ?? undefined,
+  });
   const updateFlag = useUpdateFlag();
   const deleteFlag = useDeleteFlag();
   const { toast } = useToast();
@@ -421,14 +555,14 @@ export default function FlagsListPage() {
   function handleToggleActive(flag: FlagType) {
     const next = !flag.is_active;
     setConfirmAction({
-      title: `${next ? "Activate" : "Deactivate"} flag?`,
-      body: `"${flag.flag_key}" will be ${next ? "active — evaluated normally" : "inactive — returns default for all requests"}.`,
+      title: `${next ? "Enable" : "Disable"} flag?`,
+      body: `"${flag.flag_key}" will be ${next ? "enabled — evaluated normally across all environments" : "disabled — default value returned for all requests"}.`,
       variant: next ? "info" : "warning",
-      confirmLabel: next ? "Activate" : "Deactivate",
+      confirmLabel: next ? "Enable" : "Disable",
       onConfirm: async () => {
         try {
           await updateFlag.mutateAsync({ id: flag.id, body: { is_active: next } });
-          toast(`Flag "${flag.flag_key}" ${next ? "activated" : "deactivated"}`, "success");
+          toast(`Flag "${flag.flag_key}" ${next ? "enabled" : "disabled"}`, "success");
         } catch (e) {
           toast(e instanceof Error ? e.message : "Failed", "error");
         }
@@ -439,7 +573,7 @@ export default function FlagsListPage() {
   function handleDelete(flag: FlagType) {
     setConfirmAction({
       title: "Delete flag?",
-      body: `"${flag.flag_key}" will be permanently deleted. This cannot be undone.`,
+      body: `"${flag.flag_key}" will be permanently deleted. All environment states, rules, and overrides will be removed. This cannot be undone.`,
       variant: "danger",
       confirmLabel: "Delete",
       onConfirm: async () => {
@@ -453,13 +587,20 @@ export default function FlagsListPage() {
     });
   }
 
-  const statCards: StatCard[] = [
-    { label: "Total",       value: stats.total,       icon: Flag,     borderCls: "border-l-zinc-900 dark:border-l-zinc-100",   numCls: "text-zinc-900 dark:text-zinc-50",             testId: "stat-card-total"       },
-    { label: "Global",      value: stats.global,      icon: Globe,    borderCls: "border-l-amber-500",                         numCls: "text-amber-600 dark:text-amber-400",           testId: "stat-card-global"      },
-    { label: "Org",         value: stats.org,         icon: Building2,borderCls: "border-l-blue-500",                          numCls: "text-blue-600 dark:text-blue-400",             testId: "stat-card-org"         },
-    { label: "Application", value: stats.application, icon: Package,  borderCls: "border-l-purple-500",                        numCls: "text-purple-600 dark:text-purple-400",         testId: "stat-card-application" },
-    { label: "Active",      value: stats.active,      icon: Zap,      borderCls: "border-l-emerald-500",                       numCls: "text-emerald-600 dark:text-emerald-400",       testId: "stat-card-active"      },
-    { label: "Inactive",    value: stats.inactive,    icon: Flag,     borderCls: "border-l-zinc-400",                          numCls: "text-zinc-500 dark:text-zinc-400",             testId: "stat-card-inactive"    },
+  function clearScopeFilter() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("org_id");
+    url.searchParams.delete("application_id");
+    router.replace(url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : ""));
+  }
+
+  const statCards: StatCardData[] = [
+    { label: "Total Flags",   value: stats.total,       icon: Flag,      accentColor: "var(--text-secondary)", testId: "stat-card-total"       },
+    { label: "Global",        value: stats.global,      icon: Globe,     accentColor: "var(--warning)",        testId: "stat-card-global"      },
+    { label: "Org",           value: stats.org,         icon: Building2, accentColor: "var(--accent)",         testId: "stat-card-org"         },
+    { label: "Application",   value: stats.application, icon: Package,   accentColor: "#a855f7",               testId: "stat-card-application" },
+    { label: "Enabled",       value: stats.active,      icon: Zap,       accentColor: "var(--success)",        testId: "stat-card-active"      },
+    { label: "Disabled",      value: stats.inactive,    icon: Flag,      accentColor: "var(--text-muted)",     testId: "stat-card-inactive"    },
   ];
 
   return (
@@ -470,18 +611,23 @@ export default function FlagsListPage() {
 
       <PageHeader
         title="Feature Flags"
-        description="Control features across scopes. Click any status badge to toggle inline."
+        description="Control feature exposure across environments and scopes. Toggle, rule, and override production traffic without deployments."
         testId="heading-flags"
         actions={
           <>
             <Link
               href="/feature-flags/evaluate"
-              className="inline-flex h-10 items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+              className="inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium transition"
+              style={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border-bright)",
+                color: "var(--text-secondary)",
+              }}
               data-testid="link-evaluate"
             >
-              Try evaluator &rarr;
+              Evaluate sandbox →
             </Link>
-            <Button onClick={() => setOpenCreate(true)} data-testid="open-create-flag">
+            <Button variant="primary" onClick={() => setOpenCreate(true)} data-testid="open-create-flag">
               + New flag
             </Button>
           </>
@@ -489,41 +635,57 @@ export default function FlagsListPage() {
       />
 
       <div className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+        {/* Scope filter banner */}
+        {urlOrgId && (
+          <ScopeFilterBanner
+            orgId={urlOrgId}
+            appId={urlAppId}
+            onClear={clearScopeFilter}
+          />
+        )}
+
         {/* Stat cards */}
         {!isLoading && !isError && <StatCards cards={statCards} />}
 
         {/* Filter bar */}
         {!isLoading && !isError && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+          <div
+            className="flex flex-wrap items-center gap-2 rounded-xl px-4 py-3"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border)",
+            }}
+          >
             {/* Scope pills */}
             {(["all", "global", "org", "application"] as const).map((s) => {
               const active = scopeFilter === s;
               const count = s === "all" ? stats.total : stats[s];
               const meta = s !== "all" ? SCOPE_META[s] : null;
-              const SIcon = meta?.icon;
               return (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setScopeFilter(s)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
-                    active
-                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-                  )}
+                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+                  style={active ? {
+                    background: "var(--accent-dim)",
+                    border: "1px solid var(--accent)",
+                    color: "var(--accent)",
+                  } : {
+                    background: "var(--bg-elevated)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text-secondary)",
+                  }}
                   data-testid={`filter-flag-scope-${s}`}
                 >
-                  {SIcon && <SIcon className="h-3 w-3" />}
+                  {meta && <meta.icon className="h-3 w-3" />}
                   {s === "all" ? "All scopes" : meta!.label}
-                  <span className={cn("tabular-nums", active ? "opacity-70" : "text-zinc-400")}>
-                    {count}
-                  </span>
+                  <span className="tabular-nums opacity-70">{count}</span>
                 </button>
               );
             })}
 
-            <span className="h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+            <span className="h-5 w-px" style={{ background: "var(--border)" }} />
 
             {/* Status pills */}
             {(["all", "active", "inactive"] as const).map((s) => {
@@ -534,20 +696,32 @@ export default function FlagsListPage() {
                   key={s}
                   type="button"
                   onClick={() => setStatusFilter(s)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
-                    active
-                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-                  )}
+                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+                  style={active ? {
+                    background: s === "active" ? "var(--success-muted)" : "var(--bg-elevated)",
+                    border: `1px solid ${s === "active" ? "var(--success)" : "var(--accent)"}`,
+                    color: s === "active" ? "var(--success)" : "var(--accent)",
+                  } : {
+                    background: "var(--bg-elevated)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text-secondary)",
+                  }}
                   data-testid={`filter-flag-status-${s}`}
                 >
-                  {s === "active" && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
-                  {s === "inactive" && <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />}
+                  {s === "active" && (
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ background: "var(--success)" }}
+                    />
+                  )}
+                  {s === "inactive" && (
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ background: "var(--text-muted)" }}
+                    />
+                  )}
                   {s === "all" ? "All statuses" : s}
-                  <span className={cn("tabular-nums", active ? "opacity-70" : "text-zinc-400")}>
-                    {count}
-                  </span>
+                  <span className="tabular-nums opacity-70">{count}</span>
                 </button>
               );
             })}
@@ -557,7 +731,12 @@ export default function FlagsListPage() {
               <button
                 type="button"
                 onClick={() => setScopeFilter("all")}
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition"
+                style={{
+                  background: "var(--accent-muted)",
+                  border: "1px solid var(--accent-dim)",
+                  color: "var(--accent)",
+                }}
               >
                 scope: {scopeFilter}
                 <X className="h-2.5 w-2.5 ml-0.5" />
@@ -567,7 +746,12 @@ export default function FlagsListPage() {
               <button
                 type="button"
                 onClick={() => setStatusFilter("all")}
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition"
+                style={{
+                  background: "var(--accent-muted)",
+                  border: "1px solid var(--accent-dim)",
+                  color: "var(--accent)",
+                }}
               >
                 status: {statusFilter}
                 <X className="h-2.5 w-2.5 ml-0.5" />
@@ -576,20 +760,29 @@ export default function FlagsListPage() {
 
             {/* Search */}
             <div className="relative ml-auto w-56">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2"
+                style={{ color: "var(--text-muted)" }}
+              />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search flags…"
-                className="h-7 w-full rounded-lg border border-zinc-200 bg-white pl-7 pr-2 text-xs text-zinc-900 transition focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-100 dark:focus:ring-zinc-100"
+                className="h-8 w-full rounded-lg border pl-7 pr-2 text-xs transition focus:outline-none"
+                style={{
+                  background: "var(--bg-elevated)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-primary)",
+                }}
                 data-testid="filter-flag-search"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 transition"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -631,10 +824,10 @@ export default function FlagsListPage() {
         {/* Empty state: no flags at all */}
         {data && allFlags.length === 0 && (
           <EmptyState
-            title="No flags yet"
-            description="Create your first flag. Pick a scope, value type, and a default. Per-environment toggles come next."
+            title="No feature flags yet"
+            description="Create your first flag to start controlling feature exposure. Pick a scope, value type, and a default — environment toggles and rollout rules come next."
             action={
-              <Button onClick={() => setOpenCreate(true)}>
+              <Button variant="primary" onClick={() => setOpenCreate(true)}>
                 + Create first flag
               </Button>
             }
@@ -643,15 +836,24 @@ export default function FlagsListPage() {
 
         {/* Empty state: filters produced nothing */}
         {data && allFlags.length > 0 && filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-            <Flag className="h-8 w-8 text-zinc-400" />
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">No flags match your filters.</p>
+          <div
+            className="flex flex-col items-center justify-center gap-2 rounded-xl px-6 py-12 text-center"
+            style={{
+              border: "1px dashed var(--border-bright)",
+              background: "var(--bg-surface)",
+            }}
+          >
+            <Flag className="h-8 w-8" style={{ color: "var(--text-muted)" }} />
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              No flags match your current filters.
+            </p>
             <button
               type="button"
               onClick={() => { setScopeFilter("all"); setStatusFilter("all"); setSearch(""); }}
-              className="text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="text-xs font-medium transition"
+              style={{ color: "var(--accent)" }}
             >
-              Clear filters
+              Clear all filters
             </button>
           </div>
         )}
@@ -661,5 +863,22 @@ export default function FlagsListPage() {
         <CreateFlagDialog open={openCreate} onClose={() => setOpenCreate(false)} />
       )}
     </>
+  );
+}
+
+// ─── Page export with Suspense boundary ──────────────────────────────────────
+
+export default function FlagsListPage() {
+  return (
+    <Suspense fallback={
+      <div
+        className="flex items-center justify-center p-8"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Loading flags…
+      </div>
+    }>
+      <FlagsListInner />
+    </Suspense>
   );
 }

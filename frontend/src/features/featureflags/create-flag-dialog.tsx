@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Globe, Building2, Package, ChevronLeft } from "lucide-react";
 
 import { Modal } from "@/components/modal";
 import { useToast } from "@/components/toast";
@@ -53,6 +54,36 @@ function parseDefault(v: string, t: FlagValueType): unknown {
   if (t === "json") return JSON.parse(v);
   return v;
 }
+
+const SCOPE_OPTIONS = [
+  {
+    id: "global" as const,
+    title: "Global",
+    tone: "amber" as const,
+    icon: Globe,
+    desc: "Platform-wide. Every org and application can evaluate this flag.",
+    accentColor: "var(--warning)",
+    accentMuted: "var(--warning-muted)",
+  },
+  {
+    id: "org" as const,
+    title: "Org",
+    tone: "blue" as const,
+    icon: Building2,
+    desc: "Scoped to one organisation. Other orgs cannot see or evaluate it.",
+    accentColor: "var(--accent)",
+    accentMuted: "var(--accent-muted)",
+  },
+  {
+    id: "application" as const,
+    title: "Application",
+    tone: "purple" as const,
+    icon: Package,
+    desc: "Scoped to one application under an org. Finest targeting granularity.",
+    accentColor: "#a855f7",
+    accentMuted: "#1a0533",
+  },
+];
 
 export function CreateFlagDialog({
   open,
@@ -115,6 +146,8 @@ export function CreateFlagDialog({
     }
   }
 
+  const selectedScopeMeta = SCOPE_OPTIONS.find((s) => s.id === scope)!;
+
   return (
     <Modal
       open={open}
@@ -122,8 +155,8 @@ export function CreateFlagDialog({
       title="New feature flag"
       description={
         step === "scope"
-          ? "Pick where this flag applies."
-          : "Configure the flag definition."
+          ? "Choose the scope — this determines who can evaluate the flag."
+          : "Configure the flag key, type, and default value."
       }
       size="lg"
     >
@@ -134,72 +167,78 @@ export function CreateFlagDialog({
       >
         {step === "scope" && (
           <div className="grid gap-3 sm:grid-cols-3">
-            {(
-              [
-                {
-                  id: "global",
-                  title: "Global",
-                  tone: "amber",
-                  desc: "Platform-wide. Every org and app can evaluate.",
-                },
-                {
-                  id: "org",
-                  title: "Org",
-                  tone: "blue",
-                  desc: "Scoped to one organisation.",
-                },
-                {
-                  id: "application",
-                  title: "Application",
-                  tone: "purple",
-                  desc: "Scoped to one application under an org.",
-                },
-              ] as const
-            ).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => {
-                  form.setValue("scope", c.id);
-                  setStep("details");
-                }}
-                className={cn(
-                  "flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 text-left transition hover:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-100",
-                  scope === c.id && "ring-2 ring-zinc-900 dark:ring-zinc-100"
-                )}
-                data-testid={`scope-${c.id}`}
-              >
-                <Badge tone={c.tone}>{c.title}</Badge>
-                <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  {c.desc}
-                </p>
-              </button>
-            ))}
+            {SCOPE_OPTIONS.map((c) => {
+              const isSelected = scope === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    form.setValue("scope", c.id);
+                    setStep("details");
+                  }}
+                  className="flex flex-col gap-3 rounded-xl p-4 text-left transition"
+                  style={{
+                    background: isSelected ? c.accentMuted : "var(--bg-elevated)",
+                    border: `1px solid ${isSelected ? c.accentColor : "var(--border)"}`,
+                  }}
+                  data-testid={`scope-${c.id}`}
+                >
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-lg"
+                    style={{
+                      background: c.accentMuted,
+                      border: `1px solid ${c.accentColor}`,
+                    }}
+                  >
+                    <c.icon className="h-4 w-4" style={{ color: c.accentColor }} />
+                  </div>
+                  <div>
+                    <div
+                      className="text-sm font-semibold mb-1"
+                      style={{ color: isSelected ? c.accentColor : "var(--text-primary)" }}
+                    >
+                      {c.title}
+                    </div>
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                      {c.desc}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
 
         {step === "details" && (
           <>
-            <div className="flex items-center justify-between rounded-md bg-zinc-50 px-3 py-2 text-xs dark:bg-zinc-900">
-              <div>
-                Scope:{" "}
-                <Badge
-                  tone={
-                    scope === "global"
-                      ? "amber"
-                      : scope === "org"
-                        ? "blue"
-                        : "purple"
-                  }
-                >
-                  {scope}
-                </Badge>
+            {/* Scope indicator */}
+            <div
+              className="flex items-center justify-between rounded-lg px-3 py-2.5"
+              style={{
+                background: selectedScopeMeta.accentMuted,
+                border: `1px solid ${selectedScopeMeta.accentColor}`,
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <selectedScopeMeta.icon
+                  className="h-3.5 w-3.5"
+                  style={{ color: selectedScopeMeta.accentColor }}
+                />
+                <span className="text-xs font-medium" style={{ color: selectedScopeMeta.accentColor }}>
+                  {selectedScopeMeta.title} scope
+                </span>
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  — {selectedScopeMeta.desc}
+                </span>
               </div>
               <button
                 type="button"
                 onClick={() => setStep("scope")}
-                className="text-xs font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+                className="flex items-center gap-1 text-xs font-medium transition hover:opacity-80"
+                style={{ color: "var(--text-secondary)" }}
               >
+                <ChevronLeft className="h-3 w-3" />
                 Change
               </button>
             </div>
@@ -220,6 +259,7 @@ export function CreateFlagDialog({
                 </Select>
               </Field>
             )}
+
             {scope === "application" && (
               <Field
                 label="Application"
@@ -243,7 +283,7 @@ export function CreateFlagDialog({
             <Field
               label="Flag key"
               required
-              hint="lowercase_snake_case"
+              hint="lowercase_snake_case · max 63 chars · e.g. new_checkout_flow"
               error={form.formState.errors.flag_key?.message}
             >
               <Input
@@ -251,16 +291,17 @@ export function CreateFlagDialog({
                 autoFocus
                 {...form.register("flag_key")}
                 data-testid="create-flag-key"
+                style={{ fontFamily: "var(--font-mono)" }}
               />
             </Field>
 
             <div className="grid grid-cols-2 gap-3">
               <Field label="Value type" required>
                 <Select {...form.register("value_type")} data-testid="create-flag-type">
-                  <option value="boolean">boolean</option>
-                  <option value="string">string</option>
-                  <option value="number">number</option>
-                  <option value="json">json</option>
+                  <option value="boolean">boolean — true / false</option>
+                  <option value="string">string — text value</option>
+                  <option value="number">number — numeric value</option>
+                  <option value="json">json — structured object</option>
                 </Select>
               </Field>
               <Field
@@ -270,10 +311,10 @@ export function CreateFlagDialog({
                   valueType === "boolean"
                     ? "true or false"
                     : valueType === "json"
-                      ? "JSON literal"
+                      ? "valid JSON literal"
                       : valueType === "number"
-                        ? "numeric"
-                        : "text"
+                        ? "numeric (int or float)"
+                        : "text string"
                 }
                 error={form.formState.errors.default_value_input?.message}
               >
@@ -285,24 +326,27 @@ export function CreateFlagDialog({
                 ) : (
                   <Input
                     {...form.register("default_value_input")}
-                    placeholder={
-                      valueType === "json" ? '{"variant":"A"}' : ""
-                    }
+                    placeholder={valueType === "json" ? '{"variant":"A"}' : ""}
+                    style={{ fontFamily: "var(--font-mono)", fontSize: "12px" }}
                     data-testid="create-flag-default"
                   />
                 )}
               </Field>
             </div>
 
-            <Field label="Description" hint="optional">
+            <Field label="Description" hint="optional — helps teammates understand the flag's purpose">
               <Textarea rows={2} {...form.register("description")} />
             </Field>
 
-            <div className="flex justify-end gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <div
+              className="flex justify-end gap-2 pt-4"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
               <Button variant="secondary" type="button" onClick={onClose}>
                 Cancel
               </Button>
               <Button
+                variant="primary"
                 type="submit"
                 loading={create.isPending}
                 data-testid="create-flag-submit"

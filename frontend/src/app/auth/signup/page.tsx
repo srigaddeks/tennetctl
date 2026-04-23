@@ -7,7 +7,7 @@ export default function SignUpPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Spin up your first TennetCTL workspace."
+      subtitle="Join TennetCTL — your unified developer operations platform."
     >
       <Suspense fallback={null}>
         <SignUpForm />

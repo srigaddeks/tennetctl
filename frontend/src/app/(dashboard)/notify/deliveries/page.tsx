@@ -48,28 +48,129 @@ const CHANNEL_OPTIONS = [
   { value: "in_app",  label: "In-app" },
 ];
 
-function statusTone(code: string): "zinc" | "blue" | "emerald" | "amber" | "red" | "purple" {
+function statusTone(code: string): "default" | "info" | "emerald" | "warning" | "danger" {
   switch (code) {
-    case "pending":      return "zinc";
-    case "queued":       return "blue";
-    case "sent":         return "blue";
+    case "pending":      return "default";
+    case "queued":       return "info";
+    case "sent":         return "info";
     case "delivered":    return "emerald";
     case "opened":       return "emerald";
     case "clicked":      return "emerald";
-    case "bounced":      return "red";
-    case "failed":       return "red";
-    case "unsubscribed": return "amber";
-    default:             return "zinc";
+    case "bounced":      return "warning";
+    case "failed":       return "danger";
+    case "unsubscribed": return "warning";
+    default:             return "default";
   }
 }
 
-function channelTone(code: NotifyChannelCode): "zinc" | "blue" | "purple" | "amber" {
+function channelTone(code: NotifyChannelCode): "info" | "purple" | "amber" | "default" {
   switch (code) {
-    case "email":   return "blue";
+    case "email":   return "info";
     case "webpush": return "purple";
     case "in_app":  return "amber";
-    default:        return "zinc";
+    default:        return "default";
   }
+}
+
+/** Delivery pipeline steps for a given status */
+const PIPELINE_STEPS = ["queued", "sent", "delivered", "opened"] as const;
+type PipelineStep = typeof PIPELINE_STEPS[number];
+
+function DeliveryPipeline({ status }: { status: string }) {
+  const stepIndex = PIPELINE_STEPS.indexOf(status as PipelineStep);
+  if (stepIndex === -1) return null;
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      {PIPELINE_STEPS.map((step, i) => {
+        const done = i <= stepIndex;
+        return (
+          <div key={step} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: done ? "var(--success)" : "var(--border-bright)",
+                transition: "background 0.15s",
+              }}
+              title={step}
+            />
+            {i < PIPELINE_STEPS.length - 1 && (
+              <div
+                style={{
+                  width: 16,
+                  height: 1,
+                  background: done && i < stepIndex ? "var(--success)" : "var(--border)",
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent: "blue" | "green" | "amber" | "red" | "default";
+}) {
+  const accentColor =
+    accent === "blue" ? "var(--info)"
+    : accent === "green" ? "var(--success)"
+    : accent === "amber" ? "var(--warning)"
+    : accent === "red" ? "var(--danger)"
+    : "var(--text-secondary)";
+
+  const accentBg =
+    accent === "blue" ? "var(--info-muted)"
+    : accent === "green" ? "var(--success-muted)"
+    : accent === "amber" ? "var(--warning-muted)"
+    : accent === "red" ? "var(--danger-muted)"
+    : "var(--bg-elevated)";
+
+  return (
+    <div
+      style={{
+        flex: 1,
+        padding: "16px 20px",
+        borderRadius: 8,
+        border: "1px solid var(--border)",
+        background: "var(--bg-surface)",
+        borderLeft: `3px solid ${accentColor}`,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          textTransform: "uppercase",
+          letterSpacing: "0.07em",
+          fontWeight: 600,
+          color: "var(--text-muted)",
+          marginBottom: 6,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "'IBM Plex Mono', monospace",
+          fontSize: 28,
+          fontWeight: 700,
+          color: accentColor,
+          lineHeight: 1,
+        }}
+      >
+        {value.toLocaleString()}
+      </div>
+    </div>
+  );
 }
 
 const RETRYABLE = new Set(["failed", "bounced"]);
@@ -90,6 +191,10 @@ export default function DeliveriesPage() {
 
   const items: NotifyDelivery[] = data?.items ?? [];
 
+  const delivered  = items.filter((d) => ["delivered", "opened", "clicked"].includes(d.status_code)).length;
+  const failed     = items.filter((d) => ["failed", "bounced"].includes(d.status_code)).length;
+  const pending    = items.filter((d) => ["pending", "queued"].includes(d.status_code)).length;
+
   async function handleRetry(id: string) {
     try {
       await retry.mutateAsync(id);
@@ -104,7 +209,7 @@ export default function DeliveriesPage() {
     <>
       <PageHeader
         title="Deliveries"
-        description="All notification deliveries — filter by status, channel, or recipient."
+        description="Real-time delivery tracking — every notification from queue to inbox."
         testId="heading-notify-deliveries"
         actions={
           <Button
@@ -129,9 +234,32 @@ export default function DeliveriesPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="notify-deliveries-body">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px" }}
+        data-testid="notify-deliveries-body"
+      >
+        {/* Stat cards */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+          <StatCard label="Total" value={items.length} accent="default" />
+          <StatCard label="Delivered" value={delivered} accent="green" />
+          <StatCard label="Failed / Bounced" value={failed} accent="red" />
+          <StatCard label="Pending / Queued" value={pending} accent="blue" />
+        </div>
+
         {/* Filters */}
-        <div className="mb-4 flex flex-wrap gap-4">
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+            padding: "12px 16px",
+            borderRadius: 8,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            marginBottom: 20,
+          }}
+        >
           <Field label="Status" htmlFor="filter-status">
             <Select
               id="filter-status"
@@ -179,48 +307,110 @@ export default function DeliveriesPage() {
                 <TH>Channel</TH>
                 <TH>Priority</TH>
                 <TH>Status</TH>
+                <TH>Pipeline</TH>
                 <TH>Created</TH>
                 <TH></TH>
               </TR>
             </THead>
             <TBody>
-              {items.map((d) => (
-                <TR key={d.id} data-testid={`delivery-row-${d.id}`}>
-                  <TD className="font-mono text-xs">{d.recipient_user_id.slice(0, 8)}…</TD>
-                  <TD className="font-mono text-xs">{d.template_id.slice(0, 8)}…</TD>
-                  <TD>
-                    <Badge tone={channelTone(d.channel_code)}>{d.channel_label}</Badge>
-                  </TD>
-                  <TD className="text-xs capitalize">{d.priority_label}</TD>
-                  <TD>
-                    <Badge tone={statusTone(d.status_code)}>{d.status_label}</Badge>
-                    {d.failure_reason && (
-                      <div
-                        className="mt-1 max-w-xs truncate text-[11px] text-red-500"
-                        title={d.failure_reason}
+              {items.map((d) => {
+                const isFailure = ["failed", "bounced"].includes(d.status_code);
+                return (
+                  <TR
+                    key={d.id}
+                    data-testid={`delivery-row-${d.id}`}
+                    style={
+                      isFailure
+                        ? { background: "rgba(255, 63, 85, 0.04)" }
+                        : undefined
+                    }
+                  >
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 11,
+                          color: "var(--text-secondary)",
+                        }}
                       >
-                        {d.failure_reason}
+                        {d.recipient_user_id.slice(0, 8)}…
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 11,
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        {d.template_id.slice(0, 8)}…
+                      </span>
+                    </TD>
+                    <TD>
+                      <Badge tone={channelTone(d.channel_code)}>{d.channel_label}</Badge>
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          textTransform: "capitalize",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {d.priority_label}
+                      </span>
+                    </TD>
+                    <TD>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <Badge tone={statusTone(d.status_code)} dot>{d.status_label}</Badge>
+                        {d.failure_reason && (
+                          <div
+                            style={{
+                              maxWidth: 200,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              fontSize: 11,
+                              color: "var(--danger)",
+                            }}
+                            title={d.failure_reason}
+                          >
+                            {d.failure_reason}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </TD>
-                  <TD className="text-xs text-zinc-500">
-                    {new Date(d.created_at).toLocaleString()}
-                  </TD>
-                  <TD>
-                    {RETRYABLE.has(d.status_code) && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleRetry(d.id)}
-                        loading={retry.isPending && retry.variables === d.id}
-                        data-testid={`delivery-retry-${d.id}`}
+                    </TD>
+                    <TD>
+                      <DeliveryPipeline status={d.status_code} />
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 11,
+                          color: "var(--text-muted)",
+                        }}
                       >
-                        Retry
-                      </Button>
-                    )}
-                  </TD>
-                </TR>
-              ))}
+                        {new Date(d.created_at).toLocaleString()}
+                      </span>
+                    </TD>
+                    <TD>
+                      {RETRYABLE.has(d.status_code) && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleRetry(d.id)}
+                          loading={retry.isPending && retry.variables === d.id}
+                          data-testid={`delivery-retry-${d.id}`}
+                        >
+                          Retry
+                        </Button>
+                      )}
+                    </TD>
+                  </TR>
+                );
+              })}
             </TBody>
           </Table>
         )}

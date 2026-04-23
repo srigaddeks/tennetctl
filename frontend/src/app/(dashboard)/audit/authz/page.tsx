@@ -238,10 +238,48 @@ export default function AuthzAuditExplorerPage() {
     <>
       <PageHeader
         title="AuthZ Audit Explorer"
-        description="Pre-filtered audit trail for authorization, role, flag, SSO/MFA, and session events."
+        description="Pre-filtered authorization trail — ALLOW/DENY decisions, role mutations, flag evaluations, SSO/MFA, and session events."
         testId="heading-authz-audit-explorer"
         actions={
           <div className="flex items-center gap-2">
+            {/* Decision legend */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "4px 12px",
+                borderRadius: 6,
+                border: "1px solid var(--border)",
+                background: "var(--bg-elevated)",
+                fontSize: 11,
+              }}
+            >
+              <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--success)",
+                    display: "inline-block",
+                  }}
+                />
+                <span style={{ color: "var(--success)", fontWeight: 600, letterSpacing: "0.05em" }}>ALLOW</span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "var(--danger)",
+                    display: "inline-block",
+                  }}
+                />
+                <span style={{ color: "var(--danger)", fontWeight: 600, letterSpacing: "0.05em" }}>DENY</span>
+              </span>
+            </div>
             <Button
               variant="secondary"
               onClick={() => {
@@ -257,7 +295,10 @@ export default function AuthzAuditExplorerPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 20 }}
+      >
         {/* Stat cards */}
         {!isLoading && !isError && <StatCards cards={statCards} />}
         {isLoading && (
@@ -270,7 +311,18 @@ export default function AuthzAuditExplorerPage() {
 
         {/* Filter bar */}
         {!isError && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: 8,
+              padding: "12px 16px",
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+              background: "var(--bg-surface)",
+            }}
+          >
             {/* Category pills */}
             {CATEGORIES.map((cat) => (
               <CategoryPill
@@ -285,7 +337,14 @@ export default function AuthzAuditExplorerPage() {
               />
             ))}
 
-            <span className="h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+            <span
+              style={{
+                width: 1,
+                height: 20,
+                background: "var(--border)",
+                flexShrink: 0,
+              }}
+            />
 
             {/* Outcome pills */}
             {(["all", "success", "failure"] as const).map((o) => (
@@ -301,7 +360,14 @@ export default function AuthzAuditExplorerPage() {
               />
             ))}
 
-            <span className="h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+            <span
+              style={{
+                width: 1,
+                height: 20,
+                background: "var(--border)",
+                flexShrink: 0,
+              }}
+            />
 
             {/* Time range pills */}
             {(["1h", "24h", "7d", "30d"] as TimeRange[]).map((t) => (
@@ -324,10 +390,22 @@ export default function AuthzAuditExplorerPage() {
                   setCategory("all");
                   resetPagination();
                 }}
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  border: "1px solid var(--border-bright)",
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-secondary)",
+                  fontSize: 11,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
               >
                 {CATEGORY_META[category].label}
-                <X className="ml-0.5 h-2.5 w-2.5" />
+                <X style={{ width: 10, height: 10 }} />
               </button>
             )}
             {outcome !== "all" && (
@@ -337,31 +415,75 @@ export default function AuthzAuditExplorerPage() {
                   setOutcome("all");
                   resetPagination();
                 }}
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  border: "1px solid var(--border-bright)",
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-secondary)",
+                  fontSize: 11,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
               >
                 outcome: {outcome}
-                <X className="ml-0.5 h-2.5 w-2.5" />
+                <X style={{ width: 10, height: 10 }} />
               </button>
             )}
 
             {/* Search */}
-            <div className="relative ml-auto w-56">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+            <div style={{ position: "relative", marginLeft: "auto", width: 224 }}>
+              <Search
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 14,
+                  height: 14,
+                  color: "var(--text-muted)",
+                  pointerEvents: "none",
+                }}
+              />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search event key or actor…"
                 data-testid="authz-audit-search"
-                className="h-7 w-full rounded-lg border border-zinc-200 bg-white pl-7 pr-2 text-xs text-zinc-900 transition focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-100 dark:focus:ring-zinc-100"
+                style={{
+                  height: 28,
+                  width: "100%",
+                  paddingLeft: 32,
+                  paddingRight: search ? 28 : 8,
+                  borderRadius: 6,
+                  border: "1px solid var(--border-bright)",
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-primary)",
+                  fontSize: 12,
+                  outline: "none",
+                }}
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "var(--text-muted)",
+                    cursor: "pointer",
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                  }}
                 >
-                  <X className="h-3 w-3" />
+                  <X style={{ width: 12, height: 12 }} />
                 </button>
               )}
             </div>
@@ -389,7 +511,7 @@ export default function AuthzAuditExplorerPage() {
 
         {/* Event list grouped by date */}
         {data && displayed.length > 0 && (
-          <div className="space-y-1">
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {groups.map(({ label, events }) => (
               <DateGroup
                 key={label}
@@ -412,9 +534,21 @@ export default function AuthzAuditExplorerPage() {
 
         {/* Empty: filters produced nothing but data exists */}
         {data && authzItems.length > 0 && displayed.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-            <ShieldAlert className="h-8 w-8 text-zinc-400" />
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 12,
+              borderRadius: 8,
+              border: "1px dashed var(--border-bright)",
+              padding: "48px 24px",
+              textAlign: "center",
+            }}
+          >
+            <ShieldAlert style={{ width: 32, height: 32, color: "var(--text-muted)" }} />
+            <p style={{ fontSize: 14, fontWeight: 500, color: "var(--text-secondary)" }}>
               {CATEGORY_META[category].emptyMsg}
             </p>
             <button
@@ -425,7 +559,15 @@ export default function AuthzAuditExplorerPage() {
                 setSearch("");
                 resetPagination();
               }}
-              className="text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "var(--accent)",
+                textDecoration: "underline",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
             >
               Clear filters
             </button>
@@ -434,7 +576,7 @@ export default function AuthzAuditExplorerPage() {
 
         {/* Load more */}
         {data && hasMore && (
-          <div className="flex justify-center py-2">
+          <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
             <Button
               variant="secondary"
               size="sm"

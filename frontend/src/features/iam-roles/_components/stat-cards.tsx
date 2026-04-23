@@ -1,35 +1,38 @@
 "use client";
 
-import { cn } from "@/lib/cn";
-
 import type { StatCard } from "./types";
 
 export function StatCards({ cards }: { cards: StatCard[] }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {cards.map(({ label, value, icon: Icon, borderCls, numCls, testId }) => (
+      {cards.map(({ label, value, icon: Icon, testId }) => (
         <div
           key={label}
-          className={cn(
-            "flex items-center gap-3 rounded-xl border border-l-[3px] bg-white px-4 py-3 dark:bg-zinc-950",
-            "border-zinc-200 dark:border-zinc-800",
-            borderCls
-          )}
+          className="flex items-center gap-3 rounded-lg px-4 py-3"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            borderTop: "2px solid var(--accent)",
+          }}
           data-testid={testId}
         >
-          <div className="shrink-0 rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
-            <Icon className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+          <div
+            className="shrink-0 rounded-lg p-2"
+            style={{ background: "var(--accent-muted)" }}
+          >
+            <Icon className="h-4 w-4" style={{ color: "var(--accent)" }} />
           </div>
           <div className="min-w-0">
             <span
-              className={cn(
-                "block text-2xl font-bold tabular-nums leading-none",
-                numCls
-              )}
+              className="block text-2xl font-bold tabular-nums leading-none"
+              style={{ color: "var(--text-primary)" }}
             >
               {value}
             </span>
-            <span className="mt-0.5 block truncate text-[11px] text-zinc-500 dark:text-zinc-400">
+            <span
+              className="mt-0.5 block truncate"
+              style={{ fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}
+            >
               {label}
             </span>
           </div>

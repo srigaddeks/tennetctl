@@ -58,6 +58,7 @@ export default function SSOPage() {
         breadcrumbs={BREADCRUMBS}
         actions={
           <Button
+            variant="primary"
             data-testid="btn-new-sso"
             onClick={() => setCreateOpen(true)}
           >
@@ -65,7 +66,25 @@ export default function SSOPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="iam-sso-body">
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="iam-sso-body">
+        {/* Info banner */}
+        <div
+          className="mb-5 rounded border px-4 py-3 text-xs"
+          style={{
+            background: "var(--accent-muted)",
+            borderColor: "var(--accent)",
+            color: "var(--text-secondary)",
+          }}
+        >
+          Providers are used for SP-initiated OIDC flows. The callback URL is{" "}
+          <code
+            className="font-mono-data"
+            style={{ color: "var(--accent)" }}
+          >
+            /v1/auth/oidc/&#123;org-slug&#125;/callback
+          </code>
+        </div>
+
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -104,18 +123,20 @@ export default function SSOPage() {
               {providers.map((p) => (
                 <TR key={p.id} data-testid={`sso-row-${p.id}`}>
                   <TD>
-                    <span className="font-mono text-xs">{p.slug}</span>
+                    <span className="font-mono-data text-xs" style={{ color: "var(--accent)" }}>
+                      {p.slug}
+                    </span>
                   </TD>
                   <TD>
-                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                    <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
                       {p.issuer}
                     </span>
                   </TD>
                   <TD>
-                    <span className="font-mono text-xs">{p.client_id}</span>
+                    <span className="font-mono-data text-xs">{p.client_id}</span>
                   </TD>
                   <TD>
-                    <Badge tone={p.enabled ? "emerald" : "zinc"}>
+                    <Badge tone={p.enabled ? "success" : "default"} dot>
                       {p.enabled ? "enabled" : "disabled"}
                     </Badge>
                   </TD>
@@ -137,7 +158,7 @@ export default function SSOPage() {
                         type="button"
                         data-testid={`sso-delete-${p.id}`}
                         onClick={() => setDeleteTarget(p)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        style={{ color: "var(--danger)" }}
                       >
                         Delete
                       </Button>
@@ -302,7 +323,11 @@ function CreateProviderDialog({
             data-testid="create-sso-claim"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

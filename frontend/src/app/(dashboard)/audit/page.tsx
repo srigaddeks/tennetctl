@@ -85,7 +85,6 @@ export default function AuditExplorerPage() {
                 .filter((r) => !ids.has(r.id))
                 .map((r) => ({
                   ...r,
-                  // slim row → compatible with AuditEventRow shape
                   event_description: undefined,
                   category_label: undefined,
                   actor_session_id: undefined,
@@ -118,9 +117,7 @@ export default function AuditExplorerPage() {
   }, [listKey]);
 
   /**
-   * Client-side filter for live-tail items. The tail endpoint only respects
-   * org scoping; remaining filter dimensions (event_key, category, outcome,
-   * actor, q) are applied here so live mode obeys the active filter bar.
+   * Client-side filter for live-tail items.
    */
   const matchesFilter = useMemo(
     () => (r: AuditEventRow) => {
@@ -170,16 +167,40 @@ export default function AuditExplorerPage() {
     <>
       <PageHeader
         title="Audit Explorer"
-        description="Every effect, every actor, every tenant — queryable."
+        description="Immutable event ledger — every effect, every actor, every tenant."
         testId="heading-audit-explorer"
         actions={
           <div className="flex items-center gap-2">
             <a
               href={buildCsvUrl(filter)}
               download="audit_events.csv"
-              className="inline-flex items-center rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
               data-testid="audit-export-csv"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                border: "1px solid var(--border-bright)",
+                background: "var(--bg-elevated)",
+                color: "var(--text-secondary)",
+                fontSize: "12px",
+                fontWeight: 500,
+                textDecoration: "none",
+                transition: "color 0.15s, border-color 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-primary)";
+                (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--accent)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "var(--text-secondary)";
+                (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--border-bright)";
+              }}
             >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               Export CSV
             </a>
             <button
@@ -191,16 +212,42 @@ export default function AuditExplorerPage() {
                 }
               }}
               data-testid="audit-live-toggle"
-              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium shadow-sm transition-colors ${
-                liveOn
-                  ? "border-green-300 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
-              }`}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                border: liveOn ? "1px solid var(--success)" : "1px solid var(--border-bright)",
+                background: liveOn ? "var(--success-muted)" : "var(--bg-elevated)",
+                color: liveOn ? "var(--success)" : "var(--text-secondary)",
+                fontSize: "12px",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
             >
               {liveOn && (
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                <span style={{ position: "relative", display: "inline-flex", width: 8, height: 8 }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      borderRadius: "50%",
+                      background: "var(--success)",
+                      opacity: 0.5,
+                      animation: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
+                    }}
+                  />
+                  <span
+                    style={{
+                      position: "relative",
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "var(--success)",
+                    }}
+                  />
                 </span>
               )}
               {liveOn ? "Live" : "Go Live"}
@@ -224,41 +271,114 @@ export default function AuditExplorerPage() {
       />
 
       {/* Tab bar */}
-      <div className="flex border-b border-zinc-200 px-8 dark:border-zinc-800">
+      <div
+        style={{
+          display: "flex",
+          borderBottom: "1px solid var(--border)",
+          paddingLeft: 32,
+          paddingRight: 32,
+          background: "var(--bg-base)",
+        }}
+      >
         {(["explorer", "analytics"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             data-testid={`audit-tab-${t}`}
-            className={`px-4 py-2.5 text-sm font-medium capitalize transition-colors ${
-              tab === t
-                ? "border-b-2 border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-100"
-                : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-            }`}
+            style={{
+              padding: "10px 16px",
+              fontSize: "13px",
+              fontWeight: 500,
+              textTransform: "capitalize",
+              color: tab === t ? "var(--text-primary)" : "var(--text-muted)",
+              borderBottom: tab === t ? "2px solid var(--accent)" : "2px solid transparent",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              transition: "color 0.15s",
+              letterSpacing: "0.01em",
+            }}
           >
             {t}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="audit-explorer-body">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px" }}
+        data-testid="audit-explorer-body"
+      >
         {tab === "explorer" && (
           <div className="flex flex-col gap-5">
             {liveOn && (
               <div
-                className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
                 data-testid="audit-live-banner"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  border: "1px solid var(--success)",
+                  background: "var(--success-muted)",
+                  color: "var(--success)",
+                  fontSize: 12,
+                }}
               >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                <span style={{ position: "relative", display: "inline-flex", width: 8, height: 8 }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      borderRadius: "50%",
+                      background: "var(--success)",
+                      opacity: 0.5,
+                      animation: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
+                    }}
+                  />
+                  <span
+                    style={{
+                      position: "relative",
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "var(--success)",
+                    }}
+                  />
                 </span>
-                Live tail active — polling every {LIVE_INTERVAL_MS / 1000}s.
-                {liveItems.length > 0 && (
-                  <span className="ml-1 font-medium">{liveItems.length} new event{liveItems.length !== 1 ? "s" : ""} received.</span>
-                )}
+                <span>
+                  Live tail active — polling every {LIVE_INTERVAL_MS / 1000}s.
+                  {liveItems.length > 0 && (
+                    <span style={{ marginLeft: 4, fontWeight: 600 }}>
+                      {liveItems.length} new event{liveItems.length !== 1 ? "s" : ""} received.
+                    </span>
+                  )}
+                </span>
               </div>
             )}
+
+            {/* Immutability notice */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "6px 12px",
+                borderRadius: 6,
+                background: "var(--accent-muted)",
+                border: "1px solid var(--border)",
+                fontSize: 11,
+                color: "var(--text-muted)",
+                letterSpacing: "0.04em",
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M6 1L1 4v3c0 2.5 2.1 4.8 5 5.4C8.9 11.8 11 9.5 11 7V4L6 1z" stroke="var(--accent)" strokeWidth="1.2" fill="none"/>
+                <path d="M4 6l1.5 1.5L8 4.5" stroke="var(--accent)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              IMMUTABLE RECORD — Events are append-only and cannot be modified or deleted. SHA-256 integrity chain enforced.
+            </div>
 
             <FilterBar
               value={filter}
@@ -290,7 +410,7 @@ export default function AuditExplorerPage() {
               <>
                 <EventsTable items={items} onRowClick={setSelectedId} />
                 {!liveOn && effectiveCursor && (
-                  <div className="flex justify-center py-2">
+                  <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
                     <Button
                       variant="secondary"
                       size="sm"

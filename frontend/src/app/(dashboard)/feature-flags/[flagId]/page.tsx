@@ -16,7 +16,6 @@ import {
   useFlag,
 } from "@/features/featureflags/hooks/use-flags";
 import { ApiClientError } from "@/lib/api";
-import { cn } from "@/lib/cn";
 
 type Tab = "environments" | "rules" | "overrides";
 
@@ -47,8 +46,14 @@ export default function FlagDetailPage({
 
   if (isLoading) {
     return (
-      <div className="p-8">
+      <div className="p-8 space-y-4">
         <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-5 w-96" />
+        <div className="flex gap-3 mt-6">
+          <Skeleton className="h-24 flex-1 rounded-xl" />
+          <Skeleton className="h-24 flex-1 rounded-xl" />
+          <Skeleton className="h-24 flex-1 rounded-xl" />
+        </div>
       </div>
     );
   }
@@ -70,13 +75,24 @@ export default function FlagDetailPage({
         ? "blue"
         : "purple";
 
+  const scopeAccent =
+    flag.scope === "global"
+      ? "var(--warning)"
+      : flag.scope === "org"
+        ? "var(--accent)"
+        : "#a855f7";
+
+  const tabs: { id: Tab; label: string; description: string }[] = [
+    { id: "environments", label: "Environments",  description: "Per-env enable/disable + rollout" },
+    { id: "rules",        label: "Rules",         description: "Targeting rules and conditions"   },
+    { id: "overrides",    label: "Overrides",     description: "Per-entity forced values"         },
+  ];
+
   return (
     <>
       <PageHeader
         title={flag.flag_key}
-        description={
-          flag.description ?? "No description — add one via the edit panel."
-        }
+        description={flag.description ?? "No description — add one via the edit panel."}
         testId="heading-flag-detail"
         breadcrumbs={[
           { label: "Feature Flags", href: "/feature-flags" },
@@ -86,9 +102,14 @@ export default function FlagDetailPage({
           <>
             <Link
               href={`/feature-flags/evaluate?flag_key=${encodeURIComponent(flag.flag_key)}`}
-              className="inline-flex h-10 items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+              className="inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium transition"
+              style={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border-bright)",
+                color: "var(--text-secondary)",
+              }}
             >
-              Try in sandbox →
+              Evaluate in sandbox →
             </Link>
             <Button variant="danger" onClick={onDelete} loading={del.isPending}>
               Delete
@@ -97,60 +118,121 @@ export default function FlagDetailPage({
         }
       />
 
-      <div className="border-b border-zinc-200 bg-white px-8 pt-3 dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex flex-wrap items-center gap-1.5 pb-3">
-          <Badge tone={scopeTone}>{flag.scope}</Badge>
-          <Badge tone="zinc">{flag.value_type}</Badge>
-          <Badge tone={flag.is_active ? "emerald" : "zinc"}>
-            {flag.is_active ? "active" : "inactive"}
-          </Badge>
-          <span className="ml-2 text-xs text-zinc-500">
-            default ={" "}
-            <code className="rounded bg-zinc-100 px-1 py-0.5 text-[11px] dark:bg-zinc-800">
+      {/* Flag metadata strip */}
+      <div
+        className="px-8 pt-4 pb-0"
+        style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-surface)" }}
+      >
+        {/* Overview cards */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-5">
+          {/* Status */}
+          <div
+            className="rounded-xl px-4 py-3"
+            style={{
+              background: "var(--bg-elevated)",
+              border: `1px solid ${flag.is_active ? "var(--success)" : "var(--border)"}`,
+            }}
+          >
+            <div className="label-caps mb-1.5" style={{ color: "var(--text-muted)" }}>Status</div>
+            <div className="flex items-center gap-2">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: flag.is_active ? "var(--success)" : "var(--text-muted)" }}
+              />
+              <span
+                className="text-sm font-semibold"
+                style={{ color: flag.is_active ? "var(--success)" : "var(--text-muted)" }}
+              >
+                {flag.is_active ? "Enabled" : "Disabled"}
+              </span>
+            </div>
+          </div>
+
+          {/* Scope */}
+          <div
+            className="rounded-xl px-4 py-3"
+            style={{
+              background: "var(--bg-elevated)",
+              border: `1px solid ${scopeAccent}`,
+            }}
+          >
+            <div className="label-caps mb-1.5" style={{ color: "var(--text-muted)" }}>Scope</div>
+            <Badge tone={scopeTone}>{flag.scope}</Badge>
+          </div>
+
+          {/* Value type */}
+          <div
+            className="rounded-xl px-4 py-3"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div className="label-caps mb-1.5" style={{ color: "var(--text-muted)" }}>Value type</div>
+            <Badge tone="default">{flag.value_type}</Badge>
+          </div>
+
+          {/* Default value */}
+          <div
+            className="rounded-xl px-4 py-3"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div className="label-caps mb-1.5" style={{ color: "var(--text-muted)" }}>Default value</div>
+            <code
+              className="text-sm font-semibold font-mono-data"
+              style={{ color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}
+            >
               {JSON.stringify(flag.default_value)}
             </code>
-          </span>
-          {flag.org_id && (
-            <span className="text-xs text-zinc-500">
-              · org{" "}
-              <Link
-                href={`/iam/orgs/${flag.org_id}`}
-                className="font-mono text-zinc-700 underline-offset-2 hover:underline dark:text-zinc-300"
-              >
-                {flag.org_id.slice(0, 8)}…
-              </Link>
-            </span>
-          )}
-          {flag.application_id && (
-            <span className="text-xs text-zinc-500">
-              · app{" "}
-              <Link
-                href={`/iam/applications`}
-                className="font-mono text-zinc-700 underline-offset-2 hover:underline dark:text-zinc-300"
-              >
-                {flag.application_id.slice(0, 8)}…
-              </Link>
-            </span>
-          )}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {(
-            [
-              { id: "environments", label: "Environments" },
-              { id: "rules", label: "Rules" },
-              { id: "overrides", label: "Overrides" },
-            ] as const
-          ).map((t) => (
+
+        {/* Scope context */}
+        {(flag.org_id || flag.application_id) && (
+          <div className="flex items-center gap-3 mb-4 text-xs" style={{ color: "var(--text-muted)" }}>
+            {flag.org_id && (
+              <span>
+                org:{" "}
+                <Link
+                  href={`/iam/orgs/${flag.org_id}`}
+                  className="transition hover:opacity-80"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}
+                >
+                  {flag.org_id.slice(0, 8)}…
+                </Link>
+              </span>
+            )}
+            {flag.application_id && (
+              <span>
+                app:{" "}
+                <Link
+                  href="/iam/applications"
+                  className="transition hover:opacity-80"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}
+                >
+                  {flag.application_id.slice(0, 8)}…
+                </Link>
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="flex gap-0">
+          {tabs.map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id as Tab)}
+              onClick={() => setTab(t.id)}
               data-testid={`tab-${t.id}`}
-              className={cn(
-                "border-b-2 px-3 py-2 text-sm transition",
-                tab === t.id
-                  ? "border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-50"
-                  : "border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-              )}
+              className="relative px-4 py-3 text-sm transition"
+              style={{
+                borderBottom: tab === t.id ? `2px solid var(--accent)` : "2px solid transparent",
+                color: tab === t.id ? "var(--accent)" : "var(--text-secondary)",
+                background: "transparent",
+              }}
             >
               {t.label}
             </button>
@@ -160,8 +242,8 @@ export default function FlagDetailPage({
 
       <div className="flex-1 overflow-y-auto px-8 py-6">
         {tab === "environments" && <FlagEnvironmentsPanel flag={flag} />}
-        {tab === "rules" && <FlagRulesPanel flag={flag} />}
-        {tab === "overrides" && <FlagOverridesPanel flag={flag} />}
+        {tab === "rules"        && <FlagRulesPanel flag={flag} />}
+        {tab === "overrides"    && <FlagOverridesPanel flag={flag} />}
       </div>
     </>
   );

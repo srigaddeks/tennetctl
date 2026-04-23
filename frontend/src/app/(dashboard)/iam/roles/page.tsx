@@ -135,11 +135,7 @@ export default function RolesPage() {
   }
 
   function handleDuplicate(role: Role) {
-    // Pre-fill create dialog fields by opening it and then setting values
     setOpenCreate(true);
-    // We rely on the CreateRoleDialog useEffect reset — caller opens dialog;
-    // actual pre-fill would require a separate prop; log intent for now.
-    // TODO: pass defaultValues prop to CreateRoleDialog for duplicate pre-fill
     toast(`Opened create dialog — adjust code and label to duplicate "${role.code}"`, "info");
   }
 
@@ -148,40 +144,40 @@ export default function RolesPage() {
       label: "Total",
       value: stats.total,
       icon: ShieldCheck,
-      borderCls: "border-l-zinc-900 dark:border-l-zinc-100",
-      numCls: "text-zinc-900 dark:text-zinc-50",
+      borderCls: "",
+      numCls: "",
       testId: "stat-card-total",
     },
     {
       label: "Platform",
       value: stats.platform,
       icon: Globe,
-      borderCls: "border-l-violet-500",
-      numCls: "text-violet-600 dark:text-violet-400",
+      borderCls: "",
+      numCls: "",
       testId: "stat-card-platform",
     },
     {
       label: "Org-scoped",
       value: stats.orgScoped,
       icon: Building2,
-      borderCls: "border-l-blue-500",
-      numCls: "text-blue-600 dark:text-blue-400",
+      borderCls: "",
+      numCls: "",
       testId: "stat-card-org-scoped",
     },
     {
       label: "System",
       value: stats.system,
       icon: Lock,
-      borderCls: "border-l-purple-500",
-      numCls: "text-purple-600 dark:text-purple-400",
+      borderCls: "",
+      numCls: "",
       testId: "stat-card-system",
     },
     {
       label: "Custom",
       value: stats.custom,
       icon: Users,
-      borderCls: "border-l-emerald-500",
-      numCls: "text-emerald-600 dark:text-emerald-400",
+      borderCls: "",
+      numCls: "",
       testId: "stat-card-custom",
     },
   ];
@@ -206,6 +202,7 @@ export default function RolesPage() {
         testId="heading-roles"
         actions={
           <Button
+            variant="primary"
             onClick={() => setOpenCreate(true)}
             data-testid="open-create-role"
           >
@@ -215,47 +212,66 @@ export default function RolesPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-5">
+      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-5 animate-fade-in">
         {/* Stat cards */}
         {!isLoading && !isError && <StatCards cards={statCards} />}
 
         {/* Filter bar */}
         {!isLoading && !isError && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-            {/* Org pills */}
+          <div
+            className="flex flex-wrap items-center gap-2 rounded-lg px-4 py-3"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            {/* All pill */}
             <button
               type="button"
               onClick={() => setOrgFilter("all")}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
+              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+              style={
                 orgFilter === "all"
-                  ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-              )}
+                  ? {
+                      background: "var(--accent)",
+                      borderColor: "var(--accent)",
+                      color: "#fff",
+                    }
+                  : {
+                      background: "transparent",
+                      borderColor: "var(--border)",
+                      color: "var(--text-secondary)",
+                    }
+              }
               data-testid="filter-role-org-all"
             >
               All orgs
-              <span className={cn("tabular-nums", orgFilter === "all" ? "opacity-70" : "text-zinc-400")}>
-                {stats.total}
-              </span>
+              <span className="tabular-nums opacity-70">{stats.total}</span>
             </button>
 
+            {/* Platform pill */}
             <button
               type="button"
               onClick={() => setOrgFilter("platform")}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
+              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+              style={
                 orgFilter === "platform"
-                  ? "border-violet-700 bg-violet-700 text-white dark:border-violet-300 dark:bg-violet-300 dark:text-violet-900"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-              )}
+                  ? {
+                      background: "var(--info)",
+                      borderColor: "var(--info)",
+                      color: "#000",
+                    }
+                  : {
+                      background: "transparent",
+                      borderColor: "var(--border)",
+                      color: "var(--text-secondary)",
+                    }
+              }
               data-testid="filter-role-org-platform"
             >
               <Globe className="h-3 w-3" />
               Platform
-              <span className={cn("tabular-nums", orgFilter === "platform" ? "opacity-70" : "text-zinc-400")}>
-                {stats.platform}
-              </span>
+              <span className="tabular-nums opacity-70">{stats.platform}</span>
             </button>
 
             {/* Per-org pills */}
@@ -268,29 +284,40 @@ export default function RolesPage() {
                   key={org.id}
                   type="button"
                   onClick={() => setOrgFilter(org.id)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition",
+                  className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition"
+                  style={
                     active
-                      ? "border-blue-700 bg-blue-700 text-white dark:border-blue-300 dark:bg-blue-300 dark:text-blue-900"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
-                  )}
+                      ? {
+                          background: "var(--success)",
+                          borderColor: "var(--success)",
+                          color: "#000",
+                        }
+                      : {
+                          background: "transparent",
+                          borderColor: "var(--border)",
+                          color: "var(--text-secondary)",
+                        }
+                  }
                   data-testid={`filter-role-org-${org.id}`}
                 >
                   <Building2 className="h-3 w-3" />
                   {org.display_name ?? org.slug}
-                  <span className={cn("tabular-nums", active ? "opacity-70" : "text-zinc-400")}>
-                    {count}
-                  </span>
+                  <span className="tabular-nums opacity-70">{count}</span>
                 </button>
               );
             })}
 
-            {/* Active filter chips */}
+            {/* Active filter chip */}
             {orgFilter !== "all" && (
               <button
                 type="button"
                 onClick={() => setOrgFilter("all")}
-                className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition"
+                style={{
+                  background: "var(--bg-elevated)",
+                  border: "1px solid var(--border-bright)",
+                  color: "var(--text-secondary)",
+                }}
               >
                 {orgFilter === "platform"
                   ? "scope: platform"
@@ -301,20 +328,29 @@ export default function RolesPage() {
 
             {/* Search */}
             <div className="relative ml-auto w-56">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2"
+                style={{ color: "var(--text-muted)" }}
+              />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search roles…"
-                className="h-7 w-full rounded-lg border border-zinc-200 bg-white pl-7 pr-2 text-xs text-zinc-900 transition focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-100 dark:focus:ring-zinc-100"
+                className="h-7 w-full rounded-lg pl-7 pr-2 text-xs transition focus:outline-none"
+                style={{
+                  background: "var(--bg-elevated)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-primary)",
+                }}
                 data-testid="filter-role-search"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -364,7 +400,7 @@ export default function RolesPage() {
             title="No roles yet"
             description="Create your first role. Platform roles apply globally; org-scoped roles bind to a specific org."
             action={
-              <Button onClick={() => setOpenCreate(true)}>
+              <Button variant="primary" onClick={() => setOpenCreate(true)}>
                 <Plus className="h-4 w-4" />
                 Create first role
               </Button>
@@ -374,9 +410,18 @@ export default function RolesPage() {
 
         {/* Empty: filters produced nothing */}
         {data && allRoles.length > 0 && filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-            <ShieldAlert className="h-8 w-8 text-zinc-400" />
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <div
+            className="flex flex-col items-center justify-center gap-2 rounded-lg px-6 py-12 text-center"
+            style={{
+              border: "1px dashed var(--border-bright)",
+              background: "var(--bg-surface)",
+            }}
+          >
+            <ShieldAlert
+              className="h-8 w-8"
+              style={{ color: "var(--text-muted)" }}
+            />
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
               No roles match your filters.
             </p>
             <button
@@ -385,7 +430,8 @@ export default function RolesPage() {
                 setOrgFilter("all");
                 setSearch("");
               }}
-              className="text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="text-xs font-medium underline underline-offset-2"
+              style={{ color: "var(--accent)" }}
             >
               Clear filters
             </button>

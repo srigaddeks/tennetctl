@@ -13,6 +13,7 @@ import {
   Field,
   Input,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -43,6 +44,9 @@ export default function TosPage() {
     null,
   );
 
+  const activeVersion = versions.find((v) => v.effective_at !== null);
+  const draftCount = versions.filter((v) => !v.effective_at).length;
+
   return (
     <>
       <PageHeader
@@ -52,6 +56,7 @@ export default function TosPage() {
         breadcrumbs={BREADCRUMBS}
         actions={
           <Button
+            variant="primary"
             data-testid="btn-new-tos"
             onClick={() => setCreateOpen(true)}
           >
@@ -59,7 +64,74 @@ export default function TosPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="iam-tos-body">
+      <div
+        className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in"
+        data-testid="iam-tos-body"
+      >
+        {/* Stats */}
+        {!isLoading && !isError && (
+          <div className="mb-5 grid grid-cols-3 gap-3">
+            <StatCard
+              label="Total versions"
+              value={versions.length}
+              accent="blue"
+            />
+            <StatCard
+              label="Active"
+              value={activeVersion ? 1 : 0}
+              accent="green"
+            />
+            <StatCard
+              label="Drafts"
+              value={draftCount}
+              accent="amber"
+            />
+          </div>
+        )}
+
+        {/* Active version highlight */}
+        {activeVersion && (
+          <div
+            className="mb-5 rounded border px-4 py-3"
+            style={{
+              background: "var(--success-muted)",
+              borderColor: "var(--success)",
+              borderLeft: "3px solid var(--success)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="label-caps text-[11px]"
+                  style={{ color: "var(--success)" }}
+                >
+                  Currently effective
+                </p>
+                <p
+                  className="mt-0.5 text-sm font-medium"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {activeVersion.title}
+                </p>
+              </div>
+              <div className="text-right">
+                <span
+                  className="font-mono-data text-xs"
+                  style={{ color: "var(--success)" }}
+                >
+                  v{activeVersion.version}
+                </span>
+                <p
+                  className="mt-0.5 font-mono-data text-[11px]"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Since {new Date(activeVersion.effective_at!).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -90,7 +162,7 @@ export default function TosPage() {
                 <TH>Version</TH>
                 <TH>Title</TH>
                 <TH>Status</TH>
-                <TH>Effective</TH>
+                <TH>Effective date</TH>
                 <TH className="text-right">Actions</TH>
               </tr>
             </THead>
@@ -98,18 +170,33 @@ export default function TosPage() {
               {versions.map((v) => (
                 <TR key={v.id} data-testid={`tos-row-${v.id}`}>
                   <TD>
-                    <span className="font-mono text-xs">{v.version}</span>
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--accent)" }}
+                    >
+                      {v.version}
+                    </span>
                   </TD>
-                  <TD>{v.title}</TD>
+                  <TD>
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      {v.title}
+                    </span>
+                  </TD>
                   <TD>
                     {v.effective_at ? (
-                      <Badge tone="emerald">active</Badge>
+                      <Badge tone="success" dot>active</Badge>
                     ) : (
-                      <Badge tone="zinc">draft</Badge>
+                      <Badge tone="warning">draft</Badge>
                     )}
                   </TD>
                   <TD>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {v.effective_at
                         ? new Date(v.effective_at).toLocaleDateString()
                         : "—"}
@@ -123,6 +210,7 @@ export default function TosPage() {
                         type="button"
                         data-testid={`tos-activate-${v.id}`}
                         onClick={() => setEffectiveTarget(v)}
+                        style={{ color: "var(--success)" }}
                       >
                         Activate
                       </Button>
@@ -223,7 +311,11 @@ function CreateTosDialog({
             data-testid="create-tos-body"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
@@ -300,7 +392,11 @@ function ActivateTosDialog({
             data-testid="activate-tos-datetime"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

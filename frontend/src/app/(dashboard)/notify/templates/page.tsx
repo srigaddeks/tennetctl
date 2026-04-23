@@ -15,12 +15,6 @@ import {
   Input,
   Select,
   Skeleton,
-  TBody,
-  TD,
-  TH,
-  THead,
-  TR,
-  Table,
 } from "@/components/ui";
 import { useMe } from "@/features/auth/hooks/use-auth";
 import { useCreateTemplate, useTemplateGroups, useTemplates } from "@/features/notify/hooks/use-templates";
@@ -33,13 +27,169 @@ const PRIORITY_OPTIONS: Array<{ id: number; label: string }> = [
   { id: 4, label: "Critical" },
 ];
 
-function priorityTone(code: NotifyPriorityCode): "zinc" | "blue" | "amber" | "red" {
+function priorityTone(code: NotifyPriorityCode): "default" | "blue" | "amber" | "red" {
   switch (code) {
-    case "low":      return "zinc";
+    case "low":      return "default";
     case "normal":   return "blue";
     case "high":     return "amber";
     case "critical": return "red";
   }
+}
+
+function channelIcon(groupKey: string | undefined): React.ReactNode {
+  if (!groupKey) return null;
+  const k = groupKey.toLowerCase();
+  if (k.includes("email")) {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="1" y="3" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M1 4.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  if (k.includes("push") || k.includes("webpush")) {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1C4.24 1 2 3.24 2 6v3l-1 1.5h12L12 9V6c0-2.76-2.24-5-5-5z" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M5.5 10.5a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.2"/>
+      </svg>
+    );
+  }
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M4.5 7h5M7 4.5v5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function TemplateCard({ t, onClick }: { t: NotifyTemplate; onClick: () => void }) {
+  const isActive = t.is_active;
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => { if (e.key === "Enter") onClick(); }}
+      data-testid={`template-row-${t.id}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        padding: "16px 20px",
+        borderRadius: 8,
+        border: "1px solid var(--border)",
+        background: "var(--bg-surface)",
+        cursor: "pointer",
+        transition: "border-color 0.15s, background 0.15s",
+        outline: "none",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border-bright)";
+        (e.currentTarget as HTMLDivElement).style.background = "var(--bg-elevated)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
+        (e.currentTarget as HTMLDivElement).style.background = "var(--bg-surface)";
+      }}
+    >
+      {/* Top row */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              background: "var(--accent-muted)",
+              color: "var(--accent)",
+              flexShrink: 0,
+            }}
+          >
+            {channelIcon(t.group_key)}
+          </span>
+          <span
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t.key}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+          <Badge tone={isActive ? "emerald" : "default"} dot={isActive}>
+            {isActive ? "Active" : "Inactive"}
+          </Badge>
+          <Badge tone={priorityTone(t.priority_code as NotifyPriorityCode)}>
+            {t.priority_label}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Subject preview */}
+      {t.subject && (
+        <p
+          style={{
+            fontSize: 13,
+            color: "var(--text-secondary)",
+            margin: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {t.subject}
+        </p>
+      )}
+
+      {/* Footer */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderTop: "1px solid var(--border)",
+          paddingTop: 10,
+          marginTop: 4,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 11,
+            color: "var(--text-muted)",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+          }}
+        >
+          {t.group_key ?? "—"}
+        </span>
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontSize: 11,
+            color: "var(--info)",
+          }}
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M1 5h8M5 1v8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+          Edit template
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function NewTemplateDialog({
@@ -100,9 +250,9 @@ function NewTemplateDialog({
             ))}
           </Select>
           {(groups.data?.items ?? []).length === 0 && !groups.isLoading && (
-            <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
               No groups yet.{" "}
-              <Link href="/notify/settings" className="font-medium underline hover:text-zinc-900 dark:hover:text-zinc-100">
+              <Link href="/notify/settings" style={{ color: "var(--accent)", textDecoration: "underline" }}>
                 Create one in Settings →
               </Link>
             </p>
@@ -128,7 +278,7 @@ function NewTemplateDialog({
             ))}
           </Select>
         </Field>
-        {err && <p className="text-xs text-red-500">{err}</p>}
+        {err && <p className="text-xs" style={{ color: "var(--danger)" }}>{err}</p>}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
           <Button type="submit" data-testid="btn-create-template" disabled={create.isPending}>
@@ -147,11 +297,14 @@ export default function TemplatesPage() {
   const { data, isLoading, isError, error, refetch } = useTemplates(orgId);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const active = data?.items.filter((t) => t.is_active).length ?? 0;
+  const total = data?.items.length ?? 0;
+
   return (
     <>
       <PageHeader
         title="Templates"
-        description="Email and notification templates. Each template belongs to a group with its own SMTP config."
+        description="Precision-crafted notification templates. Each template belongs to a group with its own delivery config."
         testId="heading-notify-templates"
         actions={
           <Button data-testid="btn-new-template" onClick={() => setDialogOpen(true)}>
@@ -160,11 +313,98 @@ export default function TemplatesPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="notify-templates-body">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px" }}
+        data-testid="notify-templates-body"
+      >
+        {/* Summary bar */}
+        {data && data.items.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 24,
+              padding: "10px 16px",
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+              background: "var(--bg-surface)",
+              marginBottom: 20,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: "var(--info)",
+                }}
+              >
+                {total}
+              </span>
+              <span style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                Total
+              </span>
+            </div>
+            <div
+              style={{
+                width: 1,
+                height: 24,
+                background: "var(--border)",
+              }}
+            />
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: "var(--success)",
+                }}
+              >
+                {active}
+              </span>
+              <span style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                Active
+              </span>
+            </div>
+            <div
+              style={{
+                width: 1,
+                height: 24,
+                background: "var(--border)",
+              }}
+            />
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                {total - active}
+              </span>
+              <span style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                Inactive
+              </span>
+            </div>
+          </div>
+        )}
+
         {isLoading && (
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-9 w-full" />
-            <Skeleton className="h-9 w-full" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
           </div>
         )}
         {isError && (
@@ -180,41 +420,21 @@ export default function TemplatesPage() {
           />
         )}
         {data && data.items.length > 0 && (
-          <Table>
-            <THead>
-              <tr>
-                <TH>Key</TH>
-                <TH>Group</TH>
-                <TH>Subject</TH>
-                <TH>Priority</TH>
-                <TH>Status</TH>
-              </tr>
-            </THead>
-            <TBody>
-              {data.items.map((t: NotifyTemplate) => (
-                <TR
-                  key={t.id}
-                  className="cursor-pointer"
-                  onClick={() => router.push(`/notify/templates/${t.id}`)}
-                  data-testid={`template-row-${t.id}`}
-                >
-                  <TD><span className="font-mono text-sm">{t.key}</span></TD>
-                  <TD><span className="text-sm text-zinc-600 dark:text-zinc-400">{t.group_key}</span></TD>
-                  <TD><span className="text-sm">{t.subject}</span></TD>
-                  <TD>
-                    <Badge tone={priorityTone(t.priority_code as NotifyPriorityCode)}>
-                      {t.priority_label}
-                    </Badge>
-                  </TD>
-                  <TD>
-                    <Badge tone={t.is_active ? "emerald" : "zinc"}>
-                      {t.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </TD>
-                </TR>
-              ))}
-            </TBody>
-          </Table>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {data.items.map((t: NotifyTemplate) => (
+              <TemplateCard
+                key={t.id}
+                t={t}
+                onClick={() => router.push(`/notify/templates/${t.id}`)}
+              />
+            ))}
+          </div>
         )}
       </div>
 

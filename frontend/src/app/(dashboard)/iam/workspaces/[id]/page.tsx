@@ -17,6 +17,7 @@ import {
   Field,
   Input,
   Skeleton,
+  StatCard,
 } from "@/components/ui";
 import { useOrgs } from "@/features/iam-orgs/hooks/use-orgs";
 import { WorkspaceMembers } from "@/features/iam-workspaces/_components/WorkspaceMembers";
@@ -25,6 +26,8 @@ import {
   useUpdateWorkspace,
   useWorkspace,
 } from "@/features/iam-workspaces/hooks/use-workspaces";
+import { useSecrets } from "@/features/vault/secrets/hooks/use-secrets";
+import { useFlags } from "@/features/featureflags/hooks/use-flags";
 import { ApiClientError } from "@/lib/api";
 
 const SLUG = /^[a-z][a-z0-9-]{1,62}$/;
@@ -34,6 +37,54 @@ const editSchema = z.object({
   display_name: z.string().min(1, "required"),
 });
 type EditForm = z.infer<typeof editSchema>;
+
+type QuickLinkCardProps = {
+  label: string;
+  count: number | string;
+  sub: string;
+  href: string;
+  accentColor: string;
+};
+
+function QuickLinkCard({ label, count, sub, href, accentColor }: QuickLinkCardProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "block",
+        background: "var(--bg-elevated)",
+        border: `1px solid ${hovered ? accentColor : "var(--border)"}`,
+        borderRadius: "8px",
+        padding: "16px",
+        textDecoration: "none",
+        transition: "border-color 150ms ease",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <p
+        className="label-caps mb-2"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        {label}
+      </p>
+      <p
+        className="text-xl font-semibold"
+        style={{ color: hovered ? accentColor : "var(--text-primary)" }}
+      >
+        {count}
+      </p>
+      <p
+        className="text-xs mt-1"
+        style={{ color: "var(--text-muted)" }}
+      >
+        {sub} →
+      </p>
+    </Link>
+  );
+}
 
 export default function WorkspaceDetailPage() {
   const params = useParams();
@@ -45,6 +96,11 @@ export default function WorkspaceDetailPage() {
   const { data: orgs } = useOrgs({ limit: 500 });
   const update = useUpdateWorkspace();
   const del = useDeleteWorkspace();
+
+  const org = orgs?.items.find((o) => o.id === ws?.org_id);
+
+  const { data: secrets } = useSecrets({ workspace_id: workspaceId });
+  const { data: flags } = useFlags({ org_id: ws?.org_id ?? undefined, limit: 1 });
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
@@ -106,10 +162,15 @@ export default function WorkspaceDetailPage() {
           description="Loading…"
           testId="heading-workspace-detail"
         />
-        <div className="px-8 py-6">
-          <Skeleton className="mb-3 h-6 w-48" />
-          <Skeleton className="mb-3 h-6 w-72" />
-          <Skeleton className="h-6 w-32" />
+        <div className="px-8 py-6 space-y-3">
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-48" />
         </div>
       </>
     );
@@ -134,7 +195,8 @@ export default function WorkspaceDetailPage() {
           <div className="mt-4">
             <Link
               href="/iam/workspaces"
-              className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              style={{ color: "var(--text-secondary)" }}
+              className="text-sm hover:underline"
             >
               ← Back to workspaces
             </Link>
@@ -144,7 +206,8 @@ export default function WorkspaceDetailPage() {
     );
   }
 
-  const org = orgs?.items.find((o) => o.id === ws.org_id);
+  const secretCount = secrets?.pagination.total ?? 0;
+  const flagCount = flags?.pagination.total ?? 0;
 
   return (
     <>
@@ -153,33 +216,59 @@ export default function WorkspaceDetailPage() {
         description={`Workspace in org ${org?.slug ?? ws.org_id.slice(0, 8)}`}
         testId="heading-workspace-detail"
         breadcrumbs={[
-          { label: "Identity", href: "/iam/workspaces" },
+          { label: "IAM", href: "/iam/workspaces" },
           { label: "Workspaces", href: "/iam/workspaces" },
           { label: ws.display_name ?? ws.slug },
         ]}
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="workspace-detail-body">
-        <div className="mb-4">
-          <Link
-            href="/iam/workspaces"
-            className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-          >
-            ← Back to workspaces
-          </Link>
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in" data-testid="workspace-detail-body">
+
+        {/* Stat cards */}
+        <div className="mb-6 grid grid-cols-3 gap-4">
+          <StatCard
+            label="Status"
+            value={ws.is_active ? "Active" : "Inactive"}
+            sub="workspace state"
+            accent={ws.is_active ? "green" : "red"}
+          />
+          <StatCard
+            label="Organisation"
+            value={org?.display_name ?? org?.slug ?? ws.org_id.slice(0, 8)}
+            sub={org?.slug ?? "parent org"}
+            accent="blue"
+          />
+          <StatCard
+            label="Created"
+            value={ws.created_at.slice(0, 10)}
+            sub={`ID: ${ws.id.slice(0, 8)}…`}
+            accent="blue"
+          />
         </div>
 
+        {/* General Info section */}
         <section
-          className="mb-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+          className="mb-6 rounded-lg p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
           data-testid="ws-detail-info"
         >
-          <div className="mb-4 flex flex-wrap gap-1.5">
-            <Badge tone={ws.is_active ? "emerald" : "zinc"}>
-              {ws.is_active ? "active" : "inactive"}
-            </Badge>
-            <Badge tone="zinc">
-              org: {org?.slug ?? `${ws.org_id.slice(0, 8)}…`}
-            </Badge>
-            <Badge tone="zinc">created {ws.created_at.slice(0, 10)}</Badge>
+          <div className="mb-5 flex items-center justify-between">
+            <h2
+              className="label-caps"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              General Information
+            </h2>
+            <div className="flex flex-wrap gap-1.5">
+              <Badge tone={ws.is_active ? "success" : "default"} dot={ws.is_active}>
+                {ws.is_active ? "active" : "inactive"}
+              </Badge>
+              <Badge tone="default">
+                org: {org?.slug ?? `${ws.org_id.slice(0, 8)}…`}
+              </Badge>
+            </div>
           </div>
 
           <form
@@ -187,32 +276,37 @@ export default function WorkspaceDetailPage() {
             className="flex flex-col gap-4"
             data-testid="ws-edit-form"
           >
-            <Field
-              label="Slug"
-              required
-              error={form.formState.errors.slug?.message}
-              htmlFor="ws-edit-slug"
-            >
-              <Input
-                id="ws-edit-slug"
-                {...form.register("slug")}
-                data-testid="ws-edit-slug"
-              />
-            </Field>
-            <Field
-              label="Display name"
-              required
-              error={form.formState.errors.display_name?.message}
-              htmlFor="ws-edit-display-name"
-            >
-              <Input
-                id="ws-edit-display-name"
-                {...form.register("display_name")}
-                data-testid="ws-edit-display-name"
-              />
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field
+                label="Slug"
+                required
+                error={form.formState.errors.slug?.message}
+                htmlFor="ws-edit-slug"
+              >
+                <Input
+                  id="ws-edit-slug"
+                  {...form.register("slug")}
+                  data-testid="ws-edit-slug"
+                />
+              </Field>
+              <Field
+                label="Display Name"
+                required
+                error={form.formState.errors.display_name?.message}
+                htmlFor="ws-edit-display-name"
+              >
+                <Input
+                  id="ws-edit-display-name"
+                  {...form.register("display_name")}
+                  data-testid="ws-edit-display-name"
+                />
+              </Field>
+            </div>
 
-            <div className="flex justify-between gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <div
+              className="flex justify-between gap-2 pt-4"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
               <Button
                 variant="danger"
                 type="button"
@@ -224,6 +318,7 @@ export default function WorkspaceDetailPage() {
               </Button>
               <Button
                 type="submit"
+                variant="primary"
                 loading={update.isPending}
                 disabled={!form.formState.isDirty}
                 data-testid="ws-edit-save"
@@ -234,7 +329,55 @@ export default function WorkspaceDetailPage() {
           </form>
         </section>
 
-        <WorkspaceMembers workspaceId={ws.id} orgId={ws.org_id} />
+        {/* Resources section */}
+        <section className="mb-6" data-testid="ws-resources-section">
+          <h2
+            className="label-caps mb-4"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Resources
+          </h2>
+          <div className="grid grid-cols-3 gap-4">
+            <QuickLinkCard
+              label="Vault Secrets"
+              count={secretCount}
+              sub="secrets in this workspace"
+              href={`/vault/secrets?workspace_id=${ws.id}`}
+              accentColor="#f5a623"
+            />
+            <QuickLinkCard
+              label="Audit Events"
+              count="View"
+              sub="activity for this workspace"
+              href={`/audit?workspace_id=${ws.id}`}
+              accentColor="#ff6b35"
+            />
+            <QuickLinkCard
+              label="Feature Flags"
+              count={flagCount}
+              sub="flags in parent org"
+              href={`/feature-flags?org_id=${ws.org_id}`}
+              accentColor="var(--accent)"
+            />
+          </div>
+        </section>
+
+        {/* Members section */}
+        <section
+          className="rounded-lg p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <h2
+            className="label-caps mb-5"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Members
+          </h2>
+          <WorkspaceMembers workspaceId={ws.id} orgId={ws.org_id} />
+        </section>
       </div>
 
       <Modal

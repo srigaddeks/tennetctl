@@ -4,15 +4,9 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "@/components/page-header";
+import { Badge, EmptyState, ErrorState, Skeleton, StatCard } from "@/components/ui";
 import { apiList } from "@/lib/api";
-import { cn } from "@/lib/cn";
 import type { CatalogNode } from "@/types/api";
-
-const KIND_TONE: Record<string, string> = {
-  request: "bg-blue-100 text-blue-900 dark:bg-blue-900/40 dark:text-blue-100",
-  effect: "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100",
-  control: "bg-zinc-200 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100",
-};
 
 function useCatalogNodes() {
   return useQuery({
@@ -24,10 +18,141 @@ function useCatalogNodes() {
   });
 }
 
+const KIND_CONFIG: Record<string, { label: string; accent: string; bg: string; border: string }> = {
+  request: {
+    label: "REQUEST",
+    accent: "var(--accent)",
+    bg: "var(--accent-muted)",
+    border: "var(--accent)",
+  },
+  effect: {
+    label: "EFFECT",
+    accent: "#a855f7",
+    bg: "#1a0933",
+    border: "#a855f7",
+  },
+  control: {
+    label: "CONTROL",
+    accent: "var(--warning)",
+    bg: "var(--warning-muted)",
+    border: "var(--warning)",
+  },
+};
+
+function KindBadge({ kind }: { kind: string }) {
+  const cfg = KIND_CONFIG[kind] ?? KIND_CONFIG.control;
+  return (
+    <span
+      className="label-caps"
+      style={{
+        background: cfg.bg,
+        color: cfg.accent,
+        border: `1px solid ${cfg.border}`,
+        borderRadius: 4,
+        padding: "2px 7px",
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.07em",
+      }}
+    >
+      {cfg.label}
+    </span>
+  );
+}
+
+function NodeCard({ node }: { node: CatalogNode }) {
+  return (
+    <div
+      className="flex flex-col gap-2 rounded border p-4 transition-colors"
+      style={{
+        background: "var(--bg-surface)",
+        borderColor: "var(--border)",
+      }}
+      data-testid={`node-row-${node.node_key}`}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2">
+        <code
+          className="font-mono-data text-xs leading-snug"
+          style={{ color: "#ff4d7d", wordBreak: "break-all" }}
+        >
+          {node.node_key}
+        </code>
+        <KindBadge kind={node.kind} />
+      </div>
+
+      {/* Handler */}
+      <div
+        className="font-mono-data truncate text-[11px]"
+        style={{ color: "var(--text-muted)" }}
+        title={node.handler}
+      >
+        {node.handler}
+      </div>
+
+      {/* Meta row */}
+      <div className="flex flex-wrap items-center gap-3 pt-1">
+        {node.emits_audit && (
+          <span
+            className="label-caps"
+            style={{ color: "var(--success)", fontSize: 10 }}
+          >
+            audit
+          </span>
+        )}
+        {node.tx_mode && node.tx_mode !== "none" && (
+          <span
+            className="label-caps"
+            style={{ color: "var(--info)", fontSize: 10 }}
+          >
+            {node.tx_mode}
+          </span>
+        )}
+        <span
+          className="font-mono-data ml-auto text-[11px]"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {node.timeout_ms}ms · {node.retries}r · v{node.version}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function FilterSelect({
+  value,
+  onChange,
+  testId,
+  children,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  testId: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      data-testid={testId}
+      className="rounded border px-2.5 py-1.5 text-xs"
+      style={{
+        background: "var(--bg-elevated)",
+        borderColor: "var(--border-bright)",
+        color: "var(--text-primary)",
+        outline: "none",
+      }}
+    >
+      {children}
+    </select>
+  );
+}
+
 export default function NodesPage() {
   const { data: nodes = [], isLoading, error } = useCatalogNodes();
   const [featureFilter, setFeatureFilter] = useState<string>("");
   const [kindFilter, setKindFilter] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
 
   const features = useMemo(() => {
     const seen = new Map<string, number>();
@@ -42,9 +167,10 @@ export default function NodesPage() {
       nodes.filter(
         (n) =>
           (!featureFilter || n.feature_key === featureFilter) &&
-          (!kindFilter || n.kind === kindFilter)
+          (!kindFilter || n.kind === kindFilter) &&
+          (!search || n.node_key.includes(search.toLowerCase()) || n.handler.includes(search.toLowerCase()))
       ),
-    [nodes, featureFilter, kindFilter]
+    [nodes, featureFilter, kindFilter, search]
   );
 
   const grouped = useMemo(() => {
@@ -57,116 +183,146 @@ export default function NodesPage() {
     return [...m.entries()].sort(([a], [b]) => a.localeCompare(b));
   }, [visible]);
 
+  const requestCount = nodes.filter((n) => n.kind === "request").length;
+  const effectCount = nodes.filter((n) => n.kind === "effect").length;
+  const controlCount = nodes.filter((n) => n.kind === "control").length;
+
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col animate-fade-in">
       <PageHeader
-        title="Node Catalog"
-        description="Live registry of features, sub-features, and nodes. Populated on boot from every feature.manifest.yaml."
+        title="Node Registry"
+        description="Live catalog of platform building blocks. Populated on boot from every feature.manifest.yaml."
         testId="heading"
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-xs text-zinc-500">
-            Feature
-            <select
-              value={featureFilter}
-              onChange={(e) => setFeatureFilter(e.target.value)}
-              className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-              data-testid="nodes-feature-filter"
-            >
-              <option value="">All features</option>
-              {features.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-xs text-zinc-500">
-            Kind
-            <select
-              value={kindFilter}
-              onChange={(e) => setKindFilter(e.target.value)}
-              className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-              data-testid="nodes-kind-filter"
-            >
-              <option value="">All kinds</option>
-              <option value="request">request</option>
-              <option value="effect">effect</option>
-              <option value="control">control</option>
-            </select>
-          </label>
-          <div className="ml-auto text-xs text-zinc-500">
-            {visible.length} of {nodes.length} nodes
-          </div>
+
+      <div className="flex-1 overflow-y-auto px-6 py-5">
+        {/* Stat cards */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard
+            label="Total Nodes"
+            value={nodes.length}
+            accent="blue"
+          />
+          <StatCard
+            label="Request"
+            value={requestCount}
+            accent="blue"
+          />
+          <StatCard
+            label="Effect"
+            value={effectCount}
+            accent="amber"
+          />
+          <StatCard
+            label="Control"
+            value={controlCount}
+            accent="amber"
+          />
         </div>
-        {isLoading && <div className="text-sm text-zinc-500">Loading…</div>}
+
+        {/* Filters */}
+        <div
+          className="mb-5 flex flex-wrap items-center gap-3 rounded border px-4 py-3"
+          style={{
+            background: "var(--bg-surface)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <input
+            type="search"
+            placeholder="Search by key or handler…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="min-w-[200px] flex-1 rounded border px-3 py-1.5 text-xs"
+            style={{
+              background: "var(--bg-base)",
+              borderColor: "var(--border-bright)",
+              color: "var(--text-primary)",
+              outline: "none",
+            }}
+          />
+          <FilterSelect
+            value={featureFilter}
+            onChange={setFeatureFilter}
+            testId="nodes-feature-filter"
+          >
+            <option value="">All features</option>
+            {features.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect
+            value={kindFilter}
+            onChange={setKindFilter}
+            testId="nodes-kind-filter"
+          >
+            <option value="">All kinds</option>
+            <option value="request">request</option>
+            <option value="effect">effect</option>
+            <option value="control">control</option>
+          </FilterSelect>
+          <span
+            className="ml-auto font-mono-data text-xs"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {visible.length} / {nodes.length}
+          </span>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-28 w-full rounded" />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
         {error && (
-          <div className="text-sm text-red-600">
-            {error instanceof Error ? error.message : "Failed to load nodes"}
-          </div>
+          <ErrorState
+            message={error instanceof Error ? error.message : "Failed to load nodes"}
+          />
         )}
-        {!isLoading && !error && grouped.length === 0 && (
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950">
-            No nodes match the current filters.
-          </div>
+
+        {/* Empty */}
+        {!isLoading && !error && visible.length === 0 && (
+          <EmptyState
+            title="No nodes match"
+            description="Try clearing filters or broadening your search."
+          />
         )}
+
+        {/* Node groups */}
         {grouped.map(([subFeature, items]) => (
-          <section key={subFeature} className="mb-6">
-            <div className="mb-2 flex items-baseline justify-between">
-              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          <section key={subFeature} className="mb-8">
+            <div
+              className="mb-3 flex items-center gap-3 border-b pb-2"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ background: "#ff4d7d" }}
+              />
+              <h2
+                className="label-caps text-xs"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 {subFeature}
               </h2>
-              <span className="text-xs text-zinc-400">{items.length} nodes</span>
+              <span
+                className="font-mono-data ml-auto text-[11px]"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {items.length} {items.length === 1 ? "node" : "nodes"}
+              </span>
             </div>
-            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-              <table className="w-full text-sm">
-                <thead className="bg-zinc-50 text-[10px] uppercase tracking-wider text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
-                  <tr>
-                    <th className="px-3 py-2 text-left">Key</th>
-                    <th className="px-3 py-2 text-left">Kind</th>
-                    <th className="px-3 py-2 text-left">Handler</th>
-                    <th className="px-3 py-2 text-left">Audit</th>
-                    <th className="px-3 py-2 text-left">Tx</th>
-                    <th className="px-3 py-2 text-right">Timeout</th>
-                    <th className="px-3 py-2 text-right">Retries</th>
-                    <th className="px-3 py-2 text-right">v</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((n) => (
-                    <tr
-                      key={n.node_key}
-                      className="border-t border-zinc-100 dark:border-zinc-900"
-                      data-testid={`node-row-${n.node_key}`}
-                    >
-                      <td className="px-3 py-2 font-mono text-xs">{n.node_key}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={cn(
-                            "rounded px-2 py-0.5 text-[10px] font-semibold uppercase",
-                            KIND_TONE[n.kind] ?? "bg-zinc-100"
-                          )}
-                        >
-                          {n.kind}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 font-mono text-[11px] text-zinc-500">
-                        {n.handler}
-                      </td>
-                      <td className="px-3 py-2 text-xs">
-                        {n.emits_audit ? "yes" : "—"}
-                      </td>
-                      <td className="px-3 py-2 text-xs">{n.tx_mode}</td>
-                      <td className="px-3 py-2 text-right text-xs">
-                        {n.timeout_ms}ms
-                      </td>
-                      <td className="px-3 py-2 text-right text-xs">{n.retries}</td>
-                      <td className="px-3 py-2 text-right text-xs">{n.version}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((n) => (
+                <NodeCard key={n.node_key} node={n} />
+              ))}
             </div>
           </section>
         ))}

@@ -15,6 +15,7 @@ import {
   Field,
   Input,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -38,12 +39,13 @@ const STATUS_LABELS: Record<number, string> = {
   4: "Expired",
 };
 
-type BadgeTone = "zinc" | "emerald" | "amber" | "red";
+type BadgeTone = "default" | "success" | "warning" | "danger" | "info" | "emerald" | "red" | "amber" | "blue" | "purple" | "cyan";
+
 const STATUS_TONES: Record<number, BadgeTone> = {
-  1: "amber",
-  2: "emerald",
-  3: "red",
-  4: "zinc",
+  1: "warning",
+  2: "success",
+  3: "danger",
+  4: "default",
 };
 
 const inviteSchema = z.object({
@@ -51,6 +53,23 @@ const inviteSchema = z.object({
   role_id: z.string().optional(),
 });
 type InviteForm = z.infer<typeof inviteSchema>;
+
+function getExpiryState(expiresAt: string | null | undefined): "overdue" | "soon" | "ok" | "none" {
+  if (!expiresAt) return "none";
+  const now = Date.now();
+  const exp = new Date(expiresAt).getTime();
+  if (exp < now) return "overdue";
+  if (exp - now < 24 * 60 * 60 * 1000) return "soon";
+  return "ok";
+}
+
+function formatExpiry(expiresAt: string | null | undefined): string {
+  if (!expiresAt) return "—";
+  return new Date(expiresAt).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 export default function InvitesPage() {
   const [orgId] = useState<string>(DEFAULT_ORG_ID);
@@ -62,6 +81,11 @@ export default function InvitesPage() {
   const cancelInvite = useCancelInvite(orgId);
 
   const form = useForm<InviteForm>({ resolver: zodResolver(inviteSchema) });
+
+  const allInvites = invites ?? [];
+  const pending = allInvites.filter((i) => i.status === 1).length;
+  const accepted = allInvites.filter((i) => i.status === 2).length;
+  const expired = allInvites.filter((i) => i.status === 4 || i.status === 3).length;
 
   async function handleInvite(values: InviteForm) {
     try {
@@ -105,61 +129,110 @@ export default function InvitesPage() {
         }
       />
 
-      {showForm && (
-        <div className="mb-6 rounded-lg border bg-white p-5 shadow-sm" data-testid="invite-form">
-          <h2 className="mb-4 text-sm font-semibold text-gray-700">Send Invite</h2>
-          <form
-            onSubmit={form.handleSubmit(handleInvite)}
-            className="flex flex-col gap-3 sm:flex-row sm:items-end"
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in">
+
+        {/* Stat cards */}
+        {!isLoading && !isError && (
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            <StatCard
+              label="Pending Invites"
+              value={pending}
+              sub="awaiting acceptance"
+              accent="amber"
+            />
+            <StatCard
+              label="Accepted"
+              value={accepted}
+              sub="successfully joined"
+              accent="green"
+            />
+            <StatCard
+              label="Expired / Cancelled"
+              value={expired}
+              sub="no longer active"
+              accent="red"
+            />
+          </div>
+        )}
+
+        {/* Inline invite form */}
+        {showForm && (
+          <div
+            className="mb-6 rounded-lg p-5 animate-slide-up"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-bright)",
+            }}
+            data-testid="invite-form"
           >
-            <div className="flex-1">
-              <Field label="Email">
-                <Input
-                  {...form.register("email")}
-                  type="email"
-                  placeholder="colleague@example.com"
-                  data-testid="input-invite-email"
-                />
-              </Field>
-              {form.formState.errors.email && (
-                <p className="mt-1 text-xs text-red-600">{form.formState.errors.email.message}</p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={createInvite.isPending}
-              data-testid="btn-send-invite"
+            <h2
+              className="label-caps mb-4"
+              style={{ color: "var(--text-secondary)" }}
             >
               Send Invite
-            </Button>
-          </form>
-        </div>
-      )}
+            </h2>
+            <form
+              onSubmit={form.handleSubmit(handleInvite)}
+              className="flex flex-col gap-3 sm:flex-row sm:items-end"
+            >
+              <div className="flex-1">
+                <Field label="Email">
+                  <Input
+                    {...form.register("email")}
+                    type="email"
+                    placeholder="colleague@example.com"
+                    data-testid="input-invite-email"
+                  />
+                </Field>
+                {form.formState.errors.email && (
+                  <p
+                    className="mt-1 text-xs"
+                    style={{ color: "var(--danger)" }}
+                  >
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                variant="primary"
+                loading={createInvite.isPending}
+                data-testid="btn-send-invite"
+              >
+                Send Invite
+              </Button>
+            </form>
+          </div>
+        )}
 
-      {isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 w-full" />
-          ))}
-        </div>
-      )}
+        {/* Loading */}
+        {isLoading && (
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-11 w-full" />
+            ))}
+          </div>
+        )}
 
-      {isError && (
-        <ErrorState
-          message={
-            error instanceof ApiClientError ? error.message : "Failed to load invites"
-          }
-        />
-      )}
+        {/* Error */}
+        {isError && (
+          <ErrorState
+            message={
+              error instanceof ApiClientError ? error.message : "Failed to load invites"
+            }
+          />
+        )}
 
-      {!isLoading && !isError && invites !== undefined && (
-        invites.length === 0 ? (
+        {/* Empty */}
+        {!isLoading && !isError && invites !== undefined && invites.length === 0 && (
           <EmptyState
             title="No invites yet"
             description="Send an invite to bring a teammate into your organization."
           />
-        ) : (
+        )}
+
+        {/* Table */}
+        {!isLoading && !isError && invites !== undefined && invites.length > 0 && (
           <Table data-testid="invites-table">
             <THead>
               <TR>
@@ -171,39 +244,71 @@ export default function InvitesPage() {
               </TR>
             </THead>
             <TBody>
-              {invites.map((invite) => (
-                <TR key={invite.id} data-testid={`invite-row-${invite.id}`}>
-                  <TD>{invite.email}</TD>
-                  <TD>{invite.inviter_display_name ?? invite.inviter_email ?? invite.invited_by}</TD>
-                  <TD>
-                    <Badge tone={STATUS_TONES[invite.status]}>
-                      {STATUS_LABELS[invite.status] ?? String(invite.status)}
-                    </Badge>
-                  </TD>
-                  <TD>
-                    {invite.expires_at
-                      ? new Date(invite.expires_at).toLocaleString()
-                      : "—"}
-                  </TD>
-                  <TD>
-                    {invite.status === 1 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCancel(invite.id, invite.email)}
-                        loading={cancelInvite.isPending}
-                        data-testid={`btn-cancel-invite-${invite.id}`}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                  </TD>
-                </TR>
-              ))}
+              {invites.map((invite) => {
+                const expiryState = getExpiryState(invite.expires_at);
+                return (
+                  <TR key={invite.id} data-testid={`invite-row-${invite.id}`}>
+                    <TD>
+                      <span style={{ color: "var(--text-primary)" }}>
+                        {invite.email}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span style={{ color: "var(--text-secondary)" }}>
+                        {invite.inviter_display_name ?? invite.inviter_email ?? (
+                          <span className="font-mono-data text-xs" style={{ color: "var(--text-muted)" }}>
+                            {invite.invited_by.slice(0, 8)}…
+                          </span>
+                        )}
+                      </span>
+                    </TD>
+                    <TD>
+                      <Badge tone={STATUS_TONES[invite.status]} dot={invite.status === 1}>
+                        {STATUS_LABELS[invite.status] ?? String(invite.status)}
+                      </Badge>
+                    </TD>
+                    <TD>
+                      {invite.status === 1 ? (
+                        <span className="flex items-center gap-1.5">
+                          {expiryState === "overdue" && (
+                            <Badge tone="danger">OVERDUE</Badge>
+                          )}
+                          {expiryState === "soon" && (
+                            <Badge tone="warning">EXPIRING SOON</Badge>
+                          )}
+                          <span
+                            className="font-mono-data text-xs"
+                            style={{ color: expiryState === "overdue" ? "var(--danger)" : expiryState === "soon" ? "var(--warning)" : "var(--text-secondary)" }}
+                          >
+                            {formatExpiry(invite.expires_at)}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="font-mono-data text-xs" style={{ color: "var(--text-muted)" }}>
+                          {formatExpiry(invite.expires_at)}
+                        </span>
+                      )}
+                    </TD>
+                    <TD>
+                      {invite.status === 1 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCancel(invite.id, invite.email)}
+                          loading={cancelInvite.isPending}
+                          data-testid={`btn-cancel-invite-${invite.id}`}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </TD>
+                  </TR>
+                );
+              })}
             </TBody>
           </Table>
-        )
-      )}
+        )}
+      </div>
     </>
   );
 }

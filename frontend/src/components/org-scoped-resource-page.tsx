@@ -26,6 +26,7 @@ import {
   Input,
   Select,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -124,6 +125,11 @@ export function OrgScopedResourcePage<T extends OrgScopedItem>({
     refetch,
   } = hooks.useList({ limit: 200, org_id: filterOrg || undefined });
 
+  const allItems = data?.items ?? [];
+  const totalItems = allItems.length;
+  const activeItems = allItems.filter((r) => r.is_active).length;
+  const inactiveItems = allItems.filter((r) => !r.is_active).length;
+
   return (
     <>
       <PageHeader
@@ -132,6 +138,7 @@ export function OrgScopedResourcePage<T extends OrgScopedItem>({
         testId={pageTestId}
         actions={
           <Button
+            variant="primary"
             onClick={() => setOpenCreate(true)}
             data-testid={`open-create-${testPrefix}`}
           >
@@ -139,9 +146,40 @@ export function OrgScopedResourcePage<T extends OrgScopedItem>({
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        <div className="mb-4 flex items-center gap-2">
-          <label className="text-xs text-zinc-500">Filter org</label>
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in">
+
+        {/* Stat cards */}
+        {!isLoading && !isError && (
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            <StatCard
+              label={`Total ${title}`}
+              value={totalItems}
+              sub="all records"
+              accent="blue"
+            />
+            <StatCard
+              label="Active"
+              value={activeItems}
+              sub="currently enabled"
+              accent="green"
+            />
+            <StatCard
+              label="Inactive"
+              value={inactiveItems}
+              sub="disabled or archived"
+              accent="red"
+            />
+          </div>
+        )}
+
+        {/* Filter bar */}
+        <div className="mb-4 flex items-center gap-3">
+          <span
+            className="label-caps"
+            style={{ color: "var(--text-muted)" }}
+          >
+            ORG
+          </span>
           <Select
             value={filterOrg}
             onChange={(e) => setFilterOrg(e.target.value)}
@@ -154,25 +192,51 @@ export function OrgScopedResourcePage<T extends OrgScopedItem>({
               </option>
             ))}
           </Select>
+          {data && (
+            <span
+              className="ml-auto rounded px-2 py-0.5 text-xs font-mono"
+              style={{
+                background: "var(--bg-elevated)",
+                color: "var(--text-secondary)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {allItems.length} {resourceNoun}s
+            </span>
+          )}
         </div>
-        {isLoading && <Skeleton className="h-12 w-full" />}
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-11 w-full" />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
+        {/* Empty */}
         {data && data.items.length === 0 && (
           <EmptyState
             title={`No ${resourceNoun}s`}
             description={`Create a ${resourceNoun} to get started.`}
             action={
-              <Button onClick={() => setOpenCreate(true)}>
+              <Button variant="primary" onClick={() => setOpenCreate(true)}>
                 + New {resourceNoun}
               </Button>
             }
           />
         )}
+
+        {/* Table */}
         {data && data.items.length > 0 && (
           <Table>
             <THead>
@@ -189,16 +253,28 @@ export function OrgScopedResourcePage<T extends OrgScopedItem>({
                 return (
                   <TR key={r.id} onClick={() => setSelected(r.id)}>
                     <TD>
-                      <span className="font-mono text-xs">{r.code ?? "—"}</span>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--accent)" }}
+                      >
+                        {r.code ?? "—"}
+                      </span>
                     </TD>
-                    <TD>{r.label ?? "—"}</TD>
                     <TD>
-                      <span className="text-xs text-zinc-500">
+                      <span style={{ color: "var(--text-primary)" }}>
+                        {r.label ?? "—"}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {org?.slug ?? r.org_id.slice(0, 8)}
                       </span>
                     </TD>
                     <TD>
-                      <Badge tone={r.is_active ? "emerald" : "zinc"}>
+                      <Badge tone={r.is_active ? "success" : "default"} dot={r.is_active}>
                         {r.is_active ? "active" : "inactive"}
                       </Badge>
                     </TD>
@@ -342,6 +418,7 @@ function CreateOrgScopedDialog<T extends OrgScopedItem>({
           </Button>
           <Button
             type="submit"
+            variant="primary"
             loading={create.isPending}
             data-testid={`create-${testPrefix}-submit`}
           >
@@ -428,17 +505,21 @@ function OrgScopedDetailDrawer<T extends OrgScopedItem>({
       title={item?.label ?? resourceNoun}
       description={item?.code ?? undefined}
     >
-      {isLoading && <p className="text-sm text-zinc-500">Loading…</p>}
+      {isLoading && (
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Loading…
+        </p>
+      )}
       {item && (
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
         >
           <div className="flex flex-wrap gap-1.5">
-            <Badge tone={item.is_active ? "emerald" : "zinc"}>
+            <Badge tone={item.is_active ? "success" : "default"} dot={item.is_active}>
               {item.is_active ? "active" : "inactive"}
             </Badge>
-            <Badge tone="zinc">org: {item.org_id.slice(0, 8)}…</Badge>
+            <Badge tone="default">org: {item.org_id.slice(0, 8)}…</Badge>
           </div>
           <Field label="Code" hint="frozen">
             <Input disabled value={item.code ?? ""} />
@@ -449,11 +530,17 @@ function OrgScopedDetailDrawer<T extends OrgScopedItem>({
           <Field label="Description">
             <Textarea rows={3} {...form.register("description")} />
           </Field>
-          <label className="flex items-center gap-2 text-sm">
+          <label
+            className="flex items-center gap-2 text-sm"
+            style={{ color: "var(--text-secondary)" }}
+          >
             <input type="checkbox" {...form.register("is_active")} />
             Active
           </label>
-          <div className="mt-2 flex justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
+          <div
+            className="mt-2 flex justify-between pt-4"
+            style={{ borderTop: "1px solid var(--border)" }}
+          >
             <Button
               variant="danger"
               type="button"
@@ -469,6 +556,7 @@ function OrgScopedDetailDrawer<T extends OrgScopedItem>({
               </Button>
               <Button
                 type="submit"
+                variant="primary"
                 loading={update.isPending}
                 disabled={!form.formState.isDirty}
               >

@@ -7,6 +7,7 @@ import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
+  Badge,
   Button,
   EmptyState,
   ErrorState,
@@ -40,8 +41,16 @@ export default function SCIMPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [revokeTarget, setRevokeTarget] = useState<ScimToken | null>(null);
   const [newToken, setNewToken] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+  async function handleCopy() {
+    if (!newToken) return;
+    await navigator.clipboard.writeText(newToken);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <>
@@ -52,6 +61,7 @@ export default function SCIMPage() {
         breadcrumbs={BREADCRUMBS}
         actions={
           <Button
+            variant="primary"
             data-testid="btn-new-scim"
             onClick={() => setCreateOpen(true)}
           >
@@ -60,32 +70,56 @@ export default function SCIMPage() {
         }
       />
       <div
-        className="flex-1 overflow-y-auto px-8 py-6 space-y-6"
+        className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in space-y-5"
         data-testid="iam-scim-body"
       >
+        {/* New token banner */}
         {newToken && (
           <div
-            className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-800/50 dark:bg-emerald-950/40"
+            className="rounded border p-4"
+            style={{
+              background: "var(--success-muted)",
+              borderColor: "var(--success)",
+            }}
             data-testid="scim-new-token-banner"
           >
-            <p className="font-medium text-emerald-900 dark:text-emerald-100">
-              Token created — copy it now. It won&apos;t be shown again.
-            </p>
+            <div className="mb-2 flex items-center justify-between">
+              <p
+                className="text-xs font-semibold"
+                style={{ color: "var(--success)" }}
+              >
+                Token created — copy it now. It will not be shown again.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleCopy}
+                  style={{ color: "var(--success)" }}
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setNewToken(null)}
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </div>
             <code
-              className="mt-2 block select-all break-all rounded bg-white/70 px-2 py-1 font-mono text-xs text-emerald-950 dark:bg-emerald-900/60 dark:text-emerald-100"
+              className="font-mono-data block select-all break-all rounded border px-3 py-2 text-xs"
+              style={{
+                background: "var(--bg-base)",
+                borderColor: "var(--success)",
+                color: "var(--success)",
+              }}
               data-testid="scim-new-token"
             >
               {newToken}
             </code>
-            <div className="mt-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setNewToken(null)}
-              >
-                Dismiss
-              </Button>
-            </div>
           </div>
         )}
 
@@ -117,6 +151,7 @@ export default function SCIMPage() {
             <THead>
               <tr>
                 <TH>Label</TH>
+                <TH>Status</TH>
                 <TH>Created</TH>
                 <TH>Last used</TH>
                 <TH className="text-right">Actions</TH>
@@ -126,15 +161,29 @@ export default function SCIMPage() {
               {tokens.map((t) => (
                 <TR key={t.id} data-testid={`scim-row-${t.id}`}>
                   <TD>
-                    <span className="font-medium">{t.label}</span>
+                    <span
+                      className="text-xs font-medium"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      {t.label}
+                    </span>
                   </TD>
                   <TD>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Badge tone="success" dot>active</Badge>
+                  </TD>
+                  <TD>
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {new Date(t.created_at).toLocaleDateString()}
                     </span>
                   </TD>
                   <TD>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {t.last_used_at
                         ? new Date(t.last_used_at).toLocaleDateString()
                         : "—"}
@@ -147,7 +196,7 @@ export default function SCIMPage() {
                       type="button"
                       data-testid={`scim-delete-${t.id}`}
                       onClick={() => setRevokeTarget(t)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      style={{ color: "var(--danger)" }}
                     >
                       Revoke
                     </Button>
@@ -158,17 +207,53 @@ export default function SCIMPage() {
           </Table>
         )}
 
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400">
-          <p className="font-medium text-zinc-800 dark:text-zinc-200">
+        {/* Endpoint reference */}
+        <div
+          className="rounded border p-4"
+          style={{
+            background: "var(--bg-surface)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <p
+            className="label-caps mb-2 text-[11px]"
+            style={{ color: "var(--text-muted)" }}
+          >
             SCIM 2.0 endpoint base URL
           </p>
-          <code className="mt-1 block font-mono">
+          <code
+            className="font-mono-data block rounded border px-3 py-2 text-xs"
+            style={{
+              background: "var(--bg-base)",
+              borderColor: "var(--border-bright)",
+              color: "var(--accent)",
+            }}
+          >
             {origin}/scim/v2/&#123;org-slug&#125;
           </code>
-          <p className="mt-1">
-            Users: <code className="font-mono">/Users</code> · Groups:{" "}
-            <code className="font-mono">/Groups</code>
-          </p>
+          <div
+            className="mt-2 flex gap-4 text-[11px]"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <span>
+              Users:{" "}
+              <code
+                className="font-mono-data"
+                style={{ color: "var(--text-primary)" }}
+              >
+                /Users
+              </code>
+            </span>
+            <span>
+              Groups:{" "}
+              <code
+                className="font-mono-data"
+                style={{ color: "var(--text-primary)" }}
+              >
+                /Groups
+              </code>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -233,7 +318,11 @@ function CreateTokenDialog({
             data-testid="create-scim-label"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

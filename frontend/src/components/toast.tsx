@@ -14,6 +14,13 @@ type ToastContextValue = {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
+const TOAST_ICONS: Record<ToastKind, string> = {
+  success: "✓",
+  error: "✕",
+  info: "·",
+  warning: "!",
+};
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -39,35 +46,47 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(t);
   }, [toasts]);
 
+  const accentColor = (kind: ToastKind) => {
+    if (kind === "success") return "var(--success)";
+    if (kind === "error") return "var(--danger)";
+    if (kind === "warning") return "var(--warning)";
+    return "var(--accent)";
+  };
+
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="pointer-events-none fixed top-4 right-4 z-50 flex w-96 flex-col gap-2">
+      <div className="pointer-events-none fixed top-4 right-4 z-50 flex w-80 flex-col gap-1.5">
         {toasts.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => dismiss(t.id)}
             className={cn(
-              "pointer-events-auto rounded-lg border px-4 py-3 text-left text-sm shadow-lg backdrop-blur transition",
-              t.kind === "success" &&
-                "border-emerald-200 bg-emerald-50/95 text-emerald-900 dark:border-emerald-800/50 dark:bg-emerald-950/95 dark:text-emerald-100",
-              t.kind === "error" &&
-                "border-red-200 bg-red-50/95 text-red-900 dark:border-red-800/50 dark:bg-red-950/95 dark:text-red-100",
-              t.kind === "info" &&
-                "border-zinc-200 bg-white/95 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/95 dark:text-zinc-50",
-              t.kind === "warning" &&
-                "border-amber-200 bg-amber-50/95 text-amber-900 dark:border-amber-800/50 dark:bg-amber-950/95 dark:text-amber-100"
+              "pointer-events-auto rounded border text-left text-[12px] font-medium transition-all duration-200 animate-slide-up",
+              "hover:opacity-80",
             )}
+            style={{
+              background: "var(--bg-elevated)",
+              borderColor: `${accentColor(t.kind)}40`,
+              borderLeft: `2px solid ${accentColor(t.kind)}`,
+              padding: "10px 12px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            }}
           >
             <div className="flex items-start gap-2">
-              <span className="mt-0.5 text-base leading-none">
-                {t.kind === "success" && "✓"}
-                {t.kind === "error" && "✕"}
-                {t.kind === "info" && "ℹ"}
-                {t.kind === "warning" && "!"}
+              <span
+                className="mt-px font-mono text-[11px] font-bold"
+                style={{ color: accentColor(t.kind) }}
+              >
+                {TOAST_ICONS[t.kind]}
               </span>
-              <span className="flex-1 leading-snug">{t.message}</span>
+              <span
+                className="flex-1 leading-snug"
+                style={{ color: "var(--text-primary)" }}
+              >
+                {t.message}
+              </span>
             </div>
           </button>
         ))}

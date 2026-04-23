@@ -49,6 +49,7 @@ export default function SAMLPage() {
     useSamlProviders();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SamlProvider | null>(null);
+  const [expandedCert, setExpandedCert] = useState<string | null>(null);
 
   return (
     <>
@@ -59,6 +60,7 @@ export default function SAMLPage() {
         breadcrumbs={BREADCRUMBS}
         actions={
           <Button
+            variant="primary"
             data-testid="btn-new-saml"
             onClick={() => setCreateOpen(true)}
           >
@@ -66,7 +68,7 @@ export default function SAMLPage() {
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="iam-saml-body">
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="iam-saml-body">
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -91,59 +93,130 @@ export default function SAMLPage() {
           />
         )}
         {providers.length > 0 && (
-          <Table>
-            <THead>
-              <tr>
-                <TH>IdP Entity ID</TH>
-                <TH>SSO URL</TH>
-                <TH>Status</TH>
-                <TH className="text-right">Actions</TH>
-              </tr>
-            </THead>
-            <TBody>
-              {providers.map((p) => (
-                <TR key={p.id} data-testid={`saml-row-${p.id}`}>
-                  <TD>
-                    <span className="font-mono text-xs">{p.idp_entity_id}</span>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                      {p.sso_url}
-                    </span>
-                  </TD>
-                  <TD>
-                    <Badge tone={p.enabled ? "emerald" : "zinc"}>
-                      {p.enabled ? "enabled" : "disabled"}
-                    </Badge>
-                  </TD>
-                  <TD className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <a
-                        href={`/v1/auth/saml/${p.org_slug}/metadata`}
-                        target="_blank"
-                        rel="noreferrer"
-                        data-testid={`saml-metadata-${p.id}`}
+          <div className="space-y-3">
+            <Table>
+              <THead>
+                <tr>
+                  <TH>IdP Entity ID</TH>
+                  <TH>SSO URL</TH>
+                  <TH>SP Entity ID</TH>
+                  <TH>Status</TH>
+                  <TH className="text-right">Actions</TH>
+                </tr>
+              </THead>
+              <TBody>
+                {providers.map((p) => (
+                  <TR key={p.id} data-testid={`saml-row-${p.id}`}>
+                    <TD>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--accent)" }}
                       >
-                        <Button variant="ghost" size="sm" type="button">
-                          Metadata
+                        {p.idp_entity_id}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {p.sso_url}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {p.sp_entity_id}
+                      </span>
+                    </TD>
+                    <TD>
+                      <Badge tone={p.enabled ? "success" : "default"} dot>
+                        {p.enabled ? "enabled" : "disabled"}
+                      </Badge>
+                    </TD>
+                    <TD className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          onClick={() =>
+                            setExpandedCert(
+                              expandedCert === p.id ? null : p.id,
+                            )
+                          }
+                        >
+                          {expandedCert === p.id ? "Hide cert" : "View cert"}
                         </Button>
-                      </a>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                        data-testid={`saml-delete-${p.id}`}
-                        onClick={() => setDeleteTarget(p)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TD>
-                </TR>
-              ))}
-            </TBody>
-          </Table>
+                        <a
+                          href={`/v1/auth/saml/${p.org_slug}/metadata`}
+                          target="_blank"
+                          rel="noreferrer"
+                          data-testid={`saml-metadata-${p.id}`}
+                        >
+                          <Button variant="ghost" size="sm" type="button">
+                            Metadata
+                          </Button>
+                        </a>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          data-testid={`saml-delete-${p.id}`}
+                          onClick={() => setDeleteTarget(p)}
+                          style={{ color: "var(--danger)" }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </TD>
+                  </TR>
+                ))}
+              </TBody>
+            </Table>
+
+            {/* Certificate display */}
+            {providers.map((p) =>
+              expandedCert === p.id ? (
+                <div
+                  key={`cert-${p.id}`}
+                  className="rounded border"
+                  style={{
+                    background: "var(--bg-base)",
+                    borderColor: "var(--border)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-between border-b px-4 py-2"
+                    style={{ borderColor: "var(--border)" }}
+                  >
+                    <span
+                      className="label-caps text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      x509 Certificate — {p.idp_entity_id}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      onClick={() => setExpandedCert(null)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                  <pre
+                    className="overflow-x-auto p-4 font-mono-data text-[11px] leading-relaxed"
+                    style={{ color: "var(--success)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}
+                  >
+                    {p.x509_cert}
+                  </pre>
+                </div>
+              ) : null,
+            )}
+          </div>
         )}
       </div>
 
@@ -248,7 +321,11 @@ function CreateSamlDialog({
             data-testid="create-saml-cert"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

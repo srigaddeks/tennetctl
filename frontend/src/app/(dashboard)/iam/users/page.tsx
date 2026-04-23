@@ -19,6 +19,7 @@ import {
   Input,
   Select,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -49,6 +50,15 @@ const ACCOUNT_TYPE_LABEL: Record<AccountType, string> = ACCOUNT_TYPES.reduce(
   {} as Record<AccountType, string>,
 );
 
+type BadgeToneType = "default" | "blue" | "purple" | "cyan" | "success" | "warning" | "danger" | "info" | "emerald" | "red" | "amber";
+
+const ACCOUNT_TYPE_TONE: Record<AccountType, BadgeToneType> = {
+  email_password: "default",
+  google_oauth: "blue",
+  github_oauth: "default",
+  magic_link: "purple",
+};
+
 const createSchema = z.object({
   account_type: z.enum([
     "email_password",
@@ -77,7 +87,9 @@ export default function UsersPage() {
     account_type: filterType || undefined,
   });
 
-  const filtered = (data?.items ?? []).filter((u) => {
+  const allItems = data?.items ?? [];
+
+  const filtered = allItems.filter((u) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -96,6 +108,11 @@ export default function UsersPage() {
   const visibleIds = sorted.map((u) => u.id);
   const allSelected =
     visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+
+  // Stats
+  const totalUsers = allItems.length;
+  const activeUsers = allItems.filter((u) => u.is_active).length;
+  const verifiedUsers = allItems.filter((u) => !!u.email).length;
 
   function toggleRow(id: string, checked: boolean) {
     setSelectedIds((prev) => {
@@ -168,6 +185,7 @@ export default function UsersPage() {
               Export CSV
             </Button>
             <Button
+              variant="primary"
               onClick={() => setOpenCreate(true)}
               data-testid="open-create-user"
             >
@@ -176,14 +194,45 @@ export default function UsersPage() {
           </>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="users-body">
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in" data-testid="users-body">
+
+        {/* Stat cards */}
+        {!isLoading && !isError && (
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            <StatCard
+              label="Total Users"
+              value={totalUsers}
+              sub="all identities"
+              accent="blue"
+            />
+            <StatCard
+              label="Active"
+              value={activeUsers}
+              sub="can sign in"
+              accent="green"
+            />
+            <StatCard
+              label="With Email"
+              value={verifiedUsers}
+              sub="have email address"
+              accent="blue"
+            />
+          </div>
+        )}
+
+        {/* Filter bar */}
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-xs text-zinc-500">Type</label>
+            <span
+              className="label-caps"
+              style={{ color: "var(--text-muted)" }}
+            >
+              TYPE
+            </span>
             <Select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-56"
+              className="w-52"
               data-testid="filter-user-type"
             >
               <option value="">All account types</option>
@@ -194,25 +243,52 @@ export default function UsersPage() {
               ))}
             </Select>
           </div>
-          <Input
-            type="search"
-            placeholder="Search email or name…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
-            data-testid="search-users"
-          />
-          <span className="ml-auto text-xs text-zinc-500">
+          <div className="relative">
+            <span
+              className="absolute left-3 top-1/2 -translate-y-1/2 label-caps pointer-events-none"
+              style={{ color: "var(--text-muted)" }}
+            >
+              FILTER
+            </span>
+            <Input
+              type="search"
+              placeholder="email or name…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-72 pl-16"
+              data-testid="search-users"
+            />
+          </div>
+          <span
+            className="ml-auto rounded px-2 py-0.5 text-xs font-mono"
+            style={{
+              background: "var(--bg-elevated)",
+              color: "var(--text-secondary)",
+              border: "1px solid var(--border)",
+            }}
+          >
             {filtered.length} {filtered.length === 1 ? "user" : "users"}
           </span>
         </div>
-        {isLoading && <Skeleton className="h-12 w-full" />}
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex flex-col gap-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
+        {/* Empty */}
         {!isLoading && filtered.length === 0 && (
           <EmptyState
             title={data && data.items.length === 0 ? "No users" : "No matches"}
@@ -223,11 +299,13 @@ export default function UsersPage() {
             }
             action={
               data && data.items.length === 0 ? (
-                <Button onClick={() => setOpenCreate(true)}>+ New user</Button>
+                <Button variant="primary" onClick={() => setOpenCreate(true)}>+ New user</Button>
               ) : undefined
             }
           />
         )}
+
+        {/* Table */}
         {sorted.length > 0 && (
           <Table>
             <THead>
@@ -262,7 +340,7 @@ export default function UsersPage() {
                   onSort={() => toggle("account_type")}
                   testId="sort-user-type"
                 >
-                  Type
+                  Auth Type
                 </TH>
                 <TH
                   sortable
@@ -315,17 +393,25 @@ export default function UsersPage() {
                             src={u.avatar_url}
                             alt=""
                             className="h-7 w-7 rounded-full object-cover"
+                            style={{ border: "1px solid var(--border)" }}
                           />
                         ) : (
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                          <div
+                            className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold"
+                            style={{
+                              background: "var(--accent-muted)",
+                              color: "var(--accent)",
+                              border: "1px solid var(--accent-dim)",
+                            }}
+                          >
                             {initial}
                           </div>
                         )}
-                        <span>
+                        <span style={{ color: "var(--text-primary)" }}>
                           {hasName ? (
                             u.display_name
                           ) : (
-                            <span className="font-mono text-xs text-zinc-500">
+                            <span className="font-mono-data text-xs" style={{ color: "var(--text-muted)" }}>
                               user-{shortId}
                             </span>
                           )}
@@ -334,20 +420,20 @@ export default function UsersPage() {
                     </TD>
                     <TD>
                       {hasEmail ? (
-                        <span className="text-xs text-zinc-500">{u.email}</span>
+                        <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{u.email}</span>
                       ) : (
-                        <span className="text-xs text-zinc-400 italic">
-                          no email set
+                        <span className="text-xs italic" style={{ color: "var(--text-muted)" }}>
+                          no email
                         </span>
                       )}
                     </TD>
                     <TD>
-                      <Badge tone="blue">
+                      <Badge tone={ACCOUNT_TYPE_TONE[u.account_type] ?? "default"}>
                         {ACCOUNT_TYPE_LABEL[u.account_type] ?? u.account_type}
                       </Badge>
                     </TD>
                     <TD>
-                      <Badge tone={u.is_active ? "emerald" : "zinc"}>
+                      <Badge tone={u.is_active ? "success" : "default"} dot={u.is_active}>
                         {u.is_active ? "active" : "inactive"}
                       </Badge>
                     </TD>
@@ -481,6 +567,7 @@ function CreateUserDialog({
           </Button>
           <Button
             type="submit"
+            variant="primary"
             loading={create.isPending}
             data-testid="create-user-submit"
           >

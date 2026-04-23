@@ -119,6 +119,16 @@ export async function apiList<T>(
   return { items: payload.data, pagination: payload.pagination };
 }
 
+export function getWorkspaceHeaders(
+  orgId?: string | null,
+  workspaceId?: string | null,
+): HeadersInit {
+  const h: Record<string, string> = {};
+  if (orgId) h["x-org-id"] = orgId;
+  if (workspaceId) h["x-workspace-id"] = workspaceId;
+  return h;
+}
+
 export function buildQuery(
   params: Record<string, string | number | boolean | null | undefined>
 ): string {

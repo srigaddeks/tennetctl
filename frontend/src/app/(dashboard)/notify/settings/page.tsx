@@ -33,6 +33,82 @@ import type {
   NotifyTemplateGroup,
 } from "@/types/api";
 
+function SectionHeader({
+  icon,
+  title,
+  description,
+  action,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: 16,
+        marginBottom: 16,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 36,
+            height: 36,
+            borderRadius: 8,
+            background: "var(--accent-muted)",
+            color: "var(--accent)",
+            flexShrink: 0,
+            marginTop: 2,
+          }}
+        >
+          {icon}
+        </span>
+        <div>
+          <h2
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              marginBottom: 3,
+            }}
+          >
+            {title}
+          </h2>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", maxWidth: 480 }}>
+            {description}
+          </p>
+        </div>
+      </div>
+      {action && <div style={{ flexShrink: 0 }}>{action}</div>}
+    </div>
+  );
+}
+
+function SMTPIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="4" width="14" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M1 5.5l7 5 7-5" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function GroupIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M2 3h12M2 8h8M2 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export default function NotifySettingsPage() {
   const me = useMe();
   const orgId = me.data?.session?.org_id ?? null;
@@ -54,25 +130,43 @@ export default function NotifySettingsPage() {
     <>
       <PageHeader
         title="Notify Settings"
-        description="SMTP servers and template groups. Configure these first before creating templates."
+        description="SMTP providers and template groups. Configure delivery infrastructure before creating templates."
         testId="heading-notify-settings"
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-10" data-testid="notify-settings-body">
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 32 }}
+        data-testid="notify-settings-body"
+      >
         {/* SMTP Configs */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-semibold">SMTP Configs</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">Email server credentials stored in vault.</p>
-            </div>
-            <Button data-testid="btn-new-smtp" onClick={() => setSmtpOpen(true)} disabled={!orgId}>
-              + New SMTP
-            </Button>
-          </div>
+        <section
+          style={{
+            borderRadius: 8,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            padding: 24,
+          }}
+        >
+          <SectionHeader
+            icon={<SMTPIcon />}
+            title="SMTP Configurations"
+            description="Email server credentials stored in vault. Each SMTP config is referenced by one or more template groups."
+            action={
+              <Button data-testid="btn-new-smtp" onClick={() => setSmtpOpen(true)} disabled={!orgId}>
+                + New SMTP
+              </Button>
+            }
+          />
+
           {smtp.isLoading && <Skeleton className="h-16 w-full" />}
-          {smtp.isError && <ErrorState message={smtp.error instanceof Error ? smtp.error.message : "Load failed"} />}
+          {smtp.isError && (
+            <ErrorState message={smtp.error instanceof Error ? smtp.error.message : "Load failed"} />
+          )}
           {!smtp.isLoading && smtpItems.length === 0 && (
-            <EmptyState title="No SMTP configs yet" description="Add a config to send email templates." />
+            <EmptyState
+              title="No SMTP configs yet"
+              description="Add a config to send email templates."
+            />
           )}
           {smtpItems.length > 0 && (
             <Table>
@@ -89,18 +183,58 @@ export default function NotifySettingsPage() {
               <TBody>
                 {smtpItems.map((s) => (
                   <TR key={s.id} data-testid={`smtp-row-${s.id}`}>
-                    <TD><span className="font-mono text-xs">{s.key}</span></TD>
-                    <TD>{s.label}</TD>
-                    <TD><span className="text-xs">{s.host}:{s.port}</span></TD>
-                    <TD><span className="text-xs">{s.username}</span></TD>
-                    <TD><Badge tone={s.tls ? "emerald" : "zinc"}>{s.tls ? "Yes" : "No"}</Badge></TD>
                     <TD>
-                      <div className="flex gap-3">
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 12,
+                          color: "var(--info)",
+                        }}
+                      >
+                        {s.key}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 500 }}>
+                        {s.label}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 12,
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {s.host}:{s.port}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                        {s.username}
+                      </span>
+                    </TD>
+                    <TD>
+                      <Badge tone={s.tls ? "emerald" : "default"} dot={s.tls}>
+                        {s.tls ? "TLS" : "Plain"}
+                      </Badge>
+                    </TD>
+                    <TD>
+                      <div style={{ display: "flex", gap: 12 }}>
                         <button
                           type="button"
                           data-testid={`smtp-edit-${s.id}`}
                           onClick={() => setSmtpEdit(s)}
-                          className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "var(--accent)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                          }}
                         >
                           Edit
                         </button>
@@ -111,7 +245,16 @@ export default function NotifySettingsPage() {
                           onClick={() => {
                             if (confirm(`Delete SMTP config "${s.label}"?`)) deleteSMTP.mutate(s.id);
                           }}
-                          className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "var(--danger)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            opacity: deleteSMTP.isPending ? 0.5 : 1,
+                          }}
                         >
                           Delete
                         </button>
@@ -125,20 +268,34 @@ export default function NotifySettingsPage() {
         </section>
 
         {/* Template Groups */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-semibold">Template Groups</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">Group templates by purpose (onboarding, billing, etc.). Each group binds to one SMTP config.</p>
-            </div>
-            <Button data-testid="btn-new-group" onClick={() => setGroupOpen(true)} disabled={!orgId}>
-              + New Group
-            </Button>
-          </div>
+        <section
+          style={{
+            borderRadius: 8,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            padding: 24,
+          }}
+        >
+          <SectionHeader
+            icon={<GroupIcon />}
+            title="Template Groups"
+            description="Group templates by purpose (onboarding, billing, security). Each group is bound to one SMTP config and defines a notification category."
+            action={
+              <Button data-testid="btn-new-group" onClick={() => setGroupOpen(true)} disabled={!orgId}>
+                + New Group
+              </Button>
+            }
+          />
+
           {groups.isLoading && <Skeleton className="h-16 w-full" />}
-          {groups.isError && <ErrorState message={groups.error instanceof Error ? groups.error.message : "Load failed"} />}
+          {groups.isError && (
+            <ErrorState message={groups.error instanceof Error ? groups.error.message : "Load failed"} />
+          )}
           {!groups.isLoading && groupItems.length === 0 && (
-            <EmptyState title="No template groups yet" description="Create a group before adding templates." />
+            <EmptyState
+              title="No template groups yet"
+              description="Create a group before adding templates."
+            />
           )}
           {groupItems.length > 0 && (
             <Table>
@@ -147,24 +304,58 @@ export default function NotifySettingsPage() {
                   <TH>Key</TH>
                   <TH>Label</TH>
                   <TH>Category</TH>
-                  <TH>SMTP</TH>
+                  <TH>SMTP Config</TH>
                   <TH>Actions</TH>
                 </tr>
               </THead>
               <TBody>
                 {groupItems.map((g) => (
                   <TR key={g.id} data-testid={`group-row-${g.id}`}>
-                    <TD><span className="font-mono text-xs">{g.key}</span></TD>
-                    <TD>{g.label}</TD>
-                    <TD><Badge tone="blue">{g.category_label}</Badge></TD>
-                    <TD><span className="text-xs">{g.smtp_config_key ?? "—"}</span></TD>
                     <TD>
-                      <div className="flex gap-3">
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 12,
+                          color: "var(--info)",
+                        }}
+                      >
+                        {g.key}
+                      </span>
+                    </TD>
+                    <TD>
+                      <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 500 }}>
+                        {g.label}
+                      </span>
+                    </TD>
+                    <TD>
+                      <Badge tone="cyan">{g.category_label}</Badge>
+                    </TD>
+                    <TD>
+                      <span
+                        style={{
+                          fontFamily: "'IBM Plex Mono', monospace",
+                          fontSize: 12,
+                          color: g.smtp_config_key ? "var(--text-secondary)" : "var(--text-muted)",
+                        }}
+                      >
+                        {g.smtp_config_key ?? "—"}
+                      </span>
+                    </TD>
+                    <TD>
+                      <div style={{ display: "flex", gap: 12 }}>
                         <button
                           type="button"
                           data-testid={`group-edit-${g.id}`}
                           onClick={() => setGroupEdit(g)}
-                          className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "var(--accent)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                          }}
                         >
                           Edit
                         </button>
@@ -175,7 +366,16 @@ export default function NotifySettingsPage() {
                           onClick={() => {
                             if (confirm(`Delete group "${g.label}"?`)) deleteGroup.mutate(g.id);
                           }}
-                          className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "var(--danger)",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            opacity: deleteGroup.isPending ? 0.5 : 1,
+                          }}
                         >
                           Delete
                         </button>
@@ -189,13 +389,27 @@ export default function NotifySettingsPage() {
         </section>
 
         {/* Subscriptions */}
-        <SubscriptionsSection orgId={orgId} />
+        <section
+          style={{
+            borderRadius: 8,
+            border: "1px solid var(--border)",
+            background: "var(--bg-surface)",
+            padding: 24,
+          }}
+        >
+          <SubscriptionsSection orgId={orgId} />
+        </section>
       </div>
 
       {orgId && (
         <>
           <NewSMTPDialog open={smtpOpen} onClose={() => setSmtpOpen(false)} orgId={orgId} />
-          <NewGroupDialog open={groupOpen} onClose={() => setGroupOpen(false)} orgId={orgId} smtpConfigs={smtpItems.map((s) => ({ id: s.id, label: s.label, key: s.key }))} />
+          <NewGroupDialog
+            open={groupOpen}
+            onClose={() => setGroupOpen(false)}
+            orgId={orgId}
+            smtpConfigs={smtpItems.map((s) => ({ id: s.id, label: s.label, key: s.key }))}
+          />
           <EditSMTPDialog
             open={smtpEdit !== null}
             onClose={() => setSmtpEdit(null)}

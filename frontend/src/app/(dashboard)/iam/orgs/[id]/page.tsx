@@ -18,6 +18,7 @@ import {
   Field,
   Input,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -31,6 +32,8 @@ import {
   useUpdateOrg,
 } from "@/features/iam-orgs/hooks/use-orgs";
 import { useWorkspaces } from "@/features/iam-workspaces/hooks/use-workspaces";
+import { useFlags } from "@/features/featureflags/hooks/use-flags";
+import { useSecrets } from "@/features/vault/secrets/hooks/use-secrets";
 import { ApiClientError } from "@/lib/api";
 
 const SLUG = /^[a-z][a-z0-9-]{1,62}$/;
@@ -40,6 +43,54 @@ const editSchema = z.object({
   display_name: z.string().min(1, "required"),
 });
 type EditForm = z.infer<typeof editSchema>;
+
+type QuickLinkCardProps = {
+  label: string;
+  count: number | string;
+  sub: string;
+  href: string;
+  accentColor: string;
+};
+
+function QuickLinkCard({ label, count, sub, href, accentColor }: QuickLinkCardProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "block",
+        background: "var(--bg-elevated)",
+        border: `1px solid ${hovered ? accentColor : "var(--border)"}`,
+        borderRadius: "8px",
+        padding: "16px",
+        textDecoration: "none",
+        transition: "border-color 150ms ease",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <p
+        className="label-caps mb-2"
+        style={{ color: "var(--text-secondary)" }}
+      >
+        {label}
+      </p>
+      <p
+        className="text-xl font-semibold"
+        style={{ color: hovered ? accentColor : "var(--text-primary)" }}
+      >
+        {count}
+      </p>
+      <p
+        className="text-xs mt-1"
+        style={{ color: "var(--text-muted)" }}
+      >
+        {sub} →
+      </p>
+    </Link>
+  );
+}
 
 export default function OrgDetailPage() {
   const params = useParams();
@@ -51,6 +102,8 @@ export default function OrgDetailPage() {
   const update = useUpdateOrg();
   const del = useDeleteOrg();
   const { data: workspaces } = useWorkspaces({ limit: 500, org_id: orgId });
+  const { data: flags } = useFlags({ org_id: orgId, limit: 1 });
+  const { data: secrets } = useSecrets({ org_id: orgId });
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
@@ -108,14 +161,19 @@ export default function OrgDetailPage() {
     return (
       <>
         <PageHeader
-          title="Org"
+          title="Organisation"
           description="Loading…"
           testId="heading-org-detail"
         />
-        <div className="px-8 py-6">
-          <Skeleton className="mb-3 h-6 w-48" />
-          <Skeleton className="mb-3 h-6 w-72" />
-          <Skeleton className="h-6 w-32" />
+        <div className="px-8 py-6 space-y-3">
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-48" />
         </div>
       </>
     );
@@ -125,7 +183,7 @@ export default function OrgDetailPage() {
     return (
       <>
         <PageHeader
-          title="Org"
+          title="Organisation"
           description="Not found"
           testId="heading-org-detail"
         />
@@ -140,7 +198,8 @@ export default function OrgDetailPage() {
           <div className="mt-4">
             <Link
               href="/iam/orgs"
-              className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              style={{ color: "var(--text-secondary)" }}
+              className="text-sm hover:underline"
             >
               ← Back to orgs
             </Link>
@@ -151,6 +210,9 @@ export default function OrgDetailPage() {
   }
 
   const wsItems = workspaces?.items ?? [];
+  const activeWs = wsItems.filter((w) => w.is_active).length;
+  const flagCount = flags?.pagination.total ?? 0;
+  const secretCount = secrets?.pagination.total ?? 0;
 
   return (
     <>
@@ -159,22 +221,57 @@ export default function OrgDetailPage() {
         description={`Organisation · ${org.slug}`}
         testId="heading-org-detail"
         breadcrumbs={[
-          { label: "Identity", href: "/iam/orgs" },
-          { label: "Orgs", href: "/iam/orgs" },
+          { label: "IAM", href: "/iam/orgs" },
+          { label: "Organisations", href: "/iam/orgs" },
           { label: org.display_name ?? org.slug },
         ]}
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6" data-testid="org-detail-body">
+      <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in" data-testid="org-detail-body">
+
+        {/* Stat cards */}
+        <div className="mb-6 grid grid-cols-3 gap-4">
+          <StatCard
+            label="Workspaces"
+            value={wsItems.length}
+            sub={`${activeWs} active`}
+            accent="blue"
+          />
+          <StatCard
+            label="Status"
+            value={org.is_active ? "Active" : "Inactive"}
+            sub={org.is_test ? "test tenant" : "production tenant"}
+            accent={org.is_active ? "green" : "red"}
+          />
+          <StatCard
+            label="Created"
+            value={org.created_at.slice(0, 10)}
+            sub={`ID: ${org.id.slice(0, 8)}…`}
+            accent="blue"
+          />
+        </div>
+
+        {/* General Info card */}
         <section
-          className="mb-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+          className="mb-6 rounded-lg p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
           data-testid="org-detail-info"
         >
-          <div className="mb-4 flex flex-wrap gap-1.5">
-            <Badge tone={org.is_active ? "emerald" : "zinc"}>
-              {org.is_active ? "active" : "inactive"}
-            </Badge>
-            <Badge tone="zinc">created {org.created_at.slice(0, 10)}</Badge>
-            {org.is_test && <Badge tone="amber">test</Badge>}
+          <div className="mb-5 flex items-center justify-between">
+            <h2
+              className="label-caps"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              General Information
+            </h2>
+            <div className="flex flex-wrap gap-1.5">
+              <Badge tone={org.is_active ? "success" : "default"} dot={org.is_active}>
+                {org.is_active ? "active" : "inactive"}
+              </Badge>
+              {org.is_test && <Badge tone="amber">TEST</Badge>}
+            </div>
           </div>
 
           <form
@@ -182,32 +279,37 @@ export default function OrgDetailPage() {
             className="flex flex-col gap-4"
             data-testid="org-edit-form"
           >
-            <Field
-              label="Slug"
-              required
-              error={form.formState.errors.slug?.message}
-              htmlFor="org-edit-slug"
-            >
-              <Input
-                id="org-edit-slug"
-                {...form.register("slug")}
-                data-testid="org-edit-slug"
-              />
-            </Field>
-            <Field
-              label="Display name"
-              required
-              error={form.formState.errors.display_name?.message}
-              htmlFor="org-edit-display-name"
-            >
-              <Input
-                id="org-edit-display-name"
-                {...form.register("display_name")}
-                data-testid="org-edit-display-name"
-              />
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field
+                label="Slug"
+                required
+                error={form.formState.errors.slug?.message}
+                htmlFor="org-edit-slug"
+              >
+                <Input
+                  id="org-edit-slug"
+                  {...form.register("slug")}
+                  data-testid="org-edit-slug"
+                />
+              </Field>
+              <Field
+                label="Display Name"
+                required
+                error={form.formState.errors.display_name?.message}
+                htmlFor="org-edit-display-name"
+              >
+                <Input
+                  id="org-edit-display-name"
+                  {...form.register("display_name")}
+                  data-testid="org-edit-display-name"
+                />
+              </Field>
+            </div>
 
-            <div className="flex justify-between gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <div
+              className="flex justify-between gap-2 pt-4"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
               <Button
                 variant="danger"
                 type="button"
@@ -219,6 +321,7 @@ export default function OrgDetailPage() {
               </Button>
               <Button
                 type="submit"
+                variant="primary"
                 loading={update.isPending}
                 disabled={!form.formState.isDirty}
                 data-testid="org-edit-save"
@@ -229,21 +332,41 @@ export default function OrgDetailPage() {
           </form>
         </section>
 
+        {/* Workspaces section */}
         <section
-          className="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+          className="mb-6 rounded-lg p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
           data-testid="org-workspaces-section"
         >
-          <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-              Workspaces ({wsItems.length})
+          <div className="mb-5 flex items-center justify-between">
+            <h2
+              className="label-caps"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Workspaces
+              <span
+                className="ml-2 rounded px-1.5 py-0.5 font-mono-data"
+                style={{
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-muted)",
+                  fontSize: "10px",
+                }}
+              >
+                {wsItems.length}
+              </span>
             </h2>
             <Link
               href={`/iam/workspaces?org_id=${org.id}`}
-              className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              className="text-xs hover:underline"
+              style={{ color: "var(--accent)" }}
             >
-              → Manage workspaces
+              Manage workspaces →
             </Link>
           </div>
+
           {wsItems.length === 0 ? (
             <EmptyState
               title="No workspaces"
@@ -267,18 +390,27 @@ export default function OrgDetailPage() {
                     data-testid={`org-ws-row-${ws.id}`}
                   >
                     <TD>
-                      <span className="font-mono text-xs">{ws.slug}</span>
+                      <span
+                        className="font-mono-data text-xs"
+                        style={{ color: "var(--accent)" }}
+                      >
+                        {ws.slug}
+                      </span>
                     </TD>
                     <TD>
-                      {ws.display_name ?? <span className="text-zinc-400">—</span>}
+                      {ws.display_name ? (
+                        <span style={{ color: "var(--text-primary)" }}>{ws.display_name}</span>
+                      ) : (
+                        <span style={{ color: "var(--text-muted)" }}>—</span>
+                      )}
                     </TD>
                     <TD>
-                      <Badge tone={ws.is_active ? "emerald" : "zinc"}>
+                      <Badge tone={ws.is_active ? "success" : "default"} dot={ws.is_active}>
                         {ws.is_active ? "active" : "inactive"}
                       </Badge>
                     </TD>
                     <TD>
-                      <span className="text-xs text-zinc-500">
+                      <span className="font-mono-data text-xs" style={{ color: "var(--text-secondary)" }}>
                         {ws.created_at.slice(0, 10)}
                       </span>
                     </TD>
@@ -287,6 +419,46 @@ export default function OrgDetailPage() {
               </TBody>
             </Table>
           )}
+        </section>
+
+        {/* Quick Links section */}
+        <section data-testid="org-quick-links">
+          <h2
+            className="label-caps mb-4"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Quick Links
+          </h2>
+          <div className="grid grid-cols-4 gap-4">
+            <QuickLinkCard
+              label="Feature Flags"
+              count={flagCount}
+              sub="flags for this org"
+              href={`/feature-flags?org_id=${org.id}&org_scope=true`}
+              accentColor="var(--accent)"
+            />
+            <QuickLinkCard
+              label="Vault Secrets"
+              count={secretCount}
+              sub="secrets for this org"
+              href={`/vault/secrets?org_id=${org.id}`}
+              accentColor="#f5a623"
+            />
+            <QuickLinkCard
+              label="Audit Events"
+              count="View"
+              sub="activity for this org"
+              href={`/audit?org_id=${org.id}`}
+              accentColor="#ff6b35"
+            />
+            <QuickLinkCard
+              label="Members"
+              count="Manage"
+              sub="access in this org"
+              href={`/iam/memberships?org_id=${org.id}`}
+              accentColor="var(--success)"
+            />
+          </div>
         </section>
       </div>
 

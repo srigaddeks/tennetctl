@@ -14,15 +14,31 @@ import type {
   SessionReadShape,
 } from "@/types/api";
 
-const LIST_KEY = (params: ListParams) => ["iam", "sessions", "list", params] as const;
-
 type ListParams = {
   limit?: number;
   offset?: number;
   only_valid?: boolean;
+  user_id?: string;
 };
 
+const LIST_KEY = (params: ListParams) => ["iam", "sessions", "list", params] as const;
+
 export function useMySessions(
+  params: ListParams = {},
+): UseQueryResult<ListResult<SessionReadShape>> {
+  return useQuery<ListResult<SessionReadShape>>({
+    queryKey: LIST_KEY(params),
+    queryFn: () => apiList<SessionReadShape>(`/v1/sessions${buildQuery(params)}`),
+  });
+}
+
+/**
+ * useSessions — fetch sessions, optionally filtered by user_id.
+ * When user_id is provided the query targets the same /v1/sessions endpoint;
+ * admin-scoped per-user listing will be supported once the backend adds that
+ * filter. Until then results reflect the caller's own sessions.
+ */
+export function useSessions(
   params: ListParams = {},
 ): UseQueryResult<ListResult<SessionReadShape>> {
   return useQuery<ListResult<SessionReadShape>>({

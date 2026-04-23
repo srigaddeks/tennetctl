@@ -107,6 +107,11 @@ export default function DashboardDetailPage({
         title={data?.name ?? "Dashboard"}
         description={data?.description ?? undefined}
         testId="heading-monitoring-dashboard"
+        breadcrumbs={[
+          { label: "Monitoring", href: "/monitoring" },
+          { label: "Dashboards", href: "/monitoring/dashboards" },
+          { label: data?.name ?? "…" },
+        ]}
         actions={
           data && (
             <div className="flex gap-2">
@@ -120,37 +125,98 @@ export default function DashboardDetailPage({
                   </Button>
                 </>
               ) : (
-                <Button variant="secondary" onClick={() => setEditing(true)}>
-                  Edit
-                </Button>
+                <>
+                  <Button variant="secondary" onClick={() => setEditing(true)}>
+                    Edit layout
+                  </Button>
+                  <Button
+                    variant="accent"
+                    onClick={() => setAddOpen(true)}
+                    data-testid="monitoring-dashboard-add-panel"
+                  >
+                    + Add panel
+                  </Button>
+                </>
               )}
-              <Button
-                onClick={() => setAddOpen(true)}
-                data-testid="monitoring-dashboard-add-panel"
-              >
-                Add panel
-              </Button>
             </div>
           )
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
+        {/* Dashboard meta strip */}
+        {data && (
+          <div
+            className="mb-5 flex items-center gap-4 rounded border px-4 py-2.5"
+            style={{
+              background: "var(--bg-surface)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <span
+              className="label-caps"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Panels
+            </span>
+            <span
+              className="font-mono-data text-[13px] font-semibold"
+              style={{ color: "#9d6ef8" }}
+            >
+              {data.panels.length}
+            </span>
+            <span
+              className="h-3 w-px"
+              style={{ background: "var(--border)" }}
+            />
+            <span
+              className="label-caps"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Updated
+            </span>
+            <span
+              className="font-mono-data text-[12px]"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {new Date(data.updated_at).toLocaleString()}
+            </span>
+            {editing && (
+              <>
+                <span
+                  className="h-3 w-px"
+                  style={{ background: "var(--border)" }}
+                />
+                <span
+                  className="label-caps"
+                  style={{ color: "var(--warning)" }}
+                >
+                  Edit mode
+                </span>
+              </>
+            )}
+          </div>
+        )}
+
         {isLoading && <Skeleton className="h-96 w-full" />}
+
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
         {data && data.panels.length === 0 && (
           <EmptyState
-            title="No panels"
-            description="Add a panel to start visualizing data."
+            title="No panels yet"
+            description="Add a panel to start visualizing data on this dashboard."
             action={
               <Button onClick={() => setAddOpen(true)}>Add panel</Button>
             }
           />
         )}
+
         {data && data.panels.length > 0 && (
           <DashboardGrid
             panels={data.panels}

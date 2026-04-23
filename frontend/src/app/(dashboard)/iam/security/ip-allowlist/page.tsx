@@ -7,12 +7,14 @@ import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
+  Badge,
   Button,
   EmptyState,
   ErrorState,
   Field,
   Input,
   Skeleton,
+  StatCard,
   TBody,
   TD,
   TH,
@@ -42,6 +44,8 @@ export default function IpAllowlistPage() {
     null,
   );
 
+  const isRestricted = entries.length > 0;
+
   return (
     <>
       <PageHeader
@@ -51,6 +55,7 @@ export default function IpAllowlistPage() {
         breadcrumbs={BREADCRUMBS}
         actions={
           <Button
+            variant="primary"
             data-testid="btn-new-ip"
             onClick={() => setCreateOpen(true)}
           >
@@ -59,9 +64,52 @@ export default function IpAllowlistPage() {
         }
       />
       <div
-        className="flex-1 overflow-y-auto px-8 py-6"
+        className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in"
         data-testid="iam-ip-allowlist-body"
       >
+        {/* Status banner */}
+        <div
+          className="mb-5 flex items-center gap-3 rounded border px-4 py-3"
+          style={{
+            background: isRestricted ? "var(--warning-muted)" : "var(--success-muted)",
+            borderColor: isRestricted ? "var(--warning)" : "var(--success)",
+          }}
+        >
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ background: isRestricted ? "var(--warning)" : "var(--success)" }}
+          />
+          <p
+            className="text-xs font-medium"
+            style={{ color: isRestricted ? "var(--warning)" : "var(--success)" }}
+          >
+            {isRestricted
+              ? `Access restricted to ${entries.length} CIDR ${entries.length === 1 ? "range" : "ranges"}`
+              : "All IPs permitted — no restrictions active"}
+          </p>
+        </div>
+
+        {/* Stats */}
+        {!isLoading && !isError && (
+          <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <StatCard
+              label="Total entries"
+              value={entries.length}
+              accent="blue"
+            />
+            <StatCard
+              label="IPv4 ranges"
+              value={entries.filter((e) => !e.cidr.includes(":")).length}
+              accent="blue"
+            />
+            <StatCard
+              label="IPv6 ranges"
+              value={entries.filter((e) => e.cidr.includes(":")).length}
+              accent="amber"
+            />
+          </div>
+        )}
+
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />
@@ -90,6 +138,7 @@ export default function IpAllowlistPage() {
             <THead>
               <tr>
                 <TH>CIDR</TH>
+                <TH>Version</TH>
                 <TH>Label</TH>
                 <TH>Added</TH>
                 <TH className="text-right">Actions</TH>
@@ -99,17 +148,32 @@ export default function IpAllowlistPage() {
               {entries.map((e) => (
                 <TR key={e.id} data-testid={`ip-row-${e.id}`}>
                   <TD>
-                    <span className="font-mono text-xs">{e.cidr}</span>
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--info)" }}
+                    >
+                      {e.cidr}
+                    </span>
+                  </TD>
+                  <TD>
+                    <Badge tone={e.cidr.includes(":") ? "purple" : "blue"}>
+                      {e.cidr.includes(":") ? "IPv6" : "IPv4"}
+                    </Badge>
                   </TD>
                   <TD>
                     {e.label ? (
-                      <span>{e.label}</span>
+                      <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                        {e.label}
+                      </span>
                     ) : (
-                      <span className="text-zinc-400">—</span>
+                      <span style={{ color: "var(--text-muted)" }}>—</span>
                     )}
                   </TD>
                   <TD>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span
+                      className="font-mono-data text-xs"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {e.created_at
                         ? new Date(e.created_at).toLocaleDateString()
                         : "—"}
@@ -122,7 +186,7 @@ export default function IpAllowlistPage() {
                       type="button"
                       data-testid={`ip-delete-${e.id}`}
                       onClick={() => setDeleteTarget(e)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      style={{ color: "var(--danger)" }}
                     >
                       Remove
                     </Button>
@@ -199,7 +263,11 @@ function AddEntryDialog({
             data-testid="add-ip-label"
           />
         </Field>
-        {err && <p className="text-xs text-red-600">{err}</p>}
+        {err && (
+          <p className="text-xs" style={{ color: "var(--danger)" }}>
+            {err}
+          </p>
+        )}
         <div className="mt-2 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

@@ -11,6 +11,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ShieldAlert, Lock } from "lucide-react";
 
 import { Modal } from "@/components/modal";
 import { useToast } from "@/components/toast";
@@ -91,9 +92,29 @@ export function CreateSecretDialog({
           onClose();
         }}
         title="New secret"
-        description="Envelope-encrypted. The value is shown exactly once after create."
+        description="Envelope-encrypted. The plaintext value is shown exactly once after creation."
         size="md"
       >
+        {/* Amber warning banner */}
+        <div
+          className="flex items-start gap-2.5 rounded-xl px-3.5 py-3 mb-4"
+          style={{
+            background: "var(--warning-muted)",
+            border: "1px solid var(--warning)",
+          }}
+        >
+          <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "var(--warning)" }} />
+          <div>
+            <p className="text-xs font-semibold" style={{ color: "var(--warning)" }}>
+              One-time reveal — copy it before closing
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
+              After submission, the plaintext is shown exactly once. It cannot be retrieved again — only rotated.
+              Store it in a password manager immediately.
+            </p>
+          </div>
+        </div>
+
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
@@ -102,7 +123,7 @@ export function CreateSecretDialog({
           <Field
             label="Key"
             required
-            hint="lowercase + . - _"
+            hint="lowercase + . - _ · e.g. auth.argon2.pepper"
             error={form.formState.errors.key?.message}
             htmlFor="new-secret-key"
           >
@@ -112,6 +133,7 @@ export function CreateSecretDialog({
               autoFocus
               data-testid="new-secret-key"
               {...form.register("key")}
+              style={{ fontFamily: "var(--font-mono)" }}
             />
           </Field>
 
@@ -145,6 +167,7 @@ export function CreateSecretDialog({
                 placeholder="uuid of the org"
                 data-testid="new-secret-org-id"
                 {...form.register("org_id")}
+                style={{ fontFamily: "var(--font-mono)", fontSize: "12px" }}
               />
             </Field>
           )}
@@ -161,6 +184,7 @@ export function CreateSecretDialog({
                 placeholder="uuid of the workspace"
                 data-testid="new-secret-workspace-id"
                 {...form.register("workspace_id")}
+                style={{ fontFamily: "var(--font-mono)", fontSize: "12px" }}
               />
             </Field>
           )}
@@ -173,13 +197,15 @@ export function CreateSecretDialog({
           >
             <Textarea
               id="new-secret-value"
-              placeholder="paste or type the secret value"
+              placeholder="Paste or type the secret value"
               rows={4}
               autoComplete="off"
               data-testid="new-secret-value"
               {...form.register("value")}
+              style={{ fontFamily: "var(--font-mono)", fontSize: "12px" }}
             />
           </Field>
+
           <Field
             label="Description"
             hint="optional — purpose of this secret"
@@ -196,14 +222,22 @@ export function CreateSecretDialog({
 
           {serverError && (
             <div
-              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+              className="rounded-xl px-3 py-2.5 text-xs"
+              style={{
+                background: "var(--danger-muted)",
+                border: "1px solid var(--danger)",
+                color: "var(--danger)",
+              }}
               data-testid="new-secret-error"
             >
               {serverError}
             </div>
           )}
 
-          <div className="mt-2 flex justify-end gap-2">
+          <div
+            className="mt-1 flex justify-end gap-2 pt-4"
+            style={{ borderTop: "1px solid var(--border)" }}
+          >
             <Button
               type="button"
               variant="secondary"
@@ -217,10 +251,12 @@ export function CreateSecretDialog({
             </Button>
             <Button
               type="submit"
+              variant="primary"
               loading={create.isPending}
               data-testid="new-secret-submit"
             >
-              Create secret
+              <Lock className="h-3.5 w-3.5 mr-1.5" />
+              Create & reveal once
             </Button>
           </div>
         </form>

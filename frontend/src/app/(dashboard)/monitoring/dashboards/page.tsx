@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import {
+  Badge,
   Button,
   EmptyState,
   ErrorState,
@@ -19,6 +20,58 @@ import {
   useDashboards,
   useDeleteDashboard,
 } from "@/features/monitoring/hooks/use-dashboards";
+
+const PURPLE = "#9d6ef8";
+
+// Mini grid thumbnail — decorative placeholder
+function DashboardThumbnail({ panelCount }: { panelCount: number }) {
+  const cells = Math.min(panelCount, 4);
+  return (
+    <div
+      className="relative h-24 w-full overflow-hidden rounded-t"
+      style={{ background: "var(--bg-base)" }}
+    >
+      {/* Grid pattern */}
+      <div className="absolute inset-0 bg-grid-dots opacity-30" />
+
+      {/* Fake panel blocks */}
+      <div className="absolute inset-2 grid grid-cols-2 gap-1.5">
+        {[...Array(Math.max(cells, 2))].map((_, i) => (
+          <div
+            key={i}
+            className="rounded"
+            style={{
+              background:
+                i === 0
+                  ? "rgba(157,110,248,0.15)"
+                  : "rgba(157,110,248,0.07)",
+              border: "1px solid rgba(157,110,248,0.2)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Fake sparkline on first panel */}
+      <svg
+        className="absolute left-3 bottom-5"
+        width="52"
+        height="20"
+        viewBox="0 0 52 20"
+        fill="none"
+      >
+        <polyline
+          points="0,15 8,10 16,12 24,6 32,8 40,4 52,7"
+          stroke={PURPLE}
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.7"
+        />
+      </svg>
+    </div>
+  );
+}
 
 export default function DashboardsPage() {
   const [open, setOpen] = useState(false);
@@ -45,68 +98,106 @@ export default function DashboardsPage() {
         testId="heading-monitoring-dashboards"
         actions={
           <Button
+            variant="accent"
             onClick={() => setOpen(true)}
             data-testid="monitoring-dashboard-new"
           >
-            New dashboard
+            + New dashboard
           </Button>
         }
       />
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+
+      <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
         {isLoading && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-32 w-full" />
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-48 w-full" />
+            ))}
           </div>
         )}
+
         {isError && (
           <ErrorState
             message={error instanceof Error ? error.message : "Load failed"}
             retry={() => refetch()}
           />
         )}
+
         {data && data.items.length === 0 && (
           <EmptyState
-            title="No dashboards"
-            description="Create a dashboard to start adding panels."
+            title="No dashboards yet"
+            description="Create a dashboard then add panels to start visualizing your metrics, logs, and traces."
             action={
               <Button onClick={() => setOpen(true)}>New dashboard</Button>
             }
           />
         )}
+
         {data && data.items.length > 0 && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {data.items.map((d) => (
               <div
                 key={d.id}
-                className="group relative flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-100"
+                className="group relative flex flex-col overflow-hidden rounded border transition-all duration-200"
+                style={{
+                  background: "var(--bg-surface)",
+                  borderColor: "var(--border)",
+                }}
                 data-testid={`monitoring-dashboard-card-${d.id}`}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(157,110,248,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border)";
+                }}
               >
+                {/* Thumbnail */}
                 <Link href={`/monitoring/dashboards/${d.id}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                  <DashboardThumbnail panelCount={d.panel_count} />
+                </Link>
+
+                {/* Card body */}
+                <div className="flex flex-col gap-2 p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <Link
+                      href={`/monitoring/dashboards/${d.id}`}
+                      className="text-[14px] font-semibold leading-snug hover:underline"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {d.name}
-                    </span>
+                    </Link>
                     {d.shared && (
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                        Shared
-                      </span>
+                      <Badge tone="blue">Shared</Badge>
                     )}
                   </div>
+
                   {d.description && (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <p
+                      className="text-[12px] leading-relaxed"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       {d.description}
                     </p>
                   )}
-                  <div className="mt-1 flex gap-2 text-[11px] text-zinc-500">
-                    <span>{d.panel_count} panels</span>
-                    <span>·</span>
+
+                  <div
+                    className="flex items-center gap-3 text-[11px]"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    <span
+                      className="font-mono-data"
+                      style={{ color: PURPLE }}
+                    >
+                      {d.panel_count} panel{d.panel_count !== 1 ? "s" : ""}
+                    </span>
+                    <span style={{ color: "var(--border-bright)" }}>·</span>
                     <span>
                       Updated {new Date(d.updated_at).toLocaleDateString()}
                     </span>
                   </div>
-                </Link>
+                </div>
+
+                {/* Delete button (hover reveal) */}
                 <button
                   type="button"
                   onClick={() => {
@@ -115,7 +206,12 @@ export default function DashboardsPage() {
                     }
                   }}
                   data-testid={`monitoring-dashboard-delete-${d.id}`}
-                  className="absolute right-3 top-3 rounded-md bg-white p-1 text-xs text-zinc-500 opacity-0 transition hover:bg-red-50 hover:text-red-700 group-hover:opacity-100 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-300"
+                  className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded text-[11px] opacity-0 transition-opacity group-hover:opacity-100"
+                  style={{
+                    background: "var(--danger-muted)",
+                    color: "var(--danger)",
+                    border: "1px solid rgba(255,63,85,0.3)",
+                  }}
                   aria-label="Delete dashboard"
                 >
                   ✕

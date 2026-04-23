@@ -10,8 +10,8 @@ export const metadata = {
 export default function SetupPage() {
   return (
     <AuthShell
-      title="First-run setup"
-      subtitle="Create the initial platform admin account. MFA is mandatory."
+      title="Platform initialization"
+      subtitle="No admin account found. Complete first-run setup to activate the control plane."
     >
       <Suspense fallback={null}>
         <SetupWizard />

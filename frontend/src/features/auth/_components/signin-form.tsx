@@ -38,24 +38,38 @@ export function SignInForm() {
   const passkeyAuthBegin = usePasskeyAuthBegin();
   const passkeyAuthComplete = usePasskeyAuthComplete();
 
+  const inputCls = "w-full rounded border bg-[var(--bg-base)] px-3 py-2 text-[13px] text-[var(--text-primary)] border-[var(--border)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all duration-150 hover:border-[var(--border-bright)]";
+  const submitCls = "mt-2 w-full rounded border border-[var(--accent)] bg-[var(--accent)] px-3 py-2 text-[13px] font-semibold text-white transition-all duration-150 hover:bg-[var(--accent-hover)] hover:border-[var(--accent-hover)] disabled:opacity-40 shadow-[0_0_12px_rgba(45,126,247,0.25)]";
+
   return (
     <>
       {/* Tab bar */}
-      <div className="mb-4 flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800" data-testid="signin-tabs">
+      <div
+        className="mb-5 flex gap-px rounded overflow-hidden border"
+        style={{ borderColor: "var(--border)", background: "var(--bg-base)" }}
+        data-testid="signin-tabs"
+      >
         {(["password", "magic-link", "otp", "passkey"] as Tab[]).map((t) => (
           <button
             key={t}
             type="button"
             data-testid={`tab-${t}`}
             onClick={() => { setTab(t); setMagicSent(false); setOtpSent(false); setOtpCode(""); setPasskeyError(null); }}
-            className={[
-              "flex-1 whitespace-nowrap rounded-md px-2 py-1.5 text-[11px] font-medium transition",
+            className="flex-1 whitespace-nowrap px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-100"
+            style={
               tab === t
-                ? "bg-white shadow-sm dark:bg-zinc-700"
-                : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300",
-            ].join(" ")}
+                ? {
+                    background: "var(--accent-muted)",
+                    color: "var(--accent-hover)",
+                    borderBottom: "2px solid var(--accent)",
+                  }
+                : {
+                    color: "var(--text-muted)",
+                    background: "transparent",
+                  }
+            }
           >
-            {t === "password" ? "Password" : t === "magic-link" ? "Magic Link" : t === "otp" ? "OTP Code" : "Passkey"}
+            {t === "password" ? "Password" : t === "magic-link" ? "Magic Link" : t === "otp" ? "OTP" : "Passkey"}
           </button>
         ))}
       </div>
@@ -72,49 +86,23 @@ export function SignInForm() {
             );
           }}
         >
-          <label className="flex flex-col gap-1 text-xs font-medium">
+          <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
             Email
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-              data-testid="signin-email"
-            />
+            <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} data-testid="signin-email" />
           </label>
-          <label className="flex flex-col gap-1 text-xs font-medium">
+          <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
             Password
-            <input
-              type="password"
-              required
-              minLength={1}
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-              data-testid="signin-password"
-            />
+            <input type="password" required minLength={1} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} data-testid="signin-password" />
           </label>
           {signin.error ? (
-            <p className="text-xs text-red-600" data-testid="signin-error">
+            <p className="text-[11px]" style={{ color: "var(--danger)" }} data-testid="signin-error">
               {signin.error.message}
             </p>
           ) : null}
-          <button
-            type="submit"
-            disabled={signin.isPending}
-            data-testid="signin-submit"
-            className="mt-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
+          <button type="submit" disabled={signin.isPending} data-testid="signin-submit" className={submitCls}>
             {signin.isPending ? "Signing in…" : "Sign in"}
           </button>
-          <Link
-            href="/auth/forgot-password"
-            className="text-center text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-            data-testid="forgot-password-link"
-          >
+          <Link href="/auth/forgot-password" className="text-center text-[11px] transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }} data-testid="forgot-password-link">
             Forgot your password?
           </Link>
         </form>
@@ -123,53 +111,23 @@ export function SignInForm() {
       {tab === "magic-link" && (
         <div className="flex flex-col gap-3" data-testid="magic-link-form">
           {magicSent ? (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-950" data-testid="magic-link-sent">
-              <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">Check your inbox</p>
-              <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
+            <div className="rounded border p-4" style={{ borderColor: "rgba(0,196,122,0.3)", background: "var(--success-muted)" }} data-testid="magic-link-sent">
+              <p className="text-[13px] font-semibold" style={{ color: "var(--success)" }}>Check your inbox</p>
+              <p className="mt-1 text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 If that email is registered, a sign-in link is on its way. It expires in 10 minutes.
               </p>
-              <button
-                type="button"
-                onClick={() => setMagicSent(false)}
-                className="mt-3 text-xs text-emerald-600 underline dark:text-emerald-400"
-              >
+              <button type="button" onClick={() => setMagicSent(false)} className="mt-3 text-[11px] underline transition-colors" style={{ color: "var(--success)" }}>
                 Send another link
               </button>
             </div>
           ) : (
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                await magicRequest.mutateAsync(
-                  { email, redirect_url: `${window.location.origin}/auth/magic-link/callback` },
-                  { onSuccess: () => setMagicSent(true) }
-                );
-              }}
-            >
-              <label className="flex flex-col gap-1 text-xs font-medium">
+            <form className="flex flex-col gap-3" onSubmit={async (e) => { e.preventDefault(); await magicRequest.mutateAsync({ email, redirect_url: `${window.location.origin}/auth/magic-link/callback` }, { onSuccess: () => setMagicSent(true) }); }}>
+              <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
                 Email
-                <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                  data-testid="magic-link-email"
-                />
+                <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} data-testid="magic-link-email" />
               </label>
-              {magicRequest.error ? (
-                <p className="text-xs text-red-600" data-testid="magic-link-error">
-                  {magicRequest.error.message}
-                </p>
-              ) : null}
-              <button
-                type="submit"
-                disabled={magicRequest.isPending}
-                data-testid="magic-link-submit"
-                className="mt-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              >
+              {magicRequest.error ? (<p className="text-[11px]" style={{ color: "var(--danger)" }} data-testid="magic-link-error">{magicRequest.error.message}</p>) : null}
+              <button type="submit" disabled={magicRequest.isPending} data-testid="magic-link-submit" className={submitCls}>
                 {magicRequest.isPending ? "Sending…" : "Send sign-in link"}
               </button>
             </form>
@@ -180,86 +138,29 @@ export function SignInForm() {
       {tab === "otp" && (
         <div className="flex flex-col gap-3" data-testid="otp-form">
           {!otpSent ? (
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                await otpRequest.mutateAsync(
-                  { email },
-                  { onSuccess: () => setOtpSent(true) }
-                );
-              }}
-            >
-              <label className="flex flex-col gap-1 text-xs font-medium">
+            <form className="flex flex-col gap-3" onSubmit={async (e) => { e.preventDefault(); await otpRequest.mutateAsync({ email }, { onSuccess: () => setOtpSent(true) }); }}>
+              <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
                 Email
-                <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                  data-testid="otp-email"
-                />
+                <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} data-testid="otp-email" />
               </label>
-              <button
-                type="submit"
-                disabled={otpRequest.isPending}
-                data-testid="otp-send-submit"
-                className="mt-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              >
+              <button type="submit" disabled={otpRequest.isPending} data-testid="otp-send-submit" className={submitCls}>
                 {otpRequest.isPending ? "Sending…" : "Send code"}
               </button>
             </form>
           ) : (
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                await otpVerify.mutateAsync(
-                  { email, code: otpCode },
-                  { onSuccess: () => router.replace(next) }
-                );
-              }}
-            >
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                A 6-digit code was sent to <strong>{email}</strong>. Enter it below.
+            <form className="flex flex-col gap-3" onSubmit={async (e) => { e.preventDefault(); await otpVerify.mutateAsync({ email, code: otpCode }, { onSuccess: () => router.replace(next) }); }}>
+              <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                A 6-digit code was sent to <strong style={{ color: "var(--text-secondary)" }}>{email}</strong>.
               </p>
-              <label className="flex flex-col gap-1 text-xs font-medium">
+              <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
                 Code
-                <input
-                  type="text"
-                  required
-                  inputMode="numeric"
-                  pattern="[0-9]{6}"
-                  maxLength={6}
-                  placeholder="000000"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-center text-lg font-mono tracking-[0.3em] dark:border-zinc-700 dark:bg-zinc-900"
-                  data-testid="otp-code-input"
-                  autoFocus
-                />
+                <input type="text" required inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="000000" value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))} className={`${inputCls} text-center text-xl tracking-[0.4em] font-mono`} data-testid="otp-code-input" autoFocus />
               </label>
-              {otpVerify.error ? (
-                <p className="text-xs text-red-600" data-testid="otp-error">
-                  {otpVerify.error.message}
-                </p>
-              ) : null}
-              <button
-                type="submit"
-                disabled={otpVerify.isPending || otpCode.length < 6}
-                data-testid="otp-verify-submit"
-                className="mt-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              >
+              {otpVerify.error ? (<p className="text-[11px]" style={{ color: "var(--danger)" }} data-testid="otp-error">{otpVerify.error.message}</p>) : null}
+              <button type="submit" disabled={otpVerify.isPending || otpCode.length < 6} data-testid="otp-verify-submit" className={submitCls}>
                 {otpVerify.isPending ? "Verifying…" : "Sign in"}
               </button>
-              <button
-                type="button"
-                onClick={() => { setOtpSent(false); setOtpCode(""); }}
-                className="text-xs text-zinc-500 underline"
-                data-testid="otp-resend"
-              >
+              <button type="button" onClick={() => { setOtpSent(false); setOtpCode(""); }} className="text-[11px] underline transition-colors" style={{ color: "var(--text-muted)" }} data-testid="otp-resend">
                 Send another code
               </button>
             </form>
@@ -300,55 +201,41 @@ export function SignInForm() {
               }
             }}
           >
-            <label className="flex flex-col gap-1 text-xs font-medium">
+            <label className="flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
               Email
-              <input
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                data-testid="passkey-email"
-              />
+              <input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} data-testid="passkey-email" />
             </label>
-            {passkeyError ? (
-              <p className="text-xs text-red-600" data-testid="passkey-signin-error">{passkeyError}</p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={passkeyLoading}
-              data-testid="passkey-signin-submit"
-              className="mt-2 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
+            {passkeyError ? (<p className="text-[11px]" style={{ color: "var(--danger)" }} data-testid="passkey-signin-error">{passkeyError}</p>) : null}
+            <button type="submit" disabled={passkeyLoading} data-testid="passkey-signin-submit" className={submitCls}>
               {passkeyLoading ? "Connecting…" : "Sign in with passkey"}
             </button>
           </form>
         </div>
       )}
 
-      <div className="my-5 flex items-center gap-3 text-[11px] uppercase text-zinc-400">
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+        <span className="h-px flex-1" style={{ background: "var(--border)" }} />
         or
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <span className="h-px flex-1" style={{ background: "var(--border)" }} />
       </div>
       <OAuthButtons />
 
-      <div className="my-5 flex items-center gap-3 text-[11px] uppercase text-zinc-400">
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
-        Or continue with SSO
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
+        <span className="h-px flex-1" style={{ background: "var(--border)" }} />
+        SSO
+        <span className="h-px flex-1" style={{ background: "var(--border)" }} />
       </div>
       <SSOEntry />
 
-      <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mt-5 text-[12px]" style={{ color: "var(--text-muted)" }}>
         New here?{" "}
         <Link
           href={`/auth/signup${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}
-          className="font-medium text-zinc-900 underline dark:text-zinc-100"
+          className="font-semibold transition-colors hover:text-[var(--text-primary)]"
+          style={{ color: "var(--accent-hover)" }}
           data-testid="signin-to-signup"
         >
-          Create an account
+          Create an account →
         </Link>
       </p>
     </>
@@ -368,17 +255,22 @@ function SSOEntry() {
       <input
         value={slug}
         onChange={(e) => setSlug(e.target.value)}
-        placeholder="Organisation slug (e.g. acme)"
-        className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        placeholder="org-slug"
+        className="flex-1 rounded border bg-[var(--bg-base)] px-3 py-1.5 text-[12px] text-[var(--text-primary)] border-[var(--border)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all duration-150 font-mono"
         data-testid="sso-org-slug"
       />
       <button
         type="submit"
         disabled={!slug.trim()}
-        className="rounded-md bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+        className="rounded border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all duration-100 disabled:opacity-40"
+        style={{
+          borderColor: "var(--border-bright)",
+          color: "var(--text-secondary)",
+          background: "var(--bg-elevated)",
+        }}
         data-testid="sso-continue"
       >
-        Continue with SSO
+        Go
       </button>
     </form>
   );
