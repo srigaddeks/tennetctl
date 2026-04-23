@@ -112,13 +112,9 @@ async def list_captures(
     if org_id:
         wheres.append(f"org_id = ${idx}"); params.append(org_id); idx += 1
     if platform:
-        pid = _PLATFORM_IDS.get(platform)
-        if pid:
-            wheres.append(f"platform_id = ${idx}"); params.append(pid); idx += 1
+        wheres.append(f"platform = ${idx}"); params.append(platform); idx += 1
     if capture_type:
-        tid = _TYPE_IDS.get(capture_type)
-        if tid:
-            wheres.append(f"type_id = ${idx}"); params.append(tid); idx += 1
+        wheres.append(f"type = ${idx}"); params.append(capture_type); idx += 1
     if from_dt:
         ts = from_dt.replace(tzinfo=None) if from_dt.tzinfo else from_dt
         wheres.append(f"observed_at >= ${idx}"); params.append(ts); idx += 1
