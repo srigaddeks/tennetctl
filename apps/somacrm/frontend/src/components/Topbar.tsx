@@ -11,10 +11,10 @@ function buildBreadcrumbs(pathname: string): Array<{ label: string; href: string
   let accumulated = "";
   for (const seg of segments) {
     accumulated += "/" + seg;
-    const label = seg
-      .replace(/-/g, " ")
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(seg);
+    const label = isUuid
+      ? "Detail"
+      : seg.replace(/-/g, " ").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     crumbs.push({ label, href: accumulated });
   }
   return crumbs;

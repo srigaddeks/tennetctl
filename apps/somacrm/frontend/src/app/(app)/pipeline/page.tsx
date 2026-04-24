@@ -108,7 +108,7 @@ export default function PipelinePage() {
               }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>{stage.name}</div>
                 <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-                  {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""} · {totalValue > 0 ? `$${totalValue.toLocaleString()}` : "$0"}
+                  {stageDeals.length} deal{stageDeals.length !== 1 ? "s" : ""} · {totalValue > 0 ? `₹${totalValue.toLocaleString()}` : "₹0"}
                 </div>
               </div>
 
@@ -166,7 +166,7 @@ function DealCard({ deal, stages, onMove }: {
       <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
         {deal.value !== null && (
           <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--text-primary)", fontWeight: 600 }}>
-            ${deal.value.toLocaleString()}
+            {deal.currency === "INR" ? "₹" : deal.currency + " "}{Number(deal.value).toLocaleString()}
           </span>
         )}
         {deal.expected_close_date && (

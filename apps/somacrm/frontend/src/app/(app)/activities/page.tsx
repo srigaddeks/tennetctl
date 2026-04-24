@@ -114,6 +114,7 @@ export default function ActivitiesPage() {
                   <option value="3">Email</option>
                   <option value="4">Meeting</option>
                   <option value="5">Note</option>
+                  <option value="6">WhatsApp</option>
                 </select>
               </div>
               <div className="erp-form-group">

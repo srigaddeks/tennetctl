@@ -36,7 +36,7 @@ export default function DealsPage() {
   const [stageFilter, setStageFilter] = useState("");
   const [q, setQ] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState<DealCreate>({ title: "" });
+  const [formData, setFormData] = useState<DealCreate>({ title: "", currency: "INR" });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -116,7 +116,7 @@ export default function DealsPage() {
               </div>
               <div className="erp-form-group">
                 <label className="erp-label">Currency</label>
-                <input className="erp-input" value={formData.currency ?? "USD"} onChange={e => setFormData({ ...formData, currency: e.target.value || undefined })} placeholder="USD" />
+                <input className="erp-input" value={formData.currency ?? "INR"} onChange={e => setFormData({ ...formData, currency: e.target.value || undefined })} placeholder="INR" />
               </div>
               <div className="erp-form-group">
                 <label className="erp-label">Expected Close Date</label>
