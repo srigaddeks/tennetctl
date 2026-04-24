@@ -345,18 +345,22 @@ export function deleteEntityTag(id: string): Promise<void> {
 
 // ── Reports ───────────────────────────────────────────────────────────────────
 
-export function getPipelineSummary(): Promise<PipelineSummaryStage[]> {
-  return apiFetch<PipelineSummaryStage[]>("/v1/somacrm/reports/pipeline-summary");
+export async function getPipelineSummary(): Promise<PipelineSummaryStage[]> {
+  const d = await apiFetch<{ stages: PipelineSummaryStage[] }>("/v1/somacrm/reports/pipeline-summary");
+  return d.stages ?? [];
 }
 
-export function getLeadConversion(): Promise<LeadConversionRow[]> {
-  return apiFetch<LeadConversionRow[]>("/v1/somacrm/reports/lead-conversion");
+export async function getLeadConversion(): Promise<LeadConversionRow[]> {
+  const d = await apiFetch<{ by_status: LeadConversionRow[] }>("/v1/somacrm/reports/lead-conversion");
+  return d.by_status ?? [];
 }
 
-export function getActivitySummary(): Promise<ActivitySummaryRow[]> {
-  return apiFetch<ActivitySummaryRow[]>("/v1/somacrm/reports/activity-summary");
+export async function getActivitySummary(): Promise<ActivitySummaryRow[]> {
+  const d = await apiFetch<{ rows: ActivitySummaryRow[] }>("/v1/somacrm/reports/activity-summary");
+  return d.rows ?? [];
 }
 
-export function getContactGrowth(): Promise<ContactGrowthPoint[]> {
-  return apiFetch<ContactGrowthPoint[]>("/v1/somacrm/reports/contact-growth");
+export async function getContactGrowth(): Promise<ContactGrowthPoint[]> {
+  const d = await apiFetch<{ weeks: ContactGrowthPoint[] }>("/v1/somacrm/reports/contact-growth");
+  return d.weeks ?? [];
 }

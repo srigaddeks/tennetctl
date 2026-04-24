@@ -1,0 +1,147 @@
+- generic [active] [ref=e1]:
+  - status [ref=e44]:
+    - generic [ref=e45]:
+      - img [ref=e47]
+      - generic [ref=e49]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e50] [cursor=pointer]:
+          - img [ref=e51]
+  - alert [ref=e43]
+  - generic [ref=e54]:
+    - complementary [ref=e55]:
+      - link "somacrm CRM Platform" [ref=e57] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e58]: somacrm
+        - generic [ref=e59]: CRM Platform
+      - navigation [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]: OVERVIEW
+          - list [ref=e63]:
+            - listitem [ref=e64]:
+              - link "Dashboard" [ref=e65] [cursor=pointer]:
+                - /url: /
+                - img [ref=e67]
+                - generic [ref=e72]: Dashboard
+        - generic [ref=e73]:
+          - generic [ref=e74]: PEOPLE
+          - list [ref=e75]:
+            - listitem [ref=e76]:
+              - link "Contacts" [ref=e77] [cursor=pointer]:
+                - /url: /contacts
+                - img [ref=e79]
+                - generic [ref=e84]: Contacts
+            - listitem [ref=e85]:
+              - link "Organizations" [ref=e86] [cursor=pointer]:
+                - /url: /organizations
+                - img [ref=e88]
+                - generic [ref=e91]: Organizations
+        - generic [ref=e92]:
+          - generic [ref=e93]: SALES
+          - list [ref=e94]:
+            - listitem [ref=e95]:
+              - link "Leads" [ref=e96] [cursor=pointer]:
+                - /url: /leads
+                - img [ref=e98]
+                - generic [ref=e102]: Leads
+            - listitem [ref=e103]:
+              - link "Pipeline" [ref=e104] [cursor=pointer]:
+                - /url: /pipeline
+                - img [ref=e106]
+                - generic [ref=e107]: Pipeline
+            - listitem [ref=e108]:
+              - link "Deals" [ref=e109] [cursor=pointer]:
+                - /url: /deals
+                - img [ref=e111]
+                - generic [ref=e113]: Deals
+        - generic [ref=e114]:
+          - generic [ref=e115]: ACTIVITY
+          - list [ref=e116]:
+            - listitem [ref=e117]:
+              - link "Activities" [ref=e118] [cursor=pointer]:
+                - /url: /activities
+                - img [ref=e120]
+                - generic [ref=e122]: Activities
+        - generic [ref=e123]:
+          - generic [ref=e124]: ANALYTICS
+          - list [ref=e125]:
+            - listitem [ref=e126]:
+              - link "Reports" [ref=e127] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e129]
+                - generic [ref=e132]: Reports
+      - generic [ref=e134]: tennetctl v0.9.0
+    - generic [ref=e135]:
+      - banner [ref=e136]:
+        - navigation "Breadcrumb" [ref=e137]:
+          - generic [ref=e139]: somacrm
+        - generic [ref=e140]:
+          - generic [ref=e141]: CRM
+          - button "Sign out" [ref=e143] [cursor=pointer]
+      - main [ref=e144]:
+        - generic [ref=e145]:
+          - generic [ref=e147]:
+            - heading "somacrm — Dashboard" [level=1] [ref=e148]
+            - paragraph [ref=e149]: CRM built on tennetctl primitives. Contacts, pipeline, and activities in one place.
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]: Total Contacts
+              - generic [ref=e153]: "1"
+            - generic [ref=e154]:
+              - generic [ref=e155]: Total Deals
+              - generic [ref=e156]: "2"
+            - generic [ref=e157]:
+              - generic [ref=e158]: Open Leads
+              - generic [ref=e159]: "1"
+            - generic [ref=e160]:
+              - generic [ref=e161]: Pipeline Value
+              - generic [ref=e162]: $0
+          - generic [ref=e163]:
+            - heading "Modules" [level=2] [ref=e164]
+            - list [ref=e165]:
+              - listitem [ref=e166]:
+                - link "Contacts People you do business with" [ref=e167] [cursor=pointer]:
+                  - /url: /contacts
+                  - generic [ref=e168]: Contacts
+                  - generic [ref=e169]: People you do business with
+              - listitem [ref=e170]:
+                - link "Organizations Companies and teams" [ref=e171] [cursor=pointer]:
+                  - /url: /organizations
+                  - generic [ref=e172]: Organizations
+                  - generic [ref=e173]: Companies and teams
+              - listitem [ref=e174]:
+                - link "Leads Potential customers and opportunities" [ref=e175] [cursor=pointer]:
+                  - /url: /leads
+                  - generic [ref=e176]: Leads
+                  - generic [ref=e177]: Potential customers and opportunities
+              - listitem [ref=e178]:
+                - link "Pipeline Deals organized by stage" [ref=e179] [cursor=pointer]:
+                  - /url: /pipeline
+                  - generic [ref=e180]: Pipeline
+                  - generic [ref=e181]: Deals organized by stage
+              - listitem [ref=e182]:
+                - link "Deals Revenue opportunities and close rates" [ref=e183] [cursor=pointer]:
+                  - /url: /deals
+                  - generic [ref=e184]: Deals
+                  - generic [ref=e185]: Revenue opportunities and close rates
+              - listitem [ref=e186]:
+                - link "Activities Tasks, calls, emails, meetings" [ref=e187] [cursor=pointer]:
+                  - /url: /activities
+                  - generic [ref=e188]: Activities
+                  - generic [ref=e189]: Tasks, calls, emails, meetings
+              - listitem [ref=e190]:
+                - link "Reports Pipeline summary, lead conversion, growth" [ref=e191] [cursor=pointer]:
+                  - /url: /reports
+                  - generic [ref=e192]: Reports
+                  - generic [ref=e193]: Pipeline summary, lead conversion, growth
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - heading "Recent Activities" [level=2] [ref=e196]
+              - link "View all →" [ref=e197] [cursor=pointer]:
+                - /url: /activities
+            - list [ref=e198]:
+              - listitem [ref=e199]:
+                - generic [ref=e200]: 📞
+                - generic [ref=e201]:
+                  - generic [ref=e202]: Intro call with Priya
+                  - generic [ref=e203]: Call · 25/04/2026
+                - generic [ref=e204]: pending

@@ -61,12 +61,12 @@ export default function ReportsPage() {
     ? Math.max(...pipeline.data.map(s => s.total_value), 1)
     : 1;
   const pipelineMaxDeals = pipeline.status === "ok"
-    ? Math.max(...pipeline.data.map(s => s.deals_count), 1)
+    ? Math.max(...pipeline.data.map(s => s.deal_count), 1)
     : 1;
 
   // Lead conversion max
   const leadMax = leadConv.status === "ok"
-    ? Math.max(...leadConv.data.map(r => r.count), 1)
+    ? Math.max(...leadConv.data.map(r => r.lead_count), 1)
     : 1;
 
   // Activity summary: group by type
@@ -80,7 +80,7 @@ export default function ReportsPage() {
 
   // Contact growth
   const growthMax = contactGrowth.status === "ok"
-    ? Math.max(...contactGrowth.data.map(p => p.count), 1)
+    ? Math.max(...contactGrowth.data.map(p => p.new_contacts), 1)
     : 1;
 
   return (
@@ -120,7 +120,7 @@ export default function ReportsPage() {
                 <HBar
                   key={`count-${stage.stage_id ?? "unstaged"}`}
                   label={stage.stage_name ?? "Unstaged"}
-                  value={stage.deals_count}
+                  value={stage.deal_count}
                   max={pipelineMaxDeals}
                   color={stage.stage_color ?? "#94A3B8"}
                 />
@@ -152,7 +152,7 @@ export default function ReportsPage() {
                   <HBar
                     key={row.status}
                     label={row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-                    value={row.count}
+                    value={row.lead_count}
                     max={leadMax}
                     color={colorMap[row.status] ?? "var(--accent)"}
                   />
@@ -232,11 +232,11 @@ export default function ReportsPage() {
               <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 8 }}>Contacts Created per Week</div>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80, marginBottom: 12 }}>
                 {contactGrowth.data.map((point) => {
-                  const h = growthMax > 0 ? Math.round((point.count / growthMax) * 64) : 0;
+                  const h = growthMax > 0 ? Math.round((point.new_contacts / growthMax) * 64) : 0;
                   return (
                     <div
                       key={point.week}
-                      title={`${point.week}: ${point.count} contacts`}
+                      title={`${point.week}: ${point.new_contacts} contacts`}
                       style={{
                         flex: 1,
                         height: Math.max(h, 2),
@@ -261,7 +261,7 @@ export default function ReportsPage() {
                     {contactGrowth.data.map((point) => (
                       <tr key={point.week}>
                         <td style={{ padding: "3px 8px", color: "var(--text-secondary)", fontFamily: "var(--font-mono)", fontSize: 11 }}>{point.week}</td>
-                        <td style={{ padding: "3px 8px", color: "var(--text-primary)", textAlign: "right", fontFamily: "var(--font-mono)" }}>{point.count}</td>
+                        <td style={{ padding: "3px 8px", color: "var(--text-primary)", textAlign: "right", fontFamily: "var(--font-mono)" }}>{point.new_contacts}</td>
                       </tr>
                     ))}
                   </tbody>

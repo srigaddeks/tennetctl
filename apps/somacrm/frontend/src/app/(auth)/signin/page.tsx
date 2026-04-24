@@ -24,7 +24,7 @@ export default function SignInPage() {
     setError(null);
     setLoading(true);
     try {
-      const base = process.env.NEXT_PUBLIC_SOMACRM_API_URL ?? "http://localhost:51738";
+      const base = process.env.NEXT_PUBLIC_TENNETCTL_BACKEND ?? "http://localhost:51734";
       const res = await fetch(`${base}/v1/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

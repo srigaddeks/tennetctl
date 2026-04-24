@@ -290,9 +290,10 @@ export type PipelineSummaryStage = {
   stage_id: string | null;
   stage_name: string | null;
   stage_color: string | null;
-  deals_count: number;
+  stage_order: number | null;
+  deal_count: number;
   total_value: number;
 };
-export type LeadConversionRow = { status: string; count: number };
+export type LeadConversionRow = { status: string; lead_count: number };
 export type ActivitySummaryRow = { activity_type: string; status: string; count: number };
-export type ContactGrowthPoint = { week: string; count: number };
+export type ContactGrowthPoint = { week: string; new_contacts: number };

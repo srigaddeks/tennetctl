@@ -1,0 +1,49 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e8]
+          - generic [ref=e13]: somacrm
+        - heading "Close more deals. Build better relationships." [level=1] [ref=e14]:
+          - text: Close more deals.
+          - text: Build better relationships.
+        - paragraph [ref=e15]: A CRM built on tennetctl primitives — contacts, pipeline, activities, and reports in one place.
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e18]: ◎
+            - generic [ref=e19]: Contact & organization management
+          - generic [ref=e20]:
+            - generic [ref=e21]: ◈
+            - generic [ref=e22]: Visual deal pipeline with stages
+          - generic [ref=e23]:
+            - generic [ref=e24]: ⬡
+            - generic [ref=e25]: Activity tracking and reporting
+      - paragraph [ref=e27]: POWERED BY TENNETCTL · v0.9.0
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - heading "Sign in" [level=2] [ref=e31]
+        - paragraph [ref=e32]: Enter your credentials to access somacrm
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: Email address
+          - textbox "Email address" [ref=e36]:
+            - /placeholder: you@example.com
+            - text: admin@example.com
+        - generic [ref=e37]:
+          - generic [ref=e38]: Password
+          - textbox "Password" [active] [ref=e39]: Admin1234!
+        - generic [ref=e54]: Sign in failed.
+        - button "Sign in →" [ref=e40] [cursor=pointer]
+      - paragraph [ref=e41]:
+        - text: Don't have an account?
+        - link "Sign up" [ref=e42] [cursor=pointer]:
+          - /url: /signup
+  - status [ref=e44]:
+    - generic [ref=e45]:
+      - img [ref=e47]
+      - generic [ref=e49]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e50] [cursor=pointer]:
+          - img [ref=e51]
+  - alert [ref=e43]

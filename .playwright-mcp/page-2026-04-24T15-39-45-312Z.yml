@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "somacrm CRM Platform" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e6]: somacrm
+        - generic [ref=e7]: CRM Platform
+      - navigation [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: OVERVIEW
+          - list [ref=e11]:
+            - listitem [ref=e12]:
+              - link "Dashboard" [ref=e13] [cursor=pointer]:
+                - /url: /
+                - img [ref=e15]
+                - generic [ref=e20]: Dashboard
+        - generic [ref=e21]:
+          - generic [ref=e22]: PEOPLE
+          - list [ref=e23]:
+            - listitem [ref=e24]:
+              - link "Contacts" [ref=e25] [cursor=pointer]:
+                - /url: /contacts
+                - img [ref=e27]
+                - generic [ref=e32]: Contacts
+            - listitem [ref=e33]:
+              - link "Organizations" [ref=e34] [cursor=pointer]:
+                - /url: /organizations
+                - img [ref=e36]
+                - generic [ref=e39]: Organizations
+        - generic [ref=e40]:
+          - generic [ref=e41]: SALES
+          - list [ref=e42]:
+            - listitem [ref=e43]:
+              - link "Leads" [ref=e44] [cursor=pointer]:
+                - /url: /leads
+                - img [ref=e46]
+                - generic [ref=e50]: Leads
+            - listitem [ref=e51]:
+              - link "Pipeline" [ref=e52] [cursor=pointer]:
+                - /url: /pipeline
+                - img [ref=e54]
+                - generic [ref=e55]: Pipeline
+            - listitem [ref=e56]:
+              - link "Deals" [ref=e57] [cursor=pointer]:
+                - /url: /deals
+                - img [ref=e59]
+                - generic [ref=e61]: Deals
+        - generic [ref=e62]:
+          - generic [ref=e63]: ACTIVITY
+          - list [ref=e64]:
+            - listitem [ref=e65]:
+              - link "Activities" [ref=e66] [cursor=pointer]:
+                - /url: /activities
+                - img [ref=e68]
+                - generic [ref=e70]: Activities
+        - generic [ref=e71]:
+          - generic [ref=e72]: ANALYTICS
+          - list [ref=e73]:
+            - listitem [ref=e74]:
+              - link "Reports" [ref=e75] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e77]
+                - generic [ref=e80]: Reports
+      - generic [ref=e82]: tennetctl v0.9.0
+    - generic [ref=e83]:
+      - banner [ref=e84]:
+        - navigation "Breadcrumb" [ref=e85]:
+          - link "somacrm" [ref=e87] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e88]:
+            - generic [ref=e89]: /
+            - generic [ref=e90]: Reports
+        - generic [ref=e91]:
+          - generic [ref=e92]: CRM
+          - button "Sign out" [ref=e94] [cursor=pointer]
+      - main [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e98]:
+            - heading "Reports" [level=1] [ref=e99]
+            - paragraph [ref=e100]: Pipeline summary, lead conversion, activity metrics, and growth
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - heading "Pipeline Summary" [level=2] [ref=e103]
+              - paragraph [ref=e104]: Loading…
+            - generic [ref=e105]:
+              - heading "Lead Conversion" [level=2] [ref=e106]
+              - paragraph [ref=e107]: Loading…
+            - generic [ref=e108]:
+              - heading "Activity Summary" [level=2] [ref=e109]
+              - paragraph [ref=e110]: Loading…
+            - generic [ref=e111]:
+              - heading "Contact Growth" [level=2] [ref=e112]
+              - paragraph [ref=e113]: Loading…
+  - alert [ref=e114]
