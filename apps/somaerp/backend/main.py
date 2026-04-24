@@ -16,8 +16,11 @@ import time
 from contextlib import asynccontextmanager
 from importlib import import_module
 
+import asyncpg
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 _config = import_module("apps.somaerp.backend.01_core.config")
 _db = import_module("apps.somaerp.backend.01_core.database")
@@ -126,6 +129,17 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     _middleware.register(app)
+
+    _resp = import_module("apps.somaerp.backend.01_core.response")
+
+    @app.exception_handler(asyncpg.exceptions.UniqueViolationError)
+    async def _handle_unique(request, exc):
+        return JSONResponse(status_code=409, content=_resp.error("CONFLICT", "A record with that value already exists."))
+
+    @app.exception_handler(RequestValidationError)
+    async def _handle_validation(request, exc):
+        detail = "; ".join(f"{'.'.join(str(l) for l in e['loc'])}: {e['msg']}" for e in exc.errors())
+        return JSONResponse(status_code=422, content=_resp.error("VALIDATION_ERROR", detail))
 
     app.include_router(_health_routes.router)
     app.include_router(_locations_routes.router)

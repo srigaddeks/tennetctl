@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { listDeals, createDeal, listPipelineStages } from "@/lib/api";
-import type { Deal, DealStatus, DealCreate, PipelineStage } from "@/types/api";
+import { listDeals, createDeal, listPipelineStages, listContacts, listOrganizations } from "@/lib/api";
+import type { Deal, DealStatus, DealCreate, PipelineStage, Contact, Organization } from "@/types/api";
 
 type DealsState =
   | { status: "loading" }
@@ -13,6 +13,16 @@ type DealsState =
 type StagesState =
   | { status: "loading" }
   | { status: "ok"; items: PipelineStage[] }
+  | { status: "error" };
+
+type ContactsState =
+  | { status: "loading" }
+  | { status: "ok"; items: Contact[] }
+  | { status: "error" };
+
+type OrgsState =
+  | { status: "loading" }
+  | { status: "ok"; items: Organization[] }
   | { status: "error" };
 
 type StatusFilter = DealStatus | "all";
@@ -32,6 +42,8 @@ const STATUS_STYLES: Record<DealStatus, string> = {
 export default function DealsPage() {
   const [deals, setDeals] = useState<DealsState>({ status: "loading" });
   const [stages, setStages] = useState<StagesState>({ status: "loading" });
+  const [contacts, setContacts] = useState<ContactsState>({ status: "loading" });
+  const [orgs, setOrgs] = useState<OrgsState>({ status: "loading" });
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [stageFilter, setStageFilter] = useState("");
   const [q, setQ] = useState("");
@@ -44,6 +56,12 @@ export default function DealsPage() {
     listPipelineStages()
       .then((items) => setStages({ status: "ok", items }))
       .catch(() => setStages({ status: "error" }));
+    listContacts()
+      .then((items) => setContacts({ status: "ok", items }))
+      .catch(() => setContacts({ status: "error" }));
+    listOrganizations()
+      .then((items) => setOrgs({ status: "ok", items }))
+      .catch(() => setOrgs({ status: "error" }));
   }, []);
 
   function reload() {
@@ -116,7 +134,30 @@ export default function DealsPage() {
               </div>
               <div className="erp-form-group">
                 <label className="erp-label">Currency</label>
-                <input className="erp-input" value={formData.currency ?? "INR"} onChange={e => setFormData({ ...formData, currency: e.target.value || undefined })} placeholder="INR" />
+                <select className="erp-select" value={formData.currency ?? "INR"} onChange={e => setFormData({ ...formData, currency: e.target.value || undefined })}>
+                  <option value="INR">INR — Indian Rupee</option>
+                  <option value="USD">USD — US Dollar</option>
+                  <option value="EUR">EUR — Euro</option>
+                  <option value="GBP">GBP — British Pound</option>
+                </select>
+              </div>
+              <div className="erp-form-group">
+                <label className="erp-label">Contact</label>
+                <select className="erp-select" value={formData.contact_id ?? ""} onChange={e => setFormData({ ...formData, contact_id: e.target.value || undefined })}>
+                  <option value="">Unassigned</option>
+                  {contacts.status === "ok" && contacts.items.map(c => (
+                    <option key={c.id} value={c.id}>{c.full_name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="erp-form-group">
+                <label className="erp-label">Organization</label>
+                <select className="erp-select" value={formData.organization_id ?? ""} onChange={e => setFormData({ ...formData, organization_id: e.target.value || undefined })}>
+                  <option value="">Unassigned</option>
+                  {orgs.status === "ok" && orgs.items.map(o => (
+                    <option key={o.id} value={o.id}>{o.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="erp-form-group">
                 <label className="erp-label">Expected Close Date</label>

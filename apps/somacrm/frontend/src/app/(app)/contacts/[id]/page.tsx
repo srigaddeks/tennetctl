@@ -7,12 +7,14 @@ import {
   getContactTimeline,
   listAddresses, createAddress,
   createActivity, createNote, updateNote,
+  listDeals,
 } from "@/lib/api";
 import type {
   Contact, ContactUpdate,
   Address, AddressCreate,
   ActivityCreate, NoteCreate,
   TimelineItem,
+  Deal,
 } from "@/types/api";
 
 type Tab = "timeline" | "overview" | "addresses";
@@ -63,6 +65,7 @@ export default function ContactDetailPage() {
 
   const [timeline, setTimeline] = useState<State<TimelineItem[]>>({ status: "loading" });
   const [addresses, setAddresses] = useState<State<Address[]>>({ status: "loading" });
+  const [linkedDeals, setLinkedDeals] = useState<State<Deal[]>>({ status: "loading" });
 
   // Quick-add panel state
   const [addMode, setAddMode] = useState<null | "activity" | "note">(null);
@@ -84,7 +87,12 @@ export default function ContactDetailPage() {
   }
 
   useEffect(() => {
-    if (tab === "timeline") refreshTimeline();
+    if (tab === "timeline") {
+      refreshTimeline();
+      listDeals({ contact_id: id })
+        .then((items) => setLinkedDeals({ status: "ok", data: items }))
+        .catch((err: unknown) => setLinkedDeals({ status: "error", message: err instanceof Error ? err.message : "Unknown error" }));
+    }
     if (tab === "addresses") {
       listAddresses({ entity_type: "contact", entity_id: id })
         .then((items) => setAddresses({ status: "ok", data: items }))
@@ -294,6 +302,48 @@ export default function ContactDetailPage() {
               No interactions yet. Log the first one above.
             </div>
           )}
+          {/* Linked Deals */}
+          <div style={{ marginTop: 32, marginBottom: 8 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Linked Deals</h3>
+            {linkedDeals.status === "loading" && <p style={{ color: "var(--text-muted)", fontSize: 13 }}>Loading deals…</p>}
+            {linkedDeals.status === "error" && <p style={{ color: "var(--status-error)", fontSize: 13 }}>{linkedDeals.message}</p>}
+            {linkedDeals.status === "ok" && linkedDeals.data.length === 0 && (
+              <p style={{ color: "var(--text-muted)", fontSize: 13 }}>No deals linked to this contact.</p>
+            )}
+            {linkedDeals.status === "ok" && linkedDeals.data.length > 0 && (
+              <div className="rounded border overflow-hidden" style={{ borderColor: "var(--border)" }}>
+                <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+                  <thead style={{ backgroundColor: "var(--bg-table-header)" }}>
+                    <tr>
+                      {["Title", "Stage", "Value", "Status", "Close Date"].map((h) => (
+                        <th key={h} style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {linkedDeals.data.map((deal) => (
+                      <tr key={deal.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                        <td style={{ padding: "8px 12px", color: "var(--text-primary)", fontWeight: 500 }}>{deal.title}</td>
+                        <td style={{ padding: "8px 12px", color: "var(--text-secondary)" }}>{deal.stage_name ?? "—"}</td>
+                        <td style={{ padding: "8px 12px", color: "var(--text-primary)", fontFamily: "monospace" }}>
+                          {deal.value !== null ? `${deal.currency} ${deal.value.toLocaleString()}` : "—"}
+                        </td>
+                        <td style={{ padding: "8px 12px" }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: "2px 8px", background: deal.status === "won" ? "#ECFDF5" : deal.status === "lost" ? "#FEF2F2" : "#EFF6FF", color: deal.status === "won" ? "#059669" : deal.status === "lost" ? "#DC2626" : "#2563EB" }}>
+                            {deal.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: "8px 12px", color: "var(--text-secondary)", fontSize: 12 }}>
+                          {deal.expected_close_date ? new Date(deal.expected_close_date).toLocaleDateString() : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
           {timeline.status === "ok" && (
             <div style={{ position: "relative" }}>
               {/* Vertical line */}

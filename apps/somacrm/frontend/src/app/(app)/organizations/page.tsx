@@ -68,7 +68,11 @@ export default function OrganizationsPage() {
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="erp-form-group">
                 <label className="erp-label">Name *</label>
-                <input className="erp-input" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                <input className="erp-input" required value={formData.name} onChange={e => {
+                  const name = e.target.value;
+                  const autoSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  setFormData(prev => ({ ...prev, name, slug: prev.slug === "" || prev.slug === prev.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") ? autoSlug : prev.slug }));
+                }} />
               </div>
               <div className="erp-form-group">
                 <label className="erp-label">Slug *</label>
