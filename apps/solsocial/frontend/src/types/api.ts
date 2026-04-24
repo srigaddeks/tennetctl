@@ -98,16 +98,41 @@ export type WorkspaceApp = {
 // ── Social Capture (collected by the browser extension) ──────────────────────
 export type CapturePlatform = "linkedin" | "x" | "twitter" | "instagram";
 export type CaptureType =
+  // Core
   | "feed_post_seen"
   | "own_post_published"
   | "comment_seen"
   | "own_comment"
-  | "profile_viewed";
+  | "profile_viewed"
+  // LinkedIn expansion
+  | "article_seen"
+  | "article_opened"
+  | "newsletter_seen"
+  | "company_viewed"
+  | "profile_page_viewed"
+  | "job_post_seen"
+  | "job_post_opened"
+  | "poll_seen"
+  | "event_seen"
+  | "hashtag_feed_seen"
+  | "search_result_seen"
+  | "reshare_seen"
+  | "reaction_detail"
+  | "connection_suggested"
+  | "notification_seen"
+  | "live_broadcast_seen"
+  // Twitter/X expansion
+  | "quote_tweet_seen"
+  | "thread_seen"
+  | "list_viewed"
+  | "space_seen"
+  | "community_seen";
 
 export type SocialCapture = {
   id: string;
   user_id: string;
   org_id: string;
+  workspace_id: string | null;
   platform: CapturePlatform;
   type: CaptureType;
   platform_post_id: string;
@@ -123,6 +148,43 @@ export type SocialCapture = {
   view_count: number | null;
   is_own: boolean;
   created_at: string;
+  raw_attrs: Record<string, unknown>;
+};
+
+export type MetricObservation = {
+  observed_at: string;
+  like_count: number | null;
+  reply_count: number | null;
+  repost_count: number | null;
+  view_count: number | null;
+  reactions: Record<string, number> | null;
+};
+
+export type MetricHistory = {
+  capture_id: string;
+  observations: MetricObservation[];
+};
+
+export type TopAuthor = {
+  platform: string;
+  handle: string;
+  display_name: string | null;
+  capture_count: number;
+  total_likes_seen: number | null;
+  total_replies_seen: number | null;
+  first_seen_at: string | null;
+  last_seen_at: string | null;
+};
+
+export type TopHashtag = { tag: string; n: number };
+
+export type CaptureCounts = {
+  total: number;
+  own_count: number;
+  today_count: number;
+  week_count: number;
+  by_platform: Array<{ platform: string; n: number }>;
+  by_type: Array<{ type: string; n: number }>;
 };
 
 export type CaptureStats = {

@@ -119,6 +119,19 @@ export default function Dashboard() {
           <div>
             <p className="kicker mb-2">Next up</p>
             <Link href="/queue" className="text-[14px] underline underline-offset-4 decoration-[color:var(--ember)]">Review queue slots →</Link>
+            <a
+              href="http://localhost:51735/iam/applications"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 block border-l-2 border-[color:var(--ember)] bg-[color:var(--paper-deep)] px-3 py-2 hover:bg-[color:var(--paper)] transition group"
+              title="Open the Tennetctl admin hub for this application"
+              data-testid="ss-tennetctl-admin-card"
+            >
+              <p className="kicker text-[10px] text-[color:var(--ember)]">Applications Dashboard</p>
+              <p className="mt-0.5 text-[13px] text-[color:var(--ink)] group-hover:text-[color:var(--ember)] transition">
+                Open Tennetctl admin ↗
+              </p>
+            </a>
           </div>
         </div>
       </section>

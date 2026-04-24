@@ -1,0 +1,90 @@
+{
+  "schema": "03_iam",
+  "table": "21_dtl_attrs",
+  "rows": [
+    {
+      "id": "019dbfc0-3001-7000-8000-000000000010",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3001-7000-8000-000000000001",
+      "attr_def_id": 11,
+      "key_text": "somaerp-admins"
+    },
+    {
+      "id": "019dbfc0-3001-7000-8000-000000000011",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3001-7000-8000-000000000001",
+      "attr_def_id": 12,
+      "key_text": "somaerp Admins"
+    },
+    {
+      "id": "019dbfc0-3001-7000-8000-000000000012",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3001-7000-8000-000000000001",
+      "attr_def_id": 13,
+      "key_text": "Platform administrators with full access"
+    },
+    {
+      "id": "019dbfc0-3002-7000-8000-000000000010",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3002-7000-8000-000000000001",
+      "attr_def_id": 11,
+      "key_text": "kitchen-managers"
+    },
+    {
+      "id": "019dbfc0-3002-7000-8000-000000000011",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3002-7000-8000-000000000001",
+      "attr_def_id": 12,
+      "key_text": "Kitchen Managers"
+    },
+    {
+      "id": "019dbfc0-3002-7000-8000-000000000012",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3002-7000-8000-000000000001",
+      "attr_def_id": 13,
+      "key_text": "Manage kitchens, recipes, production batches"
+    },
+    {
+      "id": "019dbfc0-3003-7000-8000-000000000010",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3003-7000-8000-000000000001",
+      "attr_def_id": 11,
+      "key_text": "delivery-riders"
+    },
+    {
+      "id": "019dbfc0-3003-7000-8000-000000000011",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3003-7000-8000-000000000001",
+      "attr_def_id": 12,
+      "key_text": "Delivery Riders"
+    },
+    {
+      "id": "019dbfc0-3003-7000-8000-000000000012",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3003-7000-8000-000000000001",
+      "attr_def_id": 13,
+      "key_text": "Delivery run operators with mobile access"
+    },
+    {
+      "id": "019dbfc0-3004-7000-8000-000000000010",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3004-7000-8000-000000000001",
+      "attr_def_id": 11,
+      "key_text": "somaerp-viewers"
+    },
+    {
+      "id": "019dbfc0-3004-7000-8000-000000000011",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3004-7000-8000-000000000001",
+      "attr_def_id": 12,
+      "key_text": "somaerp Viewers"
+    },
+    {
+      "id": "019dbfc0-3004-7000-8000-000000000012",
+      "entity_type_id": 5,
+      "entity_id": "019dbfc0-3004-7000-8000-000000000001",
+      "attr_def_id": 13,
+      "key_text": "Read-only access for reporting and monitoring"
+    }
+  ]
+}

@@ -70,11 +70,13 @@ def _ensure_vault_available(request: Request) -> Any:
 
 
 def _build_ctx(request: Request, pool: Any, vault: Any, *, audit_category: str) -> Any:
+    state = request.state
     return _catalog_ctx.NodeContext(
-        user_id=request.headers.get("x-user-id"),
-        session_id=request.headers.get("x-session-id"),
-        org_id=request.headers.get("x-org-id"),
-        workspace_id=request.headers.get("x-workspace-id"),
+        user_id=getattr(state, "user_id", None) or request.headers.get("x-user-id"),
+        session_id=getattr(state, "session_id", None) or request.headers.get("x-session-id"),
+        org_id=getattr(state, "org_id", None) or request.headers.get("x-org-id"),
+        workspace_id=getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id"),
+        application_id=getattr(state, "application_id", None) or request.headers.get("x-application-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(request.state, "request_id", "") or _core_id.uuid7(),

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
@@ -32,11 +33,11 @@ import {
   useRoles,
 } from "@/features/iam-roles/hooks/use-roles";
 import { ApiClientError } from "@/lib/api";
-import { cn } from "@/lib/cn";
 import type { Role } from "@/types/api";
 
 export default function RolesPage() {
   const [orgFilter, setOrgFilter] = useState<string>("all");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
@@ -215,6 +216,14 @@ export default function RolesPage() {
       <div className="flex-1 overflow-y-auto px-8 py-6 space-y-5 animate-fade-in">
         {/* Stat cards */}
         {!isLoading && !isError && <StatCards cards={statCards} />}
+
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Filter roles by application"
+          />
+        </div>
 
         {/* Filter bar */}
         {!isLoading && !isError && (

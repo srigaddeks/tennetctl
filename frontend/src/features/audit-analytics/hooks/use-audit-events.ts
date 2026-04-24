@@ -53,6 +53,7 @@ function filterParams(f: AuditEventFilter): Record<string, string | number | boo
     actor_session_id: f.actor_session_id ?? undefined,
     org_id: f.org_id ?? undefined,
     workspace_id: f.workspace_id ?? undefined,
+    application_id: f.application_id ?? undefined,
     trace_id: f.trace_id ?? undefined,
     since: f.since ?? undefined,
     until: f.until ?? undefined,

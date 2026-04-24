@@ -1,6 +1,7 @@
 "use client";
 
 import { Input, Select } from "@/components/ui";
+import { useApplications } from "@/features/iam-applications/hooks/use-applications";
 import type { AuditBucket, AuditEventFilter } from "@/types/api";
 
 type Props = {
@@ -15,6 +16,8 @@ export function FilterBar({ value, bucket, onChange, onBucketChange, onReset }: 
   const update = <K extends keyof AuditEventFilter>(k: K, v: AuditEventFilter[K]) => {
     onChange({ ...value, [k]: v });
   };
+  const { data: appsData } = useApplications({ limit: 200 });
+  const apps = appsData?.items ?? [];
 
   return (
     <div
@@ -64,6 +67,21 @@ export function FilterBar({ value, bucket, onChange, onBucketChange, onReset }: 
           value={value.actor_user_id ?? ""}
           onChange={(e) => update("actor_user_id", e.target.value || null)}
         />
+      </div>
+      <div className="flex min-w-[180px] flex-col gap-1">
+        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Application</label>
+        <Select
+          data-testid="audit-filter-application"
+          value={value.application_id ?? ""}
+          onChange={(e) => update("application_id", e.target.value || null)}
+        >
+          <option value="">All applications</option>
+          {apps.map((app) => (
+            <option key={app.id} value={app.id}>
+              {app.label ?? app.code}
+            </option>
+          ))}
+        </Select>
       </div>
       <div className="flex min-w-[220px] flex-col gap-1">
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Metadata contains</label>

@@ -1,0 +1,31 @@
+schema: "11_somaerp"
+table: "dim_product_tags"
+rows:
+  - id: 1
+    code: "immunity"
+    name: "Immunity"
+    deprecated_at: null
+  - id: 2
+    code: "energy"
+    name: "Energy"
+    deprecated_at: null
+  - id: 3
+    code: "detox"
+    name: "Detox"
+    deprecated_at: null
+  - id: 4
+    code: "hydration"
+    name: "Hydration"
+    deprecated_at: null
+  - id: 5
+    code: "skin"
+    name: "Skin"
+    deprecated_at: null
+  - id: 6
+    code: "gut"
+    name: "Gut"
+    deprecated_at: null
+  - id: 7
+    code: "endurance"
+    name: "Endurance"
+    deprecated_at: null

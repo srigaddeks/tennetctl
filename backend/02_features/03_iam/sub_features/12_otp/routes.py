@@ -125,6 +125,7 @@ async def setup_totp_route(body: TotpSetupRequest, request: Request) -> Response
                 previous_session_id=session_id,
                 org_id=getattr(request.state, "org_id", None),
                 workspace_id=getattr(request.state, "workspace_id", None),
+        application_id=getattr(request.state, "application_id", None) or request.headers.get("x-application-id"),
             )
     resp = _response.success_response(result, status_code=201)
     # Plan 38-02: if rotation happened, carry the new session cookie in the response

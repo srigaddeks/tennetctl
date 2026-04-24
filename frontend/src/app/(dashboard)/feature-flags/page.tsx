@@ -414,6 +414,17 @@ function FlagRow({
         >
           <X className="h-3.5 w-3.5" />
         </button>
+        {flag.scope === "application" && flag.application_id && (
+          <Link
+            href={`/iam/applications/${flag.application_id}`}
+            className="rounded-md px-2 py-1 text-[10px] font-medium transition"
+            style={{ color: "#a855f7" }}
+            title="Open this flag's application hub"
+            data-testid={`flag-app-hub-${flag.flag_key}`}
+          >
+            App ↗
+          </Link>
+        )}
         <Link
           href={`/feature-flags/${flag.id}`}
           className="rounded-md px-2 py-1 text-xs font-medium transition"

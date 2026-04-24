@@ -131,6 +131,14 @@ export default function CatalogPage() {
           >
             Browse nodes →
           </Link>
+          <Link
+            href="/iam/applications"
+            className="text-xs transition-colors"
+            style={{ color: "var(--text-secondary)" }}
+            data-testid="catalog-applications-link"
+          >
+            Applications →
+          </Link>
         </div>
 
         {/* Features section */}

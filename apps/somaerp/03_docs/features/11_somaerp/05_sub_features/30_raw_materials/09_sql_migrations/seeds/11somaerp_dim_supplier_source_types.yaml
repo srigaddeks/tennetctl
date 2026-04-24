@@ -1,0 +1,27 @@
+schema: "11_somaerp"
+table: "dim_supplier_source_types"
+rows:
+  - id: 1
+    code: "wholesale_market"
+    name: "Wholesale Market"
+    deprecated_at: null
+  - id: 2
+    code: "rythu_bazaar"
+    name: "Rythu Bazaar"
+    deprecated_at: null
+  - id: 3
+    code: "farm_direct"
+    name: "Farm Direct"
+    deprecated_at: null
+  - id: 4
+    code: "marketplace"
+    name: "Marketplace"
+    deprecated_at: null
+  - id: 5
+    code: "brand_distributor"
+    name: "Brand Distributor"
+    deprecated_at: null
+  - id: 6
+    code: "online"
+    name: "Online"
+    deprecated_at: null

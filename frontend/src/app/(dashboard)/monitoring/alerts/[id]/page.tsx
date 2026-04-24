@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useMemo } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   ResponsiveContainer,
@@ -154,6 +155,16 @@ export default function AlertDetailPage({
               >
                 fingerprint {data.fingerprint.slice(0, 12)}…
               </span>
+              {typeof data.labels?.application_id === "string" && (
+                <Link
+                  href={`/iam/applications/${data.labels.application_id}`}
+                  className="font-mono-data text-[11px] hover:underline"
+                  style={{ color: "var(--accent)" }}
+                  data-testid="alert-application-link"
+                >
+                  app {data.labels.application_id.slice(0, 8)} →
+                </Link>
+              )}
               <span
                 className="ml-auto font-mono-data text-[11px]"
                 style={{ color: "var(--text-secondary)" }}

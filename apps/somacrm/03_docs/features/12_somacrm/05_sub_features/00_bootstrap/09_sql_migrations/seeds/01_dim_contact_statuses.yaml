@@ -1,0 +1,6 @@
+schema: "12_somacrm"
+table: "dim_contact_statuses"
+rows:
+  - {id: 1, code: active, label: Active, description: Active contact, deprecated_at: null}
+  - {id: 2, code: inactive, label: Inactive, description: Inactive contact, deprecated_at: null}
+  - {id: 3, code: archived, label: Archived, description: Archived contact, deprecated_at: null}

@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, X } from "lucide-react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -98,6 +99,7 @@ function OrgsPageInner() {
   const shouldOpenCreate = searchParams.get("create") === "true";
 
   const [showWelcome, setShowWelcome] = useState(isWelcome);
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(shouldOpenCreate);
   const [search, setSearch] = useState("");
   const { data, isLoading, isError, error, refetch } = useOrgs({ limit: 500 });
@@ -171,6 +173,14 @@ function OrgsPageInner() {
             />
           </div>
         )}
+
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Filter orgs by application"
+          />
+        </div>
 
         {/* Search + count */}
         {data && data.items.length > 0 && (

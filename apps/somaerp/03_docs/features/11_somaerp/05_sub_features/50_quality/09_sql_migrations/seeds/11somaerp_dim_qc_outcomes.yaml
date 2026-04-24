@@ -1,0 +1,19 @@
+schema: "11_somaerp"
+table: "dim_qc_outcomes"
+rows:
+  - id: 1
+    code: "pass"
+    name: "Pass"
+    deprecated_at: null
+  - id: 2
+    code: "fail"
+    name: "Fail"
+    deprecated_at: null
+  - id: 3
+    code: "partial_pass"
+    name: "Partial Pass"
+    deprecated_at: null
+  - id: 4
+    code: "skipped"
+    name: "Skipped"
+    deprecated_at: null

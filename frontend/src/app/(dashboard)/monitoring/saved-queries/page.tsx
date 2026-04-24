@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
-  Button,
   EmptyState,
   ErrorState,
   Select,
@@ -51,6 +51,7 @@ const TARGET_ICON: Record<QueryTarget, string> = {
 
 export default function MonitoringSavedQueriesPage() {
   const [target, setTarget] = useState<"" | QueryTarget>("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const list = useSavedQueries(target || undefined);
   const remove = useDeleteSavedQuery();
 
@@ -69,6 +70,12 @@ export default function MonitoringSavedQueriesPage() {
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="saved-queries-body">
         <div className="flex flex-col gap-5">
+
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Queries for application"
+          />
 
           {/* Stats strip */}
           {!list.isLoading && items.length > 0 && (

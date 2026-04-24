@@ -1,0 +1,54 @@
+schema: "11_somaerp"
+table: "dim_units_of_measure"
+# CRITICAL: base units (base_unit_id=null) MUST be inserted before their
+# derived units so the self-FK resolves. Order below preserves that.
+rows:
+  - id: 1
+    code: "kg"
+    name: "Kilogram"
+    dimension: "mass"
+    base_unit_id: null
+    to_base_factor: 1
+    deprecated_at: null
+  - id: 2
+    code: "g"
+    name: "Gram"
+    dimension: "mass"
+    base_unit_id: 1
+    to_base_factor: 0.001
+    deprecated_at: null
+  - id: 3
+    code: "l"
+    name: "Liter"
+    dimension: "volume"
+    base_unit_id: null
+    to_base_factor: 1
+    deprecated_at: null
+  - id: 4
+    code: "ml"
+    name: "Milliliter"
+    dimension: "volume"
+    base_unit_id: 3
+    to_base_factor: 0.001
+    deprecated_at: null
+  - id: 5
+    code: "count"
+    name: "Count"
+    dimension: "count"
+    base_unit_id: null
+    to_base_factor: 1
+    deprecated_at: null
+  - id: 6
+    code: "bunch"
+    name: "Bunch"
+    dimension: "count"
+    base_unit_id: 5
+    to_base_factor: 1
+    deprecated_at: null
+  - id: 7
+    code: "bottle"
+    name: "Bottle"
+    dimension: "count"
+    base_unit_id: 5
+    to_base_factor: 1
+    deprecated_at: null

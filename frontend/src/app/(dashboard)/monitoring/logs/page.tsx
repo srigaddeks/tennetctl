@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { LogExplorer } from "@/features/monitoring/_components/log-explorer";
 import { LogLiveTail } from "@/features/monitoring/_components/log-live-tail";
@@ -16,6 +17,7 @@ const TABS: { id: Tab; label: string }[] = [
 export default function LogsPage() {
   const [tab, setTab] = useState<Tab>("explorer");
   const [livePulse] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
 
   return (
     <>
@@ -96,6 +98,13 @@ export default function LogsPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
+        <div className="mb-4">
+          <ApplicationScopeBar
+            appId={appId}
+            onChange={setAppId}
+            label="Filter logs by application"
+          />
+        </div>
         {tab === "explorer" ? <LogExplorer /> : <LogLiveTail />}
       </div>
     </>

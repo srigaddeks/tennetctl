@@ -1,0 +1,77 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "somaerp" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Generic multi-kitchen, multi-region ERP — built on tennetctl primitives.
+    - navigation [ref=e6]:
+      - heading "Modules" [level=2] [ref=e7]
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Geography Locations, kitchens, service zones" [ref=e10] [cursor=pointer]:
+            - /url: /geography
+            - generic [ref=e11]: Geography
+            - generic [ref=e12]: Locations, kitchens, service zones
+        - listitem [ref=e13]:
+          - link "Catalog Product lines, products, variants, tags" [ref=e14] [cursor=pointer]:
+            - /url: /catalog
+            - generic [ref=e15]: Catalog
+            - generic [ref=e16]: Product lines, products, variants, tags
+        - listitem [ref=e17]:
+          - link "Supply Raw materials, suppliers, supply matrix" [ref=e18] [cursor=pointer]:
+            - /url: /supply
+            - generic [ref=e19]: Supply
+            - generic [ref=e20]: Raw materials, suppliers, supply matrix
+        - listitem [ref=e21]:
+          - link "Recipes Versioned recipes, ingredients, BOM cost rollup" [ref=e22] [cursor=pointer]:
+            - /url: /recipes
+            - generic [ref=e23]: Recipes
+            - generic [ref=e24]: Versioned recipes, ingredients, BOM cost rollup
+        - listitem [ref=e25]:
+          - link "Equipment Kitchen equipment inventory + attach to kitchens" [ref=e26] [cursor=pointer]:
+            - /url: /equipment
+            - generic [ref=e27]: Equipment
+            - generic [ref=e28]: Kitchen equipment inventory + attach to kitchens
+        - listitem [ref=e29]:
+          - link "Quality QC checkpoints + append-only check events" [ref=e30] [cursor=pointer]:
+            - /url: /quality
+            - generic [ref=e31]: Quality
+            - generic [ref=e32]: QC checkpoints + append-only check events
+        - listitem [ref=e33]:
+          - link "Procurement Procurement runs + lines + MRP-lite BOM planner" [ref=e34] [cursor=pointer]:
+            - /url: /procurement
+            - generic [ref=e35]: Procurement
+            - generic [ref=e36]: Procurement runs + lines + MRP-lite BOM planner
+        - listitem [ref=e37]:
+          - link "Inventory Current stock per kitchen + append-only movement feed" [ref=e38] [cursor=pointer]:
+            - /url: /inventory
+            - generic [ref=e39]: Inventory
+            - generic [ref=e40]: Current stock per kitchen + append-only movement feed
+        - listitem [ref=e41]:
+          - link "Production The 4 AM tracker — batches, step log, consumption, yield" [ref=e42] [cursor=pointer]:
+            - /url: /production
+            - generic [ref=e43]: Production
+            - generic [ref=e44]: The 4 AM tracker — batches, step log, consumption, yield
+        - listitem [ref=e45]:
+          - link "Customers Customer directory + status + active subscriptions" [ref=e46] [cursor=pointer]:
+            - /url: /customers
+            - generic [ref=e47]: Customers
+            - generic [ref=e48]: Customer directory + status + active subscriptions
+        - listitem [ref=e49]:
+          - link "Subscriptions Plan templates + customer subscriptions + pause/resume/cancel" [ref=e50] [cursor=pointer]:
+            - /url: /subscriptions
+            - generic [ref=e51]: Subscriptions
+            - generic [ref=e52]: Plan templates + customer subscriptions + pause/resume/cancel
+        - listitem [ref=e53]:
+          - link "Delivery Routes, riders, runs, rider mobile UI for stop-by-stop delivery" [ref=e54] [cursor=pointer]:
+            - /url: /delivery
+            - generic [ref=e55]: Delivery
+            - generic [ref=e56]: Routes, riders, runs, rider mobile UI for stop-by-stop delivery
+        - listitem [ref=e57]:
+          - link "Reports KPI snapshot, yield/COGS trends, reorder alerts, spend, revenue, FSSAI compliance export" [ref=e58] [cursor=pointer]:
+            - /url: /reports
+            - generic [ref=e59]: Reports
+            - generic [ref=e60]: KPI snapshot, yield/COGS trends, reorder alerts, spend, revenue, FSSAI compliance export
+    - generic [ref=e61]:
+      - heading "Health Check" [level=2] [ref=e62]
+      - paragraph [ref=e63]: Loading health status…
+  - alert [ref=e64]

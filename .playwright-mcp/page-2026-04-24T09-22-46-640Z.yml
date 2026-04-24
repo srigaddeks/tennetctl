@@ -1,0 +1,223 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "supply" [ref=e7] [cursor=pointer]:
+            - /url: /supply
+          - text: /raw-materials
+        - heading "Raw Materials" [level=1] [ref=e8]
+      - link "+ New Raw Material" [ref=e9] [cursor=pointer]:
+        - /url: /supply/raw-materials/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Category
+        - combobox [ref=e13]:
+          - option "All categories" [selected]
+          - option "Leafy Green (leafy_green)"
+          - option "Root (root)"
+          - option "Fruit (fruit)"
+          - option "Herb (herb)"
+          - option "Spice (spice)"
+          - option "Packaging (packaging)"
+          - option "Label (label)"
+          - option "Consumable (consumable)"
+      - generic [ref=e14]:
+        - generic [ref=e15]: Status
+        - combobox [ref=e16]:
+          - option "All" [selected]
+          - option "Active"
+          - option "Paused"
+          - option "Discontinued"
+    - table [ref=e21]:
+      - rowgroup [ref=e22]:
+        - row "Name Slug Category Unit Lot-Tracked Target Cost Status" [ref=e23]:
+          - columnheader "Name" [ref=e24]
+          - columnheader "Slug" [ref=e25]
+          - columnheader "Category" [ref=e26]
+          - columnheader "Unit" [ref=e27]
+          - columnheader "Lot-Tracked" [ref=e28]
+          - columnheader "Target Cost" [ref=e29]
+          - columnheader "Status" [ref=e30]
+      - rowgroup [ref=e31]:
+        - row "Branded Label branded-label Label count YES 1.0000 INR active" [ref=e32]:
+          - cell "Branded Label" [ref=e33]
+          - cell "branded-label" [ref=e34]
+          - cell "Label" [ref=e35]
+          - cell "count" [ref=e36]
+          - cell "YES" [ref=e37]:
+            - generic [ref=e38]: "YES"
+          - cell "1.0000 INR" [ref=e39]
+          - cell "active" [ref=e40]:
+            - generic [ref=e41]: active
+        - row "Tamper-Evident Cap tamper-cap Packaging count YES 2.0000 INR active" [ref=e42]:
+          - cell "Tamper-Evident Cap" [ref=e43]
+          - cell "tamper-cap" [ref=e44]
+          - cell "Packaging" [ref=e45]
+          - cell "count" [ref=e46]
+          - cell "YES" [ref=e47]:
+            - generic [ref=e48]: "YES"
+          - cell "2.0000 INR" [ref=e49]
+          - cell "active" [ref=e50]:
+            - generic [ref=e51]: active
+        - row "300ml PET Bottle pet-bottle-300ml Packaging bottle YES 5.0000 INR active" [ref=e52]:
+          - cell "300ml PET Bottle" [ref=e53]
+          - cell "pet-bottle-300ml" [ref=e54]
+          - cell "Packaging" [ref=e55]
+          - cell "bottle" [ref=e56]
+          - cell "YES" [ref=e57]:
+            - generic [ref=e58]: "YES"
+          - cell "5.0000 INR" [ref=e59]
+          - cell "active" [ref=e60]:
+            - generic [ref=e61]: active
+        - row "Black Pepper black-pepper Spice g YES 2.0000 INR active" [ref=e62]:
+          - cell "Black Pepper" [ref=e63]
+          - cell "black-pepper" [ref=e64]
+          - cell "Spice" [ref=e65]
+          - cell "g" [ref=e66]
+          - cell "YES" [ref=e67]:
+            - generic [ref=e68]: "YES"
+          - cell "2.0000 INR" [ref=e69]
+          - cell "active" [ref=e70]:
+            - generic [ref=e71]: active
+        - row "Pineapple pineapple Fruit count YES 80.0000 INR active" [ref=e72]:
+          - cell "Pineapple" [ref=e73]
+          - cell "pineapple" [ref=e74]
+          - cell "Fruit" [ref=e75]
+          - cell "count" [ref=e76]
+          - cell "YES" [ref=e77]:
+            - generic [ref=e78]: "YES"
+          - cell "80.0000 INR" [ref=e79]
+          - cell "active" [ref=e80]:
+            - generic [ref=e81]: active
+        - row "Orange orange Fruit kg YES 60.0000 INR active" [ref=e82]:
+          - cell "Orange" [ref=e83]
+          - cell "orange" [ref=e84]
+          - cell "Fruit" [ref=e85]
+          - cell "kg" [ref=e86]
+          - cell "YES" [ref=e87]:
+            - generic [ref=e88]: "YES"
+          - cell "60.0000 INR" [ref=e89]
+          - cell "active" [ref=e90]:
+            - generic [ref=e91]: active
+        - row "Cucumber cucumber Fruit kg YES 25.0000 INR active" [ref=e92]:
+          - cell "Cucumber" [ref=e93]
+          - cell "cucumber" [ref=e94]
+          - cell "Fruit" [ref=e95]
+          - cell "kg" [ref=e96]
+          - cell "YES" [ref=e97]:
+            - generic [ref=e98]: "YES"
+          - cell "25.0000 INR" [ref=e99]
+          - cell "active" [ref=e100]:
+            - generic [ref=e101]: active
+        - row "Lemon lemon Fruit count YES 2.5000 INR active" [ref=e102]:
+          - cell "Lemon" [ref=e103]
+          - cell "lemon" [ref=e104]
+          - cell "Fruit" [ref=e105]
+          - cell "count" [ref=e106]
+          - cell "YES" [ref=e107]:
+            - generic [ref=e108]: "YES"
+          - cell "2.5000 INR" [ref=e109]
+          - cell "active" [ref=e110]:
+            - generic [ref=e111]: active
+        - row "Green Apple green-apple Fruit kg YES 120.0000 INR active" [ref=e112]:
+          - cell "Green Apple" [ref=e113]
+          - cell "green-apple" [ref=e114]
+          - cell "Fruit" [ref=e115]
+          - cell "kg" [ref=e116]
+          - cell "YES" [ref=e117]:
+            - generic [ref=e118]: "YES"
+          - cell "120.0000 INR" [ref=e119]
+          - cell "active" [ref=e120]:
+            - generic [ref=e121]: active
+        - row "Fresh Turmeric fresh-turmeric Root kg YES 140.0000 INR active" [ref=e122]:
+          - cell "Fresh Turmeric" [ref=e123]
+          - cell "fresh-turmeric" [ref=e124]
+          - cell "Root" [ref=e125]
+          - cell "kg" [ref=e126]
+          - cell "YES" [ref=e127]:
+            - generic [ref=e128]: "YES"
+          - cell "140.0000 INR" [ref=e129]
+          - cell "active" [ref=e130]:
+            - generic [ref=e131]: active
+        - row "Ginger ginger Root kg YES 180.0000 INR active" [ref=e132]:
+          - cell "Ginger" [ref=e133]
+          - cell "ginger" [ref=e134]
+          - cell "Root" [ref=e135]
+          - cell "kg" [ref=e136]
+          - cell "YES" [ref=e137]:
+            - generic [ref=e138]: "YES"
+          - cell "180.0000 INR" [ref=e139]
+          - cell "active" [ref=e140]:
+            - generic [ref=e141]: active
+        - row "Beetroot beetroot Root kg YES 35.0000 INR active" [ref=e142]:
+          - cell "Beetroot" [ref=e143]
+          - cell "beetroot" [ref=e144]
+          - cell "Root" [ref=e145]
+          - cell "kg" [ref=e146]
+          - cell "YES" [ref=e147]:
+            - generic [ref=e148]: "YES"
+          - cell "35.0000 INR" [ref=e149]
+          - cell "active" [ref=e150]:
+            - generic [ref=e151]: active
+        - row "Carrot carrot Root kg YES 30.0000 INR active" [ref=e152]:
+          - cell "Carrot" [ref=e153]
+          - cell "carrot" [ref=e154]
+          - cell "Root" [ref=e155]
+          - cell "kg" [ref=e156]
+          - cell "YES" [ref=e157]:
+            - generic [ref=e158]: "YES"
+          - cell "30.0000 INR" [ref=e159]
+          - cell "active" [ref=e160]:
+            - generic [ref=e161]: active
+        - row "Celery celery Leafy Green kg YES 80.0000 INR active" [ref=e162]:
+          - cell "Celery" [ref=e163]
+          - cell "celery" [ref=e164]
+          - cell "Leafy Green" [ref=e165]
+          - cell "kg" [ref=e166]
+          - cell "YES" [ref=e167]:
+            - generic [ref=e168]: "YES"
+          - cell "80.0000 INR" [ref=e169]
+          - cell "active" [ref=e170]:
+            - generic [ref=e171]: active
+        - row "Coriander coriander Herb bunch YES 8.0000 INR active" [ref=e172]:
+          - cell "Coriander" [ref=e173]
+          - cell "coriander" [ref=e174]
+          - cell "Herb" [ref=e175]
+          - cell "bunch" [ref=e176]
+          - cell "YES" [ref=e177]:
+            - generic [ref=e178]: "YES"
+          - cell "8.0000 INR" [ref=e179]
+          - cell "active" [ref=e180]:
+            - generic [ref=e181]: active
+        - row "Mint mint Herb bunch YES 10.0000 INR active" [ref=e182]:
+          - cell "Mint" [ref=e183]
+          - cell "mint" [ref=e184]
+          - cell "Herb" [ref=e185]
+          - cell "bunch" [ref=e186]
+          - cell "YES" [ref=e187]:
+            - generic [ref=e188]: "YES"
+          - cell "10.0000 INR" [ref=e189]
+          - cell "active" [ref=e190]:
+            - generic [ref=e191]: active
+        - row "Spinach spinach Leafy Green kg YES 20.0000 INR active" [ref=e192]:
+          - cell "Spinach" [ref=e193]
+          - cell "spinach" [ref=e194]
+          - cell "Leafy Green" [ref=e195]
+          - cell "kg" [ref=e196]
+          - cell "YES" [ref=e197]:
+            - generic [ref=e198]: "YES"
+          - cell "20.0000 INR" [ref=e199]
+          - cell "active" [ref=e200]:
+            - generic [ref=e201]: active
+  - status [ref=e202]:
+    - generic [ref=e203]:
+      - img [ref=e205]
+      - generic [ref=e207]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e208] [cursor=pointer]:
+          - img [ref=e209]
+  - alert [ref=e19]

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
@@ -42,6 +43,7 @@ export default function SCIMPage() {
   const [revokeTarget, setRevokeTarget] = useState<ScimToken | null>(null);
   const [newToken, setNewToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
@@ -73,6 +75,8 @@ export default function SCIMPage() {
         className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in space-y-5"
         data-testid="iam-scim-body"
       >
+        <ApplicationScopeBar appId={appId} onChange={setAppId} label="SCIM tokens for application" />
+
         {/* New token banner */}
         {newToken && (
           <div

@@ -2,20 +2,6 @@
 
 import { useState } from "react";
 
-type JobStatus = {
-  id: string;
-  kind: string;
-  status: string;
-  requested_at: string;
-  completed_at: string | null;
-  hard_erase_at: string | null;
-} | null;
-
-type GdprStatusData = {
-  export: JobStatus;
-  erase: JobStatus;
-};
-
 async function apiFetch(path: string, options?: RequestInit) {
   const res = await fetch(path, {
     credentials: "include",
@@ -181,6 +167,23 @@ export default function PrivacyPage() {
           <span>
             Under GDPR Articles 15 and 17, you have the right to access all personal data we hold
             and to request permanent erasure. Export requests are processed within 72 hours.
+          </span>
+        </div>
+
+        {/* App-scoped privacy notice */}
+        <div
+          className="flex items-start gap-3 rounded px-4 py-3 text-xs"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            color: "var(--text-secondary)",
+          }}
+          data-testid="privacy-app-scope-banner"
+        >
+          <span style={{ color: "var(--text-muted)", fontSize: "14px", flexShrink: 0 }}>⚑</span>
+          <span>
+            Exports and erasures cover data across every application you use in this org.
+            Per-application scoping is coming soon.
           </span>
         </div>
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
@@ -76,6 +77,7 @@ export default function UsersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [filterType, setFilterType] = useState<string>("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [search, setSearch] = useState<string>("");
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -219,6 +221,11 @@ export default function UsersPage() {
             />
           </div>
         )}
+
+        {/* Application scope */}
+        <div className="mb-4">
+          <ApplicationScopeBar appId={appFilter} onChange={setAppFilter} />
+        </div>
 
         {/* Filter bar */}
         <div className="mb-4 flex flex-wrap items-center gap-3">

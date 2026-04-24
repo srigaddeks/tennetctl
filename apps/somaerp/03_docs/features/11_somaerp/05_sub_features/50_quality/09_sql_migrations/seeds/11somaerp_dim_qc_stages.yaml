@@ -1,0 +1,23 @@
+schema: "11_somaerp"
+table: "dim_qc_stages"
+rows:
+  - id: 1
+    code: "pre_production"
+    name: "Pre-Production"
+    deprecated_at: null
+  - id: 2
+    code: "in_production"
+    name: "In-Production"
+    deprecated_at: null
+  - id: 3
+    code: "post_production"
+    name: "Post-Production"
+    deprecated_at: null
+  - id: 4
+    code: "fssai"
+    name: "FSSAI"
+    deprecated_at: null
+  - id: 5
+    code: "receiving"
+    name: "Receiving"
+    deprecated_at: null

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
@@ -50,6 +51,7 @@ export default function SAMLPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SamlProvider | null>(null);
   const [expandedCert, setExpandedCert] = useState<string | null>(null);
+  const [appId, setAppId] = useState<string | null>(null);
 
   return (
     <>
@@ -69,6 +71,10 @@ export default function SAMLPage() {
         }
       />
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="iam-saml-body">
+        <div className="mb-5">
+          <ApplicationScopeBar appId={appId} onChange={setAppId} label="SAML for application" />
+        </div>
+
         {isLoading && (
           <div className="flex flex-col gap-2">
             <Skeleton className="h-9 w-full" />

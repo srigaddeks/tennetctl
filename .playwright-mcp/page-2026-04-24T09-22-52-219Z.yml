@@ -1,0 +1,32 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "supply" [ref=e7] [cursor=pointer]:
+            - /url: /supply
+          - text: /suppliers
+        - heading "Suppliers" [level=1] [ref=e8]
+      - link "+ New Supplier" [ref=e9] [cursor=pointer]:
+        - /url: /supply/suppliers/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Source Type
+        - combobox [ref=e13]:
+          - option "All source types" [selected]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Status
+        - combobox [ref=e16]:
+          - option "All" [selected]
+          - option "Active"
+          - option "Paused"
+          - option "Blacklisted"
+      - generic [ref=e17]:
+        - generic [ref=e18]: Location
+        - combobox [ref=e19]:
+          - option "All locations" [selected]
+    - paragraph [ref=e21]: Loading suppliers…
+  - alert [ref=e22]

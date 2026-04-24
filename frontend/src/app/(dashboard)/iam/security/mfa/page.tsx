@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
@@ -56,6 +59,7 @@ export default function MFAPolicyPage() {
   const { data: policy, isLoading, isError, error, refetch } = useMfaPolicy();
   const set = useSetMfaPolicy();
   const { toast } = useToast();
+  const [appId, setAppId] = useState<string | null>(null);
 
   async function onToggle(next: boolean) {
     try {
@@ -81,6 +85,8 @@ export default function MFAPolicyPage() {
         className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in space-y-5"
         data-testid="iam-mfa-body"
       >
+        <ApplicationScopeBar appId={appId} onChange={setAppId} label="MFA policy for application" />
+
         {isLoading && <Skeleton className="h-36 max-w-xl w-full" />}
         {isError && (
           <ErrorState

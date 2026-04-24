@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/page-header";
@@ -102,6 +103,33 @@ export default function SecurityPage() {
       />
       <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in">
         <div className="mx-auto w-full max-w-2xl space-y-5">
+
+          {/* Manage applications — admin shortcut */}
+          <Link
+            href="/iam/applications"
+            className="block rounded-lg px-5 py-4 transition hover:opacity-90"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--accent)",
+              color: "var(--text-primary)",
+            }}
+            data-testid="manage-applications-card"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="label-caps" style={{ color: "var(--accent)" }}>
+                  Admin
+                </div>
+                <div className="text-base font-semibold mt-0.5">
+                  Manage applications
+                </div>
+                <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>
+                  tennetctl admins use this for app management.
+                </p>
+              </div>
+              <span className="text-xl" style={{ color: "var(--accent)" }}>→</span>
+            </div>
+          </Link>
 
           {/* Security score */}
           <div

@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "SolSocial Collector",
-  "version": "0.1.0",
-  "description": "Collect social data from LinkedIn and Twitter/X into TennetCTL.",
-  "permissions": ["storage", "alarms"],
+  "version": "0.4.0",
+  "description": "DOM-only capture of LinkedIn & Twitter/X content into TennetCTL. No platform API calls.",
+  "permissions": ["storage", "alarms", "tabs", "scripting"],
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://twitter.com/*",
@@ -18,12 +18,22 @@
   "content_scripts": [
     {
       "matches": ["https://www.linkedin.com/*"],
-      "js": ["lib/extractors/linkedin.js", "content/linkedin.js"],
+      "js": [
+        "lib/scanner.js",
+        "lib/extractors/linkedin.js",
+        "lib/signals.js",
+        "content/linkedin.js"
+      ],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://twitter.com/*", "https://x.com/*"],
-      "js": ["lib/extractors/twitter.js", "content/twitter.js"],
+      "js": [
+        "lib/scanner.js",
+        "lib/extractors/twitter.js",
+        "lib/signals.js",
+        "content/twitter.js"
+      ],
       "run_at": "document_idle"
     }
   ],

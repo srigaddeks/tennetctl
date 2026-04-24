@@ -223,6 +223,22 @@ export default function WorkspaceDetailPage() {
       />
       <div className="flex-1 overflow-y-auto px-8 py-6 animate-fade-in" data-testid="workspace-detail-body">
 
+        {/* Info banner: workspaces + applications relationship */}
+        <div
+          className="mb-5 rounded border px-4 py-3 text-xs"
+          style={{
+            background: "var(--bg-elevated)",
+            borderColor: "var(--border)",
+            borderLeft: "3px solid var(--accent)",
+            color: "var(--text-secondary)",
+          }}
+          data-testid="ws-app-info-banner"
+        >
+          <strong style={{ color: "var(--text-primary)" }}>How this relates to applications:</strong>{" "}
+          Workspaces scope configuration and policy within an org. Applications run inside this workspace
+          inherit its scope for secrets, flags, and role assignments.
+        </div>
+
         {/* Stat cards */}
         <div className="mb-6 grid grid-cols-3 gap-4">
           <StatCard

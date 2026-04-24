@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "geography" [ref=e7] [cursor=pointer]:
+            - /url: /geography
+          - text: /service-zones
+        - heading "Service Zones" [level=1] [ref=e8]
+      - link "+ New Service Zone" [ref=e9] [cursor=pointer]:
+        - /url: /geography/service-zones/new
+    - generic [ref=e10]:
+      - generic [ref=e11]: Kitchen
+      - combobox [ref=e12]:
+        - option "All kitchens" [selected]
+    - paragraph [ref=e14]: Loading service zones…
+  - status [ref=e15]:
+    - generic [ref=e16]:
+      - img [ref=e18]
+      - generic [ref=e20]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+  - alert [ref=e25]

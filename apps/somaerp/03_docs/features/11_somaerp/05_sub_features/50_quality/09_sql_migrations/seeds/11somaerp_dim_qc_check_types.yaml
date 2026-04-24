@@ -1,0 +1,35 @@
+schema: "11_somaerp"
+table: "dim_qc_check_types"
+rows:
+  - id: 1
+    code: "visual"
+    name: "Visual"
+    deprecated_at: null
+  - id: 2
+    code: "smell"
+    name: "Smell"
+    deprecated_at: null
+  - id: 3
+    code: "firmness"
+    name: "Firmness"
+    deprecated_at: null
+  - id: 4
+    code: "weight"
+    name: "Weight"
+    deprecated_at: null
+  - id: 5
+    code: "temperature"
+    name: "Temperature"
+    deprecated_at: null
+  - id: 6
+    code: "taste"
+    name: "Taste"
+    deprecated_at: null
+  - id: 7
+    code: "lot_verification"
+    name: "Lot Verification"
+    deprecated_at: null
+  - id: 8
+    code: "document_check"
+    name: "Document Check"
+    deprecated_at: null

@@ -68,6 +68,25 @@ export default function TosPage() {
         className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in"
         data-testid="iam-tos-body"
       >
+        {/* Info banner */}
+        <div
+          className="mb-5 rounded border px-4 py-3 text-xs"
+          style={{
+            background: "var(--info-muted, var(--bg-elevated))",
+            borderColor: "var(--info, var(--border))",
+            borderLeft: "3px solid var(--info, var(--accent))",
+            color: "var(--text-secondary)",
+          }}
+          data-testid="iam-tos-info-banner"
+        >
+          <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>
+            Heads up:
+          </span>{" "}
+          Publishing a new effective version forces every active user to
+          re-accept on their next sign-in. Drafts are safe to iterate on before
+          marking them effective.
+        </div>
+
         {/* Stats */}
         {!isLoading && !isError && (
           <div className="mb-5 grid grid-cols-3 gap-3">

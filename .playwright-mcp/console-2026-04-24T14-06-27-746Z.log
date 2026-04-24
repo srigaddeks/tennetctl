@@ -1,0 +1,75 @@
+[      71ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[     415ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/css/app/layout.css?v=1777039587903:0
+[     420ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/chunks/main-app.js?v=1777039587903:0
+[     421ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/chunks/app-pages-internals.js:0
+[     421ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/chunks/app/layout.js:0
+[  112962ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/reports:0
+[  113094ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[  113116ms] Error: Cannot find module './2960.js'
+Require stack:
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/_not-found/page.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/load-components.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/utils.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/swc/options.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/swc/index.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/config.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/next.js
+- /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require-hook.js:55:36)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16)
+    at __webpack_require__.f.require (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js:198:28)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js:111:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js:162:22)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/reports/page.js:1:4794)
+    at Object.<anonymous> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/reports/page.js:1:4842)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16)
+    at requirePage (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require.js:103:84)
+    at loadComponentsImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/load-components.js:107:57)
+    at async DevServer.findPageComponentsImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/next-server.js:745:36)
+    at async DevServer.findPageComponents (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/dev/next-dev-server.js:610:20)
+    at async DevServer.renderPageComponent (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/base-server.js:2246:24)
+    at async DevServer.renderToResponseImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/base-server.js:2297:32)
+    at async DevServer.pipeImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/base-server.js:959:25)
+    at async NextNodeServer.handleCatchallRenderRequest (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/next-server.js:281:17)
+    at async DevServer.handleRequestImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/base-server.js:853:17)
+    at async (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/dev/next-dev-server.js:371:20)
+    at async Span.traceAsyncFn (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/trace/trace.js:153:20)
+    at async DevServer.handleRequest (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/dev/next-dev-server.js:368:24)
+    at async invokeRender (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/router-server.js:230:21)
+    at async handleRequest (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/router-server.js:408:24)
+    at async requestHandlerImpl (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/router-server.js:432:13)
+    at async Server.requestListener (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/start-server.js:146:13)
+[  113116ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[  146023ms] [ERROR] WebSocket connection to 'ws://localhost:51737/_next/webpack-hmr' failed:  @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:84
+[  147028ms] [ERROR] WebSocket connection to 'ws://localhost:51737/_next/webpack-hmr' failed:  @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:84
+[  148760ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[  148770ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[  149653ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[  150532ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/webpack/7690a60e2bd48564.webpack.hot-update.json:0
+[  150532ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:352
+[  150589ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[  150731ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:51737/_next/static/webpack/7690a60e2bd48564.webpack.hot-update.json:0
+[  150731ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:352
+[  150920ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:24650

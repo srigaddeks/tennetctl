@@ -90,6 +90,21 @@ export default function FlagDetailPage({
 
   return (
     <>
+      {flag.application_id && (
+        <div
+          className="px-8 pt-3"
+          style={{ background: "var(--bg-surface)" }}
+        >
+          <Link
+            href={`/iam/applications/${flag.application_id}`}
+            className="text-xs transition hover:opacity-80"
+            style={{ color: "var(--accent)" }}
+            data-testid="flag-app-breadcrumb"
+          >
+            ← Back to application
+          </Link>
+        </div>
+      )}
       <PageHeader
         title={flag.flag_key}
         description={flag.description ?? "No description — add one via the edit panel."}

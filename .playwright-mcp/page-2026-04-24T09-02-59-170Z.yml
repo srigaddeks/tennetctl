@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "catalog" [ref=e7] [cursor=pointer]:
+            - /url: /catalog
+          - text: /products
+        - heading "Products" [level=1] [ref=e8]
+      - link "+ New Product" [ref=e9] [cursor=pointer]:
+        - /url: /catalog/products/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Product Line
+        - combobox [ref=e13]:
+          - option "All product lines" [selected]
+          - option "Cold-Pressed Drinks (beverage)"
+      - generic [ref=e14]:
+        - generic [ref=e15]: Status
+        - combobox [ref=e16]:
+          - option "All" [selected]
+          - option "Active"
+          - option "Paused"
+          - option "Discontinued"
+    - table [ref=e21]:
+      - rowgroup [ref=e22]:
+        - row "Name Product Line Category Serving (ml) Price Tags Status" [ref=e23]:
+          - columnheader "Name" [ref=e24]
+          - columnheader "Product Line" [ref=e25]
+          - columnheader "Category" [ref=e26]
+          - columnheader "Serving (ml)" [ref=e27]
+          - columnheader "Price" [ref=e28]
+          - columnheader "Tags" [ref=e29]
+          - columnheader "Status" [ref=e30]
+      - rowgroup [ref=e31]:
+        - row "Turmeric Ginger Shot Cold-Pressed Drinks beverage 60.00 49.0000 INR gut immunity active" [ref=e32]:
+          - cell "Turmeric Ginger Shot" [ref=e33]
+          - cell "Cold-Pressed Drinks" [ref=e34]
+          - cell "beverage" [ref=e35]
+          - cell "60.00" [ref=e36]
+          - cell "49.0000 INR" [ref=e37]
+          - cell "gut immunity" [ref=e38]:
+            - generic [ref=e39]:
+              - generic [ref=e40]: gut
+              - generic [ref=e41]: immunity
+          - cell "active" [ref=e42]:
+            - generic [ref=e43]: active
+        - row "Tropical Detox Cold-Pressed Drinks beverage 300.00 99.0000 INR detox hydration active" [ref=e44]:
+          - cell "Tropical Detox" [ref=e45]
+          - cell "Cold-Pressed Drinks" [ref=e46]
+          - cell "beverage" [ref=e47]
+          - cell "300.00" [ref=e48]
+          - cell "99.0000 INR" [ref=e49]
+          - cell "detox hydration" [ref=e50]:
+            - generic [ref=e51]:
+              - generic [ref=e52]: detox
+              - generic [ref=e53]: hydration
+          - cell "active" [ref=e54]:
+            - generic [ref=e55]: active
+        - row "Hydration Cooler Cold-Pressed Drinks beverage 300.00 89.0000 INR hydration active" [ref=e56]:
+          - cell "Hydration Cooler" [ref=e57]
+          - cell "Cold-Pressed Drinks" [ref=e58]
+          - cell "beverage" [ref=e59]
+          - cell "300.00" [ref=e60]
+          - cell "89.0000 INR" [ref=e61]
+          - cell "hydration" [ref=e62]:
+            - generic [ref=e64]: hydration
+          - cell "active" [ref=e65]:
+            - generic [ref=e66]: active
+        - row "Beetroot Recharge Cold-Pressed Drinks beverage 300.00 99.0000 INR endurance energy active" [ref=e67]:
+          - cell "Beetroot Recharge" [ref=e68]
+          - cell "Cold-Pressed Drinks" [ref=e69]
+          - cell "beverage" [ref=e70]
+          - cell "300.00" [ref=e71]
+          - cell "99.0000 INR" [ref=e72]
+          - cell "endurance energy" [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]: endurance
+              - generic [ref=e76]: energy
+          - cell "active" [ref=e77]:
+            - generic [ref=e78]: active
+        - row "Citrus Immunity Cold-Pressed Drinks beverage 300.00 99.0000 INR immunity active" [ref=e79]:
+          - cell "Citrus Immunity" [ref=e80]
+          - cell "Cold-Pressed Drinks" [ref=e81]
+          - cell "beverage" [ref=e82]
+          - cell "300.00" [ref=e83]
+          - cell "99.0000 INR" [ref=e84]
+          - cell "immunity" [ref=e85]:
+            - generic [ref=e87]: immunity
+          - cell "active" [ref=e88]:
+            - generic [ref=e89]: active
+        - row "Green Morning Cold-Pressed Drinks beverage 300.00 99.0000 INR detox hydration active" [ref=e90]:
+          - cell "Green Morning" [ref=e91]
+          - cell "Cold-Pressed Drinks" [ref=e92]
+          - cell "beverage" [ref=e93]
+          - cell "300.00" [ref=e94]
+          - cell "99.0000 INR" [ref=e95]
+          - cell "detox hydration" [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]: detox
+              - generic [ref=e99]: hydration
+          - cell "active" [ref=e100]:
+            - generic [ref=e101]: active
+  - status [ref=e102]:
+    - generic [ref=e103]:
+      - img [ref=e105]
+      - generic [ref=e107]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e108] [cursor=pointer]:
+          - img [ref=e109]
+  - alert [ref=e19]

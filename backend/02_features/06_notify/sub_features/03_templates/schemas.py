@@ -66,6 +66,7 @@ class TemplateRow(BaseModel):
     priority_code: str
     priority_label: str
     is_active: bool
+    application_id: str | None = None
     created_by: str
     updated_by: str
     created_at: datetime

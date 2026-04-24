@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import { Badge, EmptyState, ErrorState, Skeleton, StatCard } from "@/components/ui";
@@ -289,6 +290,7 @@ function ViewCard({
 
 export default function PortalViewsPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [appId, setAppId] = useState<string | null>(null);
 
   const { data: views = [], isLoading, isError, error, refetch } = usePortalViews();
   const { data: rolesData } = useRoles({ limit: 500 });
@@ -320,6 +322,12 @@ export default function PortalViewsPage() {
       />
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in space-y-5">
+        <ApplicationScopeBar
+          appId={appId}
+          onChange={setAppId}
+          label="Portal views for application"
+        />
+
         {/* Stat cards */}
         {!isLoading && !isError && (
           <div className="grid grid-cols-3 gap-3">

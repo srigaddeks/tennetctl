@@ -1,0 +1,35 @@
+schema: "11_somaerp"
+table: "dim_raw_material_categories"
+rows:
+  - id: 1
+    code: "leafy_green"
+    name: "Leafy Green"
+    deprecated_at: null
+  - id: 2
+    code: "root"
+    name: "Root"
+    deprecated_at: null
+  - id: 3
+    code: "fruit"
+    name: "Fruit"
+    deprecated_at: null
+  - id: 4
+    code: "herb"
+    name: "Herb"
+    deprecated_at: null
+  - id: 5
+    code: "spice"
+    name: "Spice"
+    deprecated_at: null
+  - id: 6
+    code: "packaging"
+    name: "Packaging"
+    deprecated_at: null
+  - id: 7
+    code: "label"
+    name: "Label"
+    deprecated_at: null
+  - id: 8
+    code: "consumable"
+    name: "Consumable"
+    deprecated_at: null

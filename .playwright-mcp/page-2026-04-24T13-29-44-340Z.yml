@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - status [ref=e23]:
+    - generic [ref=e24]:
+      - img [ref=e26]
+      - generic [ref=e28]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+  - alert [ref=e22]
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - paragraph [ref=e36]:
+          - link "somaerp" [ref=e37] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "geography" [ref=e38] [cursor=pointer]:
+            - /url: /geography
+          - text: /locations
+        - heading "Locations" [level=1] [ref=e39]
+      - link "+ New Location" [ref=e40] [cursor=pointer]:
+        - /url: /geography/locations/new
+    - table [ref=e43]:
+      - rowgroup [ref=e44]:
+        - row "Name Slug Region Timezone Created" [ref=e45]:
+          - columnheader "Name" [ref=e46]
+          - columnheader "Slug" [ref=e47]
+          - columnheader "Region" [ref=e48]
+          - columnheader "Timezone" [ref=e49]
+          - columnheader "Created" [ref=e50]
+      - rowgroup [ref=e51]:
+        - row "Bangalore bangalore IN-TG Asia/Kolkata 2026-04-24" [ref=e52]:
+          - cell "Bangalore" [ref=e53]
+          - cell "bangalore" [ref=e54]
+          - cell "IN-TG" [ref=e55]
+          - cell "Asia/Kolkata" [ref=e56]
+          - cell "2026-04-24" [ref=e57]
+        - row "Hyderabad hyderabad IN-TG Asia/Kolkata 2026-04-24" [ref=e58]:
+          - cell "Hyderabad" [ref=e59]
+          - cell "hyderabad" [ref=e60]
+          - cell "IN-TG" [ref=e61]
+          - cell "Asia/Kolkata" [ref=e62]
+          - cell "2026-04-24" [ref=e63]

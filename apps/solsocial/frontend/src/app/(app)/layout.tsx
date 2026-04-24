@@ -102,7 +102,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <footer className="px-8 py-10 border-t border-[color:var(--rule)] mt-16">
         <div className="flex items-center justify-between">
           <span className="kicker">© {new Date().getFullYear()} · solsocial · an almanac for your feed</span>
-          <span className="mono text-[10px] text-[color:var(--ink-40)]">hand-set in fraunces &amp; ibm plex · published on tennetctl</span>
+          <span className="mono text-[10px] text-[color:var(--ink-40)]">
+            hand-set in fraunces &amp; ibm plex · published on{" "}
+            <a
+              href="http://localhost:51735"
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-[color:var(--ember)] underline-offset-2 hover:text-[color:var(--ember)] transition"
+            >
+              tennetctl
+            </a>
+          </span>
         </div>
       </footer>
     </div>

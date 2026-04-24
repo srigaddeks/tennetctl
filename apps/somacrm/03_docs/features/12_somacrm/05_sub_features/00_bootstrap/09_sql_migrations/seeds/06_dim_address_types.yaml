@@ -1,0 +1,8 @@
+schema: "12_somacrm"
+table: "dim_address_types"
+rows:
+  - {id: 1, code: home, label: Home, description: Home address, deprecated_at: null}
+  - {id: 2, code: office, label: Office, description: Office address, deprecated_at: null}
+  - {id: 3, code: billing, label: Billing, description: Billing address, deprecated_at: null}
+  - {id: 4, code: delivery, label: Delivery, description: Delivery address, deprecated_at: null}
+  - {id: 5, code: other, label: Other, description: Other address, deprecated_at: null}

@@ -1,0 +1,205 @@
+- generic [active] [ref=e1]:
+  - status [ref=e18]:
+    - generic [ref=e19]:
+      - img [ref=e21]
+      - generic [ref=e23]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+  - alert [ref=e17]
+  - generic [ref=e28]:
+    - complementary [ref=e29]:
+      - link "somaerp ERP Platform" [ref=e31] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e32]: somaerp
+        - generic [ref=e33]: ERP Platform
+      - navigation [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]: OPERATIONS
+          - list [ref=e37]:
+            - listitem [ref=e38]:
+              - link "Geography" [ref=e39] [cursor=pointer]:
+                - /url: /geography
+                - img [ref=e41]
+                - generic [ref=e44]: Geography
+            - listitem [ref=e45]:
+              - link "Catalog" [ref=e46] [cursor=pointer]:
+                - /url: /catalog
+                - img [ref=e48]
+                - generic [ref=e50]: Catalog
+            - listitem [ref=e51]:
+              - link "Supply" [ref=e52] [cursor=pointer]:
+                - /url: /supply
+                - img [ref=e54]
+                - generic [ref=e59]: Supply
+        - generic [ref=e60]:
+          - generic [ref=e61]: PRODUCTION
+          - list [ref=e62]:
+            - listitem [ref=e63]:
+              - link "Recipes" [ref=e64] [cursor=pointer]:
+                - /url: /recipes
+                - img [ref=e66]
+                - generic [ref=e68]: Recipes
+            - listitem [ref=e69]:
+              - link "Equipment" [ref=e70] [cursor=pointer]:
+                - /url: /equipment
+                - img [ref=e72]
+                - generic [ref=e74]: Equipment
+            - listitem [ref=e75]:
+              - link "Quality" [ref=e76] [cursor=pointer]:
+                - /url: /quality
+                - img [ref=e78]
+                - generic [ref=e81]: Quality
+            - listitem [ref=e82]:
+              - link "Procurement" [ref=e83] [cursor=pointer]:
+                - /url: /procurement
+                - img [ref=e85]
+                - generic [ref=e89]: Procurement
+            - listitem [ref=e90]:
+              - link "Inventory" [ref=e91] [cursor=pointer]:
+                - /url: /inventory
+                - img [ref=e93]
+                - generic [ref=e96]: Inventory
+            - listitem [ref=e97]:
+              - link "Production" [ref=e98] [cursor=pointer]:
+                - /url: /production
+                - img [ref=e100]
+                - generic [ref=e103]: Production
+        - generic [ref=e104]:
+          - generic [ref=e105]: COMMERCE
+          - list [ref=e106]:
+            - listitem [ref=e107]:
+              - link "Customers" [ref=e108] [cursor=pointer]:
+                - /url: /customers
+                - img [ref=e110]
+                - generic [ref=e115]: Customers
+            - listitem [ref=e116]:
+              - link "Subscriptions" [ref=e117] [cursor=pointer]:
+                - /url: /subscriptions
+                - img [ref=e119]
+                - generic [ref=e124]: Subscriptions
+            - listitem [ref=e125]:
+              - link "Delivery" [ref=e126] [cursor=pointer]:
+                - /url: /delivery
+                - img [ref=e128]
+                - generic [ref=e132]: Delivery
+        - generic [ref=e133]:
+          - generic [ref=e134]: ANALYTICS
+          - list [ref=e135]:
+            - listitem [ref=e136]:
+              - link "Reports" [ref=e137] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e139]
+                - generic [ref=e140]: Reports
+      - generic [ref=e142]: tennetctl v0.9.0
+    - generic [ref=e143]:
+      - banner [ref=e144]:
+        - navigation "Breadcrumb" [ref=e145]:
+          - generic [ref=e147]: somaerp
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - generic "Backend connected" [ref=e150]
+            - generic [ref=e151]: connected
+          - generic [ref=e153]: admin@example.com
+          - button "Sign out" [ref=e155] [cursor=pointer]
+      - main [ref=e156]:
+        - generic [ref=e157]:
+          - generic [ref=e158]:
+            - heading "Good morning — somaerp" [level=1] [ref=e159]
+            - paragraph [ref=e160]: Generic multi-kitchen, multi-region ERP built on tennetctl primitives.
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - generic [ref=e163]: Locations
+              - generic [ref=e164]: "3"
+            - generic [ref=e165]:
+              - generic [ref=e166]: Products
+              - generic [ref=e167]: "6"
+            - generic [ref=e168]:
+              - generic [ref=e169]: Raw Materials
+              - generic [ref=e170]: "17"
+            - generic [ref=e171]:
+              - generic [ref=e172]: Customers
+              - generic [ref=e173]: "1"
+          - generic [ref=e174]:
+            - heading "Modules" [level=2] [ref=e175]
+            - list [ref=e176]:
+              - listitem [ref=e177]:
+                - link "Geography Locations, kitchens, service zones" [ref=e178] [cursor=pointer]:
+                  - /url: /geography
+                  - generic [ref=e179]: Geography
+                  - generic [ref=e180]: Locations, kitchens, service zones
+              - listitem [ref=e181]:
+                - link "Catalog Product lines, products, variants" [ref=e182] [cursor=pointer]:
+                  - /url: /catalog
+                  - generic [ref=e183]: Catalog
+                  - generic [ref=e184]: Product lines, products, variants
+              - listitem [ref=e185]:
+                - link "Supply Raw materials, suppliers, supply matrix" [ref=e186] [cursor=pointer]:
+                  - /url: /supply
+                  - generic [ref=e187]: Supply
+                  - generic [ref=e188]: Raw materials, suppliers, supply matrix
+              - listitem [ref=e189]:
+                - link "Recipes Versioned recipes, BOM cost rollup" [ref=e190] [cursor=pointer]:
+                  - /url: /recipes
+                  - generic [ref=e191]: Recipes
+                  - generic [ref=e192]: Versioned recipes, BOM cost rollup
+              - listitem [ref=e193]:
+                - link "Equipment Kitchen equipment + attach to kitchens" [ref=e194] [cursor=pointer]:
+                  - /url: /equipment
+                  - generic [ref=e195]: Equipment
+                  - generic [ref=e196]: Kitchen equipment + attach to kitchens
+              - listitem [ref=e197]:
+                - link "Quality QC checkpoints + append-only check events" [ref=e198] [cursor=pointer]:
+                  - /url: /quality
+                  - generic [ref=e199]: Quality
+                  - generic [ref=e200]: QC checkpoints + append-only check events
+              - listitem [ref=e201]:
+                - link "Procurement Procurement runs + MRP-lite BOM planner" [ref=e202] [cursor=pointer]:
+                  - /url: /procurement
+                  - generic [ref=e203]: Procurement
+                  - generic [ref=e204]: Procurement runs + MRP-lite BOM planner
+              - listitem [ref=e205]:
+                - link "Inventory Current stock per kitchen + movement feed" [ref=e206] [cursor=pointer]:
+                  - /url: /inventory
+                  - generic [ref=e207]: Inventory
+                  - generic [ref=e208]: Current stock per kitchen + movement feed
+              - listitem [ref=e209]:
+                - link "Production The 4 AM tracker — batches, step log, yield" [ref=e210] [cursor=pointer]:
+                  - /url: /production
+                  - generic [ref=e211]: Production
+                  - generic [ref=e212]: The 4 AM tracker — batches, step log, yield
+              - listitem [ref=e213]:
+                - link "Customers Customer directory + status + subscriptions" [ref=e214] [cursor=pointer]:
+                  - /url: /customers
+                  - generic [ref=e215]: Customers
+                  - generic [ref=e216]: Customer directory + status + subscriptions
+              - listitem [ref=e217]:
+                - link "Subscriptions Plan templates + pause/resume/cancel" [ref=e218] [cursor=pointer]:
+                  - /url: /subscriptions
+                  - generic [ref=e219]: Subscriptions
+                  - generic [ref=e220]: Plan templates + pause/resume/cancel
+              - listitem [ref=e221]:
+                - link "Delivery Routes, riders, runs, stop-by-stop delivery" [ref=e222] [cursor=pointer]:
+                  - /url: /delivery
+                  - generic [ref=e223]: Delivery
+                  - generic [ref=e224]: Routes, riders, runs, stop-by-stop delivery
+              - listitem [ref=e225]:
+                - link "Reports KPI snapshot, yield/COGS trends, alerts" [ref=e226] [cursor=pointer]:
+                  - /url: /reports
+                  - generic [ref=e227]: Reports
+                  - generic [ref=e228]: KPI snapshot, yield/COGS trends, alerts
+          - generic [ref=e229]:
+            - heading "System Health" [level=2] [ref=e230]
+            - generic [ref=e231]:
+              - generic [ref=e232]:
+                - text: Version
+                - generic [ref=e233]: 0.1.0
+              - generic [ref=e234]:
+                - text: Uptime
+                - generic [ref=e235]: 57.4 s
+              - generic [ref=e236]:
+                - text: Proxy
+                - generic [ref=e237]: OK — 2 ms
+              - generic [ref=e238]:
+                - text: Base URL
+                - generic [ref=e239]: http://localhost:51734

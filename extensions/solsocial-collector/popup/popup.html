@@ -263,6 +263,10 @@
         <div class="stat-label">Today</div>
       </div>
       <div class="stat">
+        <div class="stat-val" id="total-count">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat">
         <div class="stat-val" id="queue-size">0</div>
         <div class="stat-label">Queued</div>
       </div>
@@ -271,18 +275,55 @@
     <!-- Platform breakdown -->
     <div class="platforms" id="platform-pills"></div>
 
-    <hr class="divider" />
-
-    <!-- Open SolSocial -->
-    <a class="open-app-btn" id="open-app" href="http://localhost:51835/intelligence" target="_blank">
-      View in SolSocial ↗
-    </a>
+    <!-- Type breakdown — what we captured most recently -->
+    <div id="type-breakdown" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px;"></div>
 
     <hr class="divider" />
 
-    <div class="actions">
-      <button class="btn btn-outline btn-sm" id="flush-btn" style="font-size:12px;">Flush queue now</button>
-      <button class="btn btn-danger" id="signout-btn" style="font-size:12px;">Sign out</button>
+    <!-- Live scanner telemetry on the active tab -->
+    <div id="scanner-panel" style="margin-bottom: 10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-40); margin-bottom:4px; font-weight:600;">
+        <span>active tab</span>
+        <button id="scan-btn" class="btn-link" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--lapis);text-decoration:underline;">scan now ↻</button>
+      </div>
+      <div id="scanner-line" class="mono" style="font-size:11px; color:var(--ink-70); line-height:1.5;">—</div>
+      <div id="scanner-warn" style="font-size:11px; color:var(--ember); margin-top:4px;"></div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Actions -->
+    <div class="actions" style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+      <a class="btn-primary" id="open-app" href="http://localhost:51835/intelligence" target="_blank" style="text-decoration:none;text-align:center;padding:8px;border-radius:4px;background:var(--ember);color:white;font-size:12px;font-weight:600;">
+        Feed ↗
+      </a>
+      <button class="btn-primary" id="flush-btn" style="padding:8px;border-radius:4px;background:var(--paper-deep);border:1px solid var(--rule);color:var(--ink);font-size:12px;cursor:pointer;">
+        Flush queue
+      </button>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- AI recommendations panel -->
+    <div id="ai-panel" style="margin-bottom:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-40); margin-bottom:6px; font-weight:600;">
+        <span>AI assist</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <button id="rec-posts" class="btn-link" style="padding:6px;border-radius:4px;background:var(--paper-deep);border:1px solid var(--rule);font-size:11px;cursor:pointer;">Post ideas</button>
+        <button id="rec-articles" class="btn-link" style="padding:6px;border-radius:4px;background:var(--paper-deep);border:1px solid var(--rule);font-size:11px;cursor:pointer;">Articles for me</button>
+      </div>
+      <div id="rec-output" style="margin-top:8px; font-size:11px; color:var(--ink-70); line-height:1.5; max-height:180px; overflow:auto;"></div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Footer -->
+    <div class="actions" style="display:flex; justify-content:space-between; align-items:center;">
+      <label style="font-size:10px; color:var(--ink-40); display:flex; align-items:center; gap:6px; cursor:pointer;">
+        <input type="checkbox" id="debug-toggle" /> debug logs
+      </label>
+      <button class="btn-link" id="signout-btn" style="background:none;border:none;color:var(--ink-40);font-size:10px;cursor:pointer;text-decoration:underline;">sign out</button>
     </div>
   </div>
 

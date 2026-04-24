@@ -38,6 +38,7 @@ def _build_ctx(request: Request, pool: Any) -> Any:
         session_id=getattr(state, "session_id", None) or request.headers.get("x-session-id"),
         org_id=getattr(state, "org_id", None) or request.headers.get("x-org-id"),
         workspace_id=getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id"),
+        application_id=getattr(state, "application_id", None) or request.headers.get("x-application-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),
@@ -48,11 +49,16 @@ def _build_ctx(request: Request, pool: Any) -> Any:
 
 
 @router.get("/v1/notify/templates", status_code=200)
-async def list_templates_route(request: Request, org_id: str | None = None) -> dict:
+async def list_templates_route(
+    request: Request,
+    org_id: str | None = None,
+    application_id: str | None = None,
+) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    resolved_org = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    resolved_app = application_id or getattr(request.state, "application_id", None) or request.headers.get("x-application-id")
     async with pool.acquire() as conn:
-        items = await _service.list_templates(conn, org_id=org_id)
+        items = await _service.list_templates(conn, org_id=resolved_org, application_id=resolved_app)
     data = [TemplateRow(**r).model_dump() for r in items]
     return _response.success({"items": data, "total": len(data)})
 
@@ -60,7 +66,7 @@ async def list_templates_route(request: Request, org_id: str | None = None) -> d
 @router.post("/v1/notify/templates", status_code=201)
 async def create_template_route(request: Request, body: TemplateCreate) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     data = body.model_dump()
     # Convert bodies list to plain dicts for repo
@@ -75,7 +81,7 @@ async def create_template_route(request: Request, body: TemplateCreate) -> dict:
 @router.get("/v1/notify/templates/{template_id}", status_code=200)
 async def get_template_route(request: Request, template_id: str) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await _service.get_template(conn, template_id=template_id)
     if row is None:
@@ -88,7 +94,7 @@ async def update_template_route(
     request: Request, template_id: str, body: TemplateUpdate
 ) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)
@@ -106,7 +112,7 @@ async def upsert_bodies_route(
     request: Request, template_id: str, body: TemplateBodiesUpsert
 ) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     bodies = [b.model_dump() for b in body.bodies]
     async with pool.acquire() as conn:
@@ -122,7 +128,7 @@ async def test_send_route(
     request: Request, template_id: str, body: TestSendRequest
 ) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     vault = getattr(request.app.state, "vault", None)
     if vault is None:
         raise _errors.AppError("NO_VAULT", "Vault not configured — cannot send email.", 503)
@@ -144,7 +150,7 @@ async def template_analytics_route(request: Request, template_id: str) -> dict:
     if not user_id:
         raise _errors.AppError("UNAUTHORIZED", "Authentication required.", 401)
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         data = await _repo.get_template_analytics(conn, template_id=template_id)
     return _response.success(data)
@@ -153,7 +159,7 @@ async def template_analytics_route(request: Request, template_id: str) -> dict:
 @router.delete("/v1/notify/templates/{template_id}", status_code=204)
 async def delete_template_route(request: Request, template_id: str) -> None:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
+    org_id = getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)

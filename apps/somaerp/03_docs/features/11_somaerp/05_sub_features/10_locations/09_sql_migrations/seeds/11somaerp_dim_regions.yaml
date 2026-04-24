@@ -1,0 +1,11 @@
+schema: "11_somaerp"
+table: "dim_regions"
+rows:
+  - id: 1
+    code: "IN-TG"
+    country_code: "IN"
+    state_name: "Telangana"
+    regulatory_body: "FSSAI"
+    default_currency_code: "INR"
+    default_timezone: "Asia/Kolkata"
+    deprecated_at: null

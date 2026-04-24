@@ -1,0 +1,8 @@
+schema: "12_somacrm"
+table: "dim_activity_types"
+rows:
+  - {id: 1, code: task, label: Task, icon: "✓", description: A task to complete, deprecated_at: null}
+  - {id: 2, code: call, label: Call, icon: "📞", description: A phone or video call, deprecated_at: null}
+  - {id: 3, code: email, label: Email, icon: "✉", description: An email communication, deprecated_at: null}
+  - {id: 4, code: meeting, label: Meeting, icon: "📅", description: An in-person or virtual meeting, deprecated_at: null}
+  - {id: 5, code: note, label: Note, icon: "📝", description: A general note, deprecated_at: null}

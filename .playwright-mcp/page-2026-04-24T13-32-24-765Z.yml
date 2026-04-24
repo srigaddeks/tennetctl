@@ -1,0 +1,141 @@
+- generic [active] [ref=e1]:
+  - status [ref=e21]:
+    - generic [ref=e22]:
+      - img [ref=e24]
+      - generic [ref=e26]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+  - alert [ref=e17]
+  - main [ref=e57]:
+    - generic [ref=e58]:
+      - paragraph [ref=e59]:
+        - link "somaerp" [ref=e60] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "recipes" [ref=e61] [cursor=pointer]:
+          - /url: /recipes
+        - text: /Green Morning
+      - heading "Green Morning v1" [level=1] [ref=e62]
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - term [ref=e66]: Product
+        - definition [ref=e67]: Green Morning
+      - generic [ref=e68]:
+        - term [ref=e69]: Version
+        - definition [ref=e70]:
+          - code [ref=e71]: v1
+      - generic [ref=e72]:
+        - term [ref=e73]: Status
+        - definition [ref=e74]:
+          - generic [ref=e75]: draft
+      - generic [ref=e76]:
+        - term [ref=e77]: Effective From
+        - definition [ref=e78]: 2026-04-24
+      - generic [ref=e79]:
+        - term [ref=e80]: Notes
+        - definition [ref=e81]: Green Morning v1 — 300ml cold-pressed juice
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - heading "BOM Cost (live)" [level=2] [ref=e84]
+        - paragraph [ref=e85]: "Server-truth: INR 3.00"
+      - generic [ref=e86]:
+        - paragraph [ref=e87]: INR 3.00
+        - generic [ref=e88]: per batch
+      - table [ref=e141]:
+        - rowgroup [ref=e142]:
+          - row "Ingredient Quantity Unit Cost Line Cost" [ref=e143]:
+            - columnheader "Ingredient" [ref=e144]
+            - columnheader "Quantity" [ref=e145]
+            - columnheader "Unit Cost" [ref=e146]
+            - columnheader "Line Cost" [ref=e147]
+        - rowgroup [ref=e148]:
+          - row "Spinach 150 g 20.00 3.00" [ref=e149]:
+            - cell "Spinach" [ref=e150]
+            - cell "150 g" [ref=e151]
+            - cell "20.00" [ref=e152]
+            - cell "3.00" [ref=e153]
+    - generic [ref=e89]:
+      - heading "Ingredients" [level=2] [ref=e91]
+      - table [ref=e155]:
+        - rowgroup [ref=e156]:
+          - row "Pos Raw Material Quantity Unit" [ref=e157]:
+            - columnheader "Pos" [ref=e158]
+            - columnheader "Raw Material" [ref=e159]
+            - columnheader "Quantity" [ref=e160]
+            - columnheader "Unit" [ref=e161]
+            - columnheader [ref=e162]
+        - rowgroup [ref=e163]:
+          - row "1 Spinach 150.000 g Delete" [ref=e164]:
+            - cell "1" [ref=e165]
+            - cell "Spinach" [ref=e166]
+            - cell "150.000" [ref=e167]
+            - cell "g" [ref=e168]
+            - cell "Delete" [ref=e169]:
+              - button "Delete" [ref=e170] [cursor=pointer]
+          - row "Pick… Unit… Add" [ref=e171]:
+            - cell [ref=e172]:
+              - spinbutton [ref=e173]
+            - cell "Pick…" [ref=e174]:
+              - combobox [ref=e175]:
+                - option "Pick…" [selected]
+                - option "Branded Label"
+                - option "Tamper-Evident Cap"
+                - option "300ml PET Bottle"
+                - option "Black Pepper"
+                - option "Pineapple"
+                - option "Orange"
+                - option "Cucumber"
+                - option "Lemon"
+                - option "Green Apple"
+                - option "Fresh Turmeric"
+                - option "Ginger"
+                - option "Beetroot"
+                - option "Carrot"
+                - option "Celery"
+                - option "Coriander"
+                - option "Mint"
+                - option "Spinach"
+            - cell [ref=e176]:
+              - spinbutton [ref=e177]
+            - cell "Unit…" [ref=e178]:
+              - combobox [ref=e179]:
+                - option "Unit…" [selected]
+                - option "kg"
+                - option "g"
+                - option "l"
+                - option "ml"
+                - option "count"
+                - option "bunch"
+                - option "bottle"
+            - cell "Add" [ref=e180]:
+              - button "Add" [ref=e181] [cursor=pointer]
+    - generic [ref=e113]:
+      - heading "Steps" [level=2] [ref=e115]
+      - table [ref=e188]:
+        - rowgroup [ref=e189]:
+          - row "# Name Duration (min) Instructions" [ref=e190]:
+            - columnheader "#" [ref=e191]
+            - columnheader "Name" [ref=e192]
+            - columnheader "Duration (min)" [ref=e193]
+            - columnheader "Instructions" [ref=e194]
+            - columnheader [ref=e195]
+        - rowgroup [ref=e196]:
+          - row "1 Cold press spinach 10 Feed through cold-press at low speed Delete" [ref=e197]:
+            - cell "1" [ref=e198]
+            - cell "Cold press spinach" [ref=e199]
+            - cell "10" [ref=e200]
+            - cell "Feed through cold-press at low speed" [ref=e201]
+            - cell "Delete" [ref=e202]:
+              - button "Delete" [ref=e203] [cursor=pointer]
+          - row "Add" [ref=e204]:
+            - cell [ref=e205]:
+              - spinbutton [ref=e206]
+            - cell [ref=e207]:
+              - textbox "Wash all produce" [ref=e208]
+            - cell [ref=e209]:
+              - spinbutton [ref=e210]
+            - cell [ref=e211]:
+              - textbox "Triple rinse" [ref=e212]
+            - cell "Add" [ref=e213]:
+              - button "Add" [ref=e214] [cursor=pointer]

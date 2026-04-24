@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
@@ -43,6 +44,7 @@ export default function IpAllowlistPage() {
   const [deleteTarget, setDeleteTarget] = useState<IpAllowlistEntry | null>(
     null,
   );
+  const [appId, setAppId] = useState<string | null>(null);
 
   const isRestricted = entries.length > 0;
 
@@ -67,6 +69,10 @@ export default function IpAllowlistPage() {
         className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in"
         data-testid="iam-ip-allowlist-body"
       >
+        <div className="mb-5">
+          <ApplicationScopeBar appId={appId} onChange={setAppId} label="Restrict IPs to application" />
+        </div>
+
         {/* Status banner */}
         <div
           className="mb-5 flex items-center gap-3 rounded border px-4 py-3"

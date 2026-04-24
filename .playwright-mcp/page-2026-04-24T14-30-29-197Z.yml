@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - status [ref=e240]:
+    - generic [ref=e241]:
+      - img [ref=e243]
+      - generic [ref=e245]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e246] [cursor=pointer]:
+          - img [ref=e247]
+  - alert [ref=e17]
+  - generic [ref=e251]:
+    - generic [ref=e252]:
+      - heading "somaerp" [level=1] [ref=e253]
+      - paragraph [ref=e254]: ERP Platform
+    - generic [ref=e255]:
+      - generic [ref=e256]:
+        - generic [ref=e257]: Email
+        - textbox "Email" [ref=e258]
+      - generic [ref=e259]:
+        - generic [ref=e260]: Password
+        - textbox "Password" [ref=e261]
+      - button "Sign in" [ref=e262] [cursor=pointer]
+    - paragraph [ref=e263]:
+      - text: Don't have an account?
+      - link "Sign up" [ref=e264] [cursor=pointer]:
+        - /url: /signup

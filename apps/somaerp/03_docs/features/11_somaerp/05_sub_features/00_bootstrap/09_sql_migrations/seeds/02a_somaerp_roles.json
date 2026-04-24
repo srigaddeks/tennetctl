@@ -1,0 +1,46 @@
+{
+  "schema": "03_iam",
+  "table": "13_fct_roles",
+  "rows": [
+    {
+      "id": "019dbfc0-2001-7000-8000-000000000001",
+      "org_id": "019db460-92e0-7c61-968b-6c01d507511c",
+      "application_id": "019dbfc0-1001-7000-8000-000000000001",
+      "role_type_id": 2,
+      "is_active": true,
+      "is_test": false,
+      "created_by": "019db460-90ed-7351-a97f-36d6b37584fe",
+      "updated_by": "019db460-90ed-7351-a97f-36d6b37584fe"
+    },
+    {
+      "id": "019dbfc0-2002-7000-8000-000000000001",
+      "org_id": "019db460-92e0-7c61-968b-6c01d507511c",
+      "application_id": "019dbfc0-1001-7000-8000-000000000001",
+      "role_type_id": 2,
+      "is_active": true,
+      "is_test": false,
+      "created_by": "019db460-90ed-7351-a97f-36d6b37584fe",
+      "updated_by": "019db460-90ed-7351-a97f-36d6b37584fe"
+    },
+    {
+      "id": "019dbfc0-2003-7000-8000-000000000001",
+      "org_id": "019db460-92e0-7c61-968b-6c01d507511c",
+      "application_id": "019dbfc0-1001-7000-8000-000000000001",
+      "role_type_id": 2,
+      "is_active": true,
+      "is_test": false,
+      "created_by": "019db460-90ed-7351-a97f-36d6b37584fe",
+      "updated_by": "019db460-90ed-7351-a97f-36d6b37584fe"
+    },
+    {
+      "id": "019dbfc0-2004-7000-8000-000000000001",
+      "org_id": "019db460-92e0-7c61-968b-6c01d507511c",
+      "application_id": "019dbfc0-1001-7000-8000-000000000001",
+      "role_type_id": 2,
+      "is_active": true,
+      "is_test": false,
+      "created_by": "019db460-90ed-7351-a97f-36d6b37584fe",
+      "updated_by": "019db460-90ed-7351-a97f-36d6b37584fe"
+    }
+  ]
+}

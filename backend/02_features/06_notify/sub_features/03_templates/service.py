@@ -19,8 +19,13 @@ _catalog: Any = import_module("backend.01_catalog")
 _jinja_env = jinja2.Environment(undefined=jinja2.Undefined, autoescape=False)
 
 
-async def list_templates(conn: Any, *, org_id: str) -> list[dict]:
-    return await _repo.list_templates(conn, org_id=org_id)
+async def list_templates(
+    conn: Any,
+    *,
+    org_id: str,
+    application_id: str | None = None,
+) -> list[dict]:
+    return await _repo.list_templates(conn, org_id=org_id, application_id=application_id)
 
 
 async def get_template(conn: Any, *, template_id: str) -> dict | None:

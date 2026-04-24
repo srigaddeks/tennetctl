@@ -1,0 +1,23 @@
+schema: "11_somaerp"
+table: "dim_rider_roles"
+rows:
+  - id: 1
+    code: "owner"
+    name: "Owner"
+    deprecated_at: null
+  - id: 2
+    code: "contractor"
+    name: "Contractor"
+    deprecated_at: null
+  - id: 3
+    code: "employee"
+    name: "Employee"
+    deprecated_at: null
+  - id: 4
+    code: "partner"
+    name: "Partner"
+    deprecated_at: null
+  - id: 5
+    code: "gig"
+    name: "Gig"
+    deprecated_at: null

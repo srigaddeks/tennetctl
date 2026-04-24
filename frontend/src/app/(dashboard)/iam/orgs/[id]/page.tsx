@@ -32,6 +32,7 @@ import {
   useUpdateOrg,
 } from "@/features/iam-orgs/hooks/use-orgs";
 import { useWorkspaces } from "@/features/iam-workspaces/hooks/use-workspaces";
+import { useApplications } from "@/features/iam-applications/hooks/use-applications";
 import { useFlags } from "@/features/featureflags/hooks/use-flags";
 import { useSecrets } from "@/features/vault/secrets/hooks/use-secrets";
 import { ApiClientError } from "@/lib/api";
@@ -102,6 +103,7 @@ export default function OrgDetailPage() {
   const update = useUpdateOrg();
   const del = useDeleteOrg();
   const { data: workspaces } = useWorkspaces({ limit: 500, org_id: orgId });
+  const { data: applications } = useApplications({ org_id: orgId, limit: 50 });
   const { data: flags } = useFlags({ org_id: orgId, limit: 1 });
   const { data: secrets } = useSecrets({ org_id: orgId });
 
@@ -420,6 +422,51 @@ export default function OrgDetailPage() {
             </Table>
           )}
         </section>
+
+        {/* Applications in this org */}
+        {(applications?.items ?? []).length > 0 && (
+          <section
+            className="mb-6 rounded-lg p-6"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border)",
+            }}
+            data-testid="org-applications-section"
+          >
+            <h2
+              className="label-caps mb-4"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Applications in this org
+              <span
+                className="ml-2 rounded px-1.5 py-0.5 font-mono-data"
+                style={{
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-muted)",
+                  fontSize: "10px",
+                }}
+              >
+                {applications?.items.length ?? 0}
+              </span>
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {(applications?.items ?? []).map((app) => (
+                <Link
+                  key={app.id}
+                  href={`/iam/applications/${app.id}`}
+                  className="rounded border px-3 py-1.5 text-xs hover:underline"
+                  style={{
+                    background: "var(--bg-elevated)",
+                    borderColor: "var(--border)",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  {app.label ?? app.code}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Quick Links section */}
         <section data-testid="org-quick-links">

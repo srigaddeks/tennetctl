@@ -378,6 +378,20 @@ export default function TemplateDesignerPage({
       style={{ display: "flex", height: "calc(100vh - 64px)", flexDirection: "column" }}
       data-testid="designer-page"
     >
+      {/* App-scope notice — binding to applications is on the roadmap */}
+      <div
+        style={{
+          padding: "6px 24px",
+          borderBottom: "1px solid var(--border)",
+          background: "var(--info-muted)",
+          fontSize: 11,
+          color: "var(--info)",
+          flexShrink: 0,
+        }}
+        data-testid="template-app-scope-banner"
+      >
+        Template is org-scoped. Application binding coming soon.
+      </div>
       {/* Header bar */}
       <div
         style={{

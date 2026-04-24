@@ -85,7 +85,14 @@ class TennetCTLClient:
                 "server-to-server calls to tennetctl.",
                 500,
             )
-        return self._bearer(self._service_api_key)
+        headers = self._bearer(self._service_api_key)
+        # Stamp every outbound call with our application_id so tennetctl can
+        # attribute audit events, feature flag evaluations, and vault reads
+        # to this application. Middleware reads x-application-id when the
+        # bearer is an API key (no session-bound application_id).
+        if self._application_id:
+            headers["x-application-id"] = self._application_id
+        return headers
 
     @staticmethod
     def _raise_for_envelope(r: httpx.Response) -> dict:

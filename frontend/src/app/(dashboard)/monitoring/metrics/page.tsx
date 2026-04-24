@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { Modal } from "@/components/modal";
 import { Button, Field, Input, Select } from "@/components/ui";
@@ -31,6 +32,7 @@ const BUCKET_OPTIONS: { value: MetricBucket; label: string }[] = [
 
 export default function MetricsPage() {
   const [metric, setMetric] = useState<Metric | null>(null);
+  const [appId, setAppId] = useState<string | null>(null);
   const [timerange, setTimerange] = useState<Timerange>({ last: "1h" });
   const [bucket, setBucket] = useState<MetricBucket>("5m");
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,6 +83,14 @@ export default function MetricsPage() {
         description="Counters, gauges, and histograms — queried via Monitoring DSL."
         testId="heading-monitoring-metrics"
       />
+
+      <div className="px-6 pt-4">
+        <ApplicationScopeBar
+          appId={appId}
+          onChange={setAppId}
+          label="Filter metrics by application"
+        />
+      </div>
 
       <div className="grid flex-1 grid-cols-1 gap-0 overflow-hidden lg:grid-cols-[300px_1fr] animate-fade-in">
         {/* Left panel: metric picker */}

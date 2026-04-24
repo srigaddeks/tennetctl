@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - paragraph [ref=e4]:
+        - link "somaerp" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - text: /catalog
+      - heading "Catalog" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Product lines and SKUs — the dependency for recipes, production batches, subscriptions, and kitchen capacity planning.
+    - list [ref=e9]:
+      - listitem [ref=e10]:
+        - link "Product Lines Top-level product families grouped by category (beverage, shot, pulp). Every product rolls up to a line." [ref=e11] [cursor=pointer]:
+          - /url: /catalog/product-lines
+          - generic [ref=e12]: Product Lines
+          - generic [ref=e13]: Top-level product families grouped by category (beverage, shot, pulp). Every product rolls up to a line.
+      - listitem [ref=e14]:
+        - link "Products SKUs within a product line. Carry default serving, shelf life, COGS, price, currency, and wellness tags." [ref=e15] [cursor=pointer]:
+          - /url: /catalog/products
+          - generic [ref=e16]: Products
+          - generic [ref=e17]: SKUs within a product line. Carry default serving, shelf life, COGS, price, currency, and wellness tags.
+  - alert [ref=e18]

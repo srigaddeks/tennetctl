@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/page-header";
 import { FEATURES } from "@/config/features";
+import { useApplications } from "@/features/iam-applications/hooks/use-applications";
 
 const FEATURE_META: Record<
   string,
@@ -157,6 +158,8 @@ function FeatureCard({
 
 export default function Overview() {
   const features = FEATURES.filter((f) => f.key !== "overview");
+  const { data: apps } = useApplications({ limit: 500 });
+  const appCount = apps?.items?.length ?? 0;
   return (
     <div className="flex flex-1 flex-col">
       <PageHeader
@@ -165,6 +168,36 @@ export default function Overview() {
         testId="heading"
       />
       <div className="flex-1 overflow-y-auto px-6 py-6">
+        <Link
+          href="/iam/applications"
+          className="mb-4 flex items-center justify-between rounded border px-4 py-3 transition-colors"
+          style={{
+            background: "var(--bg-surface)",
+            borderColor: "var(--border)",
+          }}
+          data-testid="overview-applications-counter"
+        >
+          <div>
+            <div
+              className="label-caps text-[10px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              SaaS Applications
+            </div>
+            <div
+              className="mt-1 text-[20px] font-semibold tabular-nums"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {appCount} <span className="text-[12px] font-normal" style={{ color: "var(--text-muted)" }}>registered</span>
+            </div>
+          </div>
+          <span
+            className="text-[10px] font-semibold tracking-wider"
+            style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}
+          >
+            MANAGE →
+          </span>
+        </Link>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {features.map((f) => (
             <FeatureCard key={f.key} f={f} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { PageHeader } from "@/components/page-header";
@@ -32,6 +33,7 @@ function buildCsvUrl(filter: AuditEventFilter): string {
   if (filter.category_code) params.set("category_code", filter.category_code);
   if (filter.outcome) params.set("outcome", filter.outcome);
   if (filter.actor_user_id) params.set("actor_user_id", filter.actor_user_id);
+  if (filter.application_id) params.set("application_id", filter.application_id);
   if (filter.since) params.set("since", filter.since);
   if (filter.until) params.set("until", filter.until);
   if (filter.q) params.set("q", filter.q);
@@ -40,8 +42,12 @@ function buildCsvUrl(filter: AuditEventFilter): string {
 }
 
 export default function AuditExplorerPage() {
+  const searchParams = useSearchParams();
+  const initialAppId = searchParams.get("application_id");
   const [tab, setTab] = useState<Tab>("explorer");
-  const [filter, setFilter] = useState<AuditEventFilter>(EMPTY_FILTER);
+  const [filter, setFilter] = useState<AuditEventFilter>(
+    initialAppId ? { application_id: initialAppId } : EMPTY_FILTER,
+  );
   const [bucket, setBucket] = useState<AuditBucket>("hour");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [accumulated, setAccumulated] = useState<AuditEventRow[]>([]);
@@ -137,6 +143,9 @@ export default function AuditExplorerPage() {
       if (filter.actor_user_id && r.actor_user_id !== filter.actor_user_id) {
         return false;
       }
+      if (filter.application_id && r.application_id !== filter.application_id) {
+        return false;
+      }
       if (filter.q) {
         const q = filter.q.toLowerCase();
         const hay = JSON.stringify(r.metadata ?? {}).toLowerCase();
@@ -144,7 +153,7 @@ export default function AuditExplorerPage() {
       }
       return true;
     },
-    [filter.event_key, filter.category_code, filter.outcome, filter.actor_user_id, filter.q],
+    [filter.event_key, filter.category_code, filter.outcome, filter.actor_user_id, filter.application_id, filter.q],
   );
 
   const items: AuditEventRow[] = useMemo(() => {

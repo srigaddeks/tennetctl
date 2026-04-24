@@ -6,20 +6,41 @@ import json
 from typing import Any
 
 
-async def list_templates(conn: Any, *, org_id: str) -> list[dict]:
-    rows = await conn.fetch(
-        """
-        SELECT id, org_id, key, group_id, group_key, category_id, category_code,
-               category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, fallback_chain,
-               is_active, created_by, updated_by, created_at, updated_at,
-               bodies
-        FROM "06_notify"."v_notify_templates"
-        WHERE org_id = $1
-        ORDER BY created_at DESC
-        """,
-        org_id,
-    )
+async def list_templates(
+    conn: Any,
+    *,
+    org_id: str,
+    application_id: str | None = None,
+) -> list[dict]:
+    if application_id is not None:
+        rows = await conn.fetch(
+            """
+            SELECT id, org_id, key, group_id, group_key, category_id, category_code,
+                   category_label, subject, reply_to, priority_id, priority_code,
+                   priority_label, fallback_chain, application_id,
+                   is_active, created_by, updated_by, created_at, updated_at,
+                   bodies
+            FROM "06_notify"."v_notify_templates"
+            WHERE org_id = $1
+              AND (application_id = $2 OR application_id IS NULL)
+            ORDER BY created_at DESC
+            """,
+            org_id, application_id,
+        )
+    else:
+        rows = await conn.fetch(
+            """
+            SELECT id, org_id, key, group_id, group_key, category_id, category_code,
+                   category_label, subject, reply_to, priority_id, priority_code,
+                   priority_label, fallback_chain, application_id,
+                   is_active, created_by, updated_by, created_at, updated_at,
+                   bodies
+            FROM "06_notify"."v_notify_templates"
+            WHERE org_id = $1
+            ORDER BY created_at DESC
+            """,
+            org_id,
+        )
     return [_row_to_dict(r) for r in rows]
 
 
@@ -28,7 +49,7 @@ async def get_template(conn: Any, *, template_id: str) -> dict | None:
         """
         SELECT id, org_id, key, group_id, group_key, category_id, category_code,
                category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, fallback_chain,
+               priority_label, fallback_chain, application_id,
                is_active, created_by, updated_by, created_at, updated_at,
                bodies
         FROM "06_notify"."v_notify_templates"
@@ -44,7 +65,7 @@ async def get_template_by_key(conn: Any, *, org_id: str, key: str) -> dict | Non
         """
         SELECT id, org_id, key, group_id, group_key, category_id, category_code,
                category_label, subject, reply_to, priority_id, priority_code,
-               priority_label, fallback_chain,
+               priority_label, fallback_chain, application_id,
                is_active, created_by, updated_by, created_at, updated_at,
                bodies
         FROM "06_notify"."v_notify_templates"

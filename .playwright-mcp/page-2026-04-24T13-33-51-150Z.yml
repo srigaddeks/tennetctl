@@ -1,0 +1,51 @@
+- generic [active] [ref=e1]:
+  - status [ref=e42]:
+    - generic [ref=e43]:
+      - img [ref=e45]
+      - generic [ref=e47]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e48] [cursor=pointer]:
+          - img [ref=e49]
+  - alert [ref=e41]
+  - main [ref=e86]:
+    - generic [ref=e87]:
+      - paragraph [ref=e88]:
+        - link "somaerp" [ref=e89] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "subscriptions" [ref=e90] [cursor=pointer]:
+          - /url: /subscriptions
+        - text: /
+        - link "list" [ref=e91] [cursor=pointer]:
+          - /url: /subscriptions/list
+        - text: /new
+      - heading "New Subscription" [level=1] [ref=e92]
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e95]: Customer*
+        - combobox "Customer*" [ref=e96]:
+          - option "Choose…"
+          - option "Priya Sharma" [selected]
+      - generic [ref=e97]:
+        - generic [ref=e98]: Plan*
+        - combobox "Plan*" [ref=e99]:
+          - option "Choose…" [selected]
+      - generic [ref=e100]:
+        - generic [ref=e101]: Service Zone (optional)
+        - combobox "Service Zone (optional)" [ref=e102]:
+          - option "(none)" [selected]
+          - option "KPHB Cluster 1 (KPHB Home Kitchen)"
+      - generic [ref=e103]:
+        - generic [ref=e104]:
+          - generic [ref=e105]: Start Date*
+          - textbox "Start Date*" [ref=e106]: 2026-04-24
+        - generic [ref=e107]:
+          - generic [ref=e108]: Billing Cycle
+          - combobox "Billing Cycle" [ref=e109]:
+            - option "Weekly" [selected]
+            - option "Monthly"
+            - option "Prepaid"
+      - generic [ref=e110]:
+        - button "Create Subscription" [ref=e111] [cursor=pointer]
+        - link "Cancel" [ref=e112] [cursor=pointer]:
+          - /url: /subscriptions/list

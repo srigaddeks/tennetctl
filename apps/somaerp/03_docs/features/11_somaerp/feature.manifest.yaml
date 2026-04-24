@@ -1,0 +1,97 @@
+feature:
+  key: "11_somaerp"
+  name: "Soma ERP"
+  module: "somaerp"
+  description: "Generic multi-kitchen multi-region ERP for product businesses. Built on tennetctl primitives."
+  depends_on_modules:
+    - "iam"
+    - "audit"
+    - "vault"
+    - "notify"
+  schema: "11_somaerp"
+
+sub_features:
+  - key: "11_somaerp.00_health"
+    name: "Health"
+    description: "Liveness + tennetctl proxy verification."
+    nodes: []
+  - key: "11_somaerp.10_locations"
+    name: "Locations"
+    description: "City-level locations + read-only regions"
+    nodes: []
+  - key: "11_somaerp.15_kitchens"
+    name: "Kitchens"
+    description: "Production facilities per location"
+    nodes: []
+  - key: "11_somaerp.16_kitchen_capacity"
+    name: "Kitchen Capacity"
+    description: "Per-(kitchen x product_line x time_window x validity) capacity rows per ADR-003"
+    nodes: []
+  - key: "11_somaerp.17_service_zones"
+    name: "Service Zones"
+    description: "Delivery zones mapped to kitchens"
+    nodes: []
+  - key: "11_somaerp.20_product_lines"
+    name: "Product Lines"
+    description: "Product line definitions (grouping for recipes + capacity)"
+    nodes: []
+  - key: "11_somaerp.25_products"
+    name: "Products"
+    description: "SKUs + variants + wellness tags"
+    nodes: []
+  - key: "11_somaerp.30_raw_materials"
+    name: "Raw Materials"
+    description: "Raw material catalog + variants + categories + units of measure"
+    nodes: []
+  - key: "11_somaerp.35_suppliers"
+    name: "Suppliers"
+    description: "Supplier directory + source types + material<->supplier links with primary designation"
+    nodes: []
+  - key: "11_somaerp.40_recipes"
+    name: "Recipes"
+    description: "Versioned recipes + ingredients + steps + BOM cost rollup + step-equipment links"
+    nodes: []
+  - key: "11_somaerp.45_equipment"
+    name: "Equipment"
+    description: "Equipment inventory + categories + kitchen-equipment attach"
+    nodes: []
+  - key: "11_somaerp.50_quality"
+    name: "Quality"
+    description: "QC checkpoints (reusable definitions per recipe step / raw material / kitchen / product / universal) + append-only evt_qc_checks"
+    nodes: []
+  - key: "11_somaerp.60_procurement"
+    name: "Procurement"
+    description: "Procurement runs + lines with automatic evt_inventory_movements 'received' emission and running total_cost refresh"
+    nodes: []
+  - key: "11_somaerp.65_inventory"
+    name: "Inventory"
+    description: "Read-only current stock (v_inventory_current) + append-only movement feed + MRP-lite BOM-explosion planner (POST /v1/somaerp/inventory/plan)"
+    nodes: []
+  - key: "11_somaerp.70_production_batches"
+    name: "Production Batches"
+    description: "The 4 AM tracker — state machine planned/in_progress/completed/cancelled. Auto-generates step logs + consumption plan from active recipe at create. Auto-emits evt_inventory_movements 'consumed' on completion. v_batch_summary computes yield%/COGS-per-bottle/gross-margin/duration."
+    nodes: []
+  - key: "11_somaerp.80_customers"
+    name: "Customers"
+    description: "Tenant-scoped customer identity. Status machine: prospect/active/paused/churned/blocked. Emits somaerp.customers.{created,updated,status_changed,deleted}."
+    nodes: []
+  - key: "11_somaerp.85_subscriptions"
+    name: "Subscriptions"
+    description: "Subscription plan templates + nested plan items + customer subscriptions + append-only evt_subscription_events. State transitions auto-insert evt rows (started/paused/resumed/cancelled/ended). Universal dim_subscription_frequencies seeded."
+    nodes: []
+  - key: "11_somaerp.90_delivery_routes"
+    name: "Delivery Routes"
+    description: "Tenant-scoped delivery routes anchored to a kitchen + IMMUTABLE lnk_route_customers sequence. Reorder = DELETE all + INSERT atomically. Emits somaerp.delivery.routes.{created,updated,status_changed,deleted} + .route_customers.{attached,detached,reordered}."
+    nodes: []
+  - key: "11_somaerp.93_riders"
+    name: "Riders"
+    description: "Rider profiles + universal dim_rider_roles (owner/contractor/employee/partner/gig). user_id optional with cross-system validation against tennetctl iam users."
+    nodes: []
+  - key: "11_somaerp.95_delivery_runs"
+    name: "Delivery Runs"
+    description: "Route runs (state machine planned/in_transit/completed/cancelled) + per-customer dtl_delivery_stops generated from the route's customer snapshot. Rider mobile UI marks stops delivered/missed/customer_unavailable; run counters maintained atomically. Board groups today's runs by kitchen."
+    nodes: []
+  - key: "11_somaerp.99_reports"
+    name: "Reports"
+    description: "Read-only cross-layer rollup views over prior features. Views only, no new tables. Dashboard today snapshot, batch yield/COGS trends, inventory reorder alerts, procurement monthly spend, subscription revenue projection, FSSAI compliance CSV export."
+    nodes: []

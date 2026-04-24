@@ -57,6 +57,9 @@ export default function UserSessionsPage() {
   const userName = user?.display_name ?? user?.email ?? userId.slice(0, 8);
   const sessions = sessionsData?.items ?? [];
   const activeSessions = sessions.filter((s) => s.is_active);
+  const distinctApplications = new Set(
+    sessions.map((s) => s.application_id).filter((v): v is string => !!v),
+  ).size;
 
   if (userLoading || sessionsLoading) {
     return (
@@ -162,6 +165,25 @@ export default function UserSessionsPage() {
               style={{ color: "var(--text-secondary)" }}
             >
               {sessions.length - activeSessions.length}
+            </p>
+          </div>
+          <div
+            style={{
+              width: "1px",
+              height: "36px",
+              background: "var(--border)",
+            }}
+          />
+          <div>
+            <p className="label-caps" style={{ color: "var(--text-muted)" }}>
+              By Application
+            </p>
+            <p
+              className="text-2xl font-semibold"
+              style={{ color: "var(--text-primary)" }}
+              title="Distinct applications across sessions"
+            >
+              {distinctApplications}
             </p>
           </div>
         </div>

@@ -1,0 +1,26 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - paragraph [ref=e5]:
+        - link "somaerp" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "catalog" [ref=e7] [cursor=pointer]:
+          - /url: /catalog
+        - text: /products
+      - heading "Products" [level=1] [ref=e8]
+    - link "+ New Product" [ref=e9] [cursor=pointer]:
+      - /url: /catalog/products/new
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - text: Product Line
+      - combobox [ref=e12]:
+        - option "All product lines" [selected]
+    - generic [ref=e13]:
+      - text: Status
+      - combobox [ref=e14]:
+        - option "All" [selected]
+        - option "Active"
+        - option "Paused"
+        - option "Discontinued"
+  - paragraph [ref=e16]: Loading products…

@@ -1,0 +1,132 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - link "somaerp ERP Platform" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e6]: somaerp
+      - generic [ref=e7]: ERP Platform
+    - navigation [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: OPERATIONS
+        - list [ref=e11]:
+          - listitem [ref=e12]:
+            - link "Geography" [ref=e13] [cursor=pointer]:
+              - /url: /geography
+              - img [ref=e15]
+              - text: Geography
+          - listitem [ref=e18]:
+            - link "Catalog" [ref=e19] [cursor=pointer]:
+              - /url: /catalog
+              - img [ref=e21]
+              - text: Catalog
+          - listitem [ref=e23]:
+            - link "Supply" [ref=e24] [cursor=pointer]:
+              - /url: /supply
+              - img [ref=e26]
+              - text: Supply
+      - generic [ref=e31]:
+        - generic [ref=e32]: PRODUCTION
+        - list [ref=e33]:
+          - listitem [ref=e34]:
+            - link "Recipes" [ref=e35] [cursor=pointer]:
+              - /url: /recipes
+              - img [ref=e37]
+              - text: Recipes
+          - listitem [ref=e39]:
+            - link "Equipment" [ref=e40] [cursor=pointer]:
+              - /url: /equipment
+              - img [ref=e42]
+              - text: Equipment
+          - listitem [ref=e44]:
+            - link "Quality" [ref=e45] [cursor=pointer]:
+              - /url: /quality
+              - img [ref=e47]
+              - text: Quality
+          - listitem [ref=e50]:
+            - link "Procurement" [ref=e51] [cursor=pointer]:
+              - /url: /procurement
+              - img [ref=e53]
+              - text: Procurement
+          - listitem [ref=e57]:
+            - link "Inventory" [ref=e58] [cursor=pointer]:
+              - /url: /inventory
+              - img [ref=e60]
+              - text: Inventory
+          - listitem [ref=e63]:
+            - link "Production" [ref=e64] [cursor=pointer]:
+              - /url: /production
+              - img [ref=e66]
+              - text: Production
+      - generic [ref=e69]:
+        - generic [ref=e70]: COMMERCE
+        - list [ref=e71]:
+          - listitem [ref=e72]:
+            - link "Customers" [ref=e73] [cursor=pointer]:
+              - /url: /customers
+              - img [ref=e75]
+              - text: Customers
+          - listitem [ref=e80]:
+            - link "Subscriptions" [ref=e81] [cursor=pointer]:
+              - /url: /subscriptions
+              - img [ref=e83]
+              - text: Subscriptions
+          - listitem [ref=e88]:
+            - link "Delivery" [ref=e89] [cursor=pointer]:
+              - /url: /delivery
+              - img [ref=e91]
+              - text: Delivery
+      - generic [ref=e95]:
+        - generic [ref=e96]: ANALYTICS
+        - list [ref=e97]:
+          - listitem [ref=e98]:
+            - link "Reports" [ref=e99] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e101]
+              - text: Reports
+    - generic [ref=e102]: tennetctl v0.9.0
+  - generic [ref=e103]:
+    - banner [ref=e104]:
+      - navigation "Breadcrumb" [ref=e105]:
+        - link "somaerp" [ref=e107] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e108]: /Reports
+      - generic [ref=e109]:
+        - generic [ref=e110]:
+          - generic "Checking…"
+          - text: …
+        - text: admin@example.com
+    - main [ref=e111]:
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - heading "Reports" [level=1] [ref=e114]
+          - paragraph [ref=e115]: Cross-layer rollups over operations. Read-only views — no new data generated here.
+        - list [ref=e116]:
+          - listitem [ref=e117]:
+            - link "Today's Dashboard KPI snapshot — active batches, deliveries in transit, completed runs, active subscriptions." [ref=e118] [cursor=pointer]:
+              - /url: /reports/today
+              - generic [ref=e119]: Today's Dashboard
+              - generic [ref=e120]: KPI snapshot — active batches, deliveries in transit, completed runs, active subscriptions.
+          - listitem [ref=e121]:
+            - link "Yield & COGS Trends Daily/weekly/monthly yield percentage and COGS per unit with filters by kitchen and product." [ref=e122] [cursor=pointer]:
+              - /url: /reports/yield
+              - generic [ref=e123]: Yield & COGS Trends
+              - generic [ref=e124]: Daily/weekly/monthly yield percentage and COGS per unit with filters by kitchen and product.
+          - listitem [ref=e125]:
+            - link "Inventory Alerts Critical and low-stock raw materials per kitchen. Jump-start a procurement run from any row." [ref=e126] [cursor=pointer]:
+              - /url: /reports/inventory-alerts
+              - generic [ref=e127]: Inventory Alerts
+              - generic [ref=e128]: Critical and low-stock raw materials per kitchen. Jump-start a procurement run from any row.
+          - listitem [ref=e129]:
+            - link "Procurement Spend Monthly procurement spend rolled up by kitchen and supplier with totals." [ref=e130] [cursor=pointer]:
+              - /url: /reports/procurement
+              - generic [ref=e131]: Procurement Spend
+              - generic [ref=e132]: Monthly procurement spend rolled up by kitchen and supplier with totals.
+          - listitem [ref=e133]:
+            - link "Revenue Projection Projected monthly MRR per active subscription — price × deliveries_per_week × 4.333." [ref=e134] [cursor=pointer]:
+              - /url: /reports/revenue
+              - generic [ref=e135]: Revenue Projection
+              - generic [ref=e136]: Projected monthly MRR per active subscription — price × deliveries_per_week × 4.333.
+          - listitem [ref=e137]:
+            - link "FSSAI Compliance Per-batch lot numbers + QC results. Download a CSV filtered by date range." [ref=e138] [cursor=pointer]:
+              - /url: /reports/compliance
+              - generic [ref=e139]: FSSAI Compliance
+              - generic [ref=e140]: Per-batch lot numbers + QC results. Download a CSV filtered by date range.

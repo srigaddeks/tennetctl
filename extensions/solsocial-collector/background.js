@@ -170,12 +170,101 @@ async function handle(msg) {
         signedIn: !!auth?.token,
         enabled: auth?.enabled ?? false,
         user: auth?.user ?? null,
+        token: auth?.token ?? null,
         todayCount,
         queueSize,
         lastFlushAt,
         platformBreakdown,
         baseUrl: auth?.baseUrl ?? "http://localhost:51734",
       };
+    }
+
+    case "get_recommendations": {
+      const auth = await getAuth();
+      if (!auth?.token) return { ok: false, error: "not signed in" };
+      const endpoints = {
+        posts:    "/v1/social/recommendations/posts",
+        articles: "/v1/social/recommendations/articles",
+        comments: "/v1/social/recommendations/comments",
+      };
+      const endpoint = endpoints[msg.kind] ?? endpoints.posts;
+      const data = await apiFetch(endpoint, {
+        method: "POST",
+        token: auth.token,
+        baseUrl: auth.baseUrl,
+        body: msg.body ?? {},
+      });
+      return { ok: true, data };
+    }
+
+    case "compose_platform": {
+      const { platform, text } = msg;
+      const composeUrl = platform === "linkedin"
+        ? "https://www.linkedin.com/feed/?shareActive=true"
+        : "https://x.com/compose/post";
+
+      // Reuse existing platform tab if open, else open a new one
+      const matchUrls = platform === "linkedin"
+        ? ["https://www.linkedin.com/*"]
+        : ["https://x.com/*", "https://twitter.com/*"];
+      const existing = await chrome.tabs.query({ url: matchUrls });
+
+      let tabId;
+      if (existing.length > 0) {
+        tabId = existing[0].id;
+        await chrome.windows.update(existing[0].windowId, { focused: true });
+        await chrome.tabs.update(tabId, { active: true, url: composeUrl });
+      } else {
+        const tab = await chrome.tabs.create({ url: composeUrl, active: true });
+        tabId = tab.id;
+      }
+
+      // Wait for the tab to finish loading (15s timeout)
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          chrome.tabs.onUpdated.removeListener(listener);
+          reject(new Error("tab load timeout"));
+        }, 15_000);
+        function listener(id, changeInfo) {
+          if (id === tabId && changeInfo.status === "complete") {
+            chrome.tabs.onUpdated.removeListener(listener);
+            clearTimeout(timer);
+            resolve();
+          }
+        }
+        chrome.tabs.onUpdated.addListener(listener);
+      });
+
+      // Extra wait for JS framework hydration
+      await new Promise(r => setTimeout(r, 2500));
+
+      const results = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: (postText) => {
+          // Selectors ordered: most specific first
+          const selectors = [
+            '.ql-editor[contenteditable="true"]',          // LinkedIn Quill
+            'div[contenteditable="true"][data-placeholder]', // LinkedIn generic
+            '[data-testid="tweetTextarea_0"]',              // X Draft.js
+            '[aria-label="Post text"]',                     // X aria alt
+            '.public-DraftEditor-content[contenteditable="true"]', // Draft.js fallback
+          ];
+          for (const sel of selectors) {
+            const el = document.querySelector(sel);
+            if (el) {
+              el.focus();
+              document.execCommand("selectAll", false, null);
+              document.execCommand("insertText", false, postText);
+              el.dispatchEvent(new Event("input", { bubbles: true }));
+              return { ok: true, selector: sel };
+            }
+          }
+          return { ok: false, error: "composer not found — try clicking the text box first" };
+        },
+        args: [text],
+      });
+
+      return results?.[0]?.result ?? { ok: false, error: "script injection failed" };
     }
 
     default:

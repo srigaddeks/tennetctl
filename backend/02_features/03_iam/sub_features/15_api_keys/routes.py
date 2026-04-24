@@ -36,6 +36,7 @@ def _build_ctx(request: Request, pool: Any) -> Any:
         session_id=getattr(state, "session_id", None),
         org_id=getattr(state, "org_id", None),
         workspace_id=getattr(state, "workspace_id", None),
+        application_id=getattr(request.state, "application_id", None) or request.headers.get("x-application-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),

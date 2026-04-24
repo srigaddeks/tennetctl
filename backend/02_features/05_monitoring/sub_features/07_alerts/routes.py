@@ -53,6 +53,7 @@ def _build_ctx(request: Request) -> Any:
         org_id=org_id,
         workspace_id=getattr(state, "workspace_id", None)
             or request.headers.get("x-workspace-id"),
+        application_id=getattr(state, "application_id", None) or request.headers.get("x-application-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", "") or _core_id.uuid7(),

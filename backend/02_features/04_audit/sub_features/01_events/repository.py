@@ -75,6 +75,7 @@ def _build_where(filters: dict[str, Any]) -> tuple[str, list[Any]]:
         "actor_session_id",
         "org_id",
         "workspace_id",
+        "application_id",
         "trace_id",
     ):
         v = filters.get(col)
@@ -125,6 +126,7 @@ async def list_events(
         f"SELECT id, event_key, event_label, event_description, "
         f"       category_code, category_label, "
         f"       actor_user_id, actor_session_id, org_id, workspace_id, "
+        f"       application_id, "
         f"       trace_id, span_id, parent_span_id, "
         f"       outcome, metadata, created_at "
         f"FROM {_VIEW} "
@@ -150,6 +152,7 @@ async def get_event(conn: Any, event_id: str) -> dict | None:
         f"SELECT id, event_key, event_label, event_description, "
         f"       category_code, category_label, "
         f"       actor_user_id, actor_session_id, org_id, workspace_id, "
+        f"       application_id, "
         f"       trace_id, span_id, parent_span_id, "
         f"       outcome, metadata, created_at "
         f"FROM {_VIEW} WHERE id = $1",

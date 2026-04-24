@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - status [ref=e21]:
+    - generic [ref=e22]:
+      - img [ref=e24]
+      - generic [ref=e26]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+  - alert [ref=e17]
+  - main [ref=e57]:
+    - generic [ref=e58]:
+      - paragraph [ref=e59]:
+        - link "somaerp" [ref=e60] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "recipes" [ref=e61] [cursor=pointer]:
+          - /url: /recipes
+        - text: /Green Morning
+      - heading "Green Morning v1" [level=1] [ref=e62]
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - term [ref=e66]: Product
+        - definition [ref=e67]: Green Morning
+      - generic [ref=e68]:
+        - term [ref=e69]: Version
+        - definition [ref=e70]:
+          - code [ref=e71]: v1
+      - generic [ref=e72]:
+        - term [ref=e73]: Status
+        - definition [ref=e74]:
+          - generic [ref=e75]: draft
+      - generic [ref=e76]:
+        - term [ref=e77]: Effective From
+        - definition [ref=e78]: 2026-04-24
+      - generic [ref=e79]:
+        - term [ref=e80]: Notes
+        - definition [ref=e81]: Green Morning v1 — 300ml cold-pressed juice
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - heading "BOM Cost (live)" [level=2] [ref=e84]
+        - paragraph [ref=e85]: "Server-truth: INR 0.00"
+      - generic [ref=e86]:
+        - paragraph [ref=e87]: INR 0.00
+        - generic [ref=e88]: per batch
+    - generic [ref=e89]:
+      - heading "Ingredients" [level=2] [ref=e91]
+      - table [ref=e93]:
+        - rowgroup [ref=e94]:
+          - row "Pos Raw Material Quantity Unit" [ref=e95]:
+            - columnheader "Pos" [ref=e96]
+            - columnheader "Raw Material" [ref=e97]
+            - columnheader "Quantity" [ref=e98]
+            - columnheader "Unit" [ref=e99]
+            - columnheader [ref=e100]
+        - rowgroup [ref=e101]:
+          - row "Pick… Unit… Add" [ref=e102]:
+            - cell [ref=e103]:
+              - spinbutton [ref=e104]
+            - cell "Pick…" [ref=e105]:
+              - combobox [ref=e106]:
+                - option "Pick…" [selected]
+                - option "Branded Label"
+                - option "Tamper-Evident Cap"
+                - option "300ml PET Bottle"
+                - option "Black Pepper"
+                - option "Pineapple"
+                - option "Orange"
+                - option "Cucumber"
+                - option "Lemon"
+                - option "Green Apple"
+                - option "Fresh Turmeric"
+                - option "Ginger"
+                - option "Beetroot"
+                - option "Carrot"
+                - option "Celery"
+                - option "Coriander"
+                - option "Mint"
+                - option "Spinach"
+            - cell [ref=e107]:
+              - spinbutton [ref=e108]
+            - cell "Unit…" [ref=e109]:
+              - combobox [ref=e110]:
+                - option "Unit…" [selected]
+                - option "kg"
+                - option "g"
+                - option "l"
+                - option "ml"
+                - option "count"
+                - option "bunch"
+                - option "bottle"
+            - cell "Add" [ref=e111]:
+              - button "Add" [ref=e112] [cursor=pointer]
+    - generic [ref=e113]:
+      - heading "Steps" [level=2] [ref=e115]
+      - table [ref=e117]:
+        - rowgroup [ref=e118]:
+          - row "# Name Duration (min) Instructions" [ref=e119]:
+            - columnheader "#" [ref=e120]
+            - columnheader "Name" [ref=e121]
+            - columnheader "Duration (min)" [ref=e122]
+            - columnheader "Instructions" [ref=e123]
+            - columnheader [ref=e124]
+        - rowgroup [ref=e125]:
+          - row "Add" [ref=e126]:
+            - cell [ref=e127]:
+              - spinbutton [ref=e128]
+            - cell [ref=e129]:
+              - textbox "Wash all produce" [ref=e130]
+            - cell [ref=e131]:
+              - spinbutton [ref=e132]
+            - cell [ref=e133]:
+              - textbox "Triple rinse" [ref=e134]
+            - cell "Add" [ref=e135]:
+              - button "Add" [ref=e136] [cursor=pointer]

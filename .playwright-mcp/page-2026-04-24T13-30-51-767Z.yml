@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /recipes
+        - heading "Recipes" [level=1] [ref=e7]
+        - paragraph [ref=e8]: Versioned recipes for each product — play with values, see live BOM cost.
+      - link "+ New Recipe" [ref=e9] [cursor=pointer]:
+        - /url: /recipes/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - text: Product
+        - combobox "Product" [ref=e12]:
+          - option "All products" [selected]
+      - generic [ref=e13]:
+        - text: Status
+        - combobox "Status" [ref=e14]:
+          - option "All" [selected]
+          - option "draft"
+          - option "active"
+          - option "archived"
+    - paragraph [ref=e16]: Loading recipes…
+  - alert [ref=e17]

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import {
   Badge,
@@ -36,6 +37,7 @@ export default function ApiKeysPage() {
   const { data, isLoading, isError, error } = useApiKeys();
   const revoke = useRevokeApiKey();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
 
   const items = data?.items ?? [];
 
@@ -97,6 +99,16 @@ export default function ApiKeysPage() {
       </div>
 
       <div className="mx-auto w-full max-w-5xl px-8 py-6 space-y-6">
+        {/* Application scope bar */}
+        <ApplicationScopeBar
+          appId={appId}
+          onChange={setAppId}
+          label="Application scope"
+        />
+        <p className="text-xs -mt-3" style={{ color: "var(--text-muted)" }}>
+          API keys currently org-scoped. Application binding coming soon.
+        </p>
+
         {/* Stat cards */}
         <div className="grid grid-cols-3 gap-4">
           <StatCard

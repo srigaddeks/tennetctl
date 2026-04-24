@@ -1,0 +1,17 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "somaerp" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Generic multi-kitchen, multi-region ERP — built on tennetctl primitives.
+    - navigation [ref=e6]:
+      - heading "Modules" [level=2] [ref=e7]
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Geography Locations, kitchens, service zones" [ref=e10] [cursor=pointer]:
+            - /url: /geography
+            - generic [ref=e11]: Geography
+            - generic [ref=e12]: Locations, kitchens, service zones
+    - generic [ref=e13]:
+      - heading "Health Check" [level=2] [ref=e14]
+      - paragraph [ref=e15]: Loading health status…
+  - alert [ref=e16]

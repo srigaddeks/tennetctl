@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
@@ -73,6 +74,7 @@ function formatExpiry(expiresAt: string | null | undefined): string {
 
 export default function InvitesPage() {
   const [orgId] = useState<string>(DEFAULT_ORG_ID);
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
 
@@ -155,6 +157,14 @@ export default function InvitesPage() {
           </div>
         )}
 
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Invite to application"
+          />
+        </div>
+
         {/* Inline invite form */}
         {showForm && (
           <div
@@ -165,12 +175,17 @@ export default function InvitesPage() {
             }}
             data-testid="invite-form"
           >
-            <h2
-              className="label-caps mb-4"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              Send Invite
-            </h2>
+            <div className="mb-4 flex items-center gap-2">
+              <h2
+                className="label-caps"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Send Invite
+              </h2>
+              <Badge tone={appFilter ? "blue" : "default"}>
+                {appFilter ? `App: ${appFilter.slice(0, 8)}…` : "All applications"}
+              </Badge>
+            </div>
             <form
               onSubmit={form.handleSubmit(handleInvite)}
               className="flex flex-col gap-3 sm:flex-row sm:items-end"

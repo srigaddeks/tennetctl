@@ -1,0 +1,90 @@
+{
+  "schema": "03_iam",
+  "table": "21_dtl_attrs",
+  "rows": [
+    {
+      "id": "019dbfc0-2001-7000-8000-000000000010",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2001-7000-8000-000000000001",
+      "attr_def_id": 8,
+      "key_text": "somaerp-admin"
+    },
+    {
+      "id": "019dbfc0-2001-7000-8000-000000000011",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2001-7000-8000-000000000001",
+      "attr_def_id": 9,
+      "key_text": "somaerp Admin"
+    },
+    {
+      "id": "019dbfc0-2001-7000-8000-000000000012",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2001-7000-8000-000000000001",
+      "attr_def_id": 10,
+      "key_text": "Full access to all somaerp modules"
+    },
+    {
+      "id": "019dbfc0-2002-7000-8000-000000000010",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2002-7000-8000-000000000001",
+      "attr_def_id": 8,
+      "key_text": "somaerp-manager"
+    },
+    {
+      "id": "019dbfc0-2002-7000-8000-000000000011",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2002-7000-8000-000000000001",
+      "attr_def_id": 9,
+      "key_text": "somaerp Manager"
+    },
+    {
+      "id": "019dbfc0-2002-7000-8000-000000000012",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2002-7000-8000-000000000001",
+      "attr_def_id": 10,
+      "key_text": "Manage production, procurement, and customers"
+    },
+    {
+      "id": "019dbfc0-2003-7000-8000-000000000010",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2003-7000-8000-000000000001",
+      "attr_def_id": 8,
+      "key_text": "somaerp-operator"
+    },
+    {
+      "id": "019dbfc0-2003-7000-8000-000000000011",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2003-7000-8000-000000000001",
+      "attr_def_id": 9,
+      "key_text": "somaerp Operator"
+    },
+    {
+      "id": "019dbfc0-2003-7000-8000-000000000012",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2003-7000-8000-000000000001",
+      "attr_def_id": 10,
+      "key_text": "Day-to-day kitchen operations and delivery"
+    },
+    {
+      "id": "019dbfc0-2004-7000-8000-000000000010",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2004-7000-8000-000000000001",
+      "attr_def_id": 8,
+      "key_text": "somaerp-viewer"
+    },
+    {
+      "id": "019dbfc0-2004-7000-8000-000000000011",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2004-7000-8000-000000000001",
+      "attr_def_id": 9,
+      "key_text": "somaerp Viewer"
+    },
+    {
+      "id": "019dbfc0-2004-7000-8000-000000000012",
+      "entity_type_id": 4,
+      "entity_id": "019dbfc0-2004-7000-8000-000000000001",
+      "attr_def_id": 10,
+      "key_text": "Read-only access to all somaerp data"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "supply" [ref=e7] [cursor=pointer]:
+            - /url: /supply
+          - text: /suppliers
+        - heading "Suppliers" [level=1] [ref=e8]
+      - link "+ New Supplier" [ref=e9] [cursor=pointer]:
+        - /url: /supply/suppliers/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Source Type
+        - combobox [ref=e13]:
+          - option "All source types" [selected]
+          - option "Wholesale Market (wholesale_market)"
+          - option "Rythu Bazaar (rythu_bazaar)"
+          - option "Farm Direct (farm_direct)"
+          - option "Marketplace (marketplace)"
+          - option "Brand Distributor (brand_distributor)"
+          - option "Online (online)"
+      - generic [ref=e14]:
+        - generic [ref=e15]: Status
+        - combobox [ref=e16]:
+          - option "All" [selected]
+          - option "Active"
+          - option "Paused"
+          - option "Blacklisted"
+      - generic [ref=e17]:
+        - generic [ref=e18]: Location
+        - combobox [ref=e19]:
+          - option "All locations" [selected]
+          - option "Bangalore"
+          - option "Hyderabad"
+    - table [ref=e24]:
+      - rowgroup [ref=e25]:
+        - row "Name Source Type Location Payment Terms Quality Status" [ref=e26]:
+          - columnheader "Name" [ref=e27]
+          - columnheader "Source Type" [ref=e28]
+          - columnheader "Location" [ref=e29]
+          - columnheader "Payment Terms" [ref=e30]
+          - columnheader "Quality" [ref=e31]
+          - columnheader "Status" [ref=e32]
+      - rowgroup [ref=e33]:
+        - row "BigBasket Marketplace — net_7 ★★★☆☆ active" [ref=e34]:
+          - cell "BigBasket" [ref=e35]
+          - cell "Marketplace" [ref=e36]:
+            - generic [ref=e37]: Marketplace
+          - cell "—" [ref=e38]
+          - cell "net_7" [ref=e39]
+          - cell "★★★☆☆" [ref=e40]:
+            - generic "3/5" [ref=e41]: ★★★☆☆
+          - cell "active" [ref=e42]:
+            - generic [ref=e43]: active
+        - row "Erragadda Market Wholesale Market Hyderabad cash_on_delivery ★★★☆☆ active" [ref=e44]:
+          - cell "Erragadda Market" [ref=e45]
+          - cell "Wholesale Market" [ref=e46]:
+            - generic [ref=e47]: Wholesale Market
+          - cell "Hyderabad" [ref=e48]
+          - cell "cash_on_delivery" [ref=e49]
+          - cell "★★★☆☆" [ref=e50]:
+            - generic "3/5" [ref=e51]: ★★★☆☆
+          - cell "active" [ref=e52]:
+            - generic [ref=e53]: active
+        - row "Rythu Bazaar Kukatpally Rythu Bazaar Hyderabad cash_on_delivery ★★★★★ active" [ref=e54]:
+          - cell "Rythu Bazaar Kukatpally" [ref=e55]
+          - cell "Rythu Bazaar" [ref=e56]:
+            - generic [ref=e57]: Rythu Bazaar
+          - cell "Hyderabad" [ref=e58]
+          - cell "cash_on_delivery" [ref=e59]
+          - cell "★★★★★" [ref=e60]:
+            - generic "5/5" [ref=e61]: ★★★★★
+          - cell "active" [ref=e62]:
+            - generic [ref=e63]: active
+        - row "Bowenpally Wholesale Market Wholesale Market Hyderabad cash_on_delivery ★★★★☆ active" [ref=e64]:
+          - cell "Bowenpally Wholesale Market" [ref=e65]
+          - cell "Wholesale Market" [ref=e66]:
+            - generic [ref=e67]: Wholesale Market
+          - cell "Hyderabad" [ref=e68]
+          - cell "cash_on_delivery" [ref=e69]
+          - cell "★★★★☆" [ref=e70]:
+            - generic "4/5" [ref=e71]: ★★★★☆
+          - cell "active" [ref=e72]:
+            - generic [ref=e73]: active
+  - status [ref=e74]:
+    - generic [ref=e75]:
+      - img [ref=e77]
+      - generic [ref=e79]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e80] [cursor=pointer]:
+          - img [ref=e81]
+  - alert [ref=e22]

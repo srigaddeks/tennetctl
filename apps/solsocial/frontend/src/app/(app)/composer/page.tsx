@@ -94,6 +94,22 @@ export default function Composer() {
               </label>
             </div>
 
+            {/* Platform preview — mono caps + small italic */}
+            <div className="mt-5 hairline-t pt-3 flex items-baseline justify-between">
+              <span className="kicker">
+                {activeChannel
+                  ? `preview · ${activeChannel.provider_code}`
+                  : "preview · no channel"}
+              </span>
+              <span className="display-italic text-[12px] text-[color:var(--ink-40)]">
+                {count === 0
+                  ? "awaiting first line"
+                  : count > 280
+                    ? "long-form — twitter will clip"
+                    : `${count} / 280 chars`}
+              </span>
+            </div>
+
             {/* Word-count arc */}
             <div className="absolute top-6 right-6 w-14 h-14 grid place-items-center">
               <svg width="56" height="56" viewBox="0 0 56 56" className="-rotate-90">
@@ -169,6 +185,14 @@ export default function Composer() {
             <div className="flex flex-col gap-2 pt-4">
               <button className="btn btn-ember" disabled={!canSubmit || create.isPending}>
                 {create.isPending ? "Saving…" : "Save post →"}
+              </button>
+              <button
+                type="button"
+                className="btn"
+                disabled={!channelId || !body.trim() || create.isPending}
+                onClick={() => create.mutate({ channel_id: channelId, body, link: link || null, media: [], status: "draft", scheduled_at: null })}
+              >
+                Save draft
               </button>
               <Link href="/posts" className="btn">Discard</Link>
             </div>

@@ -138,6 +138,19 @@ export default function NotifySettingsPage() {
         style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 32 }}
         data-testid="notify-settings-body"
       >
+        <div
+          style={{
+            padding: "10px 14px",
+            borderRadius: 6,
+            border: "1px solid var(--info)",
+            background: "var(--info-muted)",
+            fontSize: 12,
+            color: "var(--info)",
+          }}
+          data-testid="notify-settings-scope-banner"
+        >
+          Settings affect all applications in this org.
+        </div>
         {/* SMTP Configs */}
         <section
           style={{

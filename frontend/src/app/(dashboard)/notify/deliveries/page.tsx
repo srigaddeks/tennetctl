@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
@@ -128,13 +129,6 @@ function StatCard({
     : accent === "red" ? "var(--danger)"
     : "var(--text-secondary)";
 
-  const accentBg =
-    accent === "blue" ? "var(--info-muted)"
-    : accent === "green" ? "var(--success-muted)"
-    : accent === "amber" ? "var(--warning-muted)"
-    : accent === "red" ? "var(--danger-muted)"
-    : "var(--bg-elevated)";
-
   return (
     <div
       style={{
@@ -182,6 +176,7 @@ export default function DeliveriesPage() {
 
   const [statusFilter, setStatusFilter]   = useState("");
   const [channelFilter, setChannelFilter] = useState("");
+  const [appFilter, setAppFilter]         = useState<string | null>(null);
 
   const { data, isLoading, isError, error } = useDeliveries(orgId, {
     status:  statusFilter || undefined,
@@ -239,6 +234,14 @@ export default function DeliveriesPage() {
         style={{ padding: "24px 32px" }}
         data-testid="notify-deliveries-body"
       >
+        <div style={{ marginBottom: 20 }}>
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Deliveries for application"
+          />
+        </div>
+
         {/* Stat cards */}
         <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
           <StatCard label="Total" value={items.length} accent="default" />

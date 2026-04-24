@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -40,6 +41,7 @@ export default function TracesPage() {
   const [serviceName, setServiceName] = useState("");
   const [spanName, setSpanName] = useState("");
   const [errorOnly, setErrorOnly] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
 
   const dsl: TracesQuery = useMemo(
     () => ({
@@ -111,6 +113,13 @@ export default function TracesPage() {
               accent="red"
             />
           </div>
+
+          {/* Application scope */}
+          <ApplicationScopeBar
+            appId={appId}
+            onChange={setAppId}
+            label="Filter traces by application"
+          />
 
           {/* Time range */}
           <TimerangePicker value={timerange} onChange={setTimerange} />

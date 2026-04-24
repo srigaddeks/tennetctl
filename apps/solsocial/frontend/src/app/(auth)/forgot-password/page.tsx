@@ -57,9 +57,21 @@ export default function ForgotPasswordPage() {
       <h2 className="display text-[42px] leading-none mb-3">
         Let's <span className="display-italic">fix</span> that.
       </h2>
-      <p className="text-[color:var(--ink-70)] mb-10">
+      <p className="text-[color:var(--ink-70)] mb-4">
         Enter the email on your account and we'll send a reset link.
       </p>
+      <div className="mb-10 hairline-t hairline-b py-3">
+        <p className="text-[11px] tracking-widest uppercase mono text-[color:var(--ink-40)] mb-1">
+          Prefer no passwords?
+        </p>
+        <p className="text-sm text-[color:var(--ink-70)]">
+          You can also{" "}
+          <Link href="/signin" className="text-[color:var(--ember-deep)] underline underline-offset-4 decoration-[color:var(--ember)]">
+            sign in with a magic link
+          </Link>
+          {" "}— we'll email a one-time link that signs you in without a password.
+        </p>
+      </div>
 
       <form onSubmit={onSubmit} className="space-y-7" noValidate>
         <Field

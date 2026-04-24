@@ -27,6 +27,19 @@ export default function PolicyPage() {
         testId="heading-iam-policy"
       />
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="iam-policy-body">
+        {/* Scope info banner */}
+        <div
+          className="mb-5 rounded border px-4 py-3 text-xs"
+          style={{
+            background: "var(--info-muted)",
+            borderColor: "var(--info)",
+            color: "var(--text-secondary)",
+          }}
+          data-testid="iam-policy-scope-note"
+        >
+          Auth policy applies across all applications in this org. Scope to app coming soon.
+        </div>
+
         {/* Tabs */}
         <div
           className="mb-6 flex border-b"

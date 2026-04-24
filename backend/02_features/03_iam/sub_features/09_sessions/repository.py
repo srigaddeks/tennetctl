@@ -19,6 +19,7 @@ async def insert_session(
     user_id: str,
     org_id: str | None,
     workspace_id: str | None,
+    application_id: str | None = None,
     expires_at: datetime,
     created_by: str,
     user_agent: str | None = None,
@@ -29,18 +30,18 @@ async def insert_session(
         user_agent = user_agent[:512]
     await conn.execute(
         'INSERT INTO "03_iam"."16_fct_sessions" '
-        '(id, user_id, org_id, workspace_id, expires_at, created_by, updated_by, '
-        ' user_agent, ip_address) '
-        'VALUES ($1, $2, $3, $4, $5, $6, $6, $7, $8)',
-        id, user_id, org_id, workspace_id, expires_at, created_by,
-        user_agent, ip_address,
+        '(id, user_id, org_id, workspace_id, application_id, expires_at, '
+        ' created_by, updated_by, user_agent, ip_address) '
+        'VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9)',
+        id, user_id, org_id, workspace_id, application_id, expires_at,
+        created_by, user_agent, ip_address,
     )
 
 
 async def get_by_id(conn: Any, session_id: str) -> dict | None:
     row = await conn.fetchrow(
-        'SELECT id, user_id, org_id, workspace_id, expires_at, revoked_at, '
-        '       is_active, is_test, deleted_at, is_valid, '
+        'SELECT id, user_id, org_id, workspace_id, application_id, '
+        '       expires_at, revoked_at, is_active, is_test, deleted_at, is_valid, '
         '       created_by, updated_by, created_at, updated_at '
         'FROM "03_iam"."v_sessions" WHERE id = $1',
         session_id,
@@ -82,7 +83,7 @@ async def list_by_user(
     )
     params_page = [*params, limit, offset]
     rows = await conn.fetch(
-        f'SELECT id, user_id, org_id, workspace_id, expires_at, revoked_at, '
+        f'SELECT id, user_id, org_id, workspace_id, application_id, expires_at, revoked_at, '
         f'       is_active, is_test, deleted_at, is_valid, '
         f'       user_agent, ip_address, last_activity_at, '
         f'       created_by, updated_by, created_at, updated_at '
@@ -158,7 +159,7 @@ async def revoke_session_by_reason(
 async def get_raw_by_id(conn: Any, session_id: str) -> dict | None:
     """Fetch the raw fct_sessions row including last_activity_at and created_at."""
     row = await conn.fetchrow(
-        'SELECT id, user_id, org_id, workspace_id, expires_at, revoked_at, '
+        'SELECT id, user_id, org_id, workspace_id, application_id, expires_at, revoked_at, '
         '       last_activity_at, created_at, deleted_at, is_active '
         'FROM "03_iam"."16_fct_sessions" WHERE id = $1',
         session_id,

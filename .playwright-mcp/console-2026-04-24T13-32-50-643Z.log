@@ -1,0 +1,2023 @@
+[      73ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[     371ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:24650
+[   24441ms] [ERROR] Pattern attribute value ^[a-z0-9][a-z0-9-]*$ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /^[a-z0-9][a-z0-9-]*$/v: Invalid character class @ http://localhost:51737/customers/new:0
+[   24506ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[   24628ms] [LOG] [Fast Refresh] done in 122ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[   58533ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[   58632ms] [LOG] [Fast Refresh] done in 99ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  258102ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  258472ms] [LOG] [Fast Refresh] done in 370ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  266716ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  266781ms] [LOG] [Fast Refresh] done in 65ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  310425ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  310492ms] [LOG] [Fast Refresh] done in 66ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  329233ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  329315ms] [LOG] [Fast Refresh] done in 81ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  337104ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  337171ms] [LOG] [Fast Refresh] done in 67ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  342326ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  342393ms] [LOG] [Fast Refresh] done in 67ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  342464ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  342554ms] [LOG] [Fast Refresh] done in 91ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  377042ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  377251ms] [LOG] [Fast Refresh] done in 210ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  396802ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  396877ms] [LOG] [Fast Refresh] done in 76ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  421603ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  421709ms] [LOG] [Fast Refresh] done in 107ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  452754ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  452836ms] [LOG] [Fast Refresh] done in 81ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  486987ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  487052ms] [LOG] [Fast Refresh] done in 65ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  520021ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  520090ms] [LOG] [Fast Refresh] done in 70ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  541382ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  541461ms] [LOG] [Fast Refresh] done in 80ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  563774ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  563873ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  563880ms] [LOG] [Fast Refresh] done in 7ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  564057ms] [LOG] [Fast Refresh] done in 184ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  578924ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  578987ms] [LOG] [Fast Refresh] done in 64ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  642047ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  642144ms] [LOG] [Fast Refresh] done in 96ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  666707ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  666782ms] [LOG] [Fast Refresh] done in 75ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  686574ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  686636ms] [LOG] [Fast Refresh] done in 62ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  713826ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  713921ms] [LOG] [Fast Refresh] done in 95ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  726121ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  726183ms] [LOG] [Fast Refresh] done in 62ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  766930ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  766997ms] [LOG] [Fast Refresh] done in 67ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  797451ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  797516ms] [LOG] [Fast Refresh] done in 66ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  826295ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  826380ms] [LOG] [Fast Refresh] done in 85ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  900860ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  901156ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-slate-500">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:50
+[  901235ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[  901236ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-slate-500">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:50
+[  901699ms] [LOG] [Fast Refresh] done in 465ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  902008ms] [LOG] [Fast Refresh] done in 773ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[  902091ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-slate-500">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:50
+[  902156ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478&_rsc=15a9o:0
+[  902161ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478&_rsc=15a9o:0
+[  902166ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478&_rsc=15a9o:0
+[  902203ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[  902330ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[  902349ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-slate-500">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[  902349ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[  902350ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-slate-500">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  946898ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status === "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  946898ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:250:1]
+ 247 |       ? "text-red-700"
+ 248 |       : "";
+ 249 |   return (
+ 250 |     <div className="rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+     :      ^^^
+ 251 |       <div className="text-xs font-semibold uppercase tracking-wide text-sm" style={{ color: "var(--text-muted)" }}">
+ 252 |         {label}
+ 253 |       </div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  946898ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:292:1]
+ 289 |   }
+ 290 | 
+ 291 |   return (
+ 292 |     <div className="max-w-5xl">
+     :      ^^^
+ 293 |       <div className="mb-6">
+ 294 |         <h1 className="mt-2 text-3xl font-bold tracking-tight">
+ 295 |           {recipe.status === "ok"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  946898ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947097ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947098ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[  947129ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947255ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status === "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947255ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:250:1]
+ 247 |       ? "text-red-700"
+ 248 |       : "";
+ 249 |   return (
+ 250 |     <div className="rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+     :      ^^^
+ 251 |       <div className="text-xs font-semibold uppercase tracking-wide text-sm" style={{ color: "var(--text-muted)" }}">
+ 252 |         {label}
+ 253 |       </div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947255ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:292:1]
+ 289 |   }
+ 290 | 
+ 291 |   return (
+ 292 |     <div className="max-w-5xl">
+     :      ^^^
+ 293 |       <div className="mb-6">
+ 294 |         <h1 className="mt-2 text-3xl font-bold tracking-tight">
+ 295 |           {recipe.status === "ok"
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947255ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947263ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/webpack/56ae26c002d0566e.webpack.hot-update.json:0
+[  947263ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:350
+[  947299ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[  947368ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[  947374ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[  947374ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[  947374ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status === "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947374ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:250:1]
+ 247 |       ? "text-red-700"
+ 248 |       : "";
+ 249 |   return (
+ 250 |     <div className="rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+     :      ^^^
+ 251 |       <div className="text-xs font-semibold uppercase tracking-wide text-sm" style={{ color: "var(--text-muted)" }}">
+ 252 |         {label}
+ 253 |       </div>
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947374ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:292:1]
+ 289 |   }
+ 290 | 
+ 291 |   return (
+ 292 |     <div className="max-w-5xl">
+     :      ^^^
+ 293 |       <div className="mb-6">
+ 294 |         <h1 className="mt-2 text-3xl font-bold tracking-tight">
+ 295 |           {recipe.status === "ok"
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  947375ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}">Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  992228ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  992228ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[  992358ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:248:1]
+ 245 |       ? "text-yellow-700"
+ 246 |       : tone === "red"
+ 247 |       ? "text-red-700"
+ 248 |       :;
+     :        ^
+ 249 |   return (
+ 250 |     <div className="rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+ 251 |       <div className="text-xs font-semibold uppercase tracking-wide text-sm" style={{ color: "var(--text-muted)" }}>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  992358ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:65:1]
+ 62 | 
+ 63 | export default function RecipeDetailPage() {
+ 64 |   const params = useParams<{ id: string }>();
+ 65 |   const recipeId = params?.id ??;
+    :                                 ^
+ 66 | 
+ 67 |   const [recipe, setRecipe] = useState<RecipeState>({ status: "loading" });
+ 68 |   const [ingredients, setIngredients] = useState<IngredientsState>({ status: "loading" });
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[  992358ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014791ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:51:1]
+ 48 |   }, []);
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId ===) return;
+    :     ^|                                         ^
+    :      `-- Tried to parse the condition for an if statement
+ 52 |     const r = regions.items.find((x) => String(x.id) === regionId);
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014791ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:51:1]
+ 48 | 
+ 49 |   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+ 50 |     e.preventDefault();
+ 51 |     if (productId ===) {
+    :     ^|               ^
+    :      `-- Tried to parse the condition for an if statement
+ 52 |       setSubmit({ status: "error", message: "Pick a product" });
+ 53 |       return;
+ 54 |     }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014791ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Unexpected token `>`. Expected an identifier, void, yield, null, await, break, a string literal, a numeric literal, true, false, `, -, import, this, typeof, {, [, (
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus |> = ["", "draft", "active", "archived"];
+    :                                             ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014852ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status ==="" "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014852ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:61:1]
+ 58 |     let cancelled = false;
+ 59 |     setCustomers({ status: "loading" });
+ 60 |     listCustomers({
+ 61 |       status: statusFilter ==="" "all" ? undefined : statusFilter,
+    :                                  ^^^^^
+ 62 |       location_id: locationId || undefined,
+ 63 |       q: q || undefined,
+ 64 |     })
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014852ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1014852ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/catalog/products/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/catalog/products/page.tsx:31:1]
+ 28 |   useEffect(() => {
+ 29 |     let cancelled = false;
+ 30 |     setProducts({ status: "loading" });
+ 31 |     listProducts({ product_line_id: productLineId || undefined, status: status ==="" "all" ? undefined : status })
+    :                                                                                      ^^^^^
+ 32 |       .then((items) => { if (!cancelled) setProducts({ status: "ok", items }); })
+ 33 |       .catch((err: unknown) => { if (!cancelled) setProducts({ status: "error", message: err instanceof Error ? err.message : "Unknown error" }); });
+ 34 |     return () => { cancelled = true; };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/catalog/products/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId ==="") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) ==="" regionId);
+    :                                                            ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/geography/locations/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/page.tsx:31:1]
+ 28 |   }, []);
+ 29 | 
+ 30 |   return (
+ 31 |     <div className="max-w-5xl">
+    :      ^^^
+ 32 |       {/* Page header */}
+ 33 |       <div className="mb-5 flex items-center justify-between">
+ 34 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/page.tsx
+Error:   x Expected ',', got 'null'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/page.tsx:78:1]
+ 75 |   }, []);
+ 76 | 
+ 77 |   const stats: StatCard[] = [
+ 78 |     { label: "Locations", value: locationCount ?? "—", loading: locationCount ==="" null },
+    :                                                                                     ^^^^
+ 79 |     { label: "Products", value: productCount ?? "—", loading: productCount ==="" null },
+ 80 |     { label: "Raw Materials", value: rawMatCount ?? "—", loading: rawMatCount ==="" null },
+ 81 |     { label: "Customers", value: customerCount ?? "—", loading: customerCount ==="" null },
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Expected a semicolon
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:76:1]
+ 73 |     }
+ 74 |   }
+ 75 | 
+ 76 |   const disabled = submit.status ==="" "submitting";
+    :                                        ^^^^^^^^^^^^
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status ==="" "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059450ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059503ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status === "" "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059503ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:61:1]
+ 58 |     let cancelled = false;
+ 59 |     setCustomers({ status: "loading" });
+ 60 |     listCustomers({
+ 61 |       status: statusFilter === "" "all" ? undefined : statusFilter,
+    :                                   ^^^^^
+ 62 |       location_id: locationId || undefined,
+ 63 |       q: q || undefined,
+ 64 |     })
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059503ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059503ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/catalog/products/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/catalog/products/page.tsx:31:1]
+ 28 |   useEffect(() => {
+ 29 |     let cancelled = false;
+ 30 |     setProducts({ status: "loading" });
+ 31 |     listProducts({ product_line_id: productLineId || undefined, status: status ==="" "all" ? undefined : status })
+    :                                                                                      ^^^^^
+ 32 |       .then((items) => { if (!cancelled) setProducts({ status: "ok", items }); })
+ 33 |       .catch((err: unknown) => { if (!cancelled) setProducts({ status: "error", message: err instanceof Error ? err.message : "Unknown error" }); });
+ 34 |     return () => { cancelled = true; };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/catalog/products/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId ==="") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) ==="" regionId);
+    :                                                            ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/geography/locations/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/page.tsx:31:1]
+ 28 |   }, []);
+ 29 | 
+ 30 |   return (
+ 31 |     <div className="max-w-5xl">
+    :      ^^^
+ 32 |       {/* Page header */}
+ 33 |       <div className="mb-5 flex items-center justify-between">
+ 34 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/page.tsx
+Error:   x Expected ',', got 'null'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/page.tsx:78:1]
+ 75 |   }, []);
+ 76 | 
+ 77 |   const stats: StatCard[] = [
+ 78 |     { label: "Locations", value: locationCount ?? "—", loading: locationCount ==="" null },
+    :                                                                                     ^^^^
+ 79 |     { label: "Products", value: productCount ?? "—", loading: productCount ==="" null },
+ 80 |     { label: "Raw Materials", value: rawMatCount ?? "—", loading: rawMatCount ==="" null },
+ 81 |     { label: "Customers", value: customerCount ?? "—", loading: customerCount ==="" null },
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Expected a semicolon
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:76:1]
+ 73 |     }
+ 74 |   }
+ 75 | 
+ 76 |   const disabled = submit.status ==="" "submitting";
+    :                                        ^^^^^^^^^^^^
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status ==="" "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059511ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/catalog/products/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/catalog/products/page.tsx:31:1]
+ 28 |   useEffect(() => {
+ 29 |     let cancelled = false;
+ 30 |     setProducts({ status: "loading" });
+ 31 |     listProducts({ product_line_id: productLineId || undefined, status: status === "" "all" ? undefined : status })
+    :                                                                                       ^^^^^
+ 32 |       .then((items) => { if (!cancelled) setProducts({ status: "ok", items }); })
+ 33 |       .catch((err: unknown) => { if (!cancelled) setProducts({ status: "error", message: err instanceof Error ? err.message : "Unknown error" }); });
+ 34 |     return () => { cancelled = true; };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/catalog/products/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/geography/locations/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/page.tsx:31:1]
+ 28 |   }, []);
+ 29 | 
+ 30 |   return (
+ 31 |     <div className="max-w-5xl">
+    :      ^^^
+ 32 |       {/* Page header */}
+ 33 |       <div className="mb-5 flex items-center justify-between">
+ 34 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/page.tsx
+Error:   x Expected ',', got 'null'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/page.tsx:78:1]
+ 75 |   }, []);
+ 76 | 
+ 77 |   const stats: StatCard[] = [
+ 78 |     { label: "Locations", value: locationCount ?? "—", loading: locationCount === "" null },
+    :                                                                                      ^^^^
+ 79 |     { label: "Products", value: productCount ?? "—", loading: productCount === "" null },
+ 80 |     { label: "Raw Materials", value: rawMatCount ?? "—", loading: rawMatCount === "" null },
+ 81 |     { label: "Customers", value: customerCount ?? "—", loading: customerCount === "" null },
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Expected a semicolon
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:76:1]
+ 73 |     }
+ 74 |   }
+ 75 | 
+ 76 |   const disabled = submit.status === "" "submitting";
+    :                                         ^^^^^^^^^^^^
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "" "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059631ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059634ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[ 1059678ms] [ERROR] ./src/app/customers/[id]/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/[id]/page.tsx:55:1]
+ 52 |   }, [id]);
+ 53 | 
+ 54 |   return (
+ 55 |     <div className="max-w-5xl">
+    :      ^^^
+ 56 |       <div className="mb-6">
+ 57 |         {customer.status === "" "ok" && (
+ 58 |           <h1 className="mt-2 text-3xl font-bold tracking-tight">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059678ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:61:1]
+ 58 |     let cancelled = false;
+ 59 |     setCustomers({ status: "loading" });
+ 60 |     listCustomers({
+ 61 |       status: statusFilter === "" "all" ? undefined : statusFilter,
+    :                                   ^^^^^
+ 62 |       location_id: locationId || undefined,
+ 63 |       q: q || undefined,
+ 64 |     })
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059678ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1059678ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/catalog/products/page.tsx
+Error:   x Expected ',', got 'string literal (all, "all")'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/catalog/products/page.tsx:31:1]
+ 28 |   useEffect(() => {
+ 29 |     let cancelled = false;
+ 30 |     setProducts({ status: "loading" });
+ 31 |     listProducts({ product_line_id: productLineId || undefined, status: status === "" "all" ? undefined : status })
+    :                                                                                       ^^^^^
+ 32 |       .then((items) => { if (!cancelled) setProducts({ status: "ok", items }); })
+ 33 |       .catch((err: unknown) => { if (!cancelled) setProducts({ status: "error", message: err instanceof Error ? err.message : "Unknown error" }); });
+ 34 |     return () => { cancelled = true; };
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/catalog/products/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/geography/locations/page.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/page.tsx:31:1]
+ 28 |   }, []);
+ 29 | 
+ 30 |   return (
+ 31 |     <div className="max-w-5xl">
+    :      ^^^
+ 32 |       {/* Page header */}
+ 33 |       <div className="mb-5 flex items-center justify-between">
+ 34 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/page.tsx
+Error:   x Expected ',', got 'null'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/page.tsx:78:1]
+ 75 |   }, []);
+ 76 | 
+ 77 |   const stats: StatCard[] = [
+ 78 |     { label: "Locations", value: locationCount ?? "—", loading: locationCount === "" null },
+    :                                                                                      ^^^^
+ 79 |     { label: "Products", value: productCount ?? "—", loading: productCount === "" null },
+ 80 |     { label: "Raw Materials", value: rawMatCount ?? "—", loading: rawMatCount === "" null },
+ 81 |     { label: "Customers", value: customerCount ?? "—", loading: customerCount === "" null },
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/recipes/new/page.tsx
+Error:   x Expected a semicolon
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:76:1]
+ 73 |     }
+ 74 |   }
+ 75 | 
+ 76 |   const disabled = submit.status === "" "submitting";
+    :                                         ^^^^^^^^^^^^
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/new/page.tsx:79:1]
+ 76 |   const disabled = submit.status === "" "submitting";
+ 77 | 
+ 78 |   return (
+ 79 |     <div className="max-w-5xl">
+    :      ^^^
+ 80 |       <div className="mb-6">
+ 81 |         <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>New Recipe</h1>
+ 82 |       </div>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083399ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083473ms] [ERROR] ./src/app/customers/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/customers/page.tsx:248:1]
+ 245 |       ? "text-yellow-700"
+ 246 |       : tone === "red"
+ 247 |       ? "text-red-700"
+ 248 |       :;
+     :        ^
+ 249 |   return (
+ 250 |     <div className="rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+ 251 |       <div className="text-xs font-semibold uppercase tracking-wide text-sm" style={{ color: "var(--text-muted)" }}>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/customers/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083473ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1083473ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1161036ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1161036ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1161165ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1161165ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Unexpected token `Suspense`. Expected jsx identifier
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:20:1]
+ 17 | 
+ 18 | export default function NewSubscriptionPage() {
+ 19 |   return (
+ 20 |     <Suspense fallback={<main className="p-10 text-sm" style={{ color: "var(--text-muted)" }}>Loading…</div>}>
+    :      ^^^^^^^^
+ 21 |       <NewSubscriptionForm />
+ 22 |     </Suspense>
+ 23 |   );
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1196829ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1196829ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1196898ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1196898ms] [ERROR] ./src/app/subscriptions/list/new/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/subscriptions/list/new/page.tsx:29:1]
+ 26 | function NewSubscriptionForm() {
+ 27 |   const router = useRouter();
+ 28 |   const search = useSearchParams();
+ 29 |   const presetCustomerId = search.get("customer_id") ??;
+    :                                                        ^
+ 30 | 
+ 31 |   const [customers, setCustomers] = useState<Customer[]>([]);
+ 32 |   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/subscriptions/list/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1208473ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1208473ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1208558ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1223085ms] [ERROR] ./src/app/geography/locations/new/page.tsx
+Error:   x Expected ',', got 'regionId'
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/geography/locations/new/page.tsx:52:1]
+ 49 | 
+ 50 |   useEffect(() => {
+ 51 |     if (regions.status !== "ok" || regionId === "") return;
+ 52 |     const r = regions.items.find((x) => String(x.id) === "" regionId);
+    :                                                             ^^^^^^^^
+ 53 |     if (r && !tzTouched) setTimezone(r.default_timezone);
+ 54 |   }, [regionId, regions, tzTouched]);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/geography/locations/new/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1223085ms] [ERROR] ./src/app/recipes/page.tsx
+Error:   x Expected ',', got '='
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/page.tsx:11:1]
+  8 | type RecipesState = { status: "loading" } | { status: "ok"; items: Recipe[] } | { status: "error"; message: string };
+  9 | type ProductsState = { status: "loading" } | { status: "ok"; items: Product[] } | { status: "error"; message: string };
+ 10 | 
+ 11 | const STATUSES: ReadonlyArray<RecipeStatus | "" = ["", "draft", "active", "archived"];
+    :                                                 ^
+ 12 | const inputStyle = { borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" };
+ 13 | 
+ 14 | export default function RecipesListPage() {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1223141ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1321116ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1321244ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1321263ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1321263ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1321264ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1328832ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1328897ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1328903ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1328903ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1328903ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1333637ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1333701ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1333705ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1333706ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1333706ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1341715ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1341781ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1341785ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1341785ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1341785ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1348897ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1348963ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1348966ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1348967ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1348967ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1368658ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1368723ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1368730ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1368730ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1368731ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1375318ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1375384ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1375390ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1375390ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1375390ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+    ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:75:1]
+ 72 |   const [serverCost, setServerCost] = useState<CostState>({ status: "idle" });
+ 73 | 
+ 74 |   const [draftIngredient, setDraftIngredient] = useState<NewIngredient>({
+ 75 |     raw_material_id:,
+    :                     ^
+ 76 |     quantity:,
+ 77 |     unit_id:,
+ 78 |     position:,
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1381972ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[ 1382071ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:221:1]
+ 218 |         unit_id: unitId,
+ 219 |         position: pos,
+ 220 |       });
+ 221 |       setDraftIngredient({ raw_material_id:, quantity:, unit_id:, position: });
+     :                                            ^
+ 222 |       loadIngredients();
+ 223 |       loadCost();
+ 224 |     } catch (err: unknown) {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1382136ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/webpack/56ae26c002d0566e.webpack.hot-update.json:0
+[ 1382137ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:350
+[ 1382170ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1382236ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1382240ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:221:1]
+ 218 |         unit_id: unitId,
+ 219 |         position: pos,
+ 220 |       });
+ 221 |       setDraftIngredient({ raw_material_id:, quantity:, unit_id:, position: });
+     :                                            ^
+ 222 |       loadIngredients();
+ 223 |       loadCost();
+ 224 |     } catch (err: unknown) {
+     `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1382240ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1382241ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:221:1]
+ 218 |         unit_id: unitId,
+ 219 |         position: pos,
+ 220 |       });
+ 221 |       setDraftIngredient({ raw_material_id:, quantity:, unit_id:, position: });
+     :                                            ^
+ 222 |       loadIngredients();
+ 223 |       loadCost();
+ 224 |     } catch (err: unknown) {
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1391002ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[ 1391056ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:268:1]
+ 265 |         duration_min: dur ?? undefined,
+ 266 |         instructions: draftStep.instructions.trim() || undefined,
+ 267 |       });
+ 268 |       setDraftStep({ step_number:, name:, duration_min:, instructions: });
+     :                                  ^
+ 269 |       loadSteps();
+ 270 |     } catch (err: unknown) {
+ 271 |       const message = err instanceof Error ? err.message : "Unknown error";
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/recipes/[id]/page.tsx @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1391112ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/webpack/56ae26c002d0566e.webpack.hot-update.json:0
+[ 1391112ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:350
+[ 1391147ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1391215ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[ 1391220ms] ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:268:1]
+ 265 |         duration_min: dur ?? undefined,
+ 266 |         instructions: draftStep.instructions.trim() || undefined,
+ 267 |       });
+ 268 |       setDraftStep({ step_number:, name:, duration_min:, instructions: });
+     :                                  ^
+ 269 |       loadSteps();
+ 270 |     } catch (err: unknown) {
+ 271 |       const message = err instanceof Error ? err.message : "Unknown error";
+     `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:405677)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/webpack/bundle5.js:28:407465)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:8645)
+    at <unknown> (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:5019)
+    at r.callback (file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/compiled/loader-runner/LoaderRunner.js:1:4039)
+[ 1391249ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:41
+[ 1391250ms] [ERROR] ./src/app/recipes/[id]/page.tsx
+Error:   x Expression expected
+     ,-[/Users/sri/Documents/tennetctl/apps/somaerp/frontend/src/app/recipes/[id]/page.tsx:268:1]
+ 265 |         duration_min: dur ?? undefined,
+ 266 |         instructions: draftStep.instructions.trim() || undefined,
+ 267 |       });
+ 268 |       setDraftStep({ step_number:, name:, duration_min:, instructions: });
+     :                                  ^
+ 269 |       loadSteps();
+ 270 |     } catch (err: unknown) {
+ 271 |       const message = err instanceof Error ? err.message : "Unknown error";
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:84
+[ 1400983ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[ 1401218ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:221
+[ 1401320ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/webpack/56ae26c002d0566e.webpack.hot-update.json:0
+[ 1401320ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:350
+[ 1401550ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:24650
+[ 1421693ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1421769ms] [LOG] [Fast Refresh] done in 76ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1430128ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1430198ms] [LOG] [Fast Refresh] done in 71ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1435690ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1435756ms] [LOG] [Fast Refresh] done in 66ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1450785ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1450855ms] [LOG] [Fast Refresh] done in 69ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1462106ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1462178ms] [LOG] [Fast Refresh] done in 73ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1472382ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1472468ms] [LOG] [Fast Refresh] done in 87ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1477657ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1477735ms] [LOG] [Fast Refresh] done in 78ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1491018ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1491081ms] [LOG] [Fast Refresh] done in 63ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1496156ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1496241ms] [LOG] [Fast Refresh] done in 84ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1511222ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1511294ms] [LOG] [Fast Refresh] done in 72ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1518077ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1518150ms] [LOG] [Fast Refresh] done in 72ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1546083ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1546313ms] [LOG] [Fast Refresh] done in 230ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1563459ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1563544ms] [LOG] [Fast Refresh] done in 86ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1592096ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1592179ms] [LOG] [Fast Refresh] done in 84ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1609995ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1610208ms] [LOG] [Fast Refresh] done in 214ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1618306ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1618383ms] [LOG] [Fast Refresh] done in 78ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1656185ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1656420ms] [LOG] [Fast Refresh] done in 235ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1672577ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1672668ms] [LOG] [Fast Refresh] done in 91ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1696656ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1696733ms] [LOG] [Fast Refresh] done in 77ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1768446ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1768558ms] [LOG] [Fast Refresh] done in 112ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1768574ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1768741ms] [LOG] [Fast Refresh] done in 167ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1768878ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/css/app/layout.css?v=1777039339208:0
+[ 1768908ms] Event
+[ 1772829ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:240
+[ 1772908ms] [LOG] [Fast Refresh] done in 79ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:67
+[ 1772933ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478&_rsc=15a9o:0
+[ 1772984ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478:0
+[ 1773038ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/chunks/fallback/webpack.js:0
+[ 1773038ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/chunks/fallback/main.js:0
+[ 1773038ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/chunks/fallback/react-refresh.js:0
+[ 1773038ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/chunks/fallback/pages/_app.js:0
+[ 1773038ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:51737/_next/static/chunks/fallback/pages/_error.js:0

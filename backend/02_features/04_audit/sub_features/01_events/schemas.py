@@ -55,6 +55,7 @@ class AuditEventRow(BaseModel):
     actor_session_id: str | None = None
     org_id: str | None = None
     workspace_id: str | None = None
+    application_id: str | None = None
     trace_id: str
     span_id: str
     parent_span_id: str | None = None

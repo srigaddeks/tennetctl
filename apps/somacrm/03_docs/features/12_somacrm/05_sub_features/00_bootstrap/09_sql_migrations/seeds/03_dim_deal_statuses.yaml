@@ -1,0 +1,6 @@
+schema: "12_somacrm"
+table: "dim_deal_statuses"
+rows:
+  - {id: 1, code: open, label: Open, description: Deal is in progress, deprecated_at: null}
+  - {id: 2, code: won, label: Won, description: Deal was closed/won, deprecated_at: null}
+  - {id: 3, code: lost, label: Lost, description: Deal was lost, deprecated_at: null}

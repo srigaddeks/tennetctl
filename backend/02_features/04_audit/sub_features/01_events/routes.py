@@ -76,13 +76,14 @@ def _naive_utc(dt: datetime | None) -> datetime | None:
 
 
 def _session_scope(request: Request) -> dict:
-    """Read user_id / session_id / org_id / workspace_id from session middleware."""
+    """Read user_id / session_id / org_id / workspace_id / application_id from session middleware."""
     state = request.state
     return {
         "user_id": getattr(state, "user_id", None) or request.headers.get("x-user-id"),
         "session_id": getattr(state, "session_id", None) or request.headers.get("x-session-id"),
         "org_id": getattr(state, "org_id", None) or request.headers.get("x-org-id"),
         "workspace_id": getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id"),
+        "application_id": getattr(state, "application_id", None) or request.headers.get("x-application-id"),
     }
 
 
@@ -93,6 +94,7 @@ def _build_ctx(request: Request, pool: Any, *, audit_category: str) -> Any:
         session_id=s["session_id"],
         org_id=s["org_id"],
         workspace_id=s["workspace_id"],
+        application_id=s["application_id"],
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(request.state, "request_id", "") or _core_id.uuid7(),
@@ -163,6 +165,7 @@ async def list_audit_events_route(
     actor_session_id: str | None = Query(default=None),
     org_id: str | None = Query(default=None),
     workspace_id: str | None = Query(default=None),
+    application_id: str | None = Query(default=None),
     trace_id: str | None = Query(default=None),
     since: datetime | None = Query(default=None),
     until: datetime | None = Query(default=None),
@@ -181,6 +184,7 @@ async def list_audit_events_route(
         "actor_session_id": actor_session_id,
         "org_id": org_id,
         "workspace_id": workspace_id,
+        "application_id": application_id,
         "trace_id": trace_id,
         "since": _naive_utc(since),
         "until": _naive_utc(until),
@@ -204,7 +208,7 @@ async def list_audit_events_route(
         _CSV_COLUMNS = [
             "id", "event_key", "event_label", "category_code", "category_label",
             "actor_user_id", "actor_session_id", "org_id", "workspace_id",
-            "trace_id", "span_id", "outcome", "metadata", "created_at",
+            "application_id", "trace_id", "span_id", "outcome", "metadata", "created_at",
         ]
 
         def _generate() -> Any:

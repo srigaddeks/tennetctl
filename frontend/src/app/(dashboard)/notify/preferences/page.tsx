@@ -16,7 +16,6 @@ import {
   useWebPushSubscriptions,
   webPushSupported,
 } from "@/features/notify/hooks/use-webpush";
-import { cn } from "@/lib/cn";
 import type { NotifyChannelCode, NotifyCategoryCode } from "@/types/api";
 
 // Column order: channels across the top
@@ -132,6 +131,22 @@ export default function NotificationPreferencesPage() {
         style={{ padding: "24px 32px" }}
         data-testid="notify-preferences-body"
       >
+        <div
+          className="mb-5 flex items-start gap-2 rounded-md px-3 py-2 text-xs"
+          style={{
+            background: "var(--info-muted)",
+            border: "1px solid var(--info)",
+            color: "var(--text-secondary)",
+          }}
+          data-testid="notify-preferences-scope-banner"
+        >
+          <span style={{ color: "var(--info)", fontWeight: 600 }}>ⓘ</span>
+          <span>
+            Preferences apply per-user across all applications. Per-application
+            overrides are not yet supported.
+          </span>
+        </div>
+
         <BrowserPushSection />
 
         {isLoading && (

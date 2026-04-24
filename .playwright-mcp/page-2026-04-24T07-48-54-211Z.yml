@@ -1,0 +1,33 @@
+- generic [active] [ref=e1]:
+  - status [ref=e32]:
+    - generic [ref=e33]:
+      - img [ref=e35]
+      - generic [ref=e37]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e38] [cursor=pointer]:
+          - img [ref=e39]
+  - alert [ref=e16]
+  - main [ref=e42]:
+    - generic [ref=e43]:
+      - paragraph [ref=e44]:
+        - link "somaerp" [ref=e45] [cursor=pointer]:
+          - /url: /
+        - text: /geography
+      - heading "Geography" [level=1] [ref=e46]
+      - paragraph [ref=e47]: The foundation layer every other module hangs off of — locations own kitchens, kitchens own service zones, production batches, procurement, and delivery routes.
+    - list [ref=e49]:
+      - listitem [ref=e50]:
+        - link "Locations City-level sites. Every kitchen rolls up to a location; regions drive timezone and currency defaults." [ref=e51] [cursor=pointer]:
+          - /url: /geography/locations
+          - generic [ref=e52]: Locations
+          - generic [ref=e53]: City-level sites. Every kitchen rolls up to a location; regions drive timezone and currency defaults.
+      - listitem [ref=e54]:
+        - 'link "Kitchens Production facilities (home, commissary, satellite). State machine: active ↔ paused, * → decommissioned." [ref=e55] [cursor=pointer]':
+          - /url: /geography/kitchens
+          - generic [ref=e56]: Kitchens
+          - generic [ref=e57]: "Production facilities (home, commissary, satellite). State machine: active ↔ paused, * → decommissioned."
+      - listitem [ref=e58]:
+        - link "Service Zones Delivery areas tied to a kitchen. Polygon or pincode-set; only active kitchens accept new zones." [ref=e59] [cursor=pointer]:
+          - /url: /geography/service-zones
+          - generic [ref=e60]: Service Zones
+          - generic [ref=e61]: Delivery areas tied to a kitchen. Polygon or pincode-set; only active kitchens accept new zones.

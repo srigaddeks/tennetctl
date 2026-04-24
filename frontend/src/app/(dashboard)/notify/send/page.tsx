@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import { Badge, Button, Field, Input, Select } from "@/components/ui";
 import { useMe } from "@/features/auth/hooks/use-auth";
+import { useApplications } from "@/features/iam-applications/hooks/use-applications";
 import { apiFetch } from "@/lib/api";
 import type { NotifyChannelCode } from "@/types/api";
 
@@ -26,7 +27,10 @@ export default function TransactionalSendPage() {
     channel_code: "email" as NotifyChannelCode,
     deep_link: "",
     send_at: "",
+    application_id: "",
   });
+  const apps = useApplications({ limit: 200, org_id: orgId ?? undefined });
+  const appItems = apps.data?.items ?? [];
   const [result, setResult] = useState<{ delivery_id: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -50,6 +54,7 @@ export default function TransactionalSendPage() {
           variables: {},
           deep_link: form.deep_link || undefined,
           send_at: form.send_at ? new Date(form.send_at).toISOString() : undefined,
+          application_id: form.application_id || undefined,
         }),
       });
       setResult(data);
@@ -150,6 +155,21 @@ export default function TransactionalSendPage() {
                 >
                   {CHANNEL_OPTIONS.map((c) => (
                     <option key={c.code} value={c.code}>{c.label}</option>
+                  ))}
+                </Select>
+              </Field>
+              <Field label="Application (optional)" htmlFor="send-application">
+                <Select
+                  id="send-application"
+                  data-testid="select-send-application"
+                  value={form.application_id}
+                  onChange={(e) => setForm((f) => ({ ...f, application_id: e.target.value }))}
+                >
+                  <option value="">— None (org default) —</option>
+                  {appItems.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.label ?? a.code} · {a.code}
+                    </option>
                   ))}
                 </Select>
               </Field>

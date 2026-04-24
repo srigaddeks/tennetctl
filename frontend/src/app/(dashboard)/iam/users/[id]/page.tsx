@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import { ApplicationScopeBar, AppAvatar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
 import {
@@ -38,6 +39,7 @@ import {
 } from "@/features/iam-memberships/hooks/use-memberships";
 import { useOrgs } from "@/features/iam-orgs/hooks/use-orgs";
 import { useWorkspaces } from "@/features/iam-workspaces/hooks/use-workspaces";
+import { useApplications } from "@/features/iam-applications/hooks/use-applications";
 import { ApiClientError } from "@/lib/api";
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {
@@ -64,7 +66,12 @@ export default function UserDetailPage() {
   const { data: wsMembershipsData } = useWorkspaceMemberships({ user_id: userId });
   const { data: allOrgs } = useOrgs({ limit: 500 });
   const { data: allWorkspaces } = useWorkspaces({ limit: 500 });
+  // Pull a broad set of applications; we filter client-side to the user's orgs.
+  // Backend does not yet support app_id-scoped role lookups per user, so we
+  // show "apps reachable via org membership" as the best-available heuristic.
+  const { data: allApps } = useApplications({ limit: 500 });
 
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteEmailInput, setDeleteEmailInput] = useState("");
   const [confirmStatusOpen, setConfirmStatusOpen] = useState(false);
@@ -181,6 +188,13 @@ export default function UserDetailPage() {
       />
 
       <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 animate-fade-in">
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Show user's roles in application"
+          />
+        </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-3 gap-4">
@@ -617,6 +631,128 @@ export default function UserDetailPage() {
               )}
             </div>
           )}
+        </section>
+
+        {/* Applications & Roles section */}
+        <section
+          className="rounded-lg p-6"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+          }}
+          data-testid="user-applications-section"
+        >
+          <div className="mb-5 flex items-center justify-between">
+            <h2
+              className="label-caps"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Applications & Roles
+            </h2>
+            <p
+              className="text-xs"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Apps reachable via this user&apos;s org memberships
+            </p>
+          </div>
+
+          {(() => {
+            const userOrgIds = new Set(orgMemberships.map((m) => m.org_id));
+            const apps = (allApps?.items ?? []).filter((a) =>
+              a.org_id ? userOrgIds.has(a.org_id) : false,
+            );
+
+            if (apps.length === 0) {
+              return (
+                <EmptyState
+                  title="No applications"
+                  description="This user is not a member of any org that owns applications."
+                />
+              );
+            }
+
+            return (
+              <Table>
+                <THead>
+                  <tr>
+                    <TH>Application</TH>
+                    <TH>Organisation</TH>
+                    <TH>Roles</TH>
+                    <TH>Hub</TH>
+                  </tr>
+                </THead>
+                <TBody>
+                  {apps.map((app) => {
+                    const org = allOrgs?.items.find((o) => o.id === app.org_id);
+                    // Role per-application isn't modelled yet (ADR-018 roadmap).
+                    // Best-available signal: show a "member" badge if the user
+                    // belongs to the app's org. Real role codes will surface
+                    // once application_id is added to role assignments.
+                    const rolesForOrg = orgMemberships
+                      .filter((m) => m.org_id === app.org_id)
+                      .map(() => "member");
+                    return (
+                      <TR key={app.id} data-testid={`user-app-row-${app.id}`}>
+                        <TD>
+                          <div className="flex items-center gap-2">
+                            <AppAvatar code={app.code} size={20} />
+                            <div>
+                              <p
+                                className="text-sm font-medium"
+                                style={{ color: "var(--text-primary)" }}
+                              >
+                                {app.label ?? app.code ?? app.id.slice(0, 8)}
+                              </p>
+                              <p
+                                className="font-mono-data text-xs"
+                                style={{ color: "var(--text-muted)" }}
+                              >
+                                {app.code ?? "—"}
+                              </p>
+                            </div>
+                          </div>
+                        </TD>
+                        <TD>
+                          <span
+                            className="text-xs"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
+                            {org?.display_name ?? org?.slug ?? app.org_id.slice(0, 8)}
+                          </span>
+                        </TD>
+                        <TD>
+                          {rolesForOrg.length === 0 ? (
+                            <span style={{ color: "var(--text-muted)", fontSize: "12px" }}>
+                              —
+                            </span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {rolesForOrg.map((role, i) => (
+                                <Badge key={`${app.id}-${role}-${i}`} tone="blue">
+                                  {role}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </TD>
+                        <TD>
+                          <Link
+                            href={`/iam/applications/${app.id}`}
+                            className="text-xs hover:underline"
+                            style={{ color: "var(--accent)" }}
+                            data-testid={`user-app-hub-${app.id}`}
+                          >
+                            Hub →
+                          </Link>
+                        </TD>
+                      </TR>
+                    );
+                  })}
+                </TBody>
+              </Table>
+            );
+          })()}
         </section>
 
         {/* Audit trail link */}

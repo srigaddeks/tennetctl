@@ -66,8 +66,14 @@ export default function SignUpPage() {
       <h2 className="display text-[44px] leading-none mb-2">
         Start your <span className="display-italic">almanac</span>.
       </h2>
-      <p className="text-[color:var(--ink-70)] mb-10">
+      <p className="text-[color:var(--ink-70)] mb-3">
         A workspace is minted for you the moment you sign up.
+      </p>
+      <p className="text-[11px] text-[color:var(--ink-40)] mb-10">
+        Already have an account?{" "}
+        <Link href="/signin" className="underline underline-offset-4 decoration-[color:var(--ember)]">
+          Start with sign in.
+        </Link>
       </p>
 
       <form onSubmit={onSubmit} className="space-y-7" noValidate>

@@ -2,7 +2,12 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest", "--port", "59473"]
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--config",
+        "/Users/sri/Documents/tennetctl/.claude/playwright-mcp.config.json"
+      ]
     }
   }
 }

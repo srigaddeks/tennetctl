@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "somaerp" [level=1] [ref=e5]
+      - paragraph [ref=e6]: ERP Platform
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: Email
+        - textbox "Email" [ref=e10]: admin@example.com
+      - generic [ref=e11]:
+        - generic [ref=e12]: Password
+        - textbox "Password" [ref=e13]: Admin1234!
+      - paragraph [ref=e28]: Unable to reach the server. Please try again.
+      - button "Sign in" [ref=e14] [cursor=pointer]
+    - paragraph [ref=e15]:
+      - text: Don't have an account?
+      - link "Sign up" [ref=e16] [cursor=pointer]:
+        - /url: /signup
+  - status [ref=e18]:
+    - generic [ref=e19]:
+      - img [ref=e21]
+      - generic [ref=e23]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+  - alert [ref=e17]

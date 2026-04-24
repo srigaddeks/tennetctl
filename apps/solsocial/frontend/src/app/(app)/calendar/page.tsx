@@ -62,6 +62,9 @@ export default function CalendarPage() {
             {MONTH_NAMES[cursor.getMonth()]}{" "}
             <span className="display-italic">{cursor.getFullYear()}</span>
           </h1>
+          <p className="mt-3 mono text-[11px] text-[color:var(--ink-40)] max-w-md">
+            Every scheduled and published post across every channel, at a glance.
+          </p>
         </div>
         <div className="flex gap-2">
           <button className="btn text-[11px]"

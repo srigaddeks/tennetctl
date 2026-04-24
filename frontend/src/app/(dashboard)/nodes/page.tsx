@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageHeader } from "@/components/page-header";
-import { Badge, EmptyState, ErrorState, Skeleton, StatCard } from "@/components/ui";
+import { EmptyState, ErrorState, Skeleton, StatCard } from "@/components/ui";
 import { apiList } from "@/lib/api";
 import type { CatalogNode } from "@/types/api";
 
@@ -187,6 +187,12 @@ export default function NodesPage() {
   const effectCount = nodes.filter((n) => n.kind === "effect").length;
   const controlCount = nodes.filter((n) => n.kind === "control").length;
 
+  const perFeatureCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const n of nodes) m.set(n.feature_key, (m.get(n.feature_key) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [nodes]);
+
   return (
     <div className="flex flex-1 flex-col animate-fade-in">
       <PageHeader
@@ -270,6 +276,30 @@ export default function NodesPage() {
             {visible.length} / {nodes.length}
           </span>
         </div>
+
+        {/* Per-feature counter strip */}
+        {perFeatureCounts.length > 0 && (
+          <div
+            className="mb-5 flex flex-wrap items-center gap-2"
+            data-testid="nodes-per-feature-counters"
+          >
+            {perFeatureCounts.map(([fk, count]) => (
+              <button
+                type="button"
+                key={fk}
+                onClick={() => setFeatureFilter(featureFilter === fk ? "" : fk)}
+                className="rounded border px-2 py-1 font-mono-data text-[11px] transition-colors"
+                style={{
+                  background: featureFilter === fk ? "var(--accent-muted)" : "var(--bg-surface)",
+                  borderColor: featureFilter === fk ? "var(--accent)" : "var(--border)",
+                  color: featureFilter === fk ? "var(--accent)" : "var(--text-secondary)",
+                }}
+              >
+                {fk} <span style={{ color: "var(--text-muted)" }}>({count})</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Loading */}
         {isLoading && (

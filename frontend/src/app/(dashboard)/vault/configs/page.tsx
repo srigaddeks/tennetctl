@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, Globe, Building2, Layers, ToggleLeft } from "lucide-react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -100,6 +101,7 @@ function StatCards({ cards }: { cards: StatCardData[] }) {
 
 export default function ConfigsPage() {
   const [openCreate, setOpenCreate] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
   const { orgId, workspaceId } = useWorkspaceContext();
   const { data, isLoading, isError, error, refetch } = useConfigs({
     org_id: orgId,
@@ -191,6 +193,16 @@ export default function ConfigsPage() {
       >
         {/* Stat cards */}
         {!isLoading && !isError && data && <StatCards cards={statCards} />}
+
+        {/* Application scope bar */}
+        <div className="mb-4">
+          <ApplicationScopeBar
+            appId={appId}
+            orgId={orgId ?? undefined}
+            label="Scope configs to application"
+            onChange={setAppId}
+          />
+        </div>
 
         {isLoading && (
           <div className="flex flex-col gap-2">

@@ -1,0 +1,7 @@
+schema: "12_somacrm"
+table: "dim_activity_statuses"
+rows:
+  - {id: 1, code: pending, label: Pending, description: Not started, deprecated_at: null}
+  - {id: 2, code: in_progress, label: In Progress, description: Currently happening, deprecated_at: null}
+  - {id: 3, code: done, label: Done, description: Completed, deprecated_at: null}
+  - {id: 4, code: cancelled, label: Cancelled, description: Cancelled, deprecated_at: null}

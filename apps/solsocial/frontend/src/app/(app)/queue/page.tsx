@@ -106,9 +106,15 @@ export default function QueuePage() {
       </div>
 
       {!channelId ? (
-        <p className="display-italic text-[24px] text-[color:var(--ink-40)]">
-          Choose a channel above to set its week.
-        </p>
+        <div className="py-6">
+          <p className="display-italic text-[24px] text-[color:var(--ink-40)] mb-3">
+            Choose a channel above to set its week.
+          </p>
+          <p className="mono text-[11px] text-[color:var(--ink-40)] max-w-md">
+            Each channel has its own recurring schedule. Drafts in that channel's
+            queue publish at the next open slot — no per-post time picking required.
+          </p>
+        </div>
       ) : (
         <>
           {noQueue && (
@@ -120,10 +126,17 @@ export default function QueuePage() {
           )}
 
           <div className="flex items-center justify-between mb-4">
-            <p className="mono text-[11px] text-[color:var(--ink-40)]">
-              {draft.size} slot{draft.size === 1 ? "" : "s"}
-              {dirty && <span className="ml-2 text-[color:var(--ember-deep)]">· unsaved</span>}
-            </p>
+            <div>
+              <p className="mono text-[11px] text-[color:var(--ink-40)]">
+                {draft.size} slot{draft.size === 1 ? "" : "s"}
+                {dirty && <span className="ml-2 text-[color:var(--ember-deep)]">· unsaved</span>}
+              </p>
+              {slotList.length > 0 && (
+                <p className="mono text-[10px] text-[color:var(--ink-40)] mt-1">
+                  Next firing: {DAYS[slotList[0].day_of_week]} {String(slotList[0].hour).padStart(2, "0")}:{String(slotList[0].minute).padStart(2, "0")} {tz}
+                </p>
+              )}
+            </div>
             <div className="flex gap-2">
               {draft.size > 0 && (
                 <button className="btn-ghost text-[11px] mono uppercase tracking-wider" onClick={clearAll}>

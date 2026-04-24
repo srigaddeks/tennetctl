@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import Link from "next/link";
 
 import { PageHeader } from "@/components/page-header";
 import { AlertRuleEditor } from "@/features/monitoring/_components/alert-rule-editor";
@@ -52,6 +53,16 @@ export default function EditAlertRulePage({
                 {id}
               </div>
             </div>
+            {data.labels?.application_id && (
+              <Link
+                href={`/iam/applications/${data.labels.application_id}`}
+                className="font-mono-data text-[11px] hover:underline"
+                style={{ color: "var(--accent)" }}
+                data-testid="alert-rule-application-link"
+              >
+                app {data.labels.application_id.slice(0, 8)} →
+              </Link>
+            )}
             <div
               className="label-caps"
               style={{

@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { KeyRound, Globe, Building2, Layers, ShieldAlert, Lock, X } from "lucide-react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -154,6 +155,7 @@ function SecretsPageInner() {
   const searchParams = useSearchParams();
   const urlOrgId = searchParams.get("org_id");
   const urlWorkspaceId = searchParams.get("workspace_id");
+  const urlAppId = searchParams.get("app_id");
 
   const [openCreate, setOpenCreate] = useState(false);
   const { data, isLoading, isError, error, refetch } = useSecrets({
@@ -233,6 +235,21 @@ function SecretsPageInner() {
 
         {/* Stat cards */}
         {!isLoading && !isError && data && <StatCards cards={statCards} />}
+
+        {/* Application scope bar */}
+        <div className="mb-4">
+          <ApplicationScopeBar
+            appId={urlAppId}
+            orgId={urlOrgId ?? undefined}
+            label="Scope secrets to application"
+            onChange={(nextAppId) => {
+              const url = new URL(window.location.href);
+              if (nextAppId) url.searchParams.set("app_id", nextAppId);
+              else url.searchParams.delete("app_id");
+              router.replace(url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : ""));
+            }}
+          />
+        </div>
 
         {isLoading && (
           <div className="flex flex-col gap-2">

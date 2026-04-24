@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /customers
+        - heading "Customers" [level=1] [ref=e7]
+      - link "+ New Customer" [ref=e8] [cursor=pointer]:
+        - /url: /customers/new
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: Total
+        - generic [ref=e12]: "0"
+      - generic [ref=e13]:
+        - generic [ref=e14]: Active
+        - generic [ref=e15]: "0"
+      - generic [ref=e16]:
+        - generic [ref=e17]: Paused
+        - generic [ref=e18]: "0"
+      - generic [ref=e19]:
+        - generic [ref=e20]: Churned
+        - generic [ref=e21]: "0"
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: Status
+        - combobox [ref=e25]:
+          - option "All" [selected]
+          - option "Prospect"
+          - option "Active"
+          - option "Paused"
+          - option "Churned"
+          - option "Blocked"
+      - generic [ref=e26]:
+        - generic [ref=e27]: Location
+        - combobox [ref=e28]:
+          - option "All locations" [selected]
+      - generic [ref=e29]:
+        - generic [ref=e30]: Search (name / email / phone)
+        - textbox "e.g. raj or 98765…" [ref=e31]
+    - paragraph [ref=e33]: Loading customers…
+  - alert [ref=e34]

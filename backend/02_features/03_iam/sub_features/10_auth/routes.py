@@ -184,6 +184,7 @@ async def signin_route(request: Request, body: SigninBody) -> Response:
                 vault_client=vault,
                 email=body.email,
                 password=body.password,
+                application_id=request.headers.get("x-application-id"),
                 source_ip=client_ip,
                 user_agent=ua,
                 previous_session_id=previous_session_id,

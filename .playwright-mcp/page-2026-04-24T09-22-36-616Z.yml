@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]:
+          - link "somaerp" [ref=e6] [cursor=pointer]:
+            - /url: /
+          - text: /
+          - link "supply" [ref=e7] [cursor=pointer]:
+            - /url: /supply
+          - text: /raw-materials
+        - heading "Raw Materials" [level=1] [ref=e8]
+      - link "+ New Raw Material" [ref=e9] [cursor=pointer]:
+        - /url: /supply/raw-materials/new
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: Category
+        - combobox [ref=e13]:
+          - option "All categories" [selected]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Status
+        - combobox [ref=e16]:
+          - option "All" [selected]
+          - option "Active"
+          - option "Paused"
+          - option "Discontinued"
+    - paragraph [ref=e18]: Loading raw materials…
+  - alert [ref=e19]

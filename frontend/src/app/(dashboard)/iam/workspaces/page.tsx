@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
@@ -45,6 +46,7 @@ type CreateForm = z.infer<typeof createSchema>;
 export default function WorkspacesPage() {
   const router = useRouter();
   const [filterOrgId, setFilterOrgId] = useState<string>("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
 
   const { data: orgs } = useOrgs({ limit: 500 });
@@ -105,6 +107,14 @@ export default function WorkspacesPage() {
             />
           </div>
         )}
+
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Scope workspaces to application"
+          />
+        </div>
 
         {/* Filter bar */}
         <div className="mb-4 flex items-center gap-3">

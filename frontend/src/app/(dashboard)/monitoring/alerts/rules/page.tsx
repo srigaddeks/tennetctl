@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -29,6 +31,7 @@ export default function AlertRulesPage() {
   const del = useDeleteAlertRule();
   const pause = usePauseAlertRule();
   const unpause = useUnpauseAlertRule();
+  const [appId, setAppId] = useState<string | null>(null);
 
   const items = data?.items ?? [];
   const activeCount = items.filter((r) => {
@@ -62,6 +65,12 @@ export default function AlertRulesPage() {
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
         <div className="flex flex-col gap-5">
+
+          <ApplicationScopeBar
+            appId={appId}
+            onChange={setAppId}
+            label="Filter rules by application"
+          />
 
           {/* Stat strip */}
           {!isLoading && (

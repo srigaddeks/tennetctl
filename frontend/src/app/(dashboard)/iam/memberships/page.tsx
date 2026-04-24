@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/components/toast";
@@ -37,6 +38,7 @@ type Tab = "org" | "workspace";
 
 export default function MembershipsPage() {
   const [tab, setTab] = useState<Tab>("org");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [openAssign, setOpenAssign] = useState(false);
 
   const { data: orgRows } = useOrgMemberships();
@@ -83,6 +85,15 @@ export default function MembershipsPage() {
             value={totalWs}
             sub="users in workspaces"
             accent="blue"
+          />
+        </div>
+
+        {/* Application scope */}
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Scope memberships to application"
           />
         </div>
 

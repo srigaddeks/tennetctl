@@ -66,6 +66,7 @@ class SessionMeta(BaseModel):
     expires_at: str
     revoked_at: str | None = None
     is_valid: bool
+    application_id: str | None = None
 
     @field_validator("expires_at", "revoked_at", mode="before")
     @classmethod

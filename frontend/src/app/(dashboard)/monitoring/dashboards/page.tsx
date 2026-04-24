@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { Modal } from "@/components/modal";
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Badge,
@@ -77,6 +78,7 @@ export default function DashboardsPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useDashboards();
   const create = useCreateDashboard();
@@ -108,6 +110,14 @@ export default function DashboardsPage() {
       />
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
+        <div className="mb-5">
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Dashboards for application"
+          />
+        </div>
+
         {isLoading && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (

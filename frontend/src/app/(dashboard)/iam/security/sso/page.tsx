@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
@@ -48,6 +49,7 @@ export default function SSOPage() {
     useOidcProviders();
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<OidcProvider | null>(null);
+  const [appId, setAppId] = useState<string | null>(null);
 
   return (
     <>
@@ -67,6 +69,10 @@ export default function SSOPage() {
         }
       />
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in" data-testid="iam-sso-body">
+        <div className="mb-5">
+          <ApplicationScopeBar appId={appId} onChange={setAppId} label="SSO for application" />
+        </div>
+
         {/* Info banner */}
         <div
           className="mb-5 rounded border px-4 py-3 text-xs"

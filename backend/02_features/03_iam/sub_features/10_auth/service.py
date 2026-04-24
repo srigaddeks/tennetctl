@@ -262,6 +262,7 @@ async def signin(
     vault_client: Any,
     email: str,
     password: str,
+    application_id: str | None = None,
     source_ip: str | None = None,
     user_agent: str | None = None,
     previous_session_id: str | None = None,
@@ -406,6 +407,7 @@ async def signin(
     token, session = await _sessions.mint_session(
         conn, vault_client=vault_client,
         user_id=user["id"], org_id=org_id, workspace_id=workspace_id,
+        application_id=application_id,
         user_agent=user_agent, ip_address=source_ip,
     )
     # Session-fixation defense: if the client presented a pre-existing session

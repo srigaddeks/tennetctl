@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -40,6 +41,7 @@ export default function SilencesPage() {
   const [open, setOpen] = useState(false);
   const [ruleId, setRuleId] = useState<string>("");
   const [labels, setLabels] = useState("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [hours, setHours] = useState("4");
 
@@ -115,6 +117,8 @@ export default function SilencesPage() {
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
         <div className="flex flex-col gap-5">
+
+          <ApplicationScopeBar appId={appFilter} onChange={setAppFilter} label="Silences for application" />
 
           {/* Stats strip */}
           {!isLoading && items.length > 0 && (

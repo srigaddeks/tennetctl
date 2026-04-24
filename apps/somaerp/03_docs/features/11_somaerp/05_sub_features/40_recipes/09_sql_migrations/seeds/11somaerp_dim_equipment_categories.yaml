@@ -1,0 +1,51 @@
+schema: "11_somaerp"
+table: "dim_equipment_categories"
+rows:
+  - id: 1
+    code: "juicer"
+    name: "Juicer"
+    deprecated_at: null
+  - id: 2
+    code: "cold_press"
+    name: "Cold Press"
+    deprecated_at: null
+  - id: 3
+    code: "fridge"
+    name: "Fridge"
+    deprecated_at: null
+  - id: 4
+    code: "freezer"
+    name: "Freezer"
+    deprecated_at: null
+  - id: 5
+    code: "cutting_board"
+    name: "Cutting Board"
+    deprecated_at: null
+  - id: 6
+    code: "knife_set"
+    name: "Knife Set"
+    deprecated_at: null
+  - id: 7
+    code: "gas_stove"
+    name: "Gas Stove"
+    deprecated_at: null
+  - id: 8
+    code: "press"
+    name: "Press"
+    deprecated_at: null
+  - id: 9
+    code: "scale"
+    name: "Scale"
+    deprecated_at: null
+  - id: 10
+    code: "bottler"
+    name: "Bottler"
+    deprecated_at: null
+  - id: 11
+    code: "labeler"
+    name: "Labeler"
+    deprecated_at: null
+  - id: 12
+    code: "storage_shelf"
+    name: "Storage Shelf"
+    deprecated_at: null

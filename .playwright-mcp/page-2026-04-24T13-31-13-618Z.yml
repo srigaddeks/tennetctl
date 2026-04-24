@@ -1,0 +1,49 @@
+- generic [active] [ref=e1]:
+  - status [ref=e21]:
+    - generic [ref=e22]:
+      - img [ref=e24]
+      - generic [ref=e26]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+  - alert [ref=e17]
+  - main [ref=e31]:
+    - generic [ref=e32]:
+      - paragraph [ref=e33]:
+        - link "somaerp" [ref=e34] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "recipes" [ref=e35] [cursor=pointer]:
+          - /url: /recipes
+        - text: /new
+      - heading "New Recipe" [level=1] [ref=e36]
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]: Product
+        - combobox [ref=e40]:
+          - option "Turmeric Ginger Shot" [selected]
+          - option "Tropical Detox"
+          - option "Hydration Cooler"
+          - option "Beetroot Recharge"
+          - option "Citrus Immunity"
+          - option "Green Morning"
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Version
+          - spinbutton [ref=e44]: "1"
+        - generic [ref=e45]:
+          - generic [ref=e46]: Status
+          - combobox [ref=e47]:
+            - option "draft" [selected]
+            - option "active"
+            - option "archived"
+      - generic [ref=e48]:
+        - generic [ref=e49]: Effective From
+        - textbox [ref=e50]: 2026-04-24
+      - generic [ref=e51]:
+        - generic [ref=e52]: Notes
+        - textbox "Soma Delights Green Morning v1 — 300ml bottle" [ref=e53]
+      - generic [ref=e54]:
+        - button "Create Recipe" [ref=e55] [cursor=pointer]
+        - link "Cancel" [ref=e56] [cursor=pointer]:
+          - /url: /recipes

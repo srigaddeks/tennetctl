@@ -1,0 +1,48 @@
+- generic [active] [ref=e1]:
+  - status [ref=e42]:
+    - generic [ref=e43]:
+      - img [ref=e45]
+      - generic [ref=e47]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e48] [cursor=pointer]:
+          - img [ref=e49]
+  - alert [ref=e41]
+  - main [ref=e52]:
+    - generic [ref=e53]:
+      - paragraph [ref=e54]:
+        - link "somaerp" [ref=e55] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "customers" [ref=e56] [cursor=pointer]:
+          - /url: /customers
+        - text: /019dbfb1-d1e6-7983-b808-3cbfbea85478
+      - heading "Priya Sharma" [level=1] [ref=e57]
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - heading "Info" [level=2] [ref=e60]
+        - generic [ref=e61]:
+          - term [ref=e62]: Slug
+          - definition [ref=e63]: priya-sharma
+          - term [ref=e64]: Status
+          - definition [ref=e65]: active
+          - term [ref=e66]: Email
+          - definition [ref=e67]: priya@example.com
+          - term [ref=e68]: Phone
+          - definition [ref=e69]: +91 98765 43210
+          - term [ref=e70]: Location
+          - definition [ref=e71]: Hyderabad
+          - term [ref=e72]: Delivery notes
+          - definition [ref=e73]: —
+          - term [ref=e74]: Acquired via
+          - definition [ref=e75]: instagram_ad
+          - term [ref=e76]: LTV
+          - definition [ref=e77]: "0.00"
+        - generic [ref=e78]:
+          - generic [ref=e79]: Address
+          - generic [ref=e80]: "{}"
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - heading "Subscriptions" [level=2] [ref=e83]
+          - link "+ New Subscription" [ref=e84] [cursor=pointer]:
+            - /url: /subscriptions/list/new?customer_id=019dbfb1-d1e6-7983-b808-3cbfbea85478
+        - paragraph [ref=e85]: No subscriptions yet.

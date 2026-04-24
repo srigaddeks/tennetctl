@@ -178,6 +178,7 @@ export type SessionReadShape = {
   last_activity_at: string | null;
   user_agent: string | null;
   ip_address: string | null;
+  application_id: string | null;
 };
 
 export type SessionPatchBody = {
@@ -740,6 +741,7 @@ export type AuditEventFilter = {
   actor_session_id?: string | null;
   org_id?: string | null;
   workspace_id?: string | null;
+  application_id?: string | null;  // filter by application scope
   trace_id?: string | null;
   since?: string | null;       // ISO-8601
   until?: string | null;
@@ -762,6 +764,7 @@ export type AuditEventRow = {
   actor_session_id: string | null;
   org_id: string | null;
   workspace_id: string | null;
+  application_id?: string | null;
   trace_id: string;
   span_id: string;
   parent_span_id: string | null;

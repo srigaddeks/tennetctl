@@ -38,16 +38,18 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Step 2: auth guard.
+  // Step 2: auth guard — only gate truly private paths when no cookie at all.
+  // We deliberately do NOT redirect away from /auth/signin when a session
+  // cookie exists: the cookie could be expired/revoked, and doing so creates
+  // an unbreakable loop (middleware redirects to /, 401 fires, client tries
+  // /auth/signin, middleware redirects back). The SignInForm handles the
+  // "already signed in" case client-side via useMe().
   if (!session && !isPublic(pathname)) {
     const url = new URL("/auth/signin", request.url);
     if (pathname !== "/") {
       url.searchParams.set("next", pathname + search);
     }
     return NextResponse.redirect(url);
-  }
-  if (session && (pathname === "/auth/signin" || pathname === "/auth/signup")) {
-    return NextResponse.redirect(new URL("/", request.url));
   }
   return NextResponse.next();
 }

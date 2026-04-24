@@ -1,0 +1,177 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img "Chrome logo" [ref=e5]
+      - generic [ref=e6]: Google LLC
+      - generic [ref=e7]: Copyright 2026 Google LLC. All rights reserved.
+    - table [ref=e8]:
+      - rowgroup [ref=e9]:
+        - 'row "Google Chrome: 147.0.7727.117 (Official Build) (arm64) Copy version string" [ref=e10]':
+          - cell "Google Chrome:" [ref=e11]
+          - cell "147.0.7727.117 (Official Build) (arm64) Copy version string" [ref=e12]:
+            - generic [ref=e13]:
+              - text: 147.0.7727.117 (Official Build)
+              - text: (arm64)
+            - button "Copy version string" [ref=e14] [cursor=pointer]
+        - 'row "Revision: 474cc805edd6b22006509896c910f6b6da2427ad-refs/branch-heads/7727_111@{#4}" [ref=e16]':
+          - cell "Revision:" [ref=e17]
+          - 'cell "474cc805edd6b22006509896c910f6b6da2427ad-refs/branch-heads/7727_111@{#4}" [ref=e18]'
+        - 'row "OS: macOS Version 15.5 (Build 24F74)" [ref=e19]':
+          - cell "OS:" [ref=e20]
+          - cell "macOS Version 15.5 (Build 24F74)" [ref=e21]:
+            - generic [ref=e22]: macOS Version 15.5 (Build 24F74)
+        - 'row "JavaScript: V8 14.7.173.20" [ref=e23]':
+          - cell "JavaScript:" [ref=e24]
+          - cell "V8 14.7.173.20" [ref=e25]
+        - 'row "User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=e26]':
+          - cell "User agent:" [ref=e27]
+          - cell "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" [ref=e28]
+        - row [ref=e29]:
+          - cell "Command Line:" [ref=e30]
+          - cell [ref=e31]
+        - 'row "Executable Path: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome" [ref=e32]':
+          - cell "Executable Path:" [ref=e33]
+          - cell "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" [ref=e34]
+        - 'row "Profile Path: /Users/sri/.playwright-chrome-profile/Profile 2" [ref=e35]':
+          - cell "Profile Path:" [ref=e36]
+          - cell "/Users/sri/.playwright-chrome-profile/Profile 2" [ref=e37]
+        - 'row "Linker: lld" [ref=e38]':
+          - cell "Linker:" [ref=e39]
+          - cell "lld" [ref=e40]
+        - text: ":"
+        - 'row "Command-line variations: eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b0RlRWxldmF0ZSxBdXRvZmlsbEFk... Copy variations string" [ref=e41]':
+          - cell "Command-line variations:" [ref=e42]
+          - cell "eyJkaXNhYmxlLWZlYXR1cmVzIjoiQXV0b0RlRWxldmF0ZSxBdXRvZmlsbEFk..." [ref=e43]
+          - cell "Copy variations string" [ref=e44]:
+            - button "Copy variations string" [ref=e45] [cursor=pointer]
+        - row [ref=e47]:
+          - cell "Active variations:" [ref=e48]
+          - cell [ref=e49]:
+            - text: c75b932e-377be55a
+            - text: eb11c34-621fdd70
+            - text: a66fd611-33c3eba5
+            - text: 8c3b7881-ca7d8d80
+            - text: c96951f6-ca7d8d80
+            - text: a6ba7388-ca7d8d80
+            - text: 7cef7344-de6b616a
+            - text: 8f6c5cc6-ca7d8d80
+            - text: 94e21eca-377be55a
+            - text: cef7280a-377be55a
+            - text: 8f80c10-1f8c5973
+            - text: 3095aa95-3f4a17df
+            - text: e957b5a8-7d5ce49c
+            - text: ead3e59e-ca7d8d80
+            - text: 9fdb24c-49aee7fb
+            - text: b453370-41654c99
+            - text: e9854fc-ca7d8d80
+            - text: f314f5b9-ab0d982c
+            - text: 238649f0-c68116e
+            - text: c9e39c5f-377be55a
+            - text: b1b6eab0-ca7d8d80
+            - text: 4e5d86a8-ca7d8d80
+            - text: fc1790de-ca7d8d80
+            - text: 639ee5d3-377be55a
+            - text: 57d26b38-d063754d
+            - text: 5e05ef36-ca7d8d80
+            - text: 48d965f1-377be55a
+            - text: a582a1b8-5ad3f43d
+            - text: 1de9086e-377be55a
+            - text: 305240ad-ca7d8d80
+            - text: bd6dd170-ca7d8d80
+            - text: 3967954f-f9a43703
+            - text: 7a63fd5a-fc4b97f0
+            - text: 9d5ecd8d-5638ba10
+            - text: ff2c10a3-377be55a
+            - text: e3b0362b-377be55a
+            - text: b2903a22-377be55a
+            - text: 335ba8a6-377be55a
+            - text: f980930-79ffc288
+            - text: d943f525-1f8c5973
+            - text: e1d656a5-ca7d8d80
+            - text: 5dfc4774-ca7d8d80
+            - text: 205d7c53-ca7d8d80
+            - text: 9cf6c713-fc5a3e0c
+            - text: 4ab30a87-86378971
+            - text: 78049c75-75312dd7
+            - text: a3ce8da1-3a655441
+            - text: 22946be1-12ede6a2
+            - text: 6ddea229-ca7d8d80
+            - text: 3e034797-ca7d8d80
+            - text: 3f105c89-f9a43703
+            - text: c17129bb-ca7d8d80
+            - text: 8978ce4e-c4cca907
+            - text: aaa52086-b7200ba4
+            - text: b0b97cfb-ca7d8d80
+            - text: fca39b9a-e550e91c
+            - text: ec3153de-ca7d8d80
+            - text: 54be7848-607d4209
+            - text: 3ee33b62-ca7d8d80
+            - text: a7038f69-1f586b09
+            - text: 81c84cff-ca7d8d80
+            - text: de028327-9e1ddfb7
+            - text: 36b1a5b9-f9a43703
+            - text: 1edcddf4-2d58eb1b
+            - text: 43395eb-ca7d8d80
+            - text: 8ec87690-cac03885
+            - text: e6ec9393-91324c30
+            - text: b6f29041-ca7d8d80
+            - text: 25a81d51-ca7d8d80
+            - text: 3d133ecc-3f4a17df
+            - text: d0fa45e6-377be55a
+            - text: e85106e5-b4f8f47f
+            - text: 53c64de7-248a12ad
+            - text: a374fdf0-bea66037
+            - text: 6ef0294d-ca7d8d80
+            - text: daa70516-377be55a
+            - text: b360dba0-1f8c5973
+            - text: f3dbf5bd-ca7d8d80
+            - text: cbe862f6-3f4a17df
+            - text: 523ecc7b-6d5ba2f1
+            - text: ab917364-ca7d8d80
+            - text: 494d8760-52325d43
+            - text: 3ac60855-486e2a9c
+            - text: 63dcb6a3-ed7a1963
+            - text: e706e746-2fa8505e
+            - text: 4442aae2-6bdfffe7
+            - text: f690cf64-6e3b1976
+            - text: ed1d377-e1cc0f14
+            - text: 710c3f90-e1cc0f14
+            - text: e7e71889-4ad60575
+            - text: 177e9e71-3f4a17df
+            - text: 80b60e4a-ca7d8d80
+            - text: b4a96eb4-ca7d8d80
+            - text: f585af0a-ca7d8d80
+            - text: bea4a9c2-ca7d8d80
+            - text: 74d4bce7-ca7d8d80
+            - text: 51d22fd4-ca7d8d80
+            - text: 17073ac-ca7d8d80
+            - text: 2e2ec567-ca7d8d80
+            - text: 39a2e568-ca7d8d80
+            - text: ea6b5a9c-ca7d8d80
+            - text: beb5d240-bfdb8b73
+            - text: 4d5e6afc-5a16f837
+            - text: d00bdbf9-ca7d8d80
+            - text: b357b792-dcf2ae30
+            - text: f4f00e05-ca7d8d80
+            - text: 70678518-dee66fa8
+            - text: be338734-8e9604d4
+            - text: 5f9907a9-206f6a6e
+            - text: 8eeccb9a-c35b209e
+            - text: 2b465683-206f6a6e
+            - text: 52fc7926-ee3d6169
+            - text: bc9b361d-dee66fa8
+            - text: a41a7188-b184655b
+            - text: ff71bfdc-dee66fa8
+            - text: 2159dd0c-dee66fa8
+            - text: e7cc79d5-dee66fa8
+            - text: 4b935545-3d47f4f4
+            - text: 9a38bae3-6046c8a7
+            - text: 2d1e43a3-3d47f4f4
+            - text: 370ace14-3f4a17df
+            - text: 386dc267-3d47f4f4
+            - text: d69d967d-9cce7190
+            - text: 3c8f75a1-dcfbe471
+            - text: a4406b35-1657e2d6
+            - text: 408da146-1657e2d6
+        - text: ":"
+  - alert [ref=e50]

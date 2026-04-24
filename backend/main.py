@@ -326,6 +326,18 @@ async def lifespan(application: FastAPI):
         )
         logger.info("Social publisher scheduler started.")
 
+    # Capture retention prune worker — runs when the capture module is enabled.
+    _capture_prune_task = None
+    if "social_capture" in config.modules or "social_publisher" in config.modules:
+        try:
+            _capture_worker_mod = import_module(
+                "backend.02_features.07_social_publisher.capture_worker"
+            )
+            _capture_prune_task = _capture_worker_mod.start_worker(pool)
+            logger.info("social.capture retention-prune worker started.")
+        except Exception as e:
+            logger.warning("social.capture worker start failed: %s", e)
+
     yield
 
     if _gdpr_worker_task is not None:
@@ -375,6 +387,12 @@ async def lifespan(application: FastAPI):
         await _asyncio_social2.gather(_social_scheduler_task, return_exceptions=True)
         logger.info("Social publisher scheduler stopped.")
 
+    if _capture_prune_task is not None:
+        _capture_prune_task.cancel()
+        import asyncio as _asyncio_cap2
+        await _asyncio_cap2.gather(_capture_prune_task, return_exceptions=True)
+        logger.info("social.capture retention-prune worker stopped.")
+
     if _notify_worker_task is not None:
         _notify_worker_task.cancel()
         import asyncio as _asyncio
@@ -422,7 +440,7 @@ app = FastAPI(
 # CORS — allow frontend dev server
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:51735", "http://localhost:51835", "http://localhost:51736"],
+    allow_origins=["http://localhost:51735", "http://localhost:51835", "http://localhost:51736", "http://localhost:51737", "http://localhost:51999"],
     allow_origin_regex=r"^chrome-extension://.*$",
     allow_credentials=True,
     allow_methods=["*"],

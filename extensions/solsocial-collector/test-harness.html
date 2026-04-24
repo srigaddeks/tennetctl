@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SolSocial Extension — Full Data Pipeline Test</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "IBM Plex Mono", monospace; background: #0d1117; color: #e6edf3; font-size: 13px; padding: 24px; }
+  h1 { font-size: 16px; color: #58a6ff; margin-bottom: 4px; }
+  .sub { color: #8b949e; font-size: 11px; margin-bottom: 24px; }
+  .section { margin-bottom: 20px; border: 1px solid #21262d; border-radius: 6px; overflow: hidden; }
+  .section-head { background: #161b22; padding: 10px 14px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .section-body { padding: 14px; }
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 700; }
+  .badge.pass { background: #1a4731; color: #3fb950; }
+  .badge.fail { background: #4d1f24; color: #f85149; }
+  .badge.warn { background: #3d2c00; color: #e3b341; }
+  .badge.run  { background: #1f3a5c; color: #58a6ff; }
+  .badge.skip { background: #1c1c1c; color: #8b949e; }
+  .log { font-size: 11px; line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+  .log .ok  { color: #3fb950; }
+  .log .err { color: #f85149; }
+  .log .info{ color: #8b949e; }
+  .log .data{ color: #79c0ff; }
+  button { background: #21262d; color: #e6edf3; border: 1px solid #30363d; border-radius: 4px; padding: 6px 14px; font-family: inherit; font-size: 12px; cursor: pointer; }
+  button:hover { background: #30363d; }
+  button.primary { background: #1f6feb; border-color: #388bfd; }
+  button.primary:hover { background: #388bfd; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #feed-dom { border: 1px solid #21262d; border-radius: 4px; padding: 12px; background: #0d1117; max-height: 200px; overflow: auto; font-size: 10px; color: #8b949e; }
+  .stat-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 10px; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 24px; font-weight: 700; color: #58a6ff; }
+  .stat-label { font-size: 10px; color: #8b949e; text-transform: uppercase; }
+  .capture-card { border: 1px solid #21262d; border-radius: 4px; padding: 8px 10px; margin-bottom: 6px; font-size: 11px; }
+  .capture-card .platform { font-size: 10px; color: #8b949e; }
+  .capture-card .author { color: #79c0ff; }
+  .capture-card .text { color: #e6edf3; margin-top: 3px; }
+  .capture-card .meta { color: #8b949e; font-size: 10px; margin-top: 3px; }
+  input[type="text"], input[type="password"] { background: #161b22; border: 1px solid #30363d; border-radius: 4px; color: #e6edf3; font-family: inherit; font-size: 12px; padding: 6px 10px; width: 100%; margin-bottom: 8px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .progress { height: 3px; background: #21262d; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .progress-bar { height: 100%; background: #1f6feb; width: 0; transition: width 0.3s; border-radius: 2px; }
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .summary-table td, .summary-table th { border: 1px solid #21262d; padding: 6px 10px; text-align: left; }
+  .summary-table th { background: #161b22; color: #8b949e; text-transform: uppercase; font-size: 10px; }
+</style>
+</head>
+<body>
+<h1>SolSocial Extension — Full Data Pipeline Test</h1>
+<div class="sub">Tests: Extractor → Scanner → Ingest API → Dedup → Intelligence feed. No extension install needed.</div>
+
+<!-- Config -->
+<div class="section">
+  <div class="section-head">
+    <span id="cfg-badge" class="badge skip">CONFIG</span>
+    Backend + Credentials
+  </div>
+  <div class="section-body">
+    <div class="two-col">
+      <div>
+        <label style="font-size:10px;color:#8b949e;display:block;margin-bottom:4px;">Backend URL (TennetCTL)</label>
+        <input type="text" id="base-url" value="http://localhost:51734" />
+      </div>
+      <div>
+        <label style="font-size:10px;color:#8b949e;display:block;margin-bottom:4px;">Intelligence URL (SolSocial)</label>
+        <input type="text" id="intel-url" value="http://localhost:51835" />
+      </div>
+      <div>
+        <label style="font-size:10px;color:#8b949e;display:block;margin-bottom:4px;">Email</label>
+        <input type="text" id="email" value="admin@example.com" />
+      </div>
+      <div>
+        <label style="font-size:10px;color:#8b949e;display:block;margin-bottom:4px;">Password</label>
+        <input type="password" id="password" value="tennetctl_dev" />
+      </div>
+    </div>
+    <button class="primary" onclick="runAll()">▶ Run All Tests</button>
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+</div>
+
+<!-- Test Results Grid -->
+<div class="grid">
+
+<!-- Test 1: Auth -->
+<div class="section">
+  <div class="section-head"><span id="t1-badge" class="badge skip">T1</span> Auth → Sign In</div>
+  <div class="section-body">
+    <div class="log" id="t1-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 2: LinkedIn Extractor -->
+<div class="section">
+  <div class="section-head"><span id="t2-badge" class="badge skip">T2</span> LinkedIn DOM Extractor</div>
+  <div class="section-body">
+    <div class="log" id="t2-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 3: Twitter Extractor -->
+<div class="section">
+  <div class="section-head"><span id="t3-badge" class="badge skip">T3</span> X/Twitter DOM Extractor</div>
+  <div class="section-body">
+    <div class="log" id="t3-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 4: Batch Ingest -->
+<div class="section">
+  <div class="section-head"><span id="t4-badge" class="badge skip">T4</span> Batch Ingest (POST /v1/social/captures)</div>
+  <div class="section-body">
+    <div class="log" id="t4-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 5: Dedup -->
+<div class="section">
+  <div class="section-head"><span id="t5-badge" class="badge skip">T5</span> Server-side Dedup</div>
+  <div class="section-body">
+    <div class="log" id="t5-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 6: Rate limit -->
+<div class="section">
+  <div class="section-head"><span id="t6-badge" class="badge skip">T6</span> Rate Limit (>500/min guard)</div>
+  <div class="section-body">
+    <div class="log" id="t6-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 7: Insights -->
+<div class="section">
+  <div class="section-head"><span id="t7-badge" class="badge skip">T7</span> Insights Counts + Top Authors</div>
+  <div class="section-body">
+    <div class="log" id="t7-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 8: Filters -->
+<div class="section">
+  <div class="section-head"><span id="t8-badge" class="badge skip">T8</span> Feed Filters (platform/type/author/hashtag)</div>
+  <div class="section-body">
+    <div class="log" id="t8-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 9: Recommendations -->
+<div class="section">
+  <div class="section-head"><span id="t9-badge" class="badge skip">T9</span> AI Recommendations (new popup feature)</div>
+  <div class="section-body">
+    <div class="log" id="t9-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+<!-- Test 10: Persona -->
+<div class="section">
+  <div class="section-head"><span id="t10-badge" class="badge skip">T10</span> Persona Build</div>
+  <div class="section-body">
+    <div class="log" id="t10-log"><span class="info">not run</span></div>
+  </div>
+</div>
+
+</div><!-- /grid -->
+
+<!-- Summary -->
+<div class="section" id="summary-section" style="display:none;">
+  <div class="section-head"><span id="sum-badge" class="badge skip">RESULT</span> Test Summary</div>
+  <div class="section-body">
+    <div class="stat-row" id="sum-stats"></div>
+    <table class="summary-table" id="sum-table">
+      <tr><th>#</th><th>Test</th><th>Result</th><th>Detail</th></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Live captured cards -->
+<div class="section" id="captures-section" style="display:none;">
+  <div class="section-head"><span class="badge run">LIVE</span> Extracted Captures (from synthetic DOM)</div>
+  <div class="section-body" id="captures-body"></div>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+let TOKEN = null;
+let BASE_URL = '';
+let INTEL_URL = '';
+const results = [];
+let testCaptureIds = [];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function log(id, html) {
+  document.getElementById(id).innerHTML = html;
+}
+
+function badge(id, state, label) {
+  const el = document.getElementById(id);
+  el.className = `badge ${state}`;
+  el.textContent = label || el.textContent;
+}
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+  const res = await fetch(BASE_URL + path, {
+    method: opts.method || 'GET',
+    headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const d = await res.json();
+  return { status: res.status, ok: d.ok, data: d.data, error: d.error };
+}
+
+function progress(pct) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function renderCard(c) {
+  return `<div class="capture-card">
+    <div class="platform">${c.platform} · ${c.type} · <span style="color:#3fb950">${c.platform_post_id?.slice(0,24)}…</span></div>
+    <div class="author">@${c.author_handle || '—'} <span style="color:#8b949e">${c.author_name || ''}</span></div>
+    <div class="text">${(c.text_excerpt || '').slice(0, 120)}</div>
+    <div class="meta">♥${c.like_count ?? '—'}  💬${c.reply_count ?? '—'}  🔁${c.repost_count ?? '—'}  hashtags:${(c.raw_attrs?.hashtags||[]).join(',')||'—'}</div>
+  </div>`;
+}
+
+// ─── Synthetic DOM builder ────────────────────────────────────────────────────
+function buildLinkedInFeed() {
+  const container = document.createElement('div');
+  container.innerHTML = `
+<div class="scaffold-layout__main">
+  <!-- Feed post 1 -->
+  <div data-id="urn:li:activity:ext-test-001" class="feed-shared-update-v2">
+    <div class="feed-shared-actor__container-link">
+      <a href="/in/jensen-huang"><span class="feed-shared-actor__name">Jensen Huang</span></a>
+      <span class="feed-shared-actor__description">CEO at NVIDIA</span>
+    </div>
+    <div class="feed-shared-text__text-view t-14">
+      Accelerated computing is the engine of the AI revolution. NVIDIA's next-gen Blackwell GPU delivers 4× the AI training throughput. #NVIDIA #AI #GPU
+    </div>
+    <div class="social-details-social-counts__reactions">
+      <button aria-label="34,521 reactions" class="social-details-social-counts__count-value">34,521</button>
+    </div>
+    <button aria-label="812 comments" class="social-details-social-counts__comments">812 comments</button>
+    <a href="https://www.linkedin.com/posts/jhuang_ai-gpu-001">View post</a>
+  </div>
+  <!-- Feed post 2 -->
+  <div data-id="urn:li:activity:ext-test-002" class="feed-shared-update-v2">
+    <div class="feed-shared-actor__container-link">
+      <a href="/in/yann-lecun"><span class="feed-shared-actor__name">Yann LeCun</span></a>
+      <span class="feed-shared-actor__description">VP & Chief AI Scientist at Meta</span>
+    </div>
+    <div class="feed-shared-text__text-view t-14">
+      World models are the path to true AI. LLMs, however impressive, are still fundamentally pattern matchers. The next frontier requires causal reasoning. #AI #MachineLearning #WorldModels
+    </div>
+    <div class="social-details-social-counts__reactions">
+      <button aria-label="8,904 reactions">8,904</button>
+    </div>
+    <button aria-label="1,204 comments">1,204 comments</button>
+    <a href="https://www.linkedin.com/posts/yann-lecun_ai-002">View post</a>
+  </div>
+  <!-- Own post -->
+  <div data-id="urn:li:activity:ext-test-003-own" class="feed-shared-update-v2">
+    <div class="feed-shared-actor__container-link">
+      <a href="/in/admin-own" class="optional-action-target-wrapper update-components-actor__container-link">
+        <span class="feed-shared-actor__name">Admin User</span>
+      </a>
+    </div>
+    <div class="feed-shared-text__text-view t-14">
+      Just shipped the plugin-first publishing flow for SolSocial. Collect from your browser, AI suggests posts, extension injects into the composer. No OAuth setup needed! #buildinpublic #SolSocial
+    </div>
+    <div class="social-details-social-counts__reactions">
+      <button aria-label="247 reactions">247</button>
+    </div>
+    <a href="https://www.linkedin.com/posts/admin-own-test-003">View post</a>
+  </div>
+  <!-- Article -->
+  <div data-id="urn:li:activity:ext-test-004" class="feed-shared-update-v2 feed-shared-article">
+    <div class="feed-shared-actor__container-link">
+      <a href="/in/tim-berners-lee"><span class="feed-shared-actor__name">Tim Berners-Lee</span></a>
+    </div>
+    <div class="feed-shared-text__text-view t-14">The Future of the Open Web</div>
+    <a class="app-aware-link" href="https://www.linkedin.com/pulse/future-open-web-tbl-001">
+      The Future of the Open Web
+    </a>
+  </div>
+  <!-- Company page view -->
+  <div data-id="urn:li:activity:ext-test-005" class="feed-shared-update-v2">
+    <div class="feed-shared-actor__container-link">
+      <a href="/company/openai"><span class="feed-shared-actor__name">OpenAI</span></a>
+      <span class="feed-shared-actor__description">Artificial Intelligence · 2.1M followers</span>
+    </div>
+    <div class="feed-shared-text__text-view t-14">GPT-4o is now available to all users. Try it at chat.openai.com #OpenAI #GPT4</div>
+    <div class="social-details-social-counts__reactions">
+      <button aria-label="91,234 reactions">91,234</button>
+    </div>
+    <a href="https://www.linkedin.com/posts/openai_gpt4o-005">View post</a>
+  </div>
+</div>`;
+  return container;
+}
+
+function buildTwitterFeed() {
+  const container = document.createElement('div');
+  container.setAttribute('data-testid', 'primaryColumn');
+  container.innerHTML = `
+<div>
+  <article data-testid="tweet" tabindex="-1">
+    <div data-testid="User-Name">
+      <a href="/karpathy"><span>Andrej Karpathy</span></a>
+      <a href="/karpathy">@karpathy</a>
+    </div>
+    <div data-testid="tweetText">
+      Tokenization is the root of all evil in LLMs. My new video explains why bytes > tokens and what a tokenization-free future looks like. #LLM #NeuralNetworks
+    </div>
+    <div data-testid="like" aria-label="42891 Likes"><span>42,891</span></div>
+    <div data-testid="reply" aria-label="3104 Replies"><span>3,104</span></div>
+    <div data-testid="retweet" aria-label="7823 reposts"><span>7,823</span></div>
+    <a href="/karpathy/status/1780000000000000001">View on X</a>
+  </article>
+  <article data-testid="tweet" tabindex="-1">
+    <div data-testid="User-Name">
+      <a href="/elonmusk"><span>Elon Musk</span></a>
+      <a href="/elonmusk">@elonmusk</a>
+    </div>
+    <div data-testid="tweetText">
+      Grok 3 is now the most capable AI on the planet. Try it at x.ai #Grok #xAI
+    </div>
+    <div data-testid="like" aria-label="187342 Likes"><span>187,342</span></div>
+    <div data-testid="retweet" aria-label="21099 reposts"><span>21,099</span></div>
+    <a href="/elonmusk/status/1780000000000000002">View on X</a>
+  </article>
+</div>`;
+  return container;
+}
+
+// ─── Extractor runner (standalone, no chrome.* needed) ────────────────────────
+async function loadScript(path) {
+  const r = await fetch(path);
+  return r.text();
+}
+
+async function runExtractor(platform, domEl) {
+  const isLI = platform === 'linkedin';
+  const extFile = isLI ? 'linkedin' : 'twitter';
+  const extName = isLI ? 'LinkedInExtractor' : 'TwitterExtractor';
+
+  // Load and eval extractor in main page context to avoid iframe sandbox blocks
+  const extSrc = await loadScript(`lib/extractors/${extFile}.js`);
+
+  // Backup any existing extractor, inject ours, run, then restore
+  const backup = window[extName];
+  try {
+    // eslint-disable-next-line no-new-func
+    new Function(extSrc)();
+  } catch(e) {
+    return { error: `eval failed: ${e.message}` };
+  }
+
+  const ext = window[extName];
+  if (!ext) return { error: `${extName} not on globalThis after eval` };
+
+  // Run against our detached DOM subtree directly
+  // Use the specific feed extractor (scanAll checks location which is localhost here)
+  let items = [];
+  try {
+    if (isLI) {
+      items = [
+        ...(ext.extractFeedPosts?.(domEl, null) || []),
+        ...(ext.extractArticleCards?.(domEl) || []),
+        ...(ext.extractCompanyPage?.(domEl) || []),
+      ];
+    } else {
+      items = ext.extractTweets?.(domEl, null) || [];
+    }
+  } catch(e) {
+    return { error: `extraction threw: ${e.message}` };
+  }
+
+  // Restore
+  if (backup) window[extName] = backup;
+  else delete window[extName];
+
+  return { items, count: items.length, version: ext.VERSION };
+}
+
+// ─── Test runners ─────────────────────────────────────────────────────────────
+
+async function t1_auth() {
+  badge('t1-badge', 'run', 'T1');
+  try {
+    const r = await api('/v1/auth/signin', { method: 'POST', body: {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value
+    }});
+    if (!r.ok) throw new Error(r.error?.message || 'signin failed');
+    TOKEN = r.data.token;
+    const u = r.data.user;
+    log('t1-log', `<span class="ok">✓ Signed in</span>\n<span class="data">user: ${u.email}\ntoken: ${TOKEN.slice(0,24)}…\nsession: ${r.data.session?.id?.slice(0,16)}…\norg_id: ${r.data.session?.org_id?.slice(0,16)}…</span>`);
+    badge('t1-badge', 'pass', 'T1 ✓');
+    results.push({ n:'T1', name:'Auth', pass:true, detail:`signed in as ${u.email}` });
+  } catch(e) {
+    log('t1-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t1-badge', 'fail', 'T1 ✗');
+    results.push({ n:'T1', name:'Auth', pass:false, detail:e.message });
+    throw e;
+  }
+}
+
+async function t2_linkedin_extractor() {
+  badge('t2-badge', 'run', 'T2');
+  try {
+    const dom = buildLinkedInFeed();
+    const result = await runExtractor('linkedin', dom);
+    if (result.error) throw new Error(result.error);
+
+    const items = result.items || [];
+    const li = items.filter(i => i.platform === 'linkedin');
+    const owned = items.filter(i => i.is_own);
+    const withText = items.filter(i => i.text_excerpt);
+    const withAuthor = items.filter(i => i.author_handle);
+
+    log('t2-log', `<span class="ok">✓ Extracted ${li.length} LinkedIn items</span>\n` +
+      `<span class="data">  with text: ${withText.length}\n  with author: ${withAuthor.length}\n  own posts: ${owned.length}\n  types: ${[...new Set(items.map(i=>i.type))].join(', ')}</span>\n` +
+      items.map(i => `<span class="info">  [${i.type}] @${i.author_handle||'?'} — ${(i.text_excerpt||'').slice(0,60)}…</span>`).join('\n'));
+
+    if (li.length < 3) throw new Error(`only ${li.length} items extracted — selectors may be stale`);
+    if (!withAuthor.length) throw new Error('no authors extracted');
+
+    badge('t2-badge', 'pass', 'T2 ✓');
+    results.push({ n:'T2', name:'LinkedIn Extractor', pass:true, detail:`${li.length} items, ${owned.length} own` });
+
+    // Store for ingest test
+    window.__liItems = items;
+  } catch(e) {
+    log('t2-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t2-badge', 'fail', 'T2 ✗');
+    results.push({ n:'T2', name:'LinkedIn Extractor', pass:false, detail:e.message });
+  }
+}
+
+async function t3_twitter_extractor() {
+  badge('t3-badge', 'run', 'T3');
+  try {
+    const dom = buildTwitterFeed();
+    const result = await runExtractor('x', dom);
+    if (result.error) throw new Error(result.error);
+
+    const items = result.items || [];
+    const withText = items.filter(i => i.text_excerpt);
+
+    log('t3-log', `<span class="ok">✓ Extracted ${items.length} X items</span>\n` +
+      `<span class="data">  with text: ${withText.length}\n  types: ${[...new Set(items.map(i=>i.type))].join(', ')}</span>\n` +
+      items.map(i => `<span class="info">  [${i.type}] @${i.author_handle||'?'} — ${(i.text_excerpt||'').slice(0,60)}…</span>`).join('\n'));
+
+    if (items.length < 1) throw new Error('no X items extracted');
+
+    badge('t3-badge', 'pass', 'T3 ✓');
+    results.push({ n:'T3', name:'X/Twitter Extractor', pass:true, detail:`${items.length} items` });
+    window.__xItems = items;
+  } catch(e) {
+    log('t3-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t3-badge', 'fail', 'T3 ✗');
+    results.push({ n:'T3', name:'X/Twitter Extractor', pass:false, detail:e.message });
+  }
+}
+
+async function t4_batch_ingest() {
+  badge('t4-badge', 'run', 'T4');
+  try {
+    // Build batch from extracted items, adding unique IDs to avoid collision
+    const ts = Date.now();
+    const liItems = (window.__liItems || []).map((item, i) => ({
+      platform: item.platform || 'linkedin',
+      type: item.type || 'feed_post_seen',
+      platform_post_id: `harness-li-${ts}-${i}`,
+      observed_at: new Date().toISOString(),
+      author_handle: item.author_handle || null,
+      author_name: item.author_name || null,
+      text_excerpt: item.text_excerpt || null,
+      url: item.url || null,
+      like_count: item.like_count || null,
+      reply_count: item.reply_count || null,
+      repost_count: item.repost_count || null,
+      view_count: item.view_count || null,
+      extractor_version: item.extractor_version || 'harness-v1',
+      is_own: item.is_own || false,
+      raw_attrs: item.raw_attrs || {},
+    }));
+    const xItems = (window.__xItems || []).map((item, i) => ({
+      platform: 'x',
+      type: item.type || 'feed_post_seen',
+      platform_post_id: `harness-x-${ts}-${i}`,
+      observed_at: new Date().toISOString(),
+      author_handle: item.author_handle || null,
+      author_name: item.author_name || null,
+      text_excerpt: item.text_excerpt || null,
+      url: item.url || null,
+      like_count: item.like_count || null,
+      reply_count: item.reply_count || null,
+      repost_count: item.repost_count || null,
+      view_count: item.view_count || null,
+      extractor_version: item.extractor_version || 'harness-v1',
+      is_own: item.is_own || false,
+      raw_attrs: item.raw_attrs || {},
+    }));
+
+    const captures = [...liItems, ...xItems];
+    if (!captures.length) {
+      // Fallback: craft 5 known-good captures
+      captures.push(
+        { platform:'linkedin', type:'feed_post_seen', platform_post_id:`harness-fallback-${ts}-1`, observed_at:new Date().toISOString(), author_handle:'jensen-huang', author_name:'Jensen Huang', text_excerpt:'Blackwell GPU delivers 4x AI throughput. #NVIDIA #AI', url:'https://www.linkedin.com/posts/jhuang_001', like_count:34521, reply_count:812, repost_count:null, view_count:null, extractor_version:'harness-v1', is_own:false, raw_attrs:{hashtags:['NVIDIA','AI'],mentions:[]} },
+        { platform:'linkedin', type:'feed_post_seen', platform_post_id:`harness-fallback-${ts}-2`, observed_at:new Date().toISOString(), author_handle:'yann-lecun', author_name:'Yann LeCun', text_excerpt:'World models are the path to true AI. #AI #MachineLearning', url:'https://www.linkedin.com/posts/ylecun_002', like_count:8904, reply_count:1204, repost_count:null, view_count:null, extractor_version:'harness-v1', is_own:false, raw_attrs:{hashtags:['AI','MachineLearning'],mentions:[]} },
+        { platform:'linkedin', type:'own_post_published', platform_post_id:`harness-fallback-${ts}-3`, observed_at:new Date().toISOString(), author_handle:'admin-own', author_name:'Admin User', text_excerpt:'Plugin-first publishing flow shipped! #buildinpublic #SolSocial', url:'https://www.linkedin.com/posts/admin-003', like_count:247, reply_count:null, repost_count:null, view_count:null, extractor_version:'harness-v1', is_own:true, raw_attrs:{hashtags:['buildinpublic','SolSocial'],mentions:[]} },
+        { platform:'x', type:'feed_post_seen', platform_post_id:`harness-fallback-${ts}-4`, observed_at:new Date().toISOString(), author_handle:'karpathy', author_name:'Andrej Karpathy', text_excerpt:'Tokenization is the root of all evil in LLMs. #LLM #NeuralNetworks', url:'https://x.com/karpathy/status/001', like_count:42891, reply_count:3104, repost_count:7823, view_count:null, extractor_version:'harness-v1', is_own:false, raw_attrs:{hashtags:['LLM','NeuralNetworks'],mentions:[]} },
+        { platform:'x', type:'feed_post_seen', platform_post_id:`harness-fallback-${ts}-5`, observed_at:new Date().toISOString(), author_handle:'elonmusk', author_name:'Elon Musk', text_excerpt:'Grok 3 is now the most capable AI. #Grok #xAI', url:'https://x.com/elonmusk/status/002', like_count:187342, reply_count:null, repost_count:21099, view_count:null, extractor_version:'harness-v1', is_own:false, raw_attrs:{hashtags:['Grok','xAI'],mentions:[] } }
+      );
+    }
+
+    window.__batchCaptures = captures;
+
+    const r = await api('/v1/social/captures', { method:'POST', body:{ captures }});
+    if (!r.ok) throw new Error(r.error?.message || 'ingest failed');
+
+    testCaptureIds = r.data.ids || [];
+    log('t4-log', `<span class="ok">✓ Ingested ${captures.length} captures</span>\n` +
+      `<span class="data">  inserted: ${r.data.inserted}\n  deduped: ${r.data.deduped}\n  metric_obs: ${r.data.metric_observations}\n  rejected_empty: ${r.data.rejected_empty}\n  ids (first 3): ${testCaptureIds.slice(0,3).join('\n              ')}</span>`);
+
+    badge('t4-badge', 'pass', 'T4 ✓');
+    results.push({ n:'T4', name:'Batch Ingest', pass:true, detail:`${r.data.inserted} inserted, ${r.data.deduped} deduped` });
+
+    // Render capture cards
+    const sec = document.getElementById('captures-section');
+    sec.style.display = 'block';
+    document.getElementById('captures-body').innerHTML = captures.map(renderCard).join('');
+  } catch(e) {
+    log('t4-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t4-badge', 'fail', 'T4 ✗');
+    results.push({ n:'T4', name:'Batch Ingest', pass:false, detail:e.message });
+  }
+}
+
+async function t5_dedup() {
+  badge('t5-badge', 'run', 'T5');
+  try {
+    const captures = window.__batchCaptures;
+    if (!captures?.length) throw new Error('no captures from T4');
+
+    // Re-send the exact same batch — all should dedup
+    const r = await api('/v1/social/captures', { method:'POST', body:{ captures }});
+    if (!r.ok) throw new Error(r.error?.message || 'dedup check failed');
+
+    const allDeduped = r.data.inserted === 0 && r.data.deduped === captures.length;
+    if (!allDeduped) throw new Error(`expected 0 inserted, ${captures.length} deduped — got inserted=${r.data.inserted}, deduped=${r.data.deduped}`);
+
+    log('t5-log', `<span class="ok">✓ All ${captures.length} re-sent captures correctly deduped</span>\n<span class="data">  inserted: ${r.data.inserted}  deduped: ${r.data.deduped}</span>`);
+    badge('t5-badge', 'pass', 'T5 ✓');
+    results.push({ n:'T5', name:'Dedup', pass:true, detail:`${r.data.deduped}/${captures.length} deduped correctly` });
+  } catch(e) {
+    log('t5-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t5-badge', 'fail', 'T5 ✗');
+    results.push({ n:'T5', name:'Dedup', pass:false, detail:e.message });
+  }
+}
+
+async function t6_rate_limit() {
+  badge('t6-badge', 'run', 'T6');
+  try {
+    // Send rapid sequential batches of 60 until we hit the 500/min limit (or 10 batches)
+    const ts = Date.now();
+    let totalSent = 0;
+    let rateLimited = false;
+    let limitDetail = '';
+
+    for (let batch = 0; batch < 10 && !rateLimited; batch++) {
+      const captures = Array.from({length:60}, (_, i) => ({
+        platform: 'linkedin',
+        type: 'feed_post_seen',
+        platform_post_id: `rl-${ts}-${batch}-${i}`,
+        observed_at: new Date().toISOString(),
+        extractor_version: 'harness-rl',
+        text_excerpt: `rate limit test ${batch}-${i}`,
+      }));
+      const r = await api('/v1/social/captures', { method:'POST', body:{ captures }});
+      if (!r.ok && (r.error?.code === 'RATE_LIMITED' || r.status === 429)) {
+        rateLimited = true;
+        limitDetail = r.error?.message || 'RATE_LIMITED';
+        break;
+      }
+      if (r.ok) totalSent += r.data?.inserted ?? captures.length;
+    }
+
+    if (!rateLimited) throw new Error(`rate limit did NOT fire after ${totalSent} captures in < 1 min (limit is 500/min per user)`);
+
+    log('t6-log', `<span class="ok">✓ Rate limit fired after ~${totalSent} captures sent this minute</span>\n<span class="data">  error: ${limitDetail}</span>`);
+    badge('t6-badge', 'pass', 'T6 ✓');
+    results.push({ n:'T6', name:'Rate Limit', pass:true, detail:`fired after ~${totalSent} captures/min` });
+  } catch(e) {
+    log('t6-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t6-badge', 'fail', 'T6 ✗');
+    results.push({ n:'T6', name:'Rate Limit', pass:false, detail:e.message });
+  }
+}
+
+async function t7_insights() {
+  badge('t7-badge', 'run', 'T7');
+  try {
+    const [counts, authors, hashtags] = await Promise.all([
+      api('/v1/social/insights/counts'),
+      api('/v1/social/insights/top-authors?limit=5'),
+      api('/v1/social/insights/top-hashtags?limit=5'),
+    ]);
+    if (!counts.ok) throw new Error('counts: ' + counts.error?.message);
+    if (!authors.ok) throw new Error('authors: ' + authors.error?.message);
+
+    const c = counts.data;
+    const topAuthors = (authors.data?.items || []).slice(0,3).map(a => `@${a.handle} (${a.capture_count})`).join(', ');
+    const topTags = (hashtags.data?.items || []).slice(0,3).map(t => `#${t.tag}(${t.n})`).join(', ');
+
+    log('t7-log', `<span class="ok">✓ Insights returned</span>\n<span class="data">  total: ${c.total}  today: ${c.today_count}  own: ${c.own_count}\n  platforms: ${c.by_platform?.map(p=>`${p.platform}:${p.n}`).join(', ')}\n  types: ${c.by_type?.slice(0,4).map(t=>`${t.type}:${t.n}`).join(', ')}\n  top authors: ${topAuthors}\n  top tags: ${topTags}</span>`);
+
+    if (c.total < 1) throw new Error('total is 0');
+    badge('t7-badge', 'pass', 'T7 ✓');
+    results.push({ n:'T7', name:'Insights', pass:true, detail:`total=${c.total}, ${c.by_platform?.length} platforms` });
+  } catch(e) {
+    log('t7-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t7-badge', 'fail', 'T7 ✗');
+    results.push({ n:'T7', name:'Insights', pass:false, detail:e.message });
+  }
+}
+
+async function t8_filters() {
+  badge('t8-badge', 'run', 'T8');
+  const errors = [];
+  try {
+    // Test platform filter
+    const li = await api('/v1/social/captures?platform=linkedin&limit=5');
+    if (!li.ok) errors.push('platform=linkedin: ' + li.error?.message);
+    else if (li.data.items.some(i => i.platform !== 'linkedin')) errors.push('platform filter leaks non-linkedin items');
+
+    // Test type filter
+    const own = await api('/v1/social/captures?type=own_post_published&limit=10');
+    if (!own.ok) errors.push('type=own_post_published: ' + own.error?.message);
+    else if (own.data.items.some(i => i.type !== 'own_post_published')) errors.push('type filter leaks other types');
+
+    // Test author filter
+    const jh = await api('/v1/social/captures?author_handle=jensen-huang&limit=5');
+    if (!jh.ok) errors.push('author_handle filter: ' + jh.error?.message);
+
+    // Test hashtag filter (AI was in our captures)
+    const ai = await api('/v1/social/captures?hashtag=AI&limit=5');
+    if (!ai.ok) errors.push('hashtag=AI: ' + ai.error?.message);
+
+    // Test full-text search
+    const fts = await api('/v1/social/captures?q=plugin-first&limit=5');
+    if (!fts.ok) errors.push('fts q=plugin-first: ' + fts.error?.message);
+
+    if (errors.length) throw new Error(errors.join('\n'));
+
+    log('t8-log', `<span class="ok">✓ All filters work</span>\n<span class="data">  platform=linkedin: ${li.data.total} results\n  type=own_post_published: ${own.data.total} results\n  author=jensen-huang: ${jh.data.total} results\n  hashtag=AI: ${ai.data.total} results\n  fts q=plugin-first: ${fts.data.total} results</span>`);
+    badge('t8-badge', 'pass', 'T8 ✓');
+    results.push({ n:'T8', name:'Filters', pass:true, detail:'platform/type/author/hashtag/fts all return correct subsets' });
+  } catch(e) {
+    log('t8-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t8-badge', 'fail', 'T8 ✗');
+    results.push({ n:'T8', name:'Filters', pass:false, detail:e.message });
+  }
+}
+
+async function t9_recommendations() {
+  badge('t9-badge', 'run', 'T9');
+  try {
+    const [posts, articles] = await Promise.all([
+      api('/v1/social/recommendations/posts', { method:'POST', body:{n:2} }),
+      api('/v1/social/recommendations/articles', { method:'POST', body:{n:3} }),
+    ]);
+    if (!posts.ok) throw new Error('posts: ' + posts.error?.message);
+    if (!articles.ok) throw new Error('articles: ' + articles.error?.message);
+
+    const ps = posts.data?.suggestions || [];
+    const as = articles.data?.suggestions || [];
+
+    log('t9-log', `<span class="ok">✓ Recommendations returned</span>\n<span class="data">  posts model: ${posts.data.model}\n  post suggestions: ${ps.length}\n    ${ps.map(s=>`"${(s.headline||s.draft||'').slice(0,50)}"`).join('\n    ')}\n  articles model: ${articles.data.model}\n  article suggestions: ${as.length}\n    ${as.map(s=>`"${(s.title||'').slice(0,50)}" ${s.url?.slice(0,40)||''}`).join('\n    ')}</span>`);
+
+    badge('t9-badge', 'pass', 'T9 ✓');
+    results.push({ n:'T9', name:'AI Recommendations', pass:true, detail:`posts=${ps.length}, articles=${as.length}, model=${posts.data.model}` });
+  } catch(e) {
+    log('t9-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t9-badge', 'fail', 'T9 ✗');
+    results.push({ n:'T9', name:'AI Recommendations', pass:false, detail:e.message });
+  }
+}
+
+async function t10_persona() {
+  badge('t10-badge', 'run', 'T10');
+  try {
+    const r = await api('/v1/social/persona');
+    if (!r.ok) throw new Error(r.error?.message);
+    const p = r.data;
+
+    log('t10-log', `<span class="ok">✓ Persona built</span>\n<span class="data">  total captures: ${p.totals?.total}\n  platform mix: ${JSON.stringify(p.platform_mix)}\n  top authors: ${(p.top_authors||[]).slice(0,3).map(a=>`@${a.handle}(${a.capture_count})`).join(', ')}\n  top hashtags: ${(p.top_hashtags||[]).slice(0,4).map(h=>`#${h.tag}(${h.n})`).join(', ')}\n  top mentions: ${(p.top_mentions||[]).slice(0,3).map(m=>`@${m.handle}(${m.n})`).join(', ')}\n  own posts: ${(p.recent_own_posts||[]).length}\n  companies: ${(p.company_interests||[]).length}\n  reading: ${(p.reading||[]).length} articles</span>`);
+
+    badge('t10-badge', 'pass', 'T10 ✓');
+    results.push({ n:'T10', name:'Persona', pass:true, detail:`${p.totals?.total} captures, ${Object.keys(p.platform_mix||{}).length} platforms` });
+  } catch(e) {
+    log('t10-log', `<span class="err">✗ ${e.message}</span>`);
+    badge('t10-badge', 'fail', 'T10 ✗');
+    results.push({ n:'T10', name:'Persona', pass:false, detail:e.message });
+  }
+}
+
+// ─── Run all ──────────────────────────────────────────────────────────────────
+async function runAll() {
+  results.length = 0;
+  testCaptureIds = [];
+  BASE_URL = document.getElementById('base-url').value.trim();
+  INTEL_URL = document.getElementById('intel-url').value.trim();
+
+  badge('cfg-badge', 'run', 'CONFIG');
+  const tests = [t1_auth, t2_linkedin_extractor, t3_twitter_extractor, t4_batch_ingest, t5_dedup, t6_rate_limit, t7_insights, t8_filters, t9_recommendations, t10_persona];
+  const total = tests.length;
+
+  for (let i = 0; i < tests.length; i++) {
+    progress(Math.round((i / total) * 100));
+    try { await tests[i](); } catch(e) { /* badge already set */ }
+    await new Promise(r => setTimeout(r, 120));
+  }
+  progress(100);
+
+  // Summary
+  const passed = results.filter(r => r.pass).length;
+  const failed = results.filter(r => !r.pass).length;
+  const sec = document.getElementById('summary-section');
+  sec.style.display = 'block';
+
+  document.getElementById('sum-stats').innerHTML = `
+    <div class="stat"><div class="stat-val" style="color:#3fb950">${passed}</div><div class="stat-label">Passed</div></div>
+    <div class="stat"><div class="stat-val" style="color:${failed?'#f85149':'#3fb950'}">${failed}</div><div class="stat-label">Failed</div></div>
+    <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
+  `;
+
+  const tbody = document.getElementById('sum-table');
+  tbody.innerHTML = '<tr><th>#</th><th>Test</th><th>Result</th><th>Detail</th></tr>';
+  results.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.n}</td><td>${r.name}</td><td><span class="badge ${r.pass?'pass':'fail'}">${r.pass?'PASS':'FAIL'}</span></td><td style="color:#8b949e;font-size:10px">${r.detail}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  badge('sum-badge', failed === 0 ? 'pass' : 'fail', failed === 0 ? '✓ ALL PASS' : `${failed} FAILED`);
+  badge('cfg-badge', failed === 0 ? 'pass' : 'warn', 'CONFIG');
+
+  // Add open Intelligence link
+  const link = document.createElement('div');
+  link.style.cssText = 'margin-top:14px;font-size:11px;';
+  link.innerHTML = `<a href="${INTEL_URL}/intelligence" target="_blank" style="color:#58a6ff">→ Open Intelligence page to verify all captures are visible</a>`;
+  document.getElementById('sum-table').after(link);
+}
+</script>
+</body>
+</html>

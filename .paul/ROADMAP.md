@@ -8,7 +8,12 @@ TennetCTL is built milestone-by-milestone from core infrastructure through enter
 
 ## Current Milestone
 
-**v0.2.2 Unified SDK Observability** (v0.2.2) — NEXT
+**v0.9.0 somaerp Foundation** (v0.9.0) — IN PROGRESS (Plan 56-01 created 2026-04-24)
+Status: PLAN created for 56-01 (Documentation Suite, zero code). Awaiting APPLY.
+Theme: First business app on the tennetctl backbone. Generic, multi-kitchen, multi-region ERP. Hybrid hardcoded skeleton + JSONB properties extension. First tenant: Soma Delights (Hyderabad cold-pressed juice subscription). Empire thesis: tennetctl = OS for self-hosted business SaaS apps; somaerp + somacrm + future apps are thin shells consuming tennetctl primitives.
+Phases: 1 of 1 in flight (Phase 56)
+
+**v0.2.2 Unified SDK Observability** (v0.2.2) — Queued behind v0.9.0
 Status: Queued — requires monitoring backend (Phase 13) verified live before plan.
 Theme: Add metrics + logs + traces to the same SDK. `tennetctl.autoinstrument(app)` makes backend services self-observing in one line.
 Phases: 0 of 2 (Phases 30–31)
@@ -44,9 +49,9 @@ Phases: 0 of 2 (Phases 40–41)
 Theme: React Flow canvas reads live catalog via the same `client.catalog` surface external apps use. Read-only v1 — typed ports, DAG render, execution trace overlay.
 Phases: 0 of 3 (Phases 42–44)
 
-**v0.8.0 GDPR DSAR** (v0.8.0) — Queued (scoped 2026-04-20)
-Theme: Self-service data subject access + erasure flows for the platform itself (IAM/audit/notify scope). Required for OSS readiness in EU/UK markets.
-Phases: 0 of 1 (Phase 45)
+**v0.8.0 GDPR DSAR** (v0.8.0) — ✅ Complete (2026-04-23)
+Theme shipped: Self-service data subject access + erasure flows for the platform itself (IAM/audit/notify scope). v0.8.0 live-stack verified: encrypted payload (AES-256-GCM, 3396B ciphertext, 12B nonce) persisted, download endpoint decrypts correctly, 6 DSAR audit events emitted via run_node, vault keys provisioned.
+Phases: 1 of 1 complete (Phase 45)
 
 ## Previous Milestones
 
@@ -127,7 +132,8 @@ Phases: 6 of 6 complete
 | 42 | Flow schema + backend (v0.4.0) | TBD | Not started | - |
 | 43 | Canvas renderer (v0.4.0) | TBD | Not started | - |
 | 44 | Trace overlay + search (v0.4.0) | TBD | Not started | - |
-| 45 | GDPR DSAR (v0.8.0) | TBD | Not started | - |
+| 45 | GDPR DSAR (v0.8.0) | 1+rework | ✅ Complete | 2026-04-23 |
+| 56 | somaerp Foundation (v0.9.0) — docs + 11 vertical slices | 12 planned | 🟡 In Progress | - |
 
 ## Phase Details
 

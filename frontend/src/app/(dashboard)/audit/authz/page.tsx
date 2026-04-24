@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import {
   Button,
@@ -67,6 +68,7 @@ export default function AuthzAuditExplorerPage() {
   const [outcome, setOutcome] = useState<"all" | AuditOutcome>("all");
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
   const [search, setSearch] = useState("");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [accumulated, setAccumulated] = useState<AuditEventRow[]>([]);
   const [tailCursor, setTailCursor] = useState<string | null>(null);
@@ -299,6 +301,12 @@ export default function AuthzAuditExplorerPage() {
         className="flex-1 overflow-y-auto"
         style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 20 }}
       >
+        <ApplicationScopeBar
+          appId={appFilter}
+          onChange={setAppFilter}
+          label="AuthZ decisions for application"
+        />
+
         {/* Stat cards */}
         {!isLoading && !isError && <StatCards cards={statCards} />}
         {isLoading && (

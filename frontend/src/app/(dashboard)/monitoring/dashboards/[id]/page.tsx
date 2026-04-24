@@ -181,6 +181,26 @@ export default function DashboardDetailPage({
             >
               {new Date(data.updated_at).toLocaleString()}
             </span>
+            {typeof (data.layout as Record<string, unknown>)?.application_id === "string" && (
+              <>
+                <span
+                  className="h-3 w-px"
+                  style={{ background: "var(--border)" }}
+                />
+                <span
+                  className="label-caps"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  App
+                </span>
+                <span
+                  className="font-mono-data text-[12px]"
+                  style={{ color: "#4a9eff" }}
+                >
+                  {String((data.layout as Record<string, unknown>).application_id).slice(0, 8)}
+                </span>
+              </>
+            )}
             {editing && (
               <>
                 <span

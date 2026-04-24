@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { PageHeader } from "@/components/page-header";
 import { Badge, Button, Skeleton, StatCard } from "@/components/ui";
 import { AlertList } from "@/features/monitoring/_components/alert-list";
@@ -10,6 +12,7 @@ import { useAlertEvents } from "@/features/monitoring/hooks/use-alerts";
 export default function AlertsPage() {
   const all = useAlertEvents();
   const firing = useAlertEvents("firing");
+  const [appFilter, setAppFilter] = useState<string | null>(null);
 
   const totalAlerts = all.data?.items.length ?? 0;
   const firingCount = firing.data?.items.length ?? 0;
@@ -40,6 +43,12 @@ export default function AlertsPage() {
 
       <div className="flex-1 overflow-y-auto px-6 py-5 animate-fade-in">
         <div className="flex flex-col gap-5">
+
+          <ApplicationScopeBar
+            appId={appFilter}
+            onChange={setAppFilter}
+            label="Alerts for application"
+          />
 
           {/* Alert state strip */}
           {all.isLoading ? (

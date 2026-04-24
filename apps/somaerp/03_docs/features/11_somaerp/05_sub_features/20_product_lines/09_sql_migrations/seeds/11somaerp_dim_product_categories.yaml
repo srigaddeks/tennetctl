@@ -1,0 +1,19 @@
+schema: "11_somaerp"
+table: "dim_product_categories"
+rows:
+  - id: 1
+    code: "beverage"
+    name: "Beverage"
+    deprecated_at: null
+  - id: 2
+    code: "shot"
+    name: "Shot"
+    deprecated_at: null
+  - id: 3
+    code: "pulp"
+    name: "Dehydrated Pulp"
+    deprecated_at: null
+  - id: 4
+    code: "packaged_food"
+    name: "Packaged Food"
+    deprecated_at: null

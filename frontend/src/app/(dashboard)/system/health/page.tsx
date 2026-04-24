@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { PageHeader } from "@/components/page-header";
 import { Badge, Button, ErrorState, Skeleton, StatCard } from "@/components/ui";
 import { useSystemHealth } from "@/features/system/hooks/use-system-health";
@@ -324,6 +326,14 @@ export default function SystemHealthPage() {
               <span className="font-mono-data text-xs" style={{ color: "var(--text-secondary)" }}>
                 {new Date(data.app.checked_at).toLocaleTimeString()}
               </span>
+              <Link
+                href="/iam/applications"
+                className="text-[11px] hover:underline"
+                style={{ color: "var(--text-secondary)" }}
+                data-testid="system-health-per-app-link"
+              >
+                View per-app health →
+              </Link>
               <span
                 className="ml-auto flex items-center gap-1.5"
               >

@@ -101,9 +101,18 @@ export default function ChannelsPage() {
              <div className="h-12 bg-[color:var(--paper-edge)]" />
            </div>
          ) : (channels.data?.items.length ?? 0) === 0 ? (
-           <p className="display-italic text-[26px] text-[color:var(--ink-40)] py-8">
-             No channels yet — pick one above.
-           </p>
+           <div className="py-8">
+             <p className="display-italic text-[26px] text-[color:var(--ink-40)] mb-3">
+               No channels yet — pick one above.
+             </p>
+             <p className="mono text-[11px] text-[color:var(--ink-40)] max-w-md">
+               A channel binds a provider account (LinkedIn / X / Instagram) to this
+               workspace. Posts, queues, and calendar all scope to channels.
+             </p>
+             <p className="mono text-[10px] text-[color:var(--ember-deep)] mt-4 italic">
+               One app, many channels — orchestrate all your social presence.
+             </p>
+           </div>
          ) : (
           <div className="space-y-10">
             {PROVIDERS.map(p => {

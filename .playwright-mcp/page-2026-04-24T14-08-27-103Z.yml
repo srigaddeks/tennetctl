@@ -1,0 +1,51 @@
+- generic [active]:
+  - alert [ref=e1]
+  - dialog "Server Error" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - navigation [ref=e8]:
+          - button "previous" [disabled] [ref=e9]:
+            - img "previous" [ref=e10]
+          - button "next" [disabled] [ref=e12]:
+            - img "next" [ref=e13]
+          - generic [ref=e15]: 1 of 1 error
+          - generic [ref=e16]:
+            - text: Next.js (15.1.6) is outdated
+            - link "(learn more)" [ref=e18] [cursor=pointer]:
+              - /url: https://nextjs.org/docs/messages/version-staleness
+        - generic [ref=e19]:
+          - heading "Server Error" [level=1] [ref=e20]
+          - generic [ref=e21]:
+            - button "Copy error stack" [ref=e22] [cursor=pointer]:
+              - img [ref=e23]
+            - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e26] [cursor=pointer]:
+              - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+              - img [ref=e27]
+        - paragraph [ref=e30]: "Error: Cannot find module './2960.js' Require stack: - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/_not-found/page.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/require.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/load-components.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/utils.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/swc/options.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/swc/index.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/build/next-config-ts/transpile-config.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/config.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/next.js - /Users/sri/Documents/tennetctl/apps/somaerp/frontend/node_modules/next/dist/server/lib/start-server.js"
+        - generic [ref=e31]: This error happened while generating the page. Any console logs will be displayed in the terminal window.
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - heading "__webpack_require__.f.require" [level=3] [ref=e34]
+          - generic [ref=e36]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js (198:28)
+        - generic [ref=e37]:
+          - heading "<unknown>" [level=3] [ref=e38]
+          - generic [ref=e40]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js (111:40)
+        - generic [ref=e41]:
+          - heading "Array.reduce" [level=3] [ref=e42]
+          - generic [ref=e44]: <anonymous> (0:0)
+        - generic [ref=e45]:
+          - heading "__webpack_require__.e" [level=3] [ref=e46]
+          - generic [ref=e48]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js (110:67)
+        - generic [ref=e49]:
+          - heading "Array.map" [level=3] [ref=e50]
+          - generic [ref=e52]: <anonymous> (0:0)
+        - generic [ref=e53]:
+          - heading "__webpack_require__.X" [level=3] [ref=e54]
+          - generic [ref=e56]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/webpack-runtime.js (162:22)
+        - generic [ref=e57]:
+          - heading "<unknown>" [level=3] [ref=e58]
+          - generic [ref=e60]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/reports/page.js (1:4794)
+        - generic [ref=e61]:
+          - heading "Object.<anonymous>" [level=3] [ref=e62]
+          - generic [ref=e64]: file:///Users/sri/Documents/tennetctl/apps/somaerp/frontend/.next/server/app/reports/page.js (1:4842)
+        - button "Show ignored frames" [ref=e65] [cursor=pointer]

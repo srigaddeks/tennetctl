@@ -1,0 +1,27 @@
+{
+  "schema": "03_iam",
+  "table": "21_dtl_attrs",
+  "rows": [
+    {
+      "id": "019dbfc0-1001-7000-8000-000000000010",
+      "entity_type_id": 6,
+      "entity_id": "019dbfc0-1001-7000-8000-000000000001",
+      "attr_def_id": 14,
+      "key_text": "somaerp"
+    },
+    {
+      "id": "019dbfc0-1001-7000-8000-000000000011",
+      "entity_type_id": 6,
+      "entity_id": "019dbfc0-1001-7000-8000-000000000001",
+      "attr_def_id": 15,
+      "key_text": "somaerp ERP"
+    },
+    {
+      "id": "019dbfc0-1001-7000-8000-000000000012",
+      "entity_type_id": 6,
+      "entity_id": "019dbfc0-1001-7000-8000-000000000001",
+      "attr_def_id": 16,
+      "key_text": "Generic multi-kitchen multi-region ERP built on tennetctl primitives"
+    }
+  ]
+}

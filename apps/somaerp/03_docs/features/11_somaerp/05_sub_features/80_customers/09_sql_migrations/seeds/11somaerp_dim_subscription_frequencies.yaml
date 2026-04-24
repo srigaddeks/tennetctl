@@ -1,0 +1,38 @@
+schema: "11_somaerp"
+table: "dim_subscription_frequencies"
+rows:
+  - id: 1
+    code: "daily"
+    name: "Daily"
+    deliveries_per_week: 7
+    deprecated_at: null
+  - id: 2
+    code: "5x_week"
+    name: "5x/week"
+    deliveries_per_week: 5
+    deprecated_at: null
+  - id: 3
+    code: "3x_week"
+    name: "3x/week"
+    deliveries_per_week: 3
+    deprecated_at: null
+  - id: 4
+    code: "weekly"
+    name: "Weekly"
+    deliveries_per_week: 1
+    deprecated_at: null
+  - id: 5
+    code: "biweekly"
+    name: "Biweekly"
+    deliveries_per_week: 0.5
+    deprecated_at: null
+  - id: 6
+    code: "monthly"
+    name: "Monthly"
+    deliveries_per_week: 0.25
+    deprecated_at: null
+  - id: 7
+    code: "custom"
+    name: "Custom"
+    deliveries_per_week: 0
+    deprecated_at: null

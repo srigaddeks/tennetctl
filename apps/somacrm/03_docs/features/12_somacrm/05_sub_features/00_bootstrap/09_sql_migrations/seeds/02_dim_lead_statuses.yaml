@@ -1,0 +1,8 @@
+schema: "12_somacrm"
+table: "dim_lead_statuses"
+rows:
+  - {id: 1, code: new, label: New, description: New lead, deprecated_at: null}
+  - {id: 2, code: contacted, label: Contacted, description: Lead has been contacted, deprecated_at: null}
+  - {id: 3, code: qualified, label: Qualified, description: Lead is qualified, deprecated_at: null}
+  - {id: 4, code: unqualified, label: Unqualified, description: Lead is not a fit, deprecated_at: null}
+  - {id: 5, code: converted, label: Converted, description: Lead converted to deal, deprecated_at: null}

@@ -79,6 +79,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
         request.state.session_id = None
         request.state.org_id = None
         request.state.workspace_id = None
+        request.state.application_id = request.headers.get("x-application-id")
         request.state.api_key_id = None
         request.state.scopes = None  # None = session auth = all scopes
         request.state.impersonator_user_id = None
@@ -168,6 +169,9 @@ class SessionMiddleware(BaseHTTPMiddleware):
                 request.state.session_id = row["id"]
                 request.state.org_id = row.get("org_id")
                 request.state.workspace_id = row.get("workspace_id")
+                # Session's application_id wins over the header value.
+                if row.get("application_id"):
+                    request.state.application_id = row["application_id"]
                 # Detect impersonation — expose dual-actor IDs on state.
                 try:
                     _imp_repo: Any = import_module(

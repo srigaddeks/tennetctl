@@ -36,6 +36,7 @@ def _build_ctx(request: Request, pool: Any, *, audit_category: str = "setup") ->
         session_id=getattr(state, "session_id", None) or request.headers.get("x-session-id"),
         org_id=getattr(state, "org_id", None) or request.headers.get("x-org-id"),
         workspace_id=getattr(state, "workspace_id", None) or request.headers.get("x-workspace-id"),
+        application_id=getattr(state, "application_id", None) or request.headers.get("x-application-id"),
         trace_id=_core_id.uuid7(),
         span_id=_core_id.uuid7(),
         request_id=getattr(state, "request_id", None) or _core_id.uuid7(),
@@ -58,7 +59,6 @@ async def list_template_groups_route(request: Request, org_id: str | None = None
 @router.post("/v1/notify/template-groups", status_code=201)
 async def create_template_group_route(request: Request, body: TemplateGroupCreate) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)
@@ -69,7 +69,6 @@ async def create_template_group_route(request: Request, body: TemplateGroupCreat
 @router.get("/v1/notify/template-groups/{group_id}", status_code=200)
 async def get_template_group_route(request: Request, group_id: str) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     async with pool.acquire() as conn:
         row = await _service.get_template_group(conn, group_id=group_id)
     if row is None:
@@ -82,7 +81,6 @@ async def update_template_group_route(
     request: Request, group_id: str, body: TemplateGroupUpdate
 ) -> dict:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)
@@ -98,7 +96,6 @@ async def update_template_group_route(
 @router.delete("/v1/notify/template-groups/{group_id}", status_code=204)
 async def delete_template_group_route(request: Request, group_id: str) -> None:
     pool = request.app.state.pool
-    org_id = org_id or getattr(request.state, "org_id", None) or request.headers.get("x-org-id")
     ctx = _build_ctx(request, pool)
     async with pool.acquire() as conn:
         ctx2 = replace(ctx, conn=conn)

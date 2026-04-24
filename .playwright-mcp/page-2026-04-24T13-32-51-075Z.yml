@@ -1,0 +1,55 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - paragraph [ref=e4]:
+        - link "somaerp" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - text: /
+        - link "customers" [ref=e6] [cursor=pointer]:
+          - /url: /customers
+        - text: /new
+      - heading "New Customer" [level=1] [ref=e7]
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Name*
+        - textbox "Name*" [ref=e11]
+      - generic [ref=e12]:
+        - generic [ref=e13]: Slug*
+        - textbox "Slug*" [ref=e14]
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: Email
+          - textbox "Email" [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]: Phone
+          - textbox "Phone" [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]: Location
+        - combobox "Location" [ref=e24]:
+          - option "(none — add later)" [selected]
+      - generic [ref=e25]:
+        - generic [ref=e26]: Address (JSON)
+        - textbox "Address (JSON)" [ref=e27]:
+          - /placeholder: "{\"line1\":\"...\",\"pincode\":\"500072\"}"
+          - text: "{}"
+      - generic [ref=e28]:
+        - generic [ref=e29]: Delivery Notes
+        - textbox "Delivery Notes" [ref=e30]
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: Acquisition Source
+          - textbox "Acquisition Source" [ref=e34]:
+            - /placeholder: e.g. ig_ad, word_of_mouth
+        - generic [ref=e35]:
+          - generic [ref=e36]: Status
+          - combobox "Status" [ref=e37]:
+            - option "Prospect"
+            - option "Active" [selected]
+            - option "Paused"
+            - option "Churned"
+            - option "Blocked"
+      - generic [ref=e38]:
+        - button "Create Customer" [ref=e39] [cursor=pointer]
+        - link "Cancel" [ref=e40] [cursor=pointer]:
+          - /url: /customers
+  - alert [ref=e41]

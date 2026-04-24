@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ApplicationScopeBar } from "@/components/application-scope-bar";
 import { Modal } from "@/components/modal";
 import { PageHeader } from "@/components/page-header";
 import {
@@ -60,6 +61,7 @@ export default function NotifySuppressionsPage() {
   const list = useSuppressions(orgId);
   const remove = useRemoveSuppression(orgId);
   const [addOpen, setAddOpen] = useState(false);
+  const [appId, setAppId] = useState<string | null>(null);
 
   const items = list.data?.items ?? [];
 
@@ -89,6 +91,14 @@ export default function NotifySuppressionsPage() {
         style={{ padding: "24px 32px" }}
         data-testid="suppressions-body"
       >
+        <div style={{ marginBottom: 20 }}>
+          <ApplicationScopeBar
+            appId={appId}
+            onChange={setAppId}
+            orgId={orgId}
+            label="Suppressions for application"
+          />
+        </div>
         {/* Reason breakdown */}
         {items.length > 0 && (
           <div

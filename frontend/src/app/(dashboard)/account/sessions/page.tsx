@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import {
-  Badge,
   Button,
   EmptyState,
   ErrorState,
@@ -12,7 +11,6 @@ import {
   TBody,
   TH,
   THead,
-  TR,
   Table,
 } from "@/components/ui";
 import { SessionRow } from "@/features/iam/_components/session-row";
@@ -31,7 +29,14 @@ export default function SessionsPage() {
   const [revokeAllPending, setRevokeAllPending] = useState(false);
 
   const currentSessionId = me.data?.session?.id ?? null;
-  const items = data?.items ?? [];
+  const rawItems = data?.items ?? [];
+  const [hideLocalhost, setHideLocalhost] = useState(false);
+  const items = hideLocalhost
+    ? rawItems.filter((s) => {
+        const ip = s.ip_address ?? "";
+        return ip !== "127.0.0.1" && ip !== "::1" && ip !== "localhost" && ip !== "";
+      })
+    : rawItems;
 
   async function handleRevokeAll() {
     if (!currentSessionId) return;
@@ -141,6 +146,22 @@ export default function SessionsPage() {
             title="No active sessions"
             description="No other sessions found for your account."
           />
+        )}
+
+        {rawItems.length > 0 && (
+          <label
+            className="inline-flex items-center gap-2 text-xs"
+            style={{ color: "var(--text-secondary)" }}
+            data-testid="hide-localhost-toggle"
+          >
+            <input
+              type="checkbox"
+              checked={hideLocalhost}
+              onChange={(e) => setHideLocalhost(e.target.checked)}
+              style={{ accentColor: "var(--accent)" }}
+            />
+            Hide localhost sessions
+          </label>
         )}
 
         {items.length > 0 && (

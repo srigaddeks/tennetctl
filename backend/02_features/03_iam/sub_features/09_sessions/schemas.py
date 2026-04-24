@@ -28,6 +28,7 @@ class SessionRead(BaseModel):
     last_activity_at: str | None = None
     user_agent: str | None = None
     ip_address: str | None = None
+    application_id: str | None = None
 
     @field_validator(
         "expires_at", "revoked_at", "created_at", "updated_at", "last_activity_at",
