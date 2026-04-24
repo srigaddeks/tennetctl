@@ -286,6 +286,28 @@ export type TagCreate = { name: string; color?: string };
 export type EntityTag = { entity_type: EntityType; entity_id: string; tag_id: string };
 
 // Reports
+// Timeline
+export type TimelineItem = {
+  id: string;
+  item_type: "activity" | "note";
+  event_at: string;
+  title: string | null;
+  body: string | null;
+  activity_type: ActivityType | null;
+  activity_type_label: string | null;
+  activity_type_icon: string | null;
+  status: string | null;
+  entity_type: EntityType | null;
+  entity_id: string | null;
+  deal_title: string | null;
+  lead_title: string | null;
+  completed_at: string | null;
+  duration_minutes: number | null;
+  created_at: string;
+  created_by: string | null;
+  is_pinned: boolean | null;
+};
+
 export type PipelineSummaryStage = {
   stage_id: string | null;
   stage_name: string | null;

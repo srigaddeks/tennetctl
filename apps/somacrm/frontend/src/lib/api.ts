@@ -1,5 +1,6 @@
 import type {
   ApiEnvelope,
+  TimelineItem,
   Contact,
   ContactCreate,
   ContactUpdate,
@@ -89,6 +90,10 @@ export function updateContact(id: string, data: ContactUpdate): Promise<Contact>
 
 export function deleteContact(id: string): Promise<void> {
   return apiFetch<void>(`/v1/somacrm/contacts/${id}`, { method: "DELETE" });
+}
+
+export function getContactTimeline(id: string, limit = 200): Promise<TimelineItem[]> {
+  return apiFetch<TimelineItem[]>(`/v1/somacrm/contacts/${id}/timeline?limit=${limit}`);
 }
 
 // ── Organizations ─────────────────────────────────────────────────────────────

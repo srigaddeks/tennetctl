@@ -92,6 +92,20 @@ async def patch_contact(
     return _response.ok(_schemas.ContactOut(**row).model_dump(mode="json"))
 
 
+@router.get("/{contact_id}/timeline")
+async def get_contact_timeline(
+    request: Request,
+    contact_id: str,
+    limit: int = Query(default=200, ge=1, le=500),
+) -> dict:
+    workspace_id = _require_workspace(request)
+    async with request.app.state.pool.acquire() as conn:
+        rows = await _service.get_contact_timeline(
+            conn, tenant_id=workspace_id, contact_id=contact_id, limit=limit,
+        )
+    return _response.ok(rows)
+
+
 @router.delete("/{contact_id}", status_code=204, response_class=Response)
 async def delete_contact(request: Request, contact_id: str) -> Response:
     workspace_id = _require_workspace(request)

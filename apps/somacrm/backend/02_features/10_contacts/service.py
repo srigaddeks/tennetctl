@@ -106,3 +106,19 @@ async def soft_delete_contact(
         scope={"user_id": actor_user_id, "session_id": session_id, "org_id": org_id, "workspace_id": tenant_id},
         payload={"outcome": "success", "metadata": {"entity_id": contact_id, "entity_kind": "contact"}},
     )
+
+
+async def get_contact_timeline(
+    conn: Any,
+    *,
+    tenant_id: str,
+    contact_id: str,
+    limit: int = 200,
+) -> list[dict]:
+    contact = await _repo.get_contact(conn, tenant_id=tenant_id, contact_id=contact_id)
+    if not contact:
+        raise _errors.NotFoundError(f"Contact {contact_id} not found.")
+    rows = await _repo.get_contact_timeline(
+        conn, tenant_id=tenant_id, contact_id=contact_id, limit=limit,
+    )
+    return rows
