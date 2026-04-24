@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Customers + Subscription Plans + Subscriptions for somaerp (Plan 56-11).
 -- Creates:
@@ -433,7 +433,7 @@ LEFT JOIN "11_somaerp".fct_service_zones       z ON z.id = s.service_zone_id;
 COMMENT ON VIEW "11_somaerp".v_subscriptions IS 'fct_subscriptions joined with customer + plan + frequency + service_zone.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW  IF EXISTS "11_somaerp".v_subscriptions;
 DROP VIEW  IF EXISTS "11_somaerp".v_subscription_plan_items;

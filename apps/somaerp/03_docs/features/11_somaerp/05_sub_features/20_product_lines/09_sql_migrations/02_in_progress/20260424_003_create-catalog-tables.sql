@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Catalog vertical for somaerp (Plan 56-04).
 -- Creates: dim_product_categories + dim_product_tags + fct_product_lines +
@@ -302,7 +302,7 @@ LEFT JOIN "11_somaerp".fct_products p ON p.id = v.product_id;
 COMMENT ON VIEW "11_somaerp".v_product_variants IS 'fct_product_variants joined with fct_products for product_name.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW IF EXISTS "11_somaerp".v_product_variants;
 DROP VIEW IF EXISTS "11_somaerp".v_products;

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { listLeads, createLead } from "@/lib/api";
 import type { Lead, LeadStatus, LeadCreate } from "@/types/api";
@@ -189,7 +190,9 @@ export default function LeadsPage() {
               <tbody>
                 {leads.items.map((lead) => (
                   <tr key={lead.id} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-table-hover)"; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}>
-                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)", maxWidth: 200 }}>{lead.title}</td>
+                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)", maxWidth: 200 }}>
+                      <Link href={`/leads/${lead.id}`} className="hover:underline" style={{ color: "var(--text-primary)" }}>{lead.title}</Link>
+                    </td>
                     <td className="px-4 py-2.5" style={{ color: "var(--text-secondary)", fontSize: 13 }}>
                       {lead.full_name ?? "—"}
                       {lead.company && <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{lead.company}</div>}

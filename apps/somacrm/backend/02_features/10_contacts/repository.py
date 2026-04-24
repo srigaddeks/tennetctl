@@ -106,6 +106,7 @@ async def update_contact(
         "first_name", "last_name", "email", "phone", "mobile", "job_title",
         "company_name", "website", "linkedin_url", "twitter_handle",
         "lead_source", "organization_id", "status_id", "properties",
+        "somaerp_customer_id",
     )
     sets: list[str] = []
     params: list[Any] = []

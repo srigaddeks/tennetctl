@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Quality Control vertical for somaerp (Plan 56-08).
 -- Creates: dim_qc_check_types + dim_qc_stages + dim_qc_outcomes +
@@ -245,7 +245,7 @@ LEFT JOIN "11_somaerp".dim_units_of_measure u ON u.id = qc.measured_unit_id;
 COMMENT ON VIEW "11_somaerp".v_qc_checks IS 'evt_qc_checks joined with checkpoint + stage + check_type + outcome + kitchen + unit labels.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW IF EXISTS "11_somaerp".v_qc_checks;
 DROP VIEW IF EXISTS "11_somaerp".v_qc_checkpoints;

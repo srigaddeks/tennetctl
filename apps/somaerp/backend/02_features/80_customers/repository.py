@@ -125,6 +125,7 @@ _CUSTOMER_COLS = (
     "acquisition_source",
     "status",
     "properties",
+    "somacrm_contact_id",
 )
 
 

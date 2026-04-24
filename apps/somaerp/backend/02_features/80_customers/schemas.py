@@ -39,6 +39,7 @@ class CustomerUpdate(BaseModel):
     acquisition_source: str | None = None
     status: CustomerStatus | None = None
     properties: dict[str, Any] | None = None
+    somacrm_contact_id: str | None = None
 
 
 class CustomerOut(BaseModel):
@@ -58,6 +59,7 @@ class CustomerOut(BaseModel):
     acquisition_source: str | None = None
     status: CustomerStatus
     lifetime_value: Decimal
+    somacrm_contact_id: str | None = None
     properties: dict[str, Any] = Field(default_factory=dict)
     active_subscription_count: int = 0
     created_at: datetime

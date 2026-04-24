@@ -240,7 +240,9 @@ export default function DealsPage() {
               <tbody>
                 {deals.items.map((deal) => (
                   <tr key={deal.id} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-table-hover)"; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}>
-                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)" }}>{deal.title}</td>
+                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)" }}>
+                      <Link href={`/deals/${deal.id}`} className="hover:underline" style={{ color: "var(--text-primary)" }}>{deal.title}</Link>
+                    </td>
                     <td className="px-4 py-2.5" style={{ color: "var(--text-secondary)", fontSize: 13 }}>
                       {deal.contact_id ? (
                         <Link href={`/contacts/${deal.contact_id}`} className="hover:underline" style={{ color: "var(--text-secondary)" }}>

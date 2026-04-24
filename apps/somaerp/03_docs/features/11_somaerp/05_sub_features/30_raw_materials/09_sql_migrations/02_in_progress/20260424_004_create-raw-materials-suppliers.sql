@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Raw materials + suppliers vertical for somaerp (Plan 56-05).
 -- Creates: dim_raw_material_categories + dim_units_of_measure +
@@ -364,7 +364,7 @@ LEFT JOIN "11_somaerp".dim_supplier_source_types st ON st.id = s.source_type_id;
 COMMENT ON VIEW "11_somaerp".v_raw_material_supplier_matrix IS 'Per-(material, supplier) pair view for procurement planner.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW IF EXISTS "11_somaerp".v_raw_material_supplier_matrix;
 DROP VIEW IF EXISTS "11_somaerp".v_suppliers;

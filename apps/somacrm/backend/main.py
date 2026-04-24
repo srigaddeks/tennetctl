@@ -39,6 +39,7 @@ _activities_routes = import_module("apps.somacrm.backend.02_features.40_activiti
 _notes_routes = import_module("apps.somacrm.backend.02_features.45_notes.routes")
 _tags_routes = import_module("apps.somacrm.backend.02_features.50_tags.routes")
 _reports_routes = import_module("apps.somacrm.backend.02_features.55_reports.routes")
+_search_routes = import_module("apps.somacrm.backend.02_features.60_search.routes")
 
 
 @asynccontextmanager
@@ -104,6 +105,7 @@ def create_app() -> FastAPI:
     app.include_router(_tags_routes.router)
     app.include_router(_tags_routes.entity_tags_router)
     app.include_router(_reports_routes.router)
+    app.include_router(_search_routes.router)
 
     @app.get("/health")
     async def health() -> dict:

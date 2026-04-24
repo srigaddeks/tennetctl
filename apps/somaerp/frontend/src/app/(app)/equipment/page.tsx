@@ -80,7 +80,9 @@ export default function EquipmentListPage() {
               <tbody >
                 {equipment.items.map((e) => (
                   <tr key={e.id} onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-table-hover)"; }} onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}>
-                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)" }}>{e.name}</td>
+                    <td className="px-4 py-2.5 font-medium" style={{ color: "var(--text-primary)" }}>
+                      <Link href={`/equipment/${e.id}`} className="hover:underline">{e.name}</Link>
+                    </td>
                     <td className="px-4 py-2.5" style={{ color: "var(--text-secondary)" }}>{e.category_name ?? e.category_code}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={e.status} />

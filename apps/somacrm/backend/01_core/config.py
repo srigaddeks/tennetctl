@@ -35,6 +35,9 @@ class Config:
     tennetctl_base_url: str
     tennetctl_service_api_key: str | None
 
+    # cross-app links
+    somaerp_base_url: str
+
     @property
     def database_url(self) -> str:
         return (
@@ -61,4 +64,5 @@ def load_config() -> Config:
             "TENNETCTL_BASE_URL", "http://localhost:51734",
         ),
         tennetctl_service_api_key=os.environ.get("TENNETCTL_SERVICE_API_KEY"),
+        somaerp_base_url=os.environ.get("SOMAERP_BASE_URL", "http://localhost:51736"),
     )

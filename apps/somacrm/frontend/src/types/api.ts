@@ -13,6 +13,14 @@ export type ActivityStatus = "pending" | "in_progress" | "done" | "cancelled";
 export type AddressType = "home" | "office" | "billing" | "delivery" | "other";
 export type EntityType = "contact" | "organization" | "lead" | "deal";
 
+// Search
+export type SearchResult = {
+  id: string;
+  entity_type: "contact" | "organization" | "lead" | "deal";
+  title: string;
+  subtitle: string | null;
+};
+
 // Contacts
 export type Contact = {
   id: string;
@@ -32,6 +40,7 @@ export type Contact = {
   twitter_handle: string | null;
   lead_source: string | null;
   status: ContactStatus;
+  somaerp_customer_id: string | null;
   notes_count: number;
   activities_count: number;
   deals_count: number;
@@ -221,7 +230,7 @@ export type DealCreate = {
   probability_pct?: number;
   description?: string;
 };
-export type DealUpdate = Partial<DealCreate & { status_id?: number }>;
+export type DealUpdate = Partial<DealCreate & { status_id?: number; actual_close_date?: string }>;
 
 // Activities
 export type Activity = {

@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Delivery layer for somaerp (Plan 56-12).
 -- Creates:
@@ -383,7 +383,7 @@ LEFT JOIN "11_somaerp".fct_customers c ON c.id = s.customer_id;
 COMMENT ON VIEW "11_somaerp".v_delivery_stops IS 'dtl_delivery_stops JOIN customer + computed delay_sec.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW  IF EXISTS "11_somaerp".v_delivery_stops;
 DROP VIEW  IF EXISTS "11_somaerp".v_delivery_runs;

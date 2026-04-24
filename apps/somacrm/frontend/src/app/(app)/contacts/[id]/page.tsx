@@ -7,7 +7,7 @@ import {
   getContactTimeline,
   listAddresses, createAddress,
   createActivity, createNote, updateNote,
-  listDeals,
+  listDeals, createErpCustomer,
 } from "@/lib/api";
 import type {
   Contact, ContactUpdate,
@@ -67,6 +67,11 @@ export default function ContactDetailPage() {
   const [addresses, setAddresses] = useState<State<Address[]>>({ status: "loading" });
   const [linkedDeals, setLinkedDeals] = useState<State<Deal[]>>({ status: "loading" });
 
+  // ERP cross-create state
+  const [erpMode, setErpMode] = useState(false);
+  const [erpForm, setErpForm] = useState<{ delivery_notes?: string; acquisition_source?: string }>({});
+  const [erpResult, setErpResult] = useState<string | null>(null);
+
   // Quick-add panel state
   const [addMode, setAddMode] = useState<null | "activity" | "note">(null);
   const [activityForm, setActivityForm] = useState<ActivityCreate>({ activity_type_id: 2, title: "" });
@@ -111,6 +116,22 @@ export default function ContactDetailPage() {
       setEditing(false);
     } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : "Failed to update");
+    } finally { setSaving(false); }
+  }
+
+  async function handleCreateErpCustomer(e: React.FormEvent) {
+    e.preventDefault();
+    if (contact.status !== "ok") return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      const result = await createErpCustomer(id, erpForm);
+      setErpResult(result.erp_customer_id);
+      setErpMode(false);
+      const updated = await getContact(id);
+      setContact({ status: "ok", data: updated });
+    } catch (err: unknown) {
+      setFormError(err instanceof Error ? err.message : "Failed to create ERP customer");
     } finally { setSaving(false); }
   }
 
@@ -186,15 +207,61 @@ export default function ContactDetailPage() {
           </div>
         </div>
         {/* Quick-add buttons */}
-        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0, alignItems: "center" }}>
           <button className="btn-primary" style={{ fontSize: 12, padding: "6px 12px" }} onClick={() => { setAddMode("activity"); setTab("timeline"); }}>
             + Log Interaction
           </button>
           <button className="btn-secondary" style={{ fontSize: 12, padding: "6px 12px" }} onClick={() => { setAddMode("note"); setTab("timeline"); }}>
             + Note
           </button>
+          {c.somaerp_customer_id ? (
+            <span style={{ fontSize: 11, background: "#ECFDF5", color: "#059669", borderRadius: 20, padding: "4px 10px", fontWeight: 700, border: "1px solid #A7F3D0" }}>
+              ERP: {c.somaerp_customer_id.slice(0, 8)}
+            </span>
+          ) : (
+            <button
+              className="btn-secondary"
+              style={{ fontSize: 12, padding: "6px 12px", borderColor: "#D97706", color: "#D97706" }}
+              onClick={() => {
+                setErpForm({ acquisition_source: c.lead_source ?? undefined });
+                setErpMode(true);
+              }}
+            >
+              ERP
+            </button>
+          )}
         </div>
       </div>
+
+      {/* ERP cross-create form */}
+      {erpMode && (
+        <form onSubmit={handleCreateErpCustomer} className="rounded border p-4 mb-4"
+          style={{ backgroundColor: "#FFFBEB", borderColor: "#FDE68A", borderLeft: "3px solid #D97706" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: "var(--text-primary)" }}>
+            Create somaerp customer for {c.full_name}?
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div className="erp-form-group">
+              <label className="erp-label">Delivery Notes</label>
+              <input className="erp-input" placeholder="e.g. 6:45 AM, ring twice"
+                value={erpForm.delivery_notes ?? ""}
+                onChange={e => setErpForm({ ...erpForm, delivery_notes: e.target.value || undefined })} />
+            </div>
+            <div className="erp-form-group">
+              <label className="erp-label">Acquisition Source</label>
+              <input className="erp-input" placeholder="e.g. referral"
+                value={erpForm.acquisition_source ?? ""}
+                onChange={e => setErpForm({ ...erpForm, acquisition_source: e.target.value || undefined })} />
+            </div>
+          </div>
+          {formError && <p style={{ color: "var(--status-error)", fontSize: 13, marginBottom: 8 }}>{formError}</p>}
+          {erpResult && <p style={{ color: "#059669", fontSize: 13, marginBottom: 8 }}>Created in somaerp (ID: {erpResult}). Now linked.</p>}
+          <div style={{ display: "flex", gap: 8 }}>
+            <button type="submit" className="btn-primary" disabled={saving}>{saving ? "Creating…" : "Create in ERP"}</button>
+            <button type="button" className="btn-secondary" onClick={() => { setErpMode(false); setFormError(null); }}>Cancel</button>
+          </div>
+        </form>
+      )}
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--border)", marginBottom: 24 }}>

@@ -42,6 +42,7 @@ class ContactUpdate(BaseModel):
     organization_id: str | None = None
     status_id: int | None = None
     properties: dict[str, Any] | None = None
+    somaerp_customer_id: str | None = None
 
 
 class ContactOut(BaseModel):
@@ -66,6 +67,7 @@ class ContactOut(BaseModel):
     lead_source: str | None = None
     status_id: int
     status: str | None = None
+    somaerp_customer_id: str | None = None
     notes_count: int = 0
     activities_count: int = 0
     deals_count: int = 0

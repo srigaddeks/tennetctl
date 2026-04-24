@@ -671,6 +671,31 @@ export const createEquipment = (body: CreateEquipmentBody): Promise<Equipment> =
     body: JSON.stringify(body),
   });
 
+export const getEquipment = (id: string): Promise<Equipment> =>
+  apiFetch<Equipment>(`/v1/somaerp/equipment/${id}`);
+
+export type UpdateEquipmentBody = {
+  name?: string;
+  slug?: string;
+  category_id?: number;
+  status?: EquipmentStatus;
+  purchase_cost?: number | null;
+  currency_code?: string | null;
+  purchase_date?: string | null;
+  expected_lifespan_months?: number | null;
+  properties?: Record<string, unknown>;
+};
+
+export const updateEquipment = (
+  id: string,
+  body: UpdateEquipmentBody
+): Promise<Equipment> =>
+  apiFetch<Equipment>(`/v1/somaerp/equipment/${id}`, {
+    method: "PATCH",
+    headers: jsonHeaders,
+    body: JSON.stringify(body),
+  });
+
 // Kitchen <-> Equipment link --------------------------------------------
 
 export const listKitchenEquipment = (

@@ -377,6 +377,36 @@ async def patch_line(
     if row is None:
         raise _errors.NotFoundError(f"Line {line_id} not found.")
 
+    # Auto-create inventory movement when a line is being marked received
+    # (received_at is set and was not previously set) and quantity is not
+    # also changing (quantity-change path already emitted a movement above).
+    if (
+        patch.get("received_at") is not None
+        and existing.get("received_at") is None
+        and patch.get("quantity") is None
+    ):
+        _inv_repo = import_module(
+            "apps.somaerp.backend.02_features.65_inventory.repository",
+        )
+        await _inv_repo.record_movement(
+            conn,
+            tenant_id=tenant_id,
+            performed_by_user_id=effective_user,
+            data={
+                "kitchen_id": run["kitchen_id"],
+                "raw_material_id": existing["raw_material_id"],
+                "movement_type": "received",
+                "quantity": existing["quantity"],
+                "unit_id": existing["unit_id"],
+                "lot_number": patch.get("lot_number") or existing.get("lot_number"),
+                "metadata": {
+                    "source": "procurement_line_received",
+                    "procurement_run_id": str(run_id),
+                    "line_id": str(line_id),
+                },
+            },
+        )
+
     changed_fields = sorted([k for k, v in patch.items() if v is not None])
     if changed_fields:
         await tennetctl.audit_emit(

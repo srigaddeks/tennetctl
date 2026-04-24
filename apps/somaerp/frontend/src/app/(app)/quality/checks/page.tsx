@@ -1,39 +1,75 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  listBatches,
   listQcCheckpoints,
   listQcChecks,
   listQcOutcomes,
+  recordQcCheck,
 } from "@/lib/api";
-import type { QcCheck, QcCheckpoint, QcOutcome } from "@/types/api";
+import type {
+  ProductionBatch,
+  QcCheck,
+  QcCheckpoint,
+  QcOutcome,
+} from "@/types/api";
 
 type ChecksState =
   | { status: "loading" }
   | { status: "ok"; items: QcCheck[] }
   | { status: "error"; message: string };
 
+type DraftCheck = {
+  checkpoint_id: string;
+  batch_id: string;
+  outcome_id: string;
+  checked_by: string;
+  notes: string;
+};
+
+function emptyDraft(): DraftCheck {
+  return {
+    checkpoint_id: "",
+    batch_id: "",
+    outcome_id: "",
+    checked_by: "",
+    notes: "",
+  };
+}
+
 export default function QcChecksListPage() {
   const [state, setState] = useState<ChecksState>({ status: "loading" });
   const [checkpoints, setCheckpoints] = useState<QcCheckpoint[]>([]);
   const [outcomes, setOutcomes] = useState<QcOutcome[]>([]);
+  const [inProgressBatches, setInProgressBatches] = useState<ProductionBatch[]>([]);
+
+  // filters
   const [checkpointId, setCheckpointId] = useState<string>("");
   const [outcomeId, setOutcomeId] = useState<string>("");
   const [tsAfter, setTsAfter] = useState<string>("");
   const [tsBefore, setTsBefore] = useState<string>("");
 
+  // create form
+  const [showForm, setShowForm] = useState(false);
+  const [draft, setDraft] = useState<DraftCheck>(emptyDraft());
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
-    Promise.all([listQcCheckpoints(), listQcOutcomes()])
-      .then(([cps, ocs]) => {
+    Promise.all([
+      listQcCheckpoints(),
+      listQcOutcomes(),
+      listBatches({ status: "in_progress" }),
+    ])
+      .then(([cps, ocs, batches]) => {
         if (cancelled) return;
         setCheckpoints(cps);
         setOutcomes(ocs);
+        setInProgressBatches(batches);
       })
-      .catch(() => {
-        // lookups optional; checks feed can still load with empty filters
-      });
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
@@ -50,9 +86,9 @@ export default function QcChecksListPage() {
     [checkpointId, outcomeId, tsAfter, tsBefore],
   );
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadChecks = useCallback(() => {
     setState({ status: "loading" });
+    let cancelled = false;
     listQcChecks(filters)
       .then((items) => {
         if (!cancelled) setState({ status: "ok", items });
@@ -67,15 +103,169 @@ export default function QcChecksListPage() {
     };
   }, [filters]);
 
+  useEffect(() => {
+    const cancel = loadChecks();
+    return cancel;
+  }, [loadChecks]);
+
+  async function onSubmit() {
+    setFormError(null);
+    if (!draft.checkpoint_id) { setFormError("Select a checkpoint"); return; }
+    if (!draft.outcome_id) { setFormError("Select an outcome"); return; }
+    setBusy(true);
+    try {
+      await recordQcCheck({
+        checkpoint_id: draft.checkpoint_id,
+        batch_id: draft.batch_id || null,
+        outcome_id: Number.parseInt(draft.outcome_id, 10),
+        notes: draft.notes.trim() || null,
+        metadata: draft.checked_by.trim() ? { checked_by: draft.checked_by.trim() } : {},
+      });
+      setDraft(emptyDraft());
+      setShowForm(false);
+      loadChecks();
+    } catch (err: unknown) {
+      setFormError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="max-w-5xl">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>Recent Checks</h1>
-        <p className="mt-2 max-w-xl text-sm ">
-          Append-only event feed. Corrections are new rows — historical rows
-          never change.
-        </p>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold" style={{ color: "var(--text-primary)" }}>Recent Checks</h1>
+          <p className="mt-2 max-w-xl text-sm">
+            Append-only event feed. Corrections are new rows — historical rows
+            never change.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => { setShowForm((v) => !v); setFormError(null); }}
+          className="inline-flex items-center justify-center rounded px-3 py-1.5 text-sm font-medium"
+          style={{ backgroundColor: "var(--accent)", color: "var(--accent-text)" }}
+        >
+          {showForm ? "Cancel" : "+ Record QC Check"}
+        </button>
       </div>
+
+      {/* Inline create form */}
+      {showForm && (
+        <div className="mb-6 rounded border p-5" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+          <h2 className="mb-4 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Record New QC Check</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Checkpoint *</label>
+              <select
+                value={draft.checkpoint_id}
+                onChange={(e) => setDraft((p) => ({ ...p, checkpoint_id: e.target.value }))}
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+              >
+                <option value="">Select checkpoint…</option>
+                {checkpoints.map((cp) => (
+                  <option key={cp.id} value={cp.id}>{cp.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Production Batch</label>
+              <select
+                value={draft.batch_id}
+                onChange={(e) => setDraft((p) => ({ ...p, batch_id: e.target.value }))}
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+              >
+                <option value="">Not batch-specific</option>
+                {inProgressBatches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.product_name ?? b.product_id} — {b.run_date}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Outcome *</label>
+              <select
+                value={draft.outcome_id}
+                onChange={(e) => setDraft((p) => ({ ...p, outcome_id: e.target.value }))}
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+              >
+                <option value="">Select outcome…</option>
+                {outcomes.map((o) => (
+                  <option key={o.id} value={o.id}>{o.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Checked By</label>
+              <input
+                type="text"
+                value={draft.checked_by}
+                onChange={(e) => setDraft((p) => ({ ...p, checked_by: e.target.value }))}
+                placeholder="Operator name"
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Notes</label>
+              <textarea
+                value={draft.notes}
+                onChange={(e) => setDraft((p) => ({ ...p, notes: e.target.value }))}
+                placeholder="optional"
+                rows={3}
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Photo</label>
+              <input
+                type="text"
+                disabled
+                placeholder="(Photo upload coming in v0.10)"
+                className="w-full rounded border px-3 py-2 text-sm opacity-50"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-muted)" }}
+              />
+            </div>
+          </div>
+
+          {formError && (
+            <div className="mt-3 rounded border p-3 text-sm" style={{ borderColor: "var(--status-error)", backgroundColor: "var(--status-error-bg)", color: "var(--status-error)" }}>
+              {formError}
+            </div>
+          )}
+
+          <div className="mt-4 flex gap-3">
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={busy}
+              className="inline-flex items-center rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ backgroundColor: "var(--accent)", color: "var(--accent-text)" }}
+            >
+              {busy ? "Saving…" : "Save Check"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowForm(false); setDraft(emptyDraft()); setFormError(null); }}
+              className="inline-flex items-center rounded border px-4 py-2 text-sm font-medium"
+              style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mb-6 rounded border p-4" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
@@ -163,7 +353,7 @@ export default function QcChecksListPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>Notes</th>
                 </tr>
               </thead>
-              <tbody >
+              <tbody>
                 {state.items.map((c) => (
                   <tr key={c.id} onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-table-hover)"; }} onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}>
                     <td className="px-4 py-2.5 font-mono text-xs" style={{ color: "var(--text-secondary)" }}>

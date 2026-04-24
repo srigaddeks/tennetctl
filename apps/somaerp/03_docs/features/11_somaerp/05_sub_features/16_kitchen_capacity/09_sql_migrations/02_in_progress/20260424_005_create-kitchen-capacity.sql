@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Kitchen capacity vertical for somaerp (Plan 56-06) per ADR-003.
 -- Creates: fct_kitchen_capacity (per kitchen × product_line × time_window ×
@@ -142,7 +142,7 @@ JOIN "11_somaerp".dim_units_of_measure u ON u.id = c.capacity_unit_id;
 COMMENT ON VIEW "11_somaerp".v_kitchen_capacity_history IS 'All kitchen capacity rows (active + closed + soft-deleted). Consumer filters by valid_to / deleted_at.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW IF EXISTS "11_somaerp".v_kitchen_capacity_history;
 DROP VIEW IF EXISTS "11_somaerp".v_kitchen_current_capacity;

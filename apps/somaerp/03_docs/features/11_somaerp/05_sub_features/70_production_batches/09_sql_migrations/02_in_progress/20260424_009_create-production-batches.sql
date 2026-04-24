@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Production Batches vertical for somaerp (Plan 56-10).
 -- Creates: fct_production_batches,
@@ -449,7 +449,7 @@ WHERE b.deleted_at IS NULL;
 COMMENT ON VIEW "11_somaerp".v_batch_summary IS 'Per-batch computed metrics: yield_pct, total_cogs, cogs_per_unit, gross_margin_pct (vs product.default_selling_price), duration_min, step + ingredient counts.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 DROP VIEW IF EXISTS "11_somaerp".v_batch_summary;
 DROP VIEW IF EXISTS "11_somaerp".v_batch_qc_results;

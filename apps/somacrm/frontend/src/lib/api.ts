@@ -33,6 +33,7 @@ import type {
   ActivitySummaryRow,
   ContactGrowthPoint,
   EntityType,
+  SearchResult,
 } from "@/types/api";
 
 const BASE = process.env.NEXT_PUBLIC_SOMACRM_API_URL ?? "http://localhost:51738";
@@ -94,6 +95,16 @@ export function deleteContact(id: string): Promise<void> {
 
 export function getContactTimeline(id: string, limit = 200): Promise<TimelineItem[]> {
   return apiFetch<TimelineItem[]>(`/v1/somacrm/contacts/${id}/timeline?limit=${limit}`);
+}
+
+export function createErpCustomer(
+  contactId: string,
+  data: { delivery_notes?: string; acquisition_source?: string },
+): Promise<{ erp_customer_id: string; already_existed: boolean }> {
+  return apiFetch(`/v1/somacrm/contacts/${contactId}/create-erp-customer`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
 
 // ── Organizations ─────────────────────────────────────────────────────────────
@@ -346,6 +357,15 @@ export function addEntityTag(data: EntityTag): Promise<void> {
 
 export function deleteEntityTag(id: string): Promise<void> {
   return apiFetch<void>(`/v1/somacrm/entity-tags/${id}`, { method: "DELETE" });
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+
+export async function globalSearch(q: string): Promise<SearchResult[]> {
+  const d = await apiFetch<{ results: SearchResult[] }>(
+    `/v1/somacrm/search?q=${encodeURIComponent(q)}`,
+  );
+  return d.results;
 }
 
 // ── Reports ───────────────────────────────────────────────────────────────────

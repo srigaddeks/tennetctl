@@ -1,4 +1,4 @@
--- UP ====================================================================
+-- UP ====
 
 -- Geography vertical for somaerp (Plan 56-03).
 -- Creates: dim_regions + fct_locations + fct_kitchens + fct_service_zones
@@ -252,7 +252,7 @@ LEFT JOIN "11_somaerp".fct_kitchens k ON k.id = z.kitchen_id;
 COMMENT ON VIEW "11_somaerp".v_service_zones IS 'fct_service_zones joined with fct_kitchens for kitchen_name.';
 
 
--- DOWN ==================================================================
+-- DOWN ====
 
 -- Drop views first (dependents before dependencies), then tables in
 -- reverse-FK order (zones -> kitchens -> locations -> dim_regions).
