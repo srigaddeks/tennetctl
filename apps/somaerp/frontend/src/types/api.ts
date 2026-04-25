@@ -842,6 +842,7 @@ export type Customer = {
   lifetime_value: string;
   properties: Record<string, unknown>;
   active_subscription_count: number;
+  somacrm_contact_id: string | null;
   created_at: string;
   updated_at: string;
 };

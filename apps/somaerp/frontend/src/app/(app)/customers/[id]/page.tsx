@@ -53,11 +53,36 @@ export default function CustomerDetailPage() {
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
         {customer.status === "ok" && (
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            {customer.data.name}
-          </h1>
+          <>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">
+              {customer.data.name}
+            </h1>
+            {customer.data.somacrm_contact_id && (
+              <a
+                href={`http://localhost:51739/contacts/${customer.data.somacrm_contact_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open this customer's contact record in somacrm"
+                style={{
+                  fontSize: 11,
+                  background: "var(--status-active-bg)",
+                  color: "var(--status-active-text)",
+                  borderRadius: 20,
+                  padding: "6px 14px",
+                  fontWeight: 700,
+                  border: "1px solid var(--border)",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                CRM · {customer.data.somacrm_contact_id.slice(0, 8)} ↗
+              </a>
+            )}
+          </>
         )}
       </div>
 

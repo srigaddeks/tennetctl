@@ -154,13 +154,18 @@ async def _ensure_crm_contact(
     name: str,
     phone: str,
     somaerp_customer_id: str,
-) -> None:
+    erp: Any,
+) -> str | None:
     """Best-effort cross-app handshake: create a somacrm contact linked
-    to the new ERP customer so sales can follow up. Silent on any
-    failure — an order must not break if the CRM is down."""
+    to the new ERP customer so sales can follow up. Then PATCH the ERP
+    customer with the new contact_id so both sides have a back-link.
+
+    Silent on any failure — an order must not break if the CRM is down.
+    Returns the new contact_id on success, None on failure.
+    """
     crm = getattr(request.app.state, "somacrm", None)
     if crm is None:
-        return
+        return None
     parts = name.strip().split(" ", 1)
     first = parts[0] or "Customer"
     last = parts[1] if len(parts) > 1 else None
@@ -172,14 +177,29 @@ async def _ensure_crm_contact(
         "somaerp_customer_id": somaerp_customer_id,
         "properties": {"acquisition_source": "somashop"},
     }
+    contact_id: str | None = None
     try:
-        await crm.request(
+        result = await crm.request(
             "POST", "/v1/somacrm/contacts",
             use_service_session=True,
             json=body,
         )
+        contact_id = (result.get("data") or {}).get("id")
     except _proxy.ProxyError:
-        pass
+        return None
+
+    # Reverse link: PATCH the ERP customer with the new contact id.
+    if contact_id:
+        try:
+            await erp.request(
+                "PATCH", f"/v1/somaerp/customers/{somaerp_customer_id}",
+                use_service_session=True,
+                json={"somacrm_contact_id": contact_id},
+                extra_headers=_service_workspace_headers(request),
+            )
+        except _proxy.ProxyError:
+            pass
+    return contact_id
 
 
 async def _find_or_create_customer(
@@ -273,13 +293,16 @@ async def place_order(request: Request, body: CreateOrderRequest) -> dict:
         )
 
         # Cross-app: ensure a somacrm contact exists for sales follow-up,
-        # linked to the ERP customer via somaerp_customer_id. Best-effort —
-        # an order must not fail if CRM is down or rejects a duplicate.
+        # linked to the ERP customer via somaerp_customer_id. The helper
+        # also writes back somacrm_contact_id on the ERP record so the
+        # link is bidirectional. Best-effort — an order must not fail if
+        # CRM is down or rejects a duplicate.
         await _ensure_crm_contact(
             request,
             name=body.name,
             phone=body.phone,
             somaerp_customer_id=customer_id,
+            erp=erp,
         )
 
         return sub

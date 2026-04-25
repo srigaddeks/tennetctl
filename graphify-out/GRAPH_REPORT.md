@@ -1,7 +1,7 @@
 # Graph Report - /Users/sri/Documents/tennetctl  (2026-04-25)
 
 ## Corpus Check
-- 1036 files · ~1,041,789 words
+- 1036 files · ~1,041,810 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -4632,11 +4632,11 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 24`, `Community 27`, `Community 29`, `Community 33`, `Community 41`, `Community 42`, `Community 45`, `Community 51`, `Community 73`?**
-  _High betweenness centrality (0.178) - this node is a cross-community bridge._
+  _High betweenness centrality (0.197) - this node is a cross-community bridge._
 - **Why does `apiFetch()` connect `Community 4` to `Community 10`, `Community 6`?**
-  _High betweenness centrality (0.065) - this node is a cross-community bridge._
-- **Why does `Filter` connect `Community 4` to `Community 24`, `Community 1`, `Community 10`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 27`, `Community 33`, `Community 41`, `Community 42`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Are the 520 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
   _`get()` has 520 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 262 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
