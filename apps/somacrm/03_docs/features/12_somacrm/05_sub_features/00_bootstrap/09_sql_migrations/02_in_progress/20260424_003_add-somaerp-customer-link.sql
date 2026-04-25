@@ -9,8 +9,11 @@ CREATE INDEX IF NOT EXISTS idx_contacts_somaerp_customer
 COMMENT ON COLUMN "12_somacrm".fct_contacts.somaerp_customer_id
   IS 'FK reference to somaerp.fct_customers.id — cross-app contact↔customer link';
 
--- Recreate v_contacts to include the new column
-CREATE OR REPLACE VIEW "12_somacrm".v_contacts AS
+-- Recreate v_contacts to include the new column.
+-- DROP+CREATE not REPLACE: the column order changes (somaerp_customer_id
+-- inserted mid-list), and CREATE OR REPLACE requires identical column order.
+DROP VIEW IF EXISTS "12_somacrm".v_contacts;
+CREATE VIEW "12_somacrm".v_contacts AS
 SELECT
     c.id,
     c.tenant_id,

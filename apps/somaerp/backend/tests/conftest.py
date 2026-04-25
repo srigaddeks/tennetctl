@@ -55,12 +55,22 @@ os.environ.setdefault(
 # ── Paths to the migration files we apply at session start ───────────────
 
 _SOMAERP_DOCS = _REPO_ROOT / "apps/somaerp/03_docs/features/11_somaerp/05_sub_features"
-_BOOTSTRAP_MIGRATIONS_DIR = (
-    _SOMAERP_DOCS / "00_bootstrap/09_sql_migrations/02_in_progress"
-)
-_GEOGRAPHY_MIGRATIONS_DIR = (
-    _SOMAERP_DOCS / "10_locations/09_sql_migrations/02_in_progress"
-)
+_BOOTSTRAP_MIGRATIONS_DIRS = [
+    _SOMAERP_DOCS / "00_bootstrap/09_sql_migrations/01_migrated",
+    _SOMAERP_DOCS / "00_bootstrap/09_sql_migrations/02_in_progress",
+]
+_GEOGRAPHY_MIGRATIONS_DIRS = [
+    _SOMAERP_DOCS / "10_locations/09_sql_migrations/01_migrated",
+    _SOMAERP_DOCS / "10_locations/09_sql_migrations/02_in_progress",
+]
+
+
+def _glob_migrations(dirs: list[Path]) -> list[Path]:
+    out: list[Path] = []
+    for d in dirs:
+        if d.exists():
+            out.extend(d.glob("*.sql"))
+    return sorted(out, key=lambda p: p.name)
 
 
 def _test_dsn() -> str:
@@ -130,11 +140,11 @@ async def test_pool() -> AsyncIterator[asyncpg.Pool]:
         await conn.execute('DROP SCHEMA IF EXISTS "11_somaerp" CASCADE')
 
         # Apply bootstrap migration (creates the schema).
-        for mig in sorted(_BOOTSTRAP_MIGRATIONS_DIR.glob("*.sql")):
+        for mig in _glob_migrations(_BOOTSTRAP_MIGRATIONS_DIRS):
             await conn.execute(_extract_up(mig.read_text()))
 
         # Apply geography migration (tables + views).
-        for mig in sorted(_GEOGRAPHY_MIGRATIONS_DIR.glob("*.sql")):
+        for mig in _glob_migrations(_GEOGRAPHY_MIGRATIONS_DIRS):
             await conn.execute(_extract_up(mig.read_text()))
 
         # Seed the IN-TG region directly — matches

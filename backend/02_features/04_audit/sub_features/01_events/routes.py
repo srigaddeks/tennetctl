@@ -415,12 +415,19 @@ async def emit_audit_event_route(request: Request, body: _EmitAuditRequest) -> d
 
     The caller's API key (or session) provides the service identity; the body
     carries end-user context on whose behalf the app is acting.
+
+    For API-key callers (no session), fall back to the api_key_id as the
+    actor_session_id so the chk_evt_audit_scope CHECK is satisfied. The api_key
+    is the durable identity for service-to-service traffic — a service's
+    "session" is the lifetime of its provisioned key.
     """
     pool = request.app.state.pool
     s = _session_scope(request)
+    api_key_id = getattr(request.state, "api_key_id", None)
+    effective_session = s["session_id"] or api_key_id
     ctx = _catalog_ctx.NodeContext(
         user_id=body.actor_user_id or s["user_id"],
-        session_id=s["session_id"],
+        session_id=effective_session,
         org_id=body.org_id or s["org_id"],
         workspace_id=body.workspace_id or s["workspace_id"],
         application_id=body.application_id,

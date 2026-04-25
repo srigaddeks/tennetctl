@@ -55,7 +55,12 @@ def _extract_up(content: str) -> str:
     up_idx = content.find(UP_MARKER)
     if up_idx < 0:
         return content
-    after = content[up_idx + len(UP_MARKER):]
+    # Markers can extend with extra '=' (e.g. '-- UP =================='). Skip
+    # past the entire marker line, otherwise the trailing '=' chars get fed
+    # to Postgres as SQL.
+    after_marker = content[up_idx + len(UP_MARKER):]
+    nl = after_marker.find("\n")
+    after = after_marker[nl + 1:] if nl >= 0 else after_marker
     down_idx = after.find(DOWN_MARKER)
     return after[:down_idx] if down_idx >= 0 else after
 
