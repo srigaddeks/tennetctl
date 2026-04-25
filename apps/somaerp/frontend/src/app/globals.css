@@ -9,40 +9,62 @@
 @tailwind utilities;
 
 :root {
-  --bg-app: #F7F8FA;
-  --bg-sidebar: #111827;
-  --bg-sidebar-hover: #1F2937;
-  --bg-sidebar-active: #1D4ED8;
-  --bg-topbar: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-surface: #F7F8FA;
-  --bg-table-header: #F1F5F9;
-  --bg-table-row-alt: #F8FAFC;
-  --bg-table-hover: #EFF6FF;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --text-sidebar: #F1F5F9;
-  --text-sidebar-muted: #94A3B8;
-  --text-accent: #1D4ED8;
-  --text-mono: #0F172A;
-  --border: #E2E8F0;
-  --border-focus: #1D4ED8;
-  --accent: #1D4ED8;
-  --accent-hover: #1E40AF;
-  --accent-text: #FFFFFF;
-  --status-active: #059669;
-  --status-active-bg: #D1FAE5;
-  --status-active-text: #065F46;
-  --status-draft: #64748B;
-  --status-draft-bg: #F1F5F9;
-  --status-draft-text: #334155;
-  --status-paused: #D97706;
-  --status-paused-bg: #FEF3C7;
-  --status-paused-text: #92400E;
-  --status-error: #DC2626;
-  --status-error-bg: #FEE2E2;
-  --status-error-text: #991B1B;
+  /* Greyscale palette per 99_business_refs/website. Operations tools
+     (somaerp) share the customer-facing palette so brand reads coherent
+     across customer + back-office. Color reserved for status semantics
+     (production state, QC outcome, delivery status). */
+  --grey-0:   #FFFFFF;
+  --grey-50:  #FAFAF9;
+  --grey-100: #F5F5F4;
+  --grey-200: #E7E5E4;
+  --grey-300: #D6D3D1;
+  --grey-400: #A8A29E;
+  --grey-500: #78716C;
+  --grey-600: #57534E;
+  --grey-700: #44403C;
+  --grey-800: #292524;
+  --grey-900: #1C1917;
+
+  --bg-app:                var(--grey-50);
+  --bg-sidebar:            var(--grey-900);
+  --bg-sidebar-hover:      var(--grey-800);
+  --bg-sidebar-active:     var(--grey-700);
+  --bg-topbar:             var(--grey-0);
+  --bg-card:               var(--grey-0);
+  --bg-surface:            var(--grey-50);
+  --bg-table-header:       var(--grey-100);
+  --bg-table-row-alt:      var(--grey-50);
+  --bg-table-hover:        var(--grey-100);
+
+  --text-primary:          var(--grey-900);
+  --text-secondary:        var(--grey-700);
+  --text-muted:            var(--grey-500);
+  --text-sidebar:          var(--grey-50);
+  --text-sidebar-muted:    var(--grey-400);
+  --text-accent:           var(--grey-900);
+  --text-mono:             var(--grey-900);
+
+  --border:                var(--grey-200);
+  --border-focus:          var(--grey-900);
+
+  --accent:                var(--grey-900);
+  --accent-hover:          var(--grey-800);
+  --accent-text:           var(--grey-0);
+
+  /* Status — only sanctioned hues. */
+  --status-active:         #2D6A4F;
+  --status-active-bg:      #E6F0EA;
+  --status-active-text:    #1A4731;
+  --status-draft:          var(--grey-600);
+  --status-draft-bg:       var(--grey-100);
+  --status-draft-text:     var(--grey-700);
+  --status-paused:         #B45309;
+  --status-paused-bg:      #FEF3C7;
+  --status-paused-text:    #78350F;
+  --status-error:          #991B1B;
+  --status-error-bg:       #FCE9E9;
+  --status-error-text:     #7A1414;
+
   --sidebar-width: 240px;
   --topbar-height: 52px;
   --font-ui:       'Inter', system-ui, sans-serif;

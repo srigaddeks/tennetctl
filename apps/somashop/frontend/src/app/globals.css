@@ -1,0 +1,145 @@
+/* Brand spec — 99_business_refs/website:
+   "Quiet luxury meets radical transparency." Greyscale UI, product
+   photos as the only color element. Typography:
+     Outfit — headings
+     Inter — body
+     Lora — pull quotes (italic)
+     JetBrains Mono — data
+*/
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Greyscale palette — the entire UI lives in this scale.
+     Color is reserved for product photography + status semantics. */
+  --grey-0:   #FFFFFF;
+  --grey-50:  #FAFAF9;
+  --grey-100: #F5F5F4;
+  --grey-200: #E7E5E4;
+  --grey-300: #D6D3D1;
+  --grey-400: #A8A29E;
+  --grey-500: #78716C;
+  --grey-600: #57534E;
+  --grey-700: #44403C;
+  --grey-800: #292524;
+  --grey-900: #1C1917;
+
+  /* Surfaces */
+  --bg-page:    var(--grey-50);
+  --bg-surface: var(--grey-0);
+  --bg-muted:   var(--grey-100);
+  --bg-inverse: var(--grey-900);
+
+  /* Text */
+  --text-primary:   var(--grey-900);
+  --text-secondary: var(--grey-700);
+  --text-muted:     var(--grey-500);
+  --text-on-inverse: var(--grey-50);
+
+  /* Borders */
+  --border:        var(--grey-200);
+  --border-strong: var(--grey-300);
+
+  /* Subtle accent (charcoal). Not a brand "color" — just emphasis. */
+  --accent:        var(--grey-900);
+  --accent-hover:  var(--grey-800);
+  --accent-text:   var(--grey-0);
+
+  /* Status semantics — the only sanctioned hues outside greyscale.
+     Used sparingly: order success / error states only. */
+  --status-success: #2D6A4F;
+  --status-warning: #B45309;
+  --status-error:   #991B1B;
+
+  /* Layout */
+  --content-max:    1200px;
+  --reading-max:    680px;
+  --topbar-height:  60px;
+
+  /* Fonts */
+  --font-ui:       'Inter', system-ui, sans-serif;
+  --font-heading:  'Outfit', 'Inter', system-ui, sans-serif;
+  --font-quote:    'Lora', Georgia, serif;
+  --font-mono:     'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  font-family: var(--font-ui);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+blockquote, .pull-quote {
+  font-family: var(--font-quote);
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.mono { font-family: var(--font-mono); }
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--text-secondary); }
+
+/* Buttons — solid charcoal primary, ghost secondary */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+}
+.btn-ghost:hover { background: var(--bg-muted); }
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+/* Card */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}

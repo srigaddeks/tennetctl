@@ -4570,11 +4570,9 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 20`, `Community 21`, `Community 22`, `Community 25`, `Community 27`, `Community 28`, `Community 30`, `Community 32`, `Community 42`?**
-  _High betweenness centrality (0.165) - this node is a cross-community bridge._
+  _High betweenness centrality (0.209) - this node is a cross-community bridge._
 - **Why does `get()` connect `Community 6` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 20`, `Community 21`, `Community 27`, `Community 28`?**
-  _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `asyncpg raw SQL for product_ops.profiles.` connect `Community 7` to `Community 32`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 18`, `Community 20`, `Community 27`, `Community 28`, `Community 30`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Are the 510 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
   _`get()` has 510 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 262 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
@@ -4583,3 +4581,5 @@ _Questions this graph is uniquely positioned to answer:_
   _`NotFoundError` has 255 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `MagicLinkCallbackPage — consumes magic link token`, `POST /v1/auth/magic-link/consume — magic link token exchange`, `SignInPage — sign-in page` to the rest of the system?**
   _1475 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 0` be split into smaller, more focused modules?**
+  _Cohesion score 0.0 - nodes in this community are weakly interconnected._
