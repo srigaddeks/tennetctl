@@ -34,6 +34,7 @@ MODULE_ROUTERS: dict[str, str] = {
     "monitoring": "backend.02_features.05_monitoring.routes",
     "social_publisher": "backend.02_features.07_social_publisher.routes",
     "social_capture": "backend.02_features.07_social_publisher.capture_routes",
+    "product_ops": "backend.02_features.10_product_ops.routes",
 }
 
 

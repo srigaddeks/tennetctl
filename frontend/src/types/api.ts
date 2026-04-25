@@ -2339,3 +2339,51 @@ export type DagValidation = {
   errors: DagValidationError[];
 };
 
+// ─── Product Ops (10_product_ops) ────────────────────────────────────────────
+
+export type ProductEventSource = "web" | "mobile" | "server" | "backend" | "other";
+
+export type ProductEventRow = {
+  id: string;
+  org_id: string;
+  workspace_id: string | null;
+  actor_user_id: string | null;
+  distinct_id: string;
+  event_name: string;
+  session_id: string | null;
+  source: string;
+  url: string | null;
+  user_agent: string | null;
+  ip_addr: string | null;
+  properties: Record<string, unknown>;
+  created_at: string;
+};
+
+export type ProductEventListResponse = {
+  items: ProductEventRow[];
+  next_cursor: string | null;
+};
+
+export type ProductEventFilter = {
+  event_name?: string | null;
+  distinct_id?: string | null;
+  actor_user_id?: string | null;
+  source?: string | null;
+  since?: string | null;
+  until?: string | null;
+  org_id?: string | null;
+};
+
+export type ProductTopEvent = { event_name: string; count: number };
+
+export type ProductCountsResponse = {
+  events_today: number;
+  events_24h: number;
+  dau: number;
+  distinct_ids_24h: number;
+  top_events_24h: ProductTopEvent[];
+};
+
+export type ProductEventKeyListResponse = { items: string[]; total: number };
+
+

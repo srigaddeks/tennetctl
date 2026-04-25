@@ -117,6 +117,16 @@ export const FEATURES: FeatureNav[] = [
     ],
   },
   {
+    key: "product-ops",
+    label: "Product Ops",
+    description: "Lightweight product analytics — append-only event ingestion (Mixpanel/OpenPanel-lite). Live event stream, daily counts, top events, per-distinct-id timeline.",
+    basePath: "/product-ops",
+    testId: "nav-feature-product-ops",
+    subFeatures: [
+      { href: "/product-ops", label: "Explorer", testId: "nav-product-ops-explorer" },
+    ],
+  },
+  {
     key: "account",
     label: "Account",
     description: "Personal settings: active sessions, API keys, security.",
