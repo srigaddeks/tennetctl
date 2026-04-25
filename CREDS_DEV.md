@@ -99,6 +99,24 @@ PYTHONPATH=. .venv/bin/python -m scripts.smoke_somashop_e2e
 PYTHONPATH=. .venv/bin/python -m scripts.seed_soma_catalog
 ```
 
+## Process management gotcha
+
+To stop a server bound to a port, **never** use the naive
+`lsof -ti :PORT | xargs kill`. That returns every PID with *any* TCP
+connection to that port — including remote clients that just happen to
+have a CLOSED connection. Killing those cascades into unrelated services
+(e.g., killing a CRM client connection accidentally killed the tennetctl
+backend during this session).
+
+Use the LISTEN-only filter:
+
+```bash
+# Safe — only the listening server process
+lsof -ti :51734 -sTCP:LISTEN | xargs kill 2>/dev/null
+```
+
+Or just identify the uvicorn parent and `kill -TERM` that PID directly.
+
 ## Brand spec
 
 `99_business_refs/website` is the brand source of truth.
