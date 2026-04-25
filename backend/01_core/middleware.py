@@ -283,6 +283,12 @@ _SETUP_ALLOWLIST = frozenset({
     "/health",
     "/v1/setup/status",
     "/v1/setup/initial-admin",
+    # Mobile-OTP: customers can self-onboard via SMS even in setup mode.
+    # The first verify creates a soma_delights_customer user (not an admin),
+    # so the system stays in setup mode for /setup/initial-admin afterwards.
+    "/v1/auth/mobile-otp/request",
+    "/v1/auth/mobile-otp/verify",
+    "/v1/track",
     "/docs",
     "/openapi.json",
     "/redoc",

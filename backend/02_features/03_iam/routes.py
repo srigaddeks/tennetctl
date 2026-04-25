@@ -97,6 +97,9 @@ _portal_views_routes: Any = import_module(
 _dsar_routes: Any = import_module(
     "backend.02_features.03_iam.sub_features.08_dsar.routes"
 )
+_mobile_otp_routes: Any = import_module(
+    "backend.02_features.03_iam.sub_features.30_mobile_otp.routes"
+)
 
 router = APIRouter()
 router.include_router(_orgs_routes.router)
@@ -128,6 +131,7 @@ router.include_router(_siem_routes.router)
 router.include_router(_tos_routes.router)
 router.include_router(_portal_views_routes.router)
 router.include_router(_dsar_routes.router)
+router.include_router(_mobile_otp_routes.router)
 
 # OIDC auth routes (no session required — browser-facing)
 from fastapi import Request  # noqa: E402
