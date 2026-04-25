@@ -6,7 +6,7 @@ End-of-session snapshot for the autonomous build run on `feat/saas-build`.
 
 ## What shipped this session
 
-10 commits, all on `feat/saas-build`, all pushed to origin:
+12+ commits, all on `feat/saas-build`, all pushed to origin:
 
 | commit    | what                                                                  |
 | --------- | --------------------------------------------------------------------- |
@@ -18,7 +18,35 @@ End-of-session snapshot for the autonomous build run on `feat/saas-build`.
 | `eb005fb` | apps/somashop scaffold + greyscale palette across all frontends       |
 | `6a7ac25` | real Soma Delights catalog + customer checkout flow + brand polish    |
 | `179a172` | somashop profile + cart indicator + footer + E2E smoke script         |
-| (head)    | signin pages brand-aligned + handoff docs                             |
+| `5a525ee` | signin pages brand-aligned + stack map + handoff docs                 |
+| `fe68ee0` | order detail page + RBAC enforcement (proof on contacts.create + recipes.create) |
+| `c293082` | editorial home page — testimonials + how-it-works + FAQ               |
+| (next)    | somashop README + handoff update                                      |
+
+## Customer flow shipped end-to-end
+
+The whole `Soma Delights customer journey` is wired and live:
+
+1. Land on http://localhost:51741 — editorial home (hero, pull quote,
+   3 pillars, 4-step how-it-works, 2 testimonials, 5-question FAQ, dark
+   CTA strip).
+2. Click "Start a free week" or "Sign in" → mobile-OTP signin
+   (split-screen brand panel + form). Stub-mode echoes the OTP back
+   in the response so dev flow works without Twilio.
+3. Verify code → land on home as authenticated customer (name in topbar).
+4. /products — 3 subscription plans + 10 real products
+   (ABC Juice, Classic Green, Clarity Greens, Beet Boost, Amla Juice,
+   Turmeric Glow, Immunity Shield, Digest Ease, Diabetes Care, BP Balance).
+   Real prices in INR.
+5. Click any product → detail page with target benefit + ingredients.
+6. Click "Subscribe" on a plan → /checkout?plan=... cart pill appears in
+   topbar, name pre-filled from auth, address form.
+7. Submit → backend creates somaerp customer + subscription + emits
+   audit event → redirect to /orders with success banner.
+8. /orders shows the active subscription with status badge.
+9. Click order → /orders/[id] detail page with cadence, price, started,
+   service zone, delivery cadence card.
+10. /profile shows account info, sign out.
 
 ## Stack state
 
