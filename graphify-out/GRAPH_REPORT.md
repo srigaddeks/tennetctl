@@ -1,7 +1,7 @@
 # Graph Report - /Users/sri/Documents/tennetctl  (2026-04-25)
 
 ## Corpus Check
-- 1000 files · ~995,208 words
+- 1000 files · ~995,257 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -4555,9 +4555,9 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 22`, `Community 23`, `Community 30`, `Community 39`, `Community 41`, `Community 48`?**
-  _High betweenness centrality (0.185) - this node is a cross-community bridge._
+  _High betweenness centrality (0.194) - this node is a cross-community bridge._
 - **Why does `apiFetch()` connect `Community 4` to `Community 9`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+  _High betweenness centrality (0.065) - this node is a cross-community bridge._
 - **Why does `get()` connect `Community 8` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 17`, `Community 19`, `Community 20`, `Community 30`, `Community 39`?**
   _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **Are the 507 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
