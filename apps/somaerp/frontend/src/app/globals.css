@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Brand cohesion (per 99_business_refs/website — "Quiet luxury meets
+   radical transparency"): Outfit (headings), Inter (body), Lora (pull
+   quotes), JetBrains Mono (data). Same family used by somacrm,
+   future somashop, and React Native shells so every Soma surface feels
+   coherent. */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,8 +45,10 @@
   --status-error-text: #991B1B;
   --sidebar-width: 240px;
   --topbar-height: 52px;
-  --font-ui: 'Manrope', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-ui:       'Inter', system-ui, sans-serif;
+  --font-heading:  'Outfit', 'Inter', system-ui, sans-serif;
+  --font-quote:    'Lora', Georgia, serif;
+  --font-mono:     'JetBrains Mono', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -53,6 +60,9 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+h1, h2, h3, h4, h5, h6, .heading { font-family: var(--font-heading); letter-spacing: -0.01em; }
+blockquote, .pull-quote { font-family: var(--font-quote); font-style: italic; }
 
 /* Monospace class for data values */
 .mono { font-family: var(--font-mono); }
