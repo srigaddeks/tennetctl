@@ -215,9 +215,27 @@ export default function ContactDetailPage() {
             + Note
           </button>
           {c.somaerp_customer_id ? (
-            <span style={{ fontSize: 11, background: "#ECFDF5", color: "#059669", borderRadius: 20, padding: "4px 10px", fontWeight: 700, border: "1px solid #A7F3D0" }}>
-              ERP: {c.somaerp_customer_id.slice(0, 8)}
-            </span>
+            <a
+              href={`http://localhost:51737/customers/${c.somaerp_customer_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open this customer's record in somaerp"
+              style={{
+                fontSize: 11,
+                background: "var(--status-active-bg)",
+                color: "var(--status-active-text)",
+                borderRadius: 20,
+                padding: "4px 12px",
+                fontWeight: 700,
+                border: "1px solid var(--border)",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              ERP · {c.somaerp_customer_id.slice(0, 8)} ↗
+            </a>
           ) : (
             <button
               className="btn-secondary"
