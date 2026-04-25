@@ -71,8 +71,8 @@ async def create_contact(
         f"INSERT INTO {TABLE} "
         "(id, tenant_id, organization_id, first_name, last_name, email, phone, mobile, "
         " job_title, company_name, website, linkedin_url, twitter_handle, lead_source, "
-        " status_id, properties, created_by, updated_by) "
-        "VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$17)",
+        " status_id, somaerp_customer_id, properties, created_by, updated_by) "
+        "VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$18)",
         new_id, tenant_id,
         data.get("organization_id"),
         data["first_name"],
@@ -87,6 +87,7 @@ async def create_contact(
         data.get("twitter_handle"),
         data.get("lead_source"),
         data.get("status_id", 1),
+        data.get("somaerp_customer_id"),
         data.get("properties") or {},
         actor_user_id,
     )

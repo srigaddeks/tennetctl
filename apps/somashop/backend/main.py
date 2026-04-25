@@ -62,8 +62,13 @@ async def lifespan(app_: FastAPI):
         cfg.somaerp_base_url,
         service_api_key=cfg.tennetctl_service_api_key,
     )
+    crm = _proxy.HttpProxy(
+        cfg.somacrm_base_url or "http://localhost:51738",
+        service_api_key=cfg.tennetctl_service_api_key,
+    )
     await tnc.start()
     await erp.start()
+    await crm.start()
 
     # Sign in service identity for tenant-scoped reads on somaerp.
     service_token = await _mint_service_session(
@@ -73,16 +78,19 @@ async def lifespan(app_: FastAPI):
     )
     if service_token:
         erp.set_service_session_token(service_token)
+        crm.set_service_session_token(service_token)
         tnc.set_service_session_token(service_token)
 
     app_.state.tennetctl = tnc
     app_.state.somaerp = erp
+    app_.state.somacrm = crm
 
     try:
         yield
     finally:
         await tnc.stop()
         await erp.stop()
+        await crm.stop()
 
 
 def create_app() -> FastAPI:

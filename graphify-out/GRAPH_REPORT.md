@@ -1,12 +1,12 @@
 # Graph Report - /Users/sri/Documents/tennetctl  (2026-04-25)
 
 ## Corpus Check
-- 1036 files · ~1,041,593 words
+- 1036 files · ~1,041,548 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7102 nodes · 15611 edges · 685 communities detected
-- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 5709 edges (avg confidence: 0.79)
+- 7102 nodes · 15613 edges · 685 communities detected
+- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 5711 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -703,7 +703,7 @@
 4. `_require_workspace()` - 237 edges
 5. `_build_ctx()` - 215 edges
 6. `success()` - 212 edges
-7. `apiFetch()` - 189 edges
+7. `apiFetch()` - 191 edges
 8. `ok()` - 183 edges
 9. `uuid7()` - 179 edges
 10. `AppError` - 139 edges
@@ -741,11 +741,11 @@ Nodes (401): Fire a notify.send.transactional call. Returns True on success., Pr
 
 ### Community 3 - "Community 3"
 Cohesion: 0.01
-Nodes (418): dlq_replay(), Consume up to ``limit`` messages from the named DLQ and republish them     to th, featureflags.apisix_routes — status + manual trigger endpoints for APISIX sync., Return the most recent PublishResult from the background worker.      Empty dict, Force an immediate publish cycle. Returns the fresh PublishResult.      Useful f, sync_now_route(), sync_status_route(), Require an authenticated user with a workspace.      Once tennetctl exposes per- (+410 more)
+Nodes (407): dlq_replay(), Consume up to ``limit`` messages from the named DLQ and republish them     to th, featureflags.apisix_routes — status + manual trigger endpoints for APISIX sync., Return the most recent PublishResult from the background worker.      Empty dict, Force an immediate publish cycle. Returns the fresh PublishResult.      Useful f, sync_now_route(), sync_status_route(), Require an authenticated user with a workspace.      Once tennetctl exposes per- (+399 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.01
-Nodes (287): addEntityTag(), addProcurementLine(), addSubscriptionPlanItem(), ApiClientError, ApiError, apiFetch(), apiList(), attachKitchenEquipment() (+279 more)
+Nodes (292): addEntityTag(), addProcurementLine(), addSubscriptionPlanItem(), ApiClientError, ApiError, apiFetch(), apiList(), attachKitchenEquipment() (+284 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.02
@@ -757,23 +757,23 @@ Nodes (167): EmitBurnAlert, Input, Output, monitoring.slo.burn_alert — emit SL
 
 ### Community 7 - "Community 7"
 Cohesion: 0.02
-Nodes (129): _attach_to_conn(), _build_query_span(), install(), _kv_str(), make_query_logger(), _publish_query_span(), asyncpg query instrumentation.  Wraps the pool's connect setup so every new conn, Return an asyncpg query-logger callback.      asyncpg's `conn.add_query_logger` (+121 more)
+Nodes (173): Compat module: ``require_user`` / ``require_org`` helpers.  Plain functions that, require_org(), require_user(), Raise ForbiddenError if user does not belong to the org., require_org_member_or_raise(), process_escalation_state(), Process single escalation state row.      Returns True if processed successfully, Dependency-style guard. Returns identity dict or raises. (+165 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.02
-Nodes (161): compile_all_request_flags(), compile_flag(), flag_kind(), _header_name(), _json_default(), featureflags.apisix_sync — compile request-path flags to APISIX config.  Design, Compile every `kind=request` flag in the catalog. Returns list of plugin configs, Turn `user.email` into `user_email` (nginx lowercases hyphens). (+153 more)
+Nodes (129): _attach_to_conn(), _build_query_span(), install(), _kv_str(), make_query_logger(), _publish_query_span(), asyncpg query instrumentation.  Wraps the pool's connect setup so every new conn, Return an asyncpg query-logger callback.      asyncpg's `conn.add_query_logger` (+121 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.02
-Nodes (107): request(), ensure_bootstrap_secrets(), _generate_secret(), Vault boot-time bootstrap.  On first start after migrations, ensures the auth su, Ensure each bootstrap key exists in the vault. Returns the count of secrets, acquire_session(), close_pool(), create_pool() (+99 more)
+Nodes (161): compile_all_request_flags(), compile_flag(), flag_kind(), _header_name(), _json_default(), featureflags.apisix_sync — compile request-path flags to APISIX config.  Design, Compile every `kind=request` flag in the catalog. Returns list of plugin configs, Turn `user.email` into `user_email` (nginx lowercases hyphens). (+153 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.02
 Nodes (141): API endpoint /v1/groups, API endpoint /v1/org-members, API endpoint /v1/orgs, API endpoint /v1/roles, API endpoint /v1/workspace-members, check_permission(), is_org_member(), Authorization helpers for admin mutations. Provides role-based and org-membershi (+133 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.03
-Nodes (154): Compat module: ``require_user`` / ``require_org`` helpers.  Plain functions that, require_org(), require_user(), Raise ForbiddenError if user does not belong to the org., require_org_member_or_raise(), Dependency-style guard. Returns identity dict or raises., Dependency-style guard. Returns identity dict or raises AuthError., Dependency-style guard. Returns identity dict or raises AuthError. (+146 more)
+Cohesion: 0.02
+Nodes (103): request(), ensure_bootstrap_secrets(), _generate_secret(), Vault boot-time bootstrap.  On first start after migrations, ensures the auth su, Ensure each bootstrap key exists in the vault. Returns the count of secrets, acquire_session(), close_pool(), create_pool() (+95 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.02
@@ -785,27 +785,27 @@ Nodes (98): AlertEvaluatorWorker, _now(), Alert evaluator worker — periodic lo
 
 ### Community 14 - "Community 14"
 Cohesion: 0.02
-Nodes (108): ActionDispatchWorker, Action dispatch worker — LISTEN-based + periodic retry scanner., Dispatch a single delivery with retry logic., # TODO: resolve vault secret, Worker that:     1. Subscribes to Postgres LISTEN monitoring_action_dispatch, Start the action dispatch worker., Start the worker loop., Handle NOTIFY event from monitoring_action_dispatch. (+100 more)
+Nodes (118): decrypt(), encrypt(), Envelope, load_root_key(), AES-256-GCM envelope encryption for vault secrets.  Every secret has its own 32-, Persisted shape for an encrypted secret — these three go into fct_vault_entries., Read + validate TENNETCTL_VAULT_ROOT_KEY. Raises RuntimeError if missing/malform, Envelope-encrypt a plaintext string. Fresh DEK + fresh nonce per call. (+110 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.02
-Nodes (118): decrypt(), encrypt(), Envelope, load_root_key(), AES-256-GCM envelope encryption for vault secrets.  Every secret has its own 32-, Persisted shape for an encrypted secret — these three go into fct_vault_entries., Read + validate TENNETCTL_VAULT_ROOT_KEY. Raises RuntimeError if missing/malform, Envelope-encrypt a plaintext string. Fresh DEK + fresh nonce per call. (+110 more)
+Nodes (109): Role expiry sweeper — runs every N seconds, revokes expired assignments., Revoke all expired role assignments. Returns count of rows revoked., Background task — sweeps every interval_seconds., run_once(), start_sweeper(), Input, ListSyntheticChecks, Output (+101 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.02
-Nodes (109): Role expiry sweeper — runs every N seconds, revokes expired assignments., Revoke all expired role assignments. Returns count of rows revoked., Background task — sweeps every interval_seconds., run_once(), start_sweeper(), Input, ListSyntheticChecks, Output (+101 more)
-
-### Community 17 - "Community 17"
-Cohesion: 0.02
 Nodes (58): authHeaders(), getMe(), getMyOrder(), getPlanBySlug(), getProductBySlug(), getToken(), listMyOrders(), listPlans() (+50 more)
 
-### Community 18 - "Community 18"
+### Community 17 - "Community 17"
 Cohesion: 0.04
 Nodes (107): DagValidation, DagValidationError, Edge, NodeInstance, DAG validation for flow definitions.  Pure compute module: no database access. -, Node instance within a flow version., Compute topological order of nodes for canvas layout.      Used by Plan 43-01 fo, Edge connecting two node instances. (+99 more)
 
-### Community 19 - "Community 19"
+### Community 18 - "Community 18"
 Cohesion: 0.03
 Nodes (75): Input, Output, QueryAuditEvents, audit.events.query — control node.  Read-only cross-sub-feature lookup over the, _build_where(), count_distinct_ids_since(), count_events_since(), _decode_cursor() (+67 more)
+
+### Community 19 - "Community 19"
+Cohesion: 0.03
+Nodes (73): ActionDispatchWorker, Action dispatch worker — LISTEN-based + periodic retry scanner., Dispatch a single delivery with retry logic., # TODO: resolve vault secret, Worker that:     1. Subscribes to Postgres LISTEN monitoring_action_dispatch, Start the action dispatch worker., Start the worker loop., Handle NOTIFY event from monitoring_action_dispatch. (+65 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.05
@@ -852,80 +852,80 @@ Cohesion: 0.06
 Nodes (34): AGPL-3.0-or-later license (Python SDK), Module matrix (auth/flags/iam/audit/notify/...), Python SDK Quickstart Code, tennetctl unified Python SDK package, API Key Bearer auth header, AuthError (401/403), Capability preview (flags/audit/notify 29-01), client.auth.api_keys (create/revoke/rotate) (+26 more)
 
 ### Community 31 - "Community 31"
+Cohesion: 0.08
+Nodes (28): create_delivery(), create_escalation_policy(), create_escalation_state(), create_oncall_schedule(), get_escalation_policy(), get_oncall_schedule(), is_policy_in_use(), list_escalation_policies() (+20 more)
+
+### Community 32 - "Community 32"
 Cohesion: 0.09
 Nodes (29): Notify API Keys (notify:send + notify:read scopes), Notify API Reference, Notify Bounce Webhook (POST /v1/notify/email/webhooks/bounce), Notify Critical Category (users cannot opt out), Notify Deep Link (path-only URL, open-redirect guard), Notify Deliveries Endpoints (GET list, GET one, unread-count, PATCH), Notify Deployment Guide (SMTP + DNS), Notify DNS for Deliverability (SPF + DKIM + DMARC) (+21 more)
 
-### Community 32 - "Community 32"
+### Community 33 - "Community 33"
 Cohesion: 0.07
 Nodes (9): LogsStore, MetricsStore, Metrics store Protocol., Protocol, ProviderAdapter, Resources store Protocol — interns OTel resource identities., ResourcesStore, Spans store Protocol. (+1 more)
 
-### Community 33 - "Community 33"
+### Community 34 - "Community 34"
 Cohesion: 0.1
 Nodes (8): EditGroupDialog(), EditSMTPDialog(), NewGroupDialog(), NewSMTPDialog(), useCreateSMTPConfig(), useCreateTemplateGroup(), useUpdateSMTPConfig(), useUpdateTemplateGroup()
 
-### Community 34 - "Community 34"
+### Community 35 - "Community 35"
 Cohesion: 0.11
 Nodes (19): backend.01_catalog.authz — Authorization hook for node runner (NCP v1 §9), DomainError — CAT_DOMAIN, non-retryable domain failure, backend.01_catalog.errors — Runner error hierarchy, backend.01_catalog.linter — Cross-import linter, enforces NCP v1 §10, NodeAuthDenied — CAT_AUTH_DENIED error, Node — base class for all node handlers (NCP v1 §4), NodeNotFound — CAT_NODE_NOT_FOUND error, NodeTombstoned — CAT_NODE_TOMBSTONED error (+11 more)
 
-### Community 35 - "Community 35"
+### Community 36 - "Community 36"
 Cohesion: 0.12
 Nodes (18): POST /v1/auth/* (signin, signup, magic-link, otp, totp, passkeys, password-reset, oauth), CSRF state nonce (sessionStorage per-tab anti-tampering), GithubCallbackPage — GitHub OAuth callback, GoogleCallbackPage — Google OAuth callback, OAuthCallback, OAuth2 Authorization Code Flow (Google + GitHub), use-auth (hook module), useMagicLinkRequest (+10 more)
 
-### Community 36 - "Community 36"
+### Community 37 - "Community 37"
 Cohesion: 0.15
 Nodes (10): API endpoint /v1/notify/deliveries, API endpoint /v1/notify/unread-count, API endpoint /v1/notify/webpush/subscriptions, API endpoint /v1/notify/webpush/vapid-public-key, InAppDelivery type (status_code, priority_code, resolved_variables, deep_link), NotificationBell component, NotificationList + CriticalBanner components, use-in-app-notifications hooks (useInAppNotifications, useUnreadCount, useMarkRead, useMarkAllRead, useUnreadCountServer) (+2 more)
 
-### Community 37 - "Community 37"
+### Community 38 - "Community 38"
 Cohesion: 0.14
 Nodes (15): audit.outbox repository, Concept: critical notification category cannot be opted out, Concept: event_key wildcard pattern matching (exact, prefix.*, *), DB table: 06_notify.14_fct_notify_subscriptions, DB table: 06_notify.17_fct_notify_user_preferences, DB table: 61_evt_audit_outbox (append-only, BIGINT cursor), notify.preferences repository — upsert/get_opt_in, 17_fct_notify_user_preferences, notify.preferences routes — GET/PATCH /v1/notify/preferences (+7 more)
 
-### Community 38 - "Community 38"
+### Community 39 - "Community 39"
 Cohesion: 0.21
 Nodes (12): AuthSignin, Input, Output, iam.auth.signin — effect node.  Wraps the signin service: verify credential + mi, headers(), main(), Seed real Soma Delights catalog into somaerp via HTTP.  Idempotent: re-running o, Returns line id. If slug already exists, fetches it. (+4 more)
 
-### Community 39 - "Community 39"
+### Community 40 - "Community 40"
 Cohesion: 0.17
 Nodes (3): handleDelete(), handleRevoke(), onSave()
 
-### Community 40 - "Community 40"
+### Community 41 - "Community 41"
 Cohesion: 0.18
 Nodes (2): useUsers(), WorkspaceMembers()
 
-### Community 41 - "Community 41"
+### Community 42 - "Community 42"
 Cohesion: 0.2
 Nodes (3): compliance_rows_to_csv(), Create a key; return the sanitized row with `token` attached exactly once., _stringify()
 
-### Community 42 - "Community 42"
+### Community 43 - "Community 43"
+Cohesion: 0.22
+Nodes (6): _bucket_date_expr(), list_cogs_trends(), list_incidents(), list_yield_trends(), Return events from the outbox newer than `since_id`.     Joins with v_audit_even, select_dashboard_today()
+
+### Community 44 - "Community 44"
 Cohesion: 0.2
 Nodes (10): Concept: pytracking open pixel + click wrapping for email, Concept: RFC 8058 one-click unsubscribe header (List-Unsubscribe), Concept: email suppression list check before send, Concept: SMTP password stored in vault, fetched at send time, DB table: 06_notify.10_fct_notify_smtp_configs, DB view: 06_notify.v_notify_smtp_configs, notify.email channel service (render/track/send), notify.smtp_configs repository (+2 more)
 
-### Community 43 - "Community 43"
+### Community 45 - "Community 45"
 Cohesion: 0.25
 Nodes (2): prepareState(), randomState()
 
-### Community 44 - "Community 44"
-Cohesion: 0.25
-Nodes (3): ImpersonationBanner(), useEndImpersonation(), useImpersonationStatus()
-
-### Community 45 - "Community 45"
+### Community 46 - "Community 46"
 Cohesion: 0.28
 Nodes (3): useDeleteSlo(), useSloMutations(), useUpdateSlo()
 
-### Community 46 - "Community 46"
+### Community 47 - "Community 47"
 Cohesion: 0.22
 Nodes (9): Concept: FOR UPDATE SKIP LOCKED atomic claim pattern for email delivery worker, DB: 06_notify.17_fct_notify_suppressions, DB table: 06_notify.15_fct_notify_deliveries, DB table: 02_vault.10_fct_vault_entries (encrypted secrets rows), notify.email repository — poll_and_claim_email_deliveries, notify.email routes — open/click tracking, bounce webhook, notify.suppression.repository — asyncpg CRUD on 06_notify.17_fct_notify_suppressions, notify.suppression service — add_suppression for hard bounces (+1 more)
 
-### Community 47 - "Community 47"
+### Community 48 - "Community 48"
 Cohesion: 0.36
 Nodes (4): LIST_KEY(), useMySessions(), useRevokeSession(), useSessions()
 
-### Community 48 - "Community 48"
+### Community 49 - "Community 49"
 Cohesion: 0.39
 Nodes (6): get_by_channel(), list_slots(), replace_slots(), upsert_queue(), get_queue_for_channel(), upsert_queue()
-
-### Community 49 - "Community 49"
-Cohesion: 0.32
-Nodes (3): _bucket_date_expr(), list_cogs_trends(), list_yield_trends()
 
 ### Community 50 - "Community 50"
 Cohesion: 0.29
@@ -4600,12 +4600,12 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 22`, `Community 24`, `Community 26`, `Community 28`, `Community 38`, `Community 41`, `Community 48`, `Community 50`, `Community 71`?**
-  _High betweenness centrality (0.180) - this node is a cross-community bridge._
-- **Why does `apiFetch()` connect `Community 4` to `Community 17`, `Community 13`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `Filter` connect `Community 4` to `Community 0`, `Community 17`, `Community 24`, `Community 14`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 22`, `Community 24`, `Community 26`, `Community 28`, `Community 31`, `Community 39`, `Community 42`, `Community 49`, `Community 50`, `Community 71`?**
+  _High betweenness centrality (0.183) - this node is a cross-community bridge._
+- **Why does `apiFetch()` connect `Community 4` to `Community 16`, `Community 13`?**
+  _High betweenness centrality (0.064) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 9` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 26`, `Community 28`, `Community 31`, `Community 39`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Are the 520 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
   _`get()` has 520 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 262 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**

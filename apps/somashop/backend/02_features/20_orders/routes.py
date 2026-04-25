@@ -148,6 +148,40 @@ async def list_my_orders(request: Request) -> dict:
         raise HTTPException(status_code=e.status, detail=e.body) from e
 
 
+async def _ensure_crm_contact(
+    request: Request,
+    *,
+    name: str,
+    phone: str,
+    somaerp_customer_id: str,
+) -> None:
+    """Best-effort cross-app handshake: create a somacrm contact linked
+    to the new ERP customer so sales can follow up. Silent on any
+    failure — an order must not break if the CRM is down."""
+    crm = getattr(request.app.state, "somacrm", None)
+    if crm is None:
+        return
+    parts = name.strip().split(" ", 1)
+    first = parts[0] or "Customer"
+    last = parts[1] if len(parts) > 1 else None
+    body = {
+        "first_name": first,
+        "last_name": last,
+        "phone": phone,
+        "lead_source": "somashop",
+        "somaerp_customer_id": somaerp_customer_id,
+        "properties": {"acquisition_source": "somashop"},
+    }
+    try:
+        await crm.request(
+            "POST", "/v1/somacrm/contacts",
+            use_service_session=True,
+            json=body,
+        )
+    except _proxy.ProxyError:
+        pass
+
+
 async def _find_or_create_customer(
     request: Request,
     erp: Any,
@@ -237,6 +271,17 @@ async def place_order(request: Request, body: CreateOrderRequest) -> dict:
             },
             extra_headers=_service_workspace_headers(request),
         )
+
+        # Cross-app: ensure a somacrm contact exists for sales follow-up,
+        # linked to the ERP customer via somaerp_customer_id. Best-effort —
+        # an order must not fail if CRM is down or rejects a duplicate.
+        await _ensure_crm_contact(
+            request,
+            name=body.name,
+            phone=body.phone,
+            somaerp_customer_id=customer_id,
+        )
+
         return sub
     except _proxy.ProxyError as e:
         raise HTTPException(status_code=e.status, detail=e.body) from e

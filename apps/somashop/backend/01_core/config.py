@@ -31,6 +31,10 @@ class Config:
     # ("the Soma Delights org") which lives in tennetctl IAM.
     somaerp_default_org_id: str | None
     somaerp_default_workspace_id: str | None
+    # Optional CRM handshake — when set, every order placed via somashop
+    # also creates a somacrm contact linked via somaerp_customer_id so
+    # sales can follow up. Skip silently if unset.
+    somacrm_base_url: str | None
 
 
 def load_config() -> Config:
@@ -51,4 +55,5 @@ def load_config() -> Config:
         somaerp_default_workspace_id=os.environ.get(
             "SOMAERP_DEFAULT_WORKSPACE_ID",
         ),
+        somacrm_base_url=os.environ.get("SOMACRM_BASE_URL"),
     )

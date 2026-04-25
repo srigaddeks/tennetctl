@@ -23,6 +23,10 @@ class ContactCreate(BaseModel):
     lead_source: str | None = Field(default=None, max_length=200)
     organization_id: str | None = None
     status_id: int = Field(default=1)
+    # Cross-app link: when this contact was created from an ERP customer
+    # (e.g. via somashop checkout), this IDs the source row so sales can
+    # see the customer's order history without manual matching.
+    somaerp_customer_id: str | None = Field(default=None, max_length=36)
     properties: dict[str, Any] = Field(default_factory=dict)
 
 
