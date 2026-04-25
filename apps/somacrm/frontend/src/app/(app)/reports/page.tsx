@@ -142,7 +142,7 @@ export default function ReportsPage() {
             <div>
               {leadConv.data.map((row) => {
                 const colorMap: Record<string, string> = {
-                  new: "#3B82F6",
+                  new: "var(--grey-700)",
                   contacted: "#F59E0B",
                   qualified: "#10B981",
                   unqualified: "#EF4444",
@@ -178,7 +178,7 @@ export default function ReportsPage() {
                 const colorMap: Record<string, string> = {
                   task: "#6366F1",
                   call: "#10B981",
-                  email: "#3B82F6",
+                  email: "var(--grey-700)",
                   meeting: "#F59E0B",
                   note: "#94A3B8",
                 };

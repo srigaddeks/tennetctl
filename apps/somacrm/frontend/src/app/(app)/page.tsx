@@ -12,7 +12,8 @@ type ActivitiesState =
   | { status: "ok"; items: Activity[] }
   | { status: "error"; message: string };
 
-const STAT_COLORS = ["#1D4ED8", "#059669", "#D97706", "#7C3AED"];
+// Greyscale-only — single charcoal stroke matches the website brand.
+const STAT_COLOR = "var(--grey-900)";
 
 const MODULES = [
   { href: "/contacts", title: "Contacts", description: "People you do business with" },
@@ -68,10 +69,10 @@ export default function DashboardPage() {
   }, []);
 
   const stats = [
-    { label: "Total Contacts", value: contactCount, color: STAT_COLORS[0] },
-    { label: "Total Deals", value: dealCount, color: STAT_COLORS[1] },
-    { label: "Open Leads", value: openLeadCount, color: STAT_COLORS[2] },
-    { label: "Pipeline Value", value: pipelineValue !== null ? `$${pipelineValue.toLocaleString()}` : null, color: STAT_COLORS[3] },
+    { label: "Total Contacts", value: contactCount, color: STAT_COLOR },
+    { label: "Total Deals", value: dealCount, color: STAT_COLOR },
+    { label: "Open Leads", value: openLeadCount, color: STAT_COLOR },
+    { label: "Pipeline Value", value: pipelineValue !== null ? `₹${pipelineValue.toLocaleString("en-IN")}` : null, color: STAT_COLOR },
   ];
 
   return (

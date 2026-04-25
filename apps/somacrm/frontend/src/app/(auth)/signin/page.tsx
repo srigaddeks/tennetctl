@@ -49,7 +49,7 @@ export default function SignInPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 48 }}>
             <div style={{
               width: 32, height: 32,
-              background: "#1D4ED8",
+              background: "var(--grey-900)",
               borderRadius: 6,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
@@ -77,7 +77,7 @@ export default function SignInPage() {
               { icon: "⬡", label: "Activity tracking and reporting" },
             ].map(({ icon, label }) => (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ color: "#1D4ED8", fontSize: 16 }}>{icon}</span>
+                <span style={{ color: "var(--grey-900)", fontSize: 16 }}>{icon}</span>
                 <span style={{ fontSize: 13, color: "#CBD5E1" }}>{label}</span>
               </div>
             ))}

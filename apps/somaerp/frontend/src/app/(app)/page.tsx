@@ -32,7 +32,8 @@ const MODULES: Module[] = [
   { href: "/reports", title: "Reports", description: "KPI snapshot, yield/COGS trends, alerts" },
 ];
 
-const STAT_COLORS = ["#1D4ED8", "#059669", "#D97706", "#7C3AED"];
+// Greyscale-only — top borders use a single charcoal stroke, no decorative colour.
+const STAT_COLOR = "var(--grey-900)";
 
 export default function DashboardPage() {
   const [health, setHealth] = useState<HealthState>({ status: "loading" });
@@ -71,10 +72,10 @@ export default function DashboardPage() {
   }, []);
 
   const stats = [
-    { label: "Locations", value: locationCount, color: STAT_COLORS[0] },
-    { label: "Products", value: productCount, color: STAT_COLORS[1] },
-    { label: "Raw Materials", value: rawMatCount, color: STAT_COLORS[2] },
-    { label: "Customers", value: customerCount, color: STAT_COLORS[3] },
+    { label: "Locations", value: locationCount, color: STAT_COLOR },
+    { label: "Products", value: productCount, color: STAT_COLOR },
+    { label: "Raw Materials", value: rawMatCount, color: STAT_COLOR },
+    { label: "Customers", value: customerCount, color: STAT_COLOR },
   ];
 
   return (

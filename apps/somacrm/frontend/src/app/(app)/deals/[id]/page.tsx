@@ -25,12 +25,12 @@ type State<T> =
   | { status: "error"; message: string };
 
 const ACTIVITY_TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string }> = {
-  whatsapp: { icon: "💬", color: "#16A34A", bg: "#F0FDF4" },
-  call:     { icon: "📞", color: "#2563EB", bg: "#EFF6FF" },
-  email:    { icon: "✉",  color: "#7C3AED", bg: "#F5F3FF" },
-  meeting:  { icon: "📅", color: "#D97706", bg: "#FFFBEB" },
+  whatsapp: { icon: "💬", color: "var(--grey-900)", bg: "var(--grey-100)" },
+  call:     { icon: "📞", color: "var(--grey-900)", bg: "#EFF6FF" },
+  email:    { icon: "✉",  color: "var(--grey-900)", bg: "var(--grey-100)" },
+  meeting:  { icon: "📅", color: "var(--grey-700)", bg: "var(--grey-100)" },
   task:     { icon: "✓",  color: "#6B7280", bg: "#F9FAFB" },
-  note:     { icon: "📝", color: "#B45309", bg: "#FFFBEB" },
+  note:     { icon: "📝", color: "var(--grey-700)", bg: "var(--grey-100)" },
 };
 
 function activityConfig(type: string) {
@@ -180,7 +180,7 @@ export default function DealDetailPage() {
   const isClosedOut = d.status === "won" || d.status === "lost";
 
   const statusColors: Record<string, { bg: string; color: string }> = {
-    open: { bg: "#EFF6FF", color: "#2563EB" },
+    open: { bg: "#EFF6FF", color: "var(--grey-900)" },
     won:  { bg: "#ECFDF5", color: "#059669" },
     lost: { bg: "#FEF2F2", color: "#DC2626" },
   };
@@ -311,7 +311,7 @@ export default function DealDetailPage() {
 
           {showActivityForm && (
             <form onSubmit={handleAddActivity} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid #2563EB" }}>
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid var(--grey-900)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: "var(--text-primary)" }}>Log Activity</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                 <div className="erp-form-group">
@@ -395,7 +395,7 @@ export default function DealDetailPage() {
                             <span style={{
                               fontSize: 10, fontWeight: 600, borderRadius: 4, padding: "1px 6px",
                               background: act.status === "pending" ? "#FEF9C3" : "#EFF6FF",
-                              color: act.status === "pending" ? "#B45309" : "#2563EB",
+                              color: act.status === "pending" ? "var(--grey-700)" : "var(--grey-900)",
                               textTransform: "uppercase",
                             }}>{act.status}</span>
                           )}
@@ -437,7 +437,7 @@ export default function DealDetailPage() {
 
           {showNoteForm && (
             <form onSubmit={handleAddNote} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "#FFFBEB", borderColor: "#FDE68A", borderLeft: "3px solid #D97706" }}>
+              style={{ backgroundColor: "var(--grey-100)", borderColor: "#FDE68A", borderLeft: "3px solid var(--grey-700)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: "var(--text-primary)" }}>Add Note</div>
               <textarea className="erp-textarea" required style={{ minHeight: 80 }}
                 placeholder="Write a note about this deal…"
@@ -465,15 +465,15 @@ export default function DealDetailPage() {
                 .map((note) => (
                   <div key={note.id} className="rounded border p-4 mb-3"
                     style={{
-                      backgroundColor: note.is_pinned ? "#FFFBEB" : "var(--bg-card)",
+                      backgroundColor: note.is_pinned ? "var(--grey-100)" : "var(--bg-card)",
                       borderColor: note.is_pinned ? "#FDE68A" : "var(--border)",
-                      borderLeft: "3px solid #D97706",
+                      borderLeft: "3px solid var(--grey-700)",
                     }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>Note</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--grey-700)" }}>Note</span>
                         {note.is_pinned && (
-                          <span style={{ fontSize: 10, background: "#FEF3C7", color: "#B45309", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>
+                          <span style={{ fontSize: 10, background: "#FEF3C7", color: "var(--grey-700)", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>
                         )}
                       </div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

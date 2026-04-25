@@ -26,13 +26,13 @@ type State<T> =
 
 // ── Activity type config ────────────────────────────────────────────────────
 const TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string }> = {
-  whatsapp: { icon: "💬", color: "#16A34A", bg: "#F0FDF4" },
-  call:     { icon: "📞", color: "#2563EB", bg: "#EFF6FF" },
-  email:    { icon: "✉",  color: "#7C3AED", bg: "#F5F3FF" },
-  meeting:  { icon: "📅", color: "#D97706", bg: "#FFFBEB" },
+  whatsapp: { icon: "💬", color: "var(--grey-900)", bg: "var(--grey-100)" },
+  call:     { icon: "📞", color: "var(--grey-900)", bg: "#EFF6FF" },
+  email:    { icon: "✉",  color: "var(--grey-900)", bg: "var(--grey-100)" },
+  meeting:  { icon: "📅", color: "var(--grey-700)", bg: "var(--grey-100)" },
   task:     { icon: "✓",  color: "#6B7280", bg: "#F9FAFB" },
-  note:     { icon: "📝", color: "#B45309", bg: "#FFFBEB" },
-  sample:   { icon: "🎁", color: "#0891B2", bg: "#ECFEFF" },
+  note:     { icon: "📝", color: "var(--grey-700)", bg: "var(--grey-100)" },
+  sample:   { icon: "🎁", color: "var(--grey-900)", bg: "var(--grey-100)" },
 };
 
 function typeConfig(item: TimelineItem) {
@@ -201,8 +201,8 @@ export default function ContactDetailPage() {
           </p>
           {/* Quick contact info pills */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-            {c.phone && <a href={`tel:${c.phone}`} style={{ fontSize: 12, color: "#2563EB", textDecoration: "none", background: "#EFF6FF", borderRadius: 20, padding: "2px 10px" }}>📞 {c.phone}</a>}
-            {c.email && <a href={`mailto:${c.email}`} style={{ fontSize: 12, color: "#7C3AED", textDecoration: "none", background: "#F5F3FF", borderRadius: 20, padding: "2px 10px" }}>✉ {c.email}</a>}
+            {c.phone && <a href={`tel:${c.phone}`} style={{ fontSize: 12, color: "var(--grey-900)", textDecoration: "none", background: "#EFF6FF", borderRadius: 20, padding: "2px 10px" }}>📞 {c.phone}</a>}
+            {c.email && <a href={`mailto:${c.email}`} style={{ fontSize: 12, color: "var(--grey-900)", textDecoration: "none", background: "var(--grey-100)", borderRadius: 20, padding: "2px 10px" }}>✉ {c.email}</a>}
             <span style={{ fontSize: 12, background: c.status === "active" ? "#ECFDF5" : "#F9FAFB", color: c.status === "active" ? "#059669" : "#6B7280", borderRadius: 20, padding: "2px 10px", fontWeight: 600 }}>{c.status}</span>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function ContactDetailPage() {
           ) : (
             <button
               className="btn-secondary"
-              style={{ fontSize: 12, padding: "6px 12px", borderColor: "#D97706", color: "#D97706" }}
+              style={{ fontSize: 12, padding: "6px 12px", borderColor: "var(--grey-700)", color: "var(--grey-700)" }}
               onClick={() => {
                 setErpForm({ acquisition_source: c.lead_source ?? undefined });
                 setErpMode(true);
@@ -236,7 +236,7 @@ export default function ContactDetailPage() {
       {/* ERP cross-create form */}
       {erpMode && (
         <form onSubmit={handleCreateErpCustomer} className="rounded border p-4 mb-4"
-          style={{ backgroundColor: "#FFFBEB", borderColor: "#FDE68A", borderLeft: "3px solid #D97706" }}>
+          style={{ backgroundColor: "var(--grey-100)", borderColor: "#FDE68A", borderLeft: "3px solid var(--grey-700)" }}>
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: "var(--text-primary)" }}>
             Create somaerp customer for {c.full_name}?
           </div>
@@ -300,7 +300,7 @@ export default function ContactDetailPage() {
           {/* Quick-add form inline at top */}
           {addMode === "activity" && (
             <form onSubmit={handleAddActivity} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid #2563EB" }}>
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid var(--grey-900)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: "var(--text-primary)" }}>Log Interaction</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                 <div className="erp-form-group">
@@ -347,7 +347,7 @@ export default function ContactDetailPage() {
 
           {addMode === "note" && (
             <form onSubmit={handleAddNote} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "#FFFBEB", borderColor: "#FDE68A", borderLeft: "3px solid #D97706" }}>
+              style={{ backgroundColor: "var(--grey-100)", borderColor: "#FDE68A", borderLeft: "3px solid var(--grey-700)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: "var(--text-primary)" }}>Add Note</div>
               <textarea className="erp-textarea" required style={{ minHeight: 80 }}
                 placeholder="Write a note about this customer…"
@@ -396,7 +396,7 @@ export default function ContactDetailPage() {
                           {deal.value !== null ? `${deal.currency} ${deal.value.toLocaleString()}` : "—"}
                         </td>
                         <td style={{ padding: "8px 12px" }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: "2px 8px", background: deal.status === "won" ? "#ECFDF5" : deal.status === "lost" ? "#FEF2F2" : "#EFF6FF", color: deal.status === "won" ? "#059669" : deal.status === "lost" ? "#DC2626" : "#2563EB" }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: "2px 8px", background: deal.status === "won" ? "#ECFDF5" : deal.status === "lost" ? "#FEF2F2" : "#EFF6FF", color: deal.status === "won" ? "#059669" : deal.status === "lost" ? "#DC2626" : "var(--grey-900)" }}>
                             {deal.status}
                           </span>
                         </td>
@@ -441,7 +441,7 @@ export default function ContactDetailPage() {
                     {/* Card */}
                     <div style={{
                       flex: 1,
-                      backgroundColor: isPinned ? "#FFFBEB" : "var(--bg-card)",
+                      backgroundColor: isPinned ? "var(--grey-100)" : "var(--bg-card)",
                       border: `1px solid ${isPinned ? "#FDE68A" : "var(--border)"}`,
                       borderLeft: `3px solid ${cfg.color}`,
                       borderRadius: 8,
@@ -456,12 +456,12 @@ export default function ContactDetailPage() {
                             </span>
                           )}
                           {isNote && <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color }}>Note</span>}
-                          {isPinned && <span style={{ fontSize: 10, background: "#FEF3C7", color: "#B45309", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>}
+                          {isPinned && <span style={{ fontSize: 10, background: "#FEF3C7", color: "var(--grey-700)", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>}
                           {item.status && item.status !== "done" && (
                             <span style={{
                               fontSize: 10, fontWeight: 600, borderRadius: 4, padding: "1px 6px",
                               background: item.status === "pending" ? "#FEF9C3" : "#EFF6FF",
-                              color: item.status === "pending" ? "#B45309" : "#2563EB",
+                              color: item.status === "pending" ? "var(--grey-700)" : "var(--grey-900)",
                               textTransform: "uppercase",
                             }}>{item.status}</span>
                           )}

@@ -24,12 +24,12 @@ type State<T> =
   | { status: "error"; message: string };
 
 const ACTIVITY_TYPE_CONFIG: Record<string, { icon: string; color: string; bg: string }> = {
-  whatsapp: { icon: "💬", color: "#16A34A", bg: "#F0FDF4" },
-  call:     { icon: "📞", color: "#2563EB", bg: "#EFF6FF" },
-  email:    { icon: "✉",  color: "#7C3AED", bg: "#F5F3FF" },
-  meeting:  { icon: "📅", color: "#D97706", bg: "#FFFBEB" },
+  whatsapp: { icon: "💬", color: "var(--grey-900)", bg: "var(--grey-100)" },
+  call:     { icon: "📞", color: "var(--grey-900)", bg: "#EFF6FF" },
+  email:    { icon: "✉",  color: "var(--grey-900)", bg: "var(--grey-100)" },
+  meeting:  { icon: "📅", color: "var(--grey-700)", bg: "var(--grey-100)" },
   task:     { icon: "✓",  color: "#6B7280", bg: "#F9FAFB" },
-  note:     { icon: "📝", color: "#B45309", bg: "#FFFBEB" },
+  note:     { icon: "📝", color: "var(--grey-700)", bg: "var(--grey-100)" },
 };
 
 function activityConfig(type: string) {
@@ -46,14 +46,14 @@ const LEAD_STATUS_LABELS: Record<string, string> = {
 
 const LEAD_STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   new:         { bg: "#F9FAFB", color: "#6B7280" },
-  contacted:   { bg: "#EFF6FF", color: "#2563EB" },
+  contacted:   { bg: "#EFF6FF", color: "var(--grey-900)" },
   qualified:   { bg: "#ECFDF5", color: "#059669" },
   unqualified: { bg: "#FEF2F2", color: "#DC2626" },
-  converted:   { bg: "#F5F3FF", color: "#7C3AED" },
+  converted:   { bg: "var(--grey-100)", color: "var(--grey-900)" },
 };
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 70 ? "#059669" : score >= 40 ? "#D97706" : "#DC2626";
+  const color = score >= 70 ? "#059669" : score >= 40 ? "var(--grey-700)" : "#DC2626";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
       <div style={{ width: 120, height: 8, backgroundColor: "#E2E8F0", borderRadius: 4, overflow: "hidden" }}>
@@ -281,7 +281,7 @@ export default function LeadDetailPage() {
       {/* Convert to Contact panel */}
       {showConvertPanel && !isConverted && (
         <div className="rounded border p-5 mb-6"
-          style={{ backgroundColor: "#F0FDF4", borderColor: "#86EFAC", borderLeft: "3px solid #059669" }}>
+          style={{ backgroundColor: "var(--grey-100)", borderColor: "#86EFAC", borderLeft: "3px solid #059669" }}>
           <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "#065F46" }}>Create a contact from this lead?</div>
           <form onSubmit={handleConvert}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
@@ -379,7 +379,7 @@ export default function LeadDetailPage() {
 
           {showActivityForm && (
             <form onSubmit={handleAddActivity} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid #2563EB" }}>
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", borderLeft: "3px solid var(--grey-900)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: "var(--text-primary)" }}>Log Activity</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                 <div className="erp-form-group">
@@ -463,7 +463,7 @@ export default function LeadDetailPage() {
                             <span style={{
                               fontSize: 10, fontWeight: 600, borderRadius: 4, padding: "1px 6px",
                               background: act.status === "pending" ? "#FEF9C3" : "#EFF6FF",
-                              color: act.status === "pending" ? "#B45309" : "#2563EB",
+                              color: act.status === "pending" ? "var(--grey-700)" : "var(--grey-900)",
                               textTransform: "uppercase",
                             }}>{act.status}</span>
                           )}
@@ -505,7 +505,7 @@ export default function LeadDetailPage() {
 
           {showNoteForm && (
             <form onSubmit={handleAddNote} className="rounded border p-4 mb-6"
-              style={{ backgroundColor: "#FFFBEB", borderColor: "#FDE68A", borderLeft: "3px solid #D97706" }}>
+              style={{ backgroundColor: "var(--grey-100)", borderColor: "#FDE68A", borderLeft: "3px solid var(--grey-700)" }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: "var(--text-primary)" }}>Add Note</div>
               <textarea className="erp-textarea" required style={{ minHeight: 80 }}
                 placeholder="Write a note about this lead…"
@@ -533,15 +533,15 @@ export default function LeadDetailPage() {
                 .map((note) => (
                   <div key={note.id} className="rounded border p-4 mb-3"
                     style={{
-                      backgroundColor: note.is_pinned ? "#FFFBEB" : "var(--bg-card)",
+                      backgroundColor: note.is_pinned ? "var(--grey-100)" : "var(--bg-card)",
                       borderColor: note.is_pinned ? "#FDE68A" : "var(--border)",
-                      borderLeft: "3px solid #D97706",
+                      borderLeft: "3px solid var(--grey-700)",
                     }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>Note</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--grey-700)" }}>Note</span>
                         {note.is_pinned && (
-                          <span style={{ fontSize: 10, background: "#FEF3C7", color: "#B45309", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>
+                          <span style={{ fontSize: 10, background: "#FEF3C7", color: "var(--grey-700)", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>📌 PINNED</span>
                         )}
                       </div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

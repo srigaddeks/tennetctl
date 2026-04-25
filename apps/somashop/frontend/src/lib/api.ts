@@ -55,6 +55,11 @@ export type Product = {
   slug: string;
   status: string;
   description?: string | null;
+  target_benefit?: string | null;
+  default_serving_size_ml?: number | null;
+  default_selling_price?: number | string | null;
+  currency_code?: string | null;
+  product_line_name?: string | null;
 };
 
 export async function listProducts(): Promise<Product[]> {
@@ -64,13 +69,20 @@ export async function listProducts(): Promise<Product[]> {
   return unwrap<Product[]>(r);
 }
 
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const all = await listProducts();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
 export type SubscriptionPlan = {
   id: string;
   name: string;
   slug: string;
-  price_amount?: number;
-  price_currency?: string;
-  cadence?: string;
+  description?: string | null;
+  price_per_delivery?: number | string | null;
+  currency_code?: string | null;
+  frequency_code?: string | null;
+  frequency_name?: string | null;
 };
 
 export async function listPlans(): Promise<SubscriptionPlan[]> {
@@ -80,9 +92,21 @@ export async function listPlans(): Promise<SubscriptionPlan[]> {
   return unwrap<SubscriptionPlan[]>(r);
 }
 
+export async function getPlanBySlug(slug: string): Promise<SubscriptionPlan | null> {
+  const all = await listPlans();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
 export type Order = {
   id: string;
   status: string;
+  plan_name?: string | null;
+  plan_slug?: string | null;
+  customer_name?: string | null;
+  start_date?: string | null;
+  price_per_delivery?: number | string | null;
+  currency_code?: string | null;
+  frequency_name?: string | null;
   created_at: string;
 };
 
@@ -91,6 +115,25 @@ export async function listMyOrders(): Promise<Order[]> {
     headers: { ...authHeaders() },
   });
   return unwrap<Order[]>(r);
+}
+
+export type PlaceOrderBody = {
+  subscription_plan_id: string;
+  name: string;
+  phone: string;
+  address_line1: string;
+  address_pincode: string;
+  city: string;
+  notes?: string | null;
+};
+
+export async function placeOrder(body: PlaceOrderBody): Promise<Order> {
+  const r = await fetch(`${SHOP_BASE}/v1/my-orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(body),
+  });
+  return unwrap<Order>(r);
 }
 
 /* ── Auth (tennetctl mobile OTP) ──────────────────────────────────── */
