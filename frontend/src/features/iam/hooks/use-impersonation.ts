@@ -1,30 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { apiFetch } from "@/lib/api";
 import type { ImpersonationStatus, StartImpersonationRequest } from "@/types/api";
 
 const BASE = "/v1/iam/impersonation";
 
 async function fetchStatus(): Promise<ImpersonationStatus> {
-  const res = await fetch(BASE, { credentials: "include" });
-  const data = await res.json();
-  if (!data.ok) return { active: false };
-  return data.data;
+  try {
+    return await apiFetch<ImpersonationStatus>(BASE);
+  } catch {
+    return { active: false };
+  }
 }
 
-async function startImpersonation(body: StartImpersonationRequest): Promise<{ session_token: string; impersonated_user_id: string; expires_at: string }> {
-  const res = await fetch(BASE, {
+async function startImpersonation(
+  body: StartImpersonationRequest,
+): Promise<{ session_token: string; impersonated_user_id: string; expires_at: string }> {
+  return apiFetch(BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(body),
   });
-  const data = await res.json();
-  if (!data.ok) throw new Error(data.error?.message ?? "Failed to start impersonation");
-  return data.data;
 }
 
 async function endImpersonation(): Promise<void> {
-  const res = await fetch(BASE, { method: "DELETE", credentials: "include" });
-  if (!res.ok && res.status !== 204) throw new Error("Failed to end impersonation");
+  return apiFetch<void>(BASE, { method: "DELETE" });
 }
 
 export function useImpersonationStatus() {
