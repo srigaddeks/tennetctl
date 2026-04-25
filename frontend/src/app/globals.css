@@ -3,43 +3,50 @@
 /* ─── Design Tokens ─────────────────────────────────────────────────────── */
 
 :root {
-  /* Backgrounds */
-  --bg-base:     #060b17;
-  --bg-surface:  #0b1523;
-  --bg-elevated: #101d30;
-  --bg-overlay:  #152038;
-  --bg-muted:    #0e1928;
+  /* Brand cohesion — tennetctl is the *dark* operator counterpart of the
+     customer brand. Same Outfit/Inter typography family, charcoal/zinc
+     greyscale instead of light stone. Color reserved for status. */
+
+  /* Backgrounds (zinc/charcoal scale) */
+  --bg-base:     #0a0a09;   /* near-black charcoal */
+  --bg-surface:  #14140f;   /* warm-charcoal panels */
+  --bg-elevated: #1c1c17;   /* card backgrounds */
+  --bg-overlay:  #232320;   /* modals, dropdowns */
+  --bg-muted:    #11110d;   /* subtle wells */
 
   /* Borders */
-  --border:        #1c2e45;
-  --border-bright: #253f5c;
-  --border-focus:  #2d7ef7;
+  --border:        #292825;
+  --border-bright: #38362f;
+  --border-focus:  #d6d3d1;  /* light grey keyline on focus */
 
-  /* Accent */
-  --accent:       #2d7ef7;
-  --accent-hover: #5596ff;
-  --accent-muted: #0d1f3c;
-  --accent-dim:   #1a3a72;
+  /* Accent — muted warm white. The operator UI is supposed to be quiet
+     and dense; the only "color" is the data on the page. */
+  --accent:       #f5f5f4;
+  --accent-hover: #ffffff;
+  --accent-muted: #1f1e1b;
+  --accent-dim:   #38362f;
 
   /* Text */
-  --text-primary:   #dde5f4;
-  --text-secondary: #7a92b8;
-  --text-muted:     #3a5075;
-  --text-inverse:   #060b17;
+  --text-primary:   #f5f5f4;
+  --text-secondary: #a8a29e;
+  --text-muted:     #57534e;
+  --text-inverse:   #0a0a09;
 
-  /* Status */
-  --success:       #00c47a;
-  --success-muted: #051a12;
+  /* Status (sanctioned semantic colors only) */
+  --success:       #4ade80;
+  --success-muted: #052a14;
   --warning:       #f5a623;
   --warning-muted: #1f1506;
-  --danger:        #ff3f55;
+  --danger:        #ef4444;
   --danger-muted:  #1f0508;
-  --info:          #00c8f0;
-  --info-muted:    #041520;
+  --info:          #60a5fa;
+  --info-muted:    #0c1a30;
 
-  /* Fonts */
-  --font-sans: var(--font-ibm-plex-sans), "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), "IBM Plex Mono", "Fira Code", monospace;
+  /* Fonts — same family as the customer brand. */
+  --font-sans:    var(--font-inter), "Inter", var(--font-ibm-plex-sans), "IBM Plex Sans", system-ui, sans-serif;
+  --font-heading: var(--font-outfit), "Outfit", "Inter", system-ui, sans-serif;
+  --font-quote:   var(--font-lora), "Lora", Georgia, serif;
+  --font-mono:    var(--font-ibm-plex-mono), "IBM Plex Mono", "Fira Code", monospace;
 }
 
 @theme inline {
@@ -58,6 +65,17 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
+}
+
+blockquote, .pull-quote {
+  font-family: var(--font-quote);
+  font-style: italic;
+  color: var(--text-secondary);
 }
 
 ::selection {
