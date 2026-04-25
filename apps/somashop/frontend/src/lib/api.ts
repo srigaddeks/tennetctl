@@ -117,6 +117,24 @@ export async function listMyOrders(): Promise<Order[]> {
   return unwrap<Order[]>(r);
 }
 
+export type OrderDetail = Order & {
+  customer_name?: string | null;
+  customer_slug?: string | null;
+  service_zone_name?: string | null;
+  end_date?: string | null;
+  paused_from?: string | null;
+  paused_to?: string | null;
+  billing_cycle?: string | null;
+  properties?: Record<string, unknown>;
+};
+
+export async function getMyOrder(id: string): Promise<OrderDetail> {
+  const r = await fetch(`${SHOP_BASE}/v1/my-orders/${id}`, {
+    headers: { ...authHeaders() },
+  });
+  return unwrap<OrderDetail>(r);
+}
+
 export type PlaceOrderBody = {
   subscription_plan_id: string;
   name: string;

@@ -11,6 +11,7 @@ _service = import_module("apps.somacrm.backend.02_features.10_contacts.service")
 _schemas = import_module("apps.somacrm.backend.02_features.10_contacts.schemas")
 _response = import_module("apps.somacrm.backend.01_core.response")
 _errors = import_module("apps.somacrm.backend.01_core.errors")
+_authz = import_module("apps.somacrm.backend.01_core.authz")
 
 router = APIRouter(prefix="/v1/somacrm/contacts", tags=["contacts"])
 
@@ -51,6 +52,12 @@ async def create_contact(
     payload: _schemas.ContactCreate,
 ) -> dict:
     workspace_id = _require_workspace(request)
+    user_id = getattr(request.state, "user_id", None)
+    await _authz.require_permission(
+        request.app.state.pool,
+        user_id=user_id,
+        perm_code="somacrm_contacts.create",
+    )
     async with request.app.state.pool.acquire() as conn:
         row = await _service.create_contact(
             conn,

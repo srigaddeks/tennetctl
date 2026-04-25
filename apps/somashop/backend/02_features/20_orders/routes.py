@@ -59,6 +59,39 @@ class CreateOrderRequest(BaseModel):
     notes: str | None = None
 
 
+@router.get("/v1/my-orders/{subscription_id}")
+async def get_my_order(request: Request, subscription_id: str) -> dict:
+    """Single-subscription detail. Verifies the subscription belongs to the
+    caller before returning."""
+    bearer = _bearer(request)
+    if not bearer:
+        raise HTTPException(
+            status_code=401,
+            detail={"ok": False, "error": {"code": "UNAUTHORIZED", "message": "sign in required"}},
+        )
+    tnc: Any = request.app.state.tennetctl
+    erp: Any = request.app.state.somaerp
+    try:
+        me = await tnc.request("GET", "/v1/auth/me", bearer=bearer)
+        user_id = me["data"]["user"]["id"]
+        customer_id = await _customer_id_for_user(request, erp, user_id)
+        if customer_id is None:
+            raise HTTPException(status_code=404, detail={"ok": False, "error": {"code": "NOT_FOUND", "message": "no order"}})
+
+        result = await erp.request(
+            "GET", f"/v1/somaerp/subscriptions/{subscription_id}",
+            use_service_session=True,
+            extra_headers=_service_workspace_headers(request),
+        )
+        sub = result.get("data") or {}
+        if sub.get("customer_id") != customer_id:
+            # Don't reveal cross-tenant sub identifiers — pretend it's missing.
+            raise HTTPException(status_code=404, detail={"ok": False, "error": {"code": "NOT_FOUND", "message": "no order"}})
+        return result
+    except _proxy.ProxyError as e:
+        raise HTTPException(status_code=e.status, detail=e.body) from e
+
+
 async def _customer_id_for_user(request: Request, erp: Any, user_id: str) -> str | None:
     slug = _slug_from_user_id(user_id)
     headers = _service_workspace_headers(request)

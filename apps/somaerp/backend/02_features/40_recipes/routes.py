@@ -14,6 +14,7 @@ _schemas = import_module(
 )
 _response = import_module("apps.somaerp.backend.01_core.response")
 _errors = import_module("apps.somaerp.backend.01_core.errors")
+_authz = import_module("apps.somaerp.backend.01_core.authz")
 
 router = APIRouter(
     prefix="/v1/somaerp",
@@ -69,6 +70,9 @@ async def create_recipe(
     session_id = getattr(request.state, "session_id", None)
 
     pool = request.app.state.pool
+    await _authz.require_permission(
+        pool, user_id=user_id, perm_code="somaerp_recipes.create",
+    )
     tennetctl = request.app.state.tennetctl
     async with pool.acquire() as conn:
         row = await _service.create_recipe(

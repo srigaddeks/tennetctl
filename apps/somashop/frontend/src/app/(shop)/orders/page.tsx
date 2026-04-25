@@ -102,7 +102,12 @@ export default function OrdersPage() {
           {state.data.map((o) => {
             const tone = statusTone(o.status);
             return (
-              <article key={o.id} className="card p-6">
+              <Link
+                key={o.id}
+                href={`/orders/${o.id}`}
+                className="card p-6 block hover:opacity-80 transition-opacity"
+                style={{ textDecoration: "none" }}
+              >
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-heading text-xl font-semibold mb-1">
@@ -139,7 +144,7 @@ export default function OrdersPage() {
                     </span>
                   </span>
                 </div>
-              </article>
+              </Link>
             );
           })}
         </div>
