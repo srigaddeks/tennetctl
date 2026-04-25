@@ -131,7 +131,7 @@ function OverviewTab({
         </Badge>
         {!role.org_id && <Badge tone="amber">platform</Badge>}
         {orgLabel && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300">
+          <span className="inline-flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800/40 px-2 py-0.5 text-[11px] font-medium text-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-300">
             <Building2 className="h-2.5 w-2.5" />
             {orgLabel}
           </span>
@@ -338,7 +338,7 @@ export function RoleRow({
           )}
           <Badge tone={typeMeta.tone}>{typeMeta.label}</Badge>
           {orgLabel && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300">
+            <span className="inline-flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800/40 px-1.5 py-0.5 text-[10px] font-medium text-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-300">
               <Building2 className="h-2.5 w-2.5" />
               {orgLabel}
             </span>

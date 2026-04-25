@@ -22,8 +22,8 @@ export function ConfirmDialog({
     info: {
       icon: Info,
       iconColor: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-950/40",
-      border: "border-blue-200 dark:border-blue-900/50",
+      bg: "bg-zinc-800/40 dark:bg-blue-950/40",
+      border: "border-zinc-700 dark:border-zinc-700",
     },
     warning: {
       icon: AlertTriangle,
