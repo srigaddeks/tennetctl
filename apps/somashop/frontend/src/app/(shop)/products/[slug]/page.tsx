@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { getProductBySlug, type Product } from "@/lib/api";
+import { trackWithIdentity } from "@/lib/track";
 
 type State =
   | { status: "loading" }
@@ -28,8 +29,18 @@ export default function ProductDetailPage() {
     if (!slug) return;
     getProductBySlug(slug)
       .then((p) => {
-        if (!p) setState({ status: "missing" });
-        else setState({ status: "ok", data: p });
+        if (!p) {
+          setState({ status: "missing" });
+          return;
+        }
+        setState({ status: "ok", data: p });
+        trackWithIdentity("product.viewed", {
+          product_id: p.id,
+          product_slug: p.slug,
+          product_name: p.name,
+          product_line: p.product_line_name,
+          price: p.default_selling_price,
+        });
       })
       .catch((e: unknown) =>
         setState({

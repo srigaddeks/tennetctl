@@ -11,6 +11,7 @@ import {
   placeOrder,
   type SubscriptionPlan,
 } from "@/lib/api";
+import { trackWithIdentity } from "@/lib/track";
 
 type State =
   | { status: "loading" }
@@ -76,7 +77,7 @@ export default function CheckoutPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await placeOrder({
+      const order = await placeOrder({
         subscription_plan_id: state.plan.id,
         name: name.trim(),
         phone: phone.trim(),
@@ -84,6 +85,16 @@ export default function CheckoutPage() {
         address_pincode: pincode.trim(),
         city: city.trim(),
         notes: notes.trim() || null,
+      });
+      trackWithIdentity("order.placed", {
+        plan_slug: state.plan.slug,
+        plan_name: state.plan.name,
+        plan_id: state.plan.id,
+        order_id: order.id,
+        price_per_delivery: state.plan.price_per_delivery,
+        currency: state.plan.currency_code,
+        city: city.trim(),
+        pincode: pincode.trim(),
       });
       clearCart();
       router.push("/orders?placed=1");

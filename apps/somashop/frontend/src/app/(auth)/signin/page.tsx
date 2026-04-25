@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { requestMobileOtp, setToken, verifyMobileOtp } from "@/lib/api";
+import { identify, track } from "@/lib/track";
 
 type Step = "phone" | "code";
 
@@ -25,6 +26,7 @@ export default function SignInPage() {
       const r = await requestMobileOtp(phone.trim());
       setDebugCode(r.debug_code ?? null);
       setStep("code");
+      track("auth.otp_requested", { phone_suffix: phone.slice(-4) });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send code");
     } finally {
@@ -43,6 +45,8 @@ export default function SignInPage() {
         display_name: name.trim() || undefined,
       });
       setToken(r.token);
+      identify(r.user_id);
+      track("auth.signed_in", { method: "mobile_otp" }, { actor_user_id: r.user_id });
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed");

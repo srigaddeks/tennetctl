@@ -6,23 +6,30 @@ import { useEffect, useState } from "react";
 
 import { getMe, setToken } from "@/lib/api";
 import { readCart } from "@/lib/cart";
+import { PageViewTracker } from "@/lib/track-router";
+import { identify, track } from "@/lib/track";
 
 export function Topbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [name, setName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [cartPlan, setCartPlanState] = useState<string | null>(null);
 
   useEffect(() => {
     void getMe().then((me) => {
       setName(me?.user.display_name ?? null);
+      setUserId(me?.user.id ?? null);
     });
     setCartPlanState(readCart().plan_slug);
   }, [pathname]);
 
   function signOut() {
+    track("auth.signed_out", {}, { actor_user_id: userId });
+    identify(null);
     setToken(null);
     setName(null);
+    setUserId(null);
     router.push("/signin");
   }
 
@@ -38,6 +45,7 @@ export function Topbar() {
         height: "var(--topbar-height)",
       }}
     >
+      <PageViewTracker actorUserId={userId} />
       <div
         className="mx-auto h-full flex items-center justify-between px-6"
         style={{ maxWidth: "var(--content-max)" }}

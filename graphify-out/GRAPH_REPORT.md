@@ -1,12 +1,12 @@
 # Graph Report - /Users/sri/Documents/tennetctl  (2026-04-25)
 
 ## Corpus Check
-- 1036 files · ~1,041,810 words
+- 1036 files · ~1,041,962 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7107 nodes · 15617 edges · 690 communities detected
-- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 5712 edges (avg confidence: 0.79)
+- 7110 nodes · 15619 edges · 690 communities detected
+- Extraction: 63% EXTRACTED · 37% INFERRED · 0% AMBIGUOUS · INFERRED: 5713 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -702,7 +702,7 @@
 - [[_COMMUNITY_Community 689|Community 689]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `get()` - 523 edges
+1. `get()` - 524 edges
 2. `get()` - 264 edges
 3. `NotFoundError` - 263 edges
 4. `_require_workspace()` - 237 edges
@@ -733,20 +733,20 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.01
-Nodes (681): Dispatch a single delivery with retry logic., dlq_replay(), DLQReplayRequest, Cross-cutting admin + health routes for monitoring.  - GET /health/monitoring —, Scope gate. The full scope system lands later; for now require the     ``monitor, Consume up to ``limit`` messages from the named DLQ and republish them     to th, _require_admin(), digest() (+673 more)
+Cohesion: 0.0
+Nodes (733): EmitAudit, _event_key_shape(), Input, Output, audit.emit — the canonical audit emitter.  Every effect node in the platform cal, BaseModel, EmitBurnAlert, Input (+725 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.0
-Nodes (576): EmitAudit, _event_key_shape(), Input, Output, audit.emit — the canonical audit emitter.  Every effect node in the platform cal, BaseModel, list_captures(), CaptureBatchIn (+568 more)
+Cohesion: 0.01
+Nodes (649): Dispatch a single delivery with retry logic., Scope gate. The full scope system lands later; for now require the     ``monitor, _require_admin(), digest(), ensure_policy_defaults(), Auth policy bootstrap — seeds 20 safe-default iam.policy.* entries in vault.conf, Seed default iam.policy.* rows into vault.configs at scope=global.     Returns c, invalidate_access_cache() (+641 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.01
-Nodes (414): _append_leaf(), _match_vars(), Translate our condition JSON tree into APISIX `vars` match syntax.      APISIX u, AuthError, code(), NotFoundError, Application error hierarchy.  All application errors extend AppError. Each subcl, tennetctl returned ok=false or non-2xx. Maps to 502 by default. (+406 more)
+Nodes (407): _append_leaf(), _match_vars(), Translate our condition JSON tree into APISIX `vars` match syntax.      APISIX u, AuthError, code(), NotFoundError, Application error hierarchy.  All application errors extend AppError. Each subcl, tennetctl returned ok=false or non-2xx. Maps to 502 by default. (+399 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.01
-Nodes (407): monitoring_health(), Return worker-pool + NATS + store snapshot., Raise ForbiddenError if user does not belong to the org., require_org_member_or_raise(), Require an authenticated user with a workspace.      Once tennetctl exposes per-, require_scope(), UnauthorizedError, NCP (Notification Control Plane) send stub — placeholder until NCP sprint. (+399 more)
+Nodes (370): Raise ForbiddenError if user does not belong to the org., require_org_member_or_raise(), UnauthorizedError, NCP (Notification Control Plane) send stub — placeholder until NCP sprint., Delegate to ``send_transactional``. Returns ``(delivery_id, was_new)``., send_transactional(), attach_view(), count_grants_per_view() (+362 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.01
@@ -754,23 +754,23 @@ Nodes (295): addEntityTag(), addProcurementLine(), addSubscriptionPlanItem(), Ap
 
 ### Community 5 - "Community 5"
 Cohesion: 0.02
-Nodes (336): Assert user holds permission_code, raise FORBIDDEN if not.      Args:         co, Raises AuthError if user lacks the permission.      Note: opens a fresh connecti, require_permission(), Assert the authenticated user holds scope_code.      Grabs pool from request.app, require_permission_from_request(), auth_rate_limit(), _Bucket, _client_ip() (+328 more)
+Nodes (305): Assert user holds permission_code, raise FORBIDDEN if not.      Args:         co, Raises AuthError if user lacks the permission.      Note: opens a fresh connecti, require_permission(), Assert the authenticated user holds scope_code.      Grabs pool from request.app, require_permission_from_request(), auth_rate_limit(), _Bucket, _client_ip() (+297 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.01
-Nodes (175): AlertEvaluatorWorker, _now(), Alert evaluator worker — periodic loop over active rules.  Runs every ``config.m, Fire a notify.send.transactional call. Returns True on success., Process one transition under its own transaction., 30s loop over active alert rules.      Self-metrics:       monitoring.alerts.eva, ApisixScraper, _prom_kind_to_id() (+167 more)
+Nodes (186): dlq_replay(), DLQReplayRequest, monitoring_health(), Cross-cutting admin + health routes for monitoring.  - GET /health/monitoring —, Return worker-pool + NATS + store snapshot., Consume up to ``limit`` messages from the named DLQ and republish them     to th, featureflags.apisix_routes — status + manual trigger endpoints for APISIX sync., Return the most recent PublishResult from the background worker.      Empty dict (+178 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.01
-Nodes (190): EmitBurnAlert, Input, Output, monitoring.slo.burn_alert — emit SLO burn rate alert node., Emit a synthetic alert event for SLO burn rate breach. Placeholder implementatio, AddIncidentComment, Input, Output (+182 more)
+Nodes (175): Input, ListDashboards, Output, monitoring.dashboards.list — list dashboards visible to the caller., assign_global_role(), attach_equipment_to_kitchen(), _bucket_date_expr(), count_active_subscriptions_for_customer() (+167 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.02
-Nodes (141): DagValidation, DagValidationError, Edge, NodeInstance, DAG validation for flow definitions.  Pure compute module: no database access. -, Node instance within a flow version., Compute topological order of nodes for canvas layout.      Used by Plan 43-01 fo, Edge connecting two node instances. (+133 more)
+Nodes (114): AlertEvaluatorWorker, _now(), Alert evaluator worker — periodic loop over active rules.  Runs every ``config.m, Fire a notify.send.transactional call. Returns True on success., Process one transition under its own transaction., 30s loop over active alert rules.      Self-metrics:       monitoring.alerts.eva, ApisixScraper, _prom_kind_to_id() (+106 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.02
-Nodes (123): featureflags.apisix_routes — status + manual trigger endpoints for APISIX sync., Return the most recent PublishResult from the background worker.      Empty dict, Force an immediate publish cycle. Returns the fresh PublishResult.      Useful f, sync_now_route(), sync_status_route(), compile_all_request_flags(), compile_flag(), flag_kind() (+115 more)
+Nodes (103): _bind(), _check_retention(), compile_filter(), compile_logs_query(), compile_metrics_query(), compile_trace_detail(), compile_traces_query(), _ctx_org() (+95 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.02
@@ -778,87 +778,87 @@ Nodes (59): authHeaders(), getMe(), getMyOrder(), getPlanBySlug(), getProductByS
 
 ### Community 11 - "Community 11"
 Cohesion: 0.03
-Nodes (76): ActionDispatchWorker, Action dispatch worker — LISTEN-based + periodic retry scanner., # TODO: resolve vault secret, Worker that:     1. Subscribes to Postgres LISTEN monitoring_action_dispatch, Start the action dispatch worker., Start the worker loop., Handle NOTIFY event from monitoring_action_dispatch., Periodically scan for pending deliveries to retry. (+68 more)
+Nodes (74): request(), AccessContext, _cache_get(), _cache_set(), has_permission(), authz — permission check primitive + AccessContext resolver (phase 23R).  Permis, Immutable bundle of resolved access state for a single request., Resolve a user's full access context for the given org.      Returns a frozen Ac (+66 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.03
-Nodes (52): request(), LogsStore, MetricsStore, Metrics store Protocol., Protocol, InstagramAdapter, LinkedInAdapter, ProviderAdapter (+44 more)
+Nodes (76): ActionDispatchWorker, Action dispatch worker — LISTEN-based + periodic retry scanner., # TODO: resolve vault secret, Worker that:     1. Subscribes to Postgres LISTEN monitoring_action_dispatch, Start the action dispatch worker., Start the worker loop., Handle NOTIFY event from monitoring_action_dispatch., Periodically scan for pending deliveries to retry. (+68 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.03
-Nodes (92): _ensure_application(), _ensure_flags(), _ensure_roles(), _find_application(), main(), _ok_envelope(), One-time bootstrap: register the `solsocial` SaaS application in tennetctl, then, run() (+84 more)
+Cohesion: 0.04
+Nodes (106): DagValidation, DagValidationError, Edge, NodeInstance, DAG validation for flow definitions.  Pure compute module: no database access. -, Node instance within a flow version., Compute topological order of nodes for canvas layout.      Used by Plan 43-01 fo, Edge connecting two node instances. (+98 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.04
-Nodes (97): can_view(), Access control for dashboard views.  Checks if a user can view a dashboard: 1. U, Check if user can view a dashboard.      Args:         conn: asyncpg connection, handler(), Node: monitoring.dashboard_share.grant_access  Effect node that grants dashboard, Grant access to a user.      Args:         inputs: dict with dashboard_id, org_i, attach_view(), count_grants_per_view() (+89 more)
+Nodes (86): _ensure_application(), _ensure_flags(), _ensure_roles(), _find_application(), main(), _ok_envelope(), One-time bootstrap: register the `solsocial` SaaS application in tennetctl, then, run() (+78 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.03
-Nodes (84): add_post_account_link(), count_posts(), create_post(), create_social_account(), delete_social_account(), _get_account_from_view(), get_accounts_for_post(), get_due_posts() (+76 more)
+Nodes (85): add_post_account_link(), count_posts(), create_post(), create_social_account(), delete_social_account(), _get_account_from_view(), get_accounts_for_post(), get_due_posts() (+77 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.03
 Nodes (82): Compat module: ``require_user`` / ``require_org`` helpers.  Plain functions that, require_org(), require_user(), BaseHTTPMiddleware, process_escalation_state(), Escalation worker — processes due escalation state rows and advances them., # TODO: expand group members, Single worker tick: load due escalation states and process concurrently. (+74 more)
 
 ### Community 17 - "Community 17"
+Cohesion: 0.05
+Nodes (85): can_view(), Access control for dashboard views.  Checks if a user can view a dashboard: 1. U, Check if user can view a dashboard.      Args:         conn: asyncpg connection, handler(), Node: monitoring.dashboard_share.grant_access  Effect node that grants dashboard, Grant access to a user.      Args:         inputs: dict with dashboard_id, org_i, count_recent_passphrase_failures(), create_internal_grant() (+77 more)
+
+### Community 18 - "Community 18"
 Cohesion: 0.03
 Nodes (88): Adding a Feature (redirect doc), ADR Index (001–026), ADR Process (issue → discussion → ADR → implementation), Backend API Standards (5-file module, response envelope, URL conventions, audit events), Bootstrap Migration (schema + shared dim/dtl tables), Building a Feature Guide, Building an Enhancement guide (9-step workflow, EAV patterns, PR template), Building a Sub-Feature guide (scope/design/manifest/done criteria) (+80 more)
 
-### Community 18 - "Community 18"
-Cohesion: 0.04
-Nodes (56): _build_where(), count_distinct_ids_since(), count_events_since(), _decode_cursor(), _encode_cursor(), funnel_analysis(), _funnel_step0(), _funnel_stepi() (+48 more)
-
 ### Community 19 - "Community 19"
 Cohesion: 0.04
-Nodes (60): EvaluationsResolve, Input, Output, featureflags.evaluations.resolve — control node (read-only)., FlagsCreate, Input, Output, featureflags.flags.create — effect node. (+52 more)
+Nodes (66): Jinja2 sandboxed template renderer with bounds checking and deterministic output, Async version of render with timeout enforcement.          Args:             tem, Sandboxed Jinja2 template renderer with security + performance bounds., Initialize the sandboxed Jinja2 environment., Validate template syntax without rendering. Raises on error., Renderer, ActionDeliveryRepository, ActionTemplateRepository (+58 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.04
-Nodes (59): compute_layout(), Position, Canvas layout engine: deterministic topological layout with lane packing.  Compu, Layout position for a node., Compute the topological level of each node using a longest-path algorithm., Compute layout positions for all nodes.      - x = level × 240px (topological le, topological_levels(), build_port_index() (+51 more)
+Nodes (60): EvaluationsResolve, Input, Output, featureflags.evaluations.resolve — control node (read-only)., FlagsCreate, Input, Output, featureflags.flags.create — effect node. (+52 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.05
 Nodes (57): bulk_insert(), capture_counts(), _ensure_dims(), list_captures(), metric_history(), prune_expired(), social_publisher.capture — repository layer (raw asyncpg SQL)., Return (items, total) filtered by the supplied criteria. (+49 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.05
-Nodes (46): Jinja2 sandboxed template renderer with bounds checking and deterministic output, Async version of render with timeout enforcement.          Args:             tem, Sandboxed Jinja2 template renderer with security + performance bounds., Initialize the sandboxed Jinja2 environment., Validate template syntax without rendering. Raises on error., Renderer, ActionDeliveryRepository, ActionTemplateRepository (+38 more)
-
-### Community 23 - "Community 23"
 Cohesion: 0.04
 Nodes (63): ADR-002: NATS JetStream for Monitoring Ingestion, ADR-003: Raw SQL with asyncpg — No ORM, ADR-005: ClickHouse as Optional Later Addition for High-Volume Analytics, ADR-006: Database Schema Structure and Naming Conventions, ADR-009b: Change License from MIT to AGPL-3.0, ADR-010: Alerting Engine Separated from Notification Delivery, ADR-011: Monitoring Frontend Architecture, ADR-015: Feature Module Gating — Single Container, Selective Activation (+55 more)
 
-### Community 24 - "Community 24"
+### Community 23 - "Community 23"
 Cohesion: 0.12
 Nodes (56): match(), _absUrl(), _ariaCount(), _cardUrnFromModal(), _companyFromHref(), _detectOwnHandle(), detectPageType(), _dumpSelectedAttrs() (+48 more)
 
-### Community 25 - "Community 25"
+### Community 24 - "Community 24"
 Cohesion: 0.04
 Nodes (59): ClickHouse — optional backend for high-cardinality metrics (never required), NATS JetStream — streaming buffer decoupling ingest rate from write rate, Postgres-specific features used: RLS, advisory locks, CTEs, LISTEN/NOTIFY, PostgreSQL 16 — only required external database for tennetctl, ADR-001: Postgres as the Primary and Only Required Database, Rationale: Redis rejected — Postgres advisory locks + LISTEN/NOTIFY outbox covers use cases, Rationale: SQLite rejected — lacks RLS, LISTEN/NOTIFY, uuid_generate_v7, advisory locks, Rationale: single docker compose up with one Postgres instance for local dev (+51 more)
 
-### Community 26 - "Community 26"
+### Community 25 - "Community 25"
 Cohesion: 0.04
 Nodes (50): Alternative rejected: NATS → ClickHouse, Alternative rejected: evt_unified single table, Alternative rejected: reuse evt_monitoring_* from Phase 13, audit.events.emit node, Daily partitions + pg_cron rollups, Decision: Two Separate Event Streams, evt_audit stream (server-side compliance), evt_product_events stream (client-side telemetry) (+42 more)
 
-### Community 27 - "Community 27"
-Cohesion: 0.05
-Nodes (36): create_entity_tag(), create_material(), create_product_line(), create_tag(), create_variant(), delete_grant_by_code(), get_feature_permission_id_by_code(), get_material() (+28 more)
-
-### Community 28 - "Community 28"
+### Community 26 - "Community 26"
 Cohesion: 0.07
 Nodes (37): AlertList Component, AlertRuleEditor Component, Alert Severity Levels (info/warn/error/critical), Alert State (firing/resolved) + Silenced overlay, API Endpoint /v1/monitoring/alert-rules (CRUD + pause/unpause), API Endpoint /v1/monitoring/alerts (events + silence-from-event), API Endpoint POST /v1/monitoring/logs/query, API Endpoint GET /v1/monitoring/logs/tail (SSE) (+29 more)
 
-### Community 29 - "Community 29"
+### Community 27 - "Community 27"
 Cohesion: 0.09
 Nodes (29): $(), fetchInsights(), init(), initDebugFlag(), loadRecommendations(), queryActiveTabScanner(), refreshHealth(), renderRecommendations() (+21 more)
 
-### Community 30 - "Community 30"
+### Community 28 - "Community 28"
 Cohesion: 0.06
 Nodes (34): AGPL-3.0-or-later license (Python SDK), Module matrix (auth/flags/iam/audit/notify/...), Python SDK Quickstart Code, tennetctl unified Python SDK package, API Key Bearer auth header, AuthError (401/403), Capability preview (flags/audit/notify 29-01), client.auth.api_keys (create/revoke/rotate) (+26 more)
 
-### Community 31 - "Community 31"
+### Community 29 - "Community 29"
+Cohesion: 0.08
+Nodes (28): compute_layout(), Position, Canvas layout engine: deterministic topological layout with lane packing.  Compu, Layout position for a node., Compute the topological level of each node using a longest-path algorithm., Compute layout positions for all nodes.      - x = level × 240px (topological le, topological_levels(), build_port_index() (+20 more)
+
+### Community 30 - "Community 30"
 Cohesion: 0.09
 Nodes (29): Notify API Keys (notify:send + notify:read scopes), Notify API Reference, Notify Bounce Webhook (POST /v1/notify/email/webhooks/bounce), Notify Critical Category (users cannot opt out), Notify Deep Link (path-only URL, open-redirect guard), Notify Deliveries Endpoints (GET list, GET one, unread-count, PATCH), Notify Deployment Guide (SMTP + DNS), Notify DNS for Deliverability (SPF + DKIM + DMARC) (+21 more)
+
+### Community 31 - "Community 31"
+Cohesion: 0.07
+Nodes (9): LogsStore, MetricsStore, Metrics store Protocol., Protocol, ProviderAdapter, Resources store Protocol — interns OTel resource identities., ResourcesStore, Spans store Protocol. (+1 more)
 
 ### Community 32 - "Community 32"
 Cohesion: 0.11
@@ -902,143 +902,143 @@ Nodes (12): AuthSignin, Input, Output, iam.auth.signin — effect node.  Wraps t
 
 ### Community 42 - "Community 42"
 Cohesion: 0.17
-Nodes (10): AccessContext, _cache_get(), _cache_set(), has_permission(), authz — permission check primitive + AccessContext resolver (phase 23R).  Permis, Immutable bundle of resolved access state for a single request., Resolve a user's full access context for the given org.      Returns a frozen Ac, # TODO: call tennetctl /v1/applications/solsocial/scopes/check with scope_code (+2 more)
-
-### Community 43 - "Community 43"
-Cohesion: 0.17
 Nodes (3): handleDelete(), handleRevoke(), onSave()
 
-### Community 44 - "Community 44"
+### Community 43 - "Community 43"
 Cohesion: 0.18
 Nodes (2): useUsers(), WorkspaceMembers()
 
-### Community 45 - "Community 45"
+### Community 44 - "Community 44"
 Cohesion: 0.2
 Nodes (3): compliance_rows_to_csv(), Create a key; return the sanitized row with `token` attached exactly once., _stringify()
 
-### Community 46 - "Community 46"
+### Community 45 - "Community 45"
 Cohesion: 0.2
 Nodes (10): Concept: pytracking open pixel + click wrapping for email, Concept: RFC 8058 one-click unsubscribe header (List-Unsubscribe), Concept: email suppression list check before send, Concept: SMTP password stored in vault, fetched at send time, DB table: 06_notify.10_fct_notify_smtp_configs, DB view: 06_notify.v_notify_smtp_configs, notify.email channel service (render/track/send), notify.smtp_configs repository (+2 more)
 
-### Community 47 - "Community 47"
+### Community 46 - "Community 46"
 Cohesion: 0.25
 Nodes (2): prepareState(), randomState()
 
-### Community 48 - "Community 48"
+### Community 47 - "Community 47"
 Cohesion: 0.28
 Nodes (3): useDeleteSlo(), useSloMutations(), useUpdateSlo()
 
-### Community 49 - "Community 49"
+### Community 48 - "Community 48"
 Cohesion: 0.22
 Nodes (9): Concept: FOR UPDATE SKIP LOCKED atomic claim pattern for email delivery worker, DB: 06_notify.17_fct_notify_suppressions, DB table: 06_notify.15_fct_notify_deliveries, DB table: 02_vault.10_fct_vault_entries (encrypted secrets rows), notify.email repository — poll_and_claim_email_deliveries, notify.email routes — open/click tracking, bounce webhook, notify.suppression.repository — asyncpg CRUD on 06_notify.17_fct_notify_suppressions, notify.suppression service — add_suppression for hard bounces (+1 more)
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.36
 Nodes (4): LIST_KEY(), useMySessions(), useRevokeSession(), useSessions()
 
-### Community 51 - "Community 51"
-Cohesion: 0.39
-Nodes (6): get_by_channel(), list_slots(), replace_slots(), upsert_queue(), get_queue_for_channel(), upsert_queue()
-
-### Community 52 - "Community 52"
+### Community 50 - "Community 50"
 Cohesion: 0.29
 Nodes (0): 
 
-### Community 53 - "Community 53"
+### Community 51 - "Community 51"
 Cohesion: 0.33
 Nodes (1): RootLayout()
+
+### Community 52 - "Community 52"
+Cohesion: 0.33
+Nodes (0): 
+
+### Community 53 - "Community 53"
+Cohesion: 0.4
+Nodes (2): deriveCategoryCode(), matchesPrefixes()
 
 ### Community 54 - "Community 54"
 Cohesion: 0.33
 Nodes (0): 
 
 ### Community 55 - "Community 55"
-Cohesion: 0.4
-Nodes (2): deriveCategoryCode(), matchesPrefixes()
-
-### Community 56 - "Community 56"
-Cohesion: 0.33
-Nodes (0): 
-
-### Community 57 - "Community 57"
 Cohesion: 0.33
 Nodes (4): EmailDispatcher, Email dispatcher that routes through Notify SMTP transport., Dispatches emails via Notify transactional SMTP., Dispatch an email via Notify.          Renders body_template should produce a mu
 
-### Community 58 - "Community 58"
+### Community 56 - "Community 56"
 Cohesion: 0.4
 Nodes (5): compute_burn_rate(), multi_window_burn(), Pure compute module for SLO multi-window burn rate calculation.  Google SRE burn, Compute burn rate multiplier for an observation window.      Burn rate = how man, Compute burn rate multipliers across multiple observation windows.      Args:
 
-### Community 59 - "Community 59"
+### Community 57 - "Community 57"
 Cohesion: 0.4
 Nodes (5): BudgetSnapshot, compute_budget(), Pure compute module for SLO error budget calculation.  No I/O, no side effects., Immutable snapshot of error budget state at a point in time., Compute error budget state for an SLO window.      Args:         target_pct: Tar
 
-### Community 60 - "Community 60"
+### Community 58 - "Community 58"
 Cohesion: 0.33
 Nodes (2): PostgresLogsStore, Postgres implementation of LogsStore — batch insert + cursor pagination.
 
-### Community 61 - "Community 61"
+### Community 59 - "Community 59"
 Cohesion: 0.33
 Nodes (6): Frontend Standards, Frontend Tech Stack (Next.js + shadcn/ui + TanStack Query), React Hook Form + Zod Form Handling, Server Components by Default Pattern, TanStack Query Hooks Pattern, TypeScript Strict Mode (no any)
 
-### Community 62 - "Community 62"
+### Community 60 - "Community 60"
 Cohesion: 0.33
 Nodes (6): Pull Request Guidelines, 90-day Coordinated Disclosure Policy, security@tennetctl.dev email channel, GitHub Security Advisories (preferred channel), Security Scope (in/out), Vulnerability Reporting
 
-### Community 63 - "Community 63"
+### Community 61 - "Community 61"
 Cohesion: 0.4
 Nodes (1): relativeTime()
 
-### Community 64 - "Community 64"
+### Community 62 - "Community 62"
 Cohesion: 0.6
 Nodes (3): useAddIpAllowlistEntry(), useIpAllowlist(), useRemoveIpAllowlistEntry()
 
+### Community 63 - "Community 63"
+Cohesion: 0.4
+Nodes (0): 
+
+### Community 64 - "Community 64"
+Cohesion: 0.4
+Nodes (0): 
+
 ### Community 65 - "Community 65"
-Cohesion: 0.4
-Nodes (0): 
-
-### Community 66 - "Community 66"
-Cohesion: 0.4
-Nodes (0): 
-
-### Community 67 - "Community 67"
 Cohesion: 0.4
 Nodes (5): GET/PATCH /v1/flag-states, GET/POST/PATCH/DELETE /v1/flags, Flag environment (dev / staging / prod / test), FlagEnvironmentsPanel, use-flags (hook module)
 
-### Community 68 - "Community 68"
+### Community 66 - "Community 66"
 Cohesion: 0.7
 Nodes (5): ConfigRowActions — Edit + soft-delete row actions for vault config, vault/configs/schema.ts — Zod schemas for config create/update + parse/stringify helpers, CreateConfigDialog — form dialog for creating a vault config entry, EditConfigDialog — patches value of an existing vault config (key/scope/type immutable), use-configs.ts — TanStack Query hooks: useConfigs, useCreateConfig, useUpdateConfig, useDeleteConfig
 
-### Community 69 - "Community 69"
+### Community 67 - "Community 67"
 Cohesion: 0.6
 Nodes (4): cellToString(), downloadCsv(), escapeCell(), rowsToCsv()
 
-### Community 70 - "Community 70"
-Cohesion: 0.4
-Nodes (0): 
-
-### Community 71 - "Community 71"
+### Community 68 - "Community 68"
 Cohesion: 0.4
 Nodes (5): DB: 06_notify.16_fct_notify_webpush_subscriptions, notify.routes — Feature router aggregating all notify sub-feature routers, notify.webpush.repository — asyncpg CRUD on 06_notify.16_fct_notify_webpush_subscriptions, notify.webpush.routes — /v1/notify/webpush/vapid-public-key + /v1/notify/webpush/subscriptions, notify.webpush.schemas — WebpushSubscriptionCreate / WebpushSubscriptionOut / VapidPublicKeyOut
 
-### Community 72 - "Community 72"
+### Community 69 - "Community 69"
 Cohesion: 0.5
 Nodes (5): Concept: dynamic_sql variable safelist (SELECT-only, DML/DDL blocked, allowed context keys), Concept: Jinja2 template rendering (subject + html + text), Concept: variable resolution pipeline (static + dynamic_sql + caller override), RenderTemplate node (notify.templates.render), notify.templates.nodes.safelist — SQL safelist validator
 
-### Community 73 - "Community 73"
+### Community 70 - "Community 70"
 Cohesion: 0.6
 Nodes (4): expect(), main(), End-to-end smoke test for the somashop customer flow.  Runs against the live loc, step()
 
-### Community 74 - "Community 74"
+### Community 71 - "Community 71"
 Cohesion: 0.4
 Nodes (0): 
 
-### Community 75 - "Community 75"
+### Community 72 - "Community 72"
 Cohesion: 0.4
 Nodes (5): Repository Directory Layout, Feature Numbers Table (00-08), Module Gating (TENNETCTL_MODULES env), importlib for Numeric Directories, Backend Sub-feature = 5 Files
 
-### Community 76 - "Community 76"
+### Community 73 - "Community 73"
+Cohesion: 0.5
+Nodes (1): submit()
+
+### Community 74 - "Community 74"
 Cohesion: 0.5
 Nodes (0): 
+
+### Community 75 - "Community 75"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 76 - "Community 76"
+Cohesion: 0.5
+Nodes (4): API endpoint /v1/notify/templates/{id}/variables, API endpoint /v1/notify/templates, use-template-variables hooks (useTemplateVariables, useCreateTemplateVariable, useResolveVariables), use-templates hooks (useTemplates, useTemplate, useCreateTemplate, usePatchTemplate, useUpsertBodies, useTemplateAnalytics, useTestSend)
 
 ### Community 77 - "Community 77"
 Cohesion: 0.5
@@ -1046,19 +1046,19 @@ Nodes (0):
 
 ### Community 78 - "Community 78"
 Cohesion: 0.5
-Nodes (4): API endpoint /v1/notify/templates/{id}/variables, API endpoint /v1/notify/templates, use-template-variables hooks (useTemplateVariables, useCreateTemplateVariable, useResolveVariables), use-templates hooks (useTemplates, useTemplate, useCreateTemplate, usePatchTemplate, useUpsertBodies, useTemplateAnalytics, useTestSend)
+Nodes (4): Funnel analysis (ordered event steps, conversion pct, bar chart), Retention analysis (anchor event + return event + bucket + cohort grid), FunnelBuilder, RetentionGrid
 
 ### Community 79 - "Community 79"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 0.67
+Nodes (2): CanvasNodeComponent(), statusRingColor()
 
 ### Community 80 - "Community 80"
 Cohesion: 0.5
-Nodes (4): Funnel analysis (ordered event steps, conversion pct, bar chart), Retention analysis (anchor event + return event + bucket + cohort grid), FunnelBuilder, RetentionGrid
+Nodes (0): 
 
 ### Community 81 - "Community 81"
-Cohesion: 0.67
-Nodes (2): CanvasNodeComponent(), statusRingColor()
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 82 - "Community 82"
 Cohesion: 0.5
@@ -1077,16 +1077,16 @@ Cohesion: 0.5
 Nodes (0): 
 
 ### Community 86 - "Community 86"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 0.67
+Nodes (2): parseVal(), save()
 
 ### Community 87 - "Community 87"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 88 - "Community 88"
-Cohesion: 0.67
-Nodes (2): parseVal(), save()
+Cohesion: 0.5
+Nodes (0): 
 
 ### Community 89 - "Community 89"
 Cohesion: 0.5
@@ -1094,7 +1094,7 @@ Nodes (0):
 
 ### Community 90 - "Community 90"
 Cohesion: 0.5
-Nodes (0): 
+Nodes (1): PageViewTracker()
 
 ### Community 91 - "Community 91"
 Cohesion: 0.5
@@ -1102,27 +1102,27 @@ Nodes (0):
 
 ### Community 92 - "Community 92"
 Cohesion: 0.5
-Nodes (1): PageViewTracker()
-
-### Community 93 - "Community 93"
-Cohesion: 0.5
 Nodes (0): 
 
+### Community 93 - "Community 93"
+Cohesion: 0.67
+Nodes (4): Commit Format (feat|fix|refactor|...), Feature Workflow Steps 0-4, TDD (Mandatory) RED-GREEN-IMPROVE, Contribution Workflow (Research/TDD/PR)
+
 ### Community 94 - "Community 94"
-Cohesion: 0.5
-Nodes (1): submit()
+Cohesion: 0.67
+Nodes (1): SignUpPage()
 
 ### Community 95 - "Community 95"
-Cohesion: 0.5
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 96 - "Community 96"
 Cohesion: 0.67
-Nodes (4): Commit Format (feat|fix|refactor|...), Feature Workflow Steps 0-4, TDD (Mandatory) RED-GREEN-IMPROVE, Contribution Workflow (Research/TDD/PR)
+Nodes (0): 
 
 ### Community 97 - "Community 97"
 Cohesion: 0.67
-Nodes (1): SignUpPage()
+Nodes (0): 
 
 ### Community 98 - "Community 98"
 Cohesion: 0.67
@@ -1137,8 +1137,8 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 101 - "Community 101"
-Cohesion: 0.67
-Nodes (0): 
+Cohesion: 1.0
+Nodes (2): CanvasEdgeComponent(), kindStrokeColor()
 
 ### Community 102 - "Community 102"
 Cohesion: 0.67
@@ -1149,12 +1149,12 @@ Cohesion: 0.67
 Nodes (0): 
 
 ### Community 104 - "Community 104"
-Cohesion: 1.0
-Nodes (2): CanvasEdgeComponent(), kindStrokeColor()
-
-### Community 105 - "Community 105"
 Cohesion: 0.67
 Nodes (0): 
+
+### Community 105 - "Community 105"
+Cohesion: 1.0
+Nodes (2): onSubmit(), parseValue()
 
 ### Community 106 - "Community 106"
 Cohesion: 0.67
@@ -1162,79 +1162,79 @@ Nodes (0):
 
 ### Community 107 - "Community 107"
 Cohesion: 0.67
-Nodes (0): 
+Nodes (3): GET/POST/DELETE /v1/flag-overrides, GET/POST/PATCH/DELETE /v1/flag-rules, use-rules-overrides (hook module)
 
 ### Community 108 - "Community 108"
-Cohesion: 1.0
-Nodes (2): onSubmit(), parseValue()
-
-### Community 109 - "Community 109"
 Cohesion: 0.67
 Nodes (0): 
 
+### Community 109 - "Community 109"
+Cohesion: 1.0
+Nodes (2): AppAvatar(), appColor()
+
 ### Community 110 - "Community 110"
-Cohesion: 0.67
-Nodes (3): GET/POST/DELETE /v1/flag-overrides, GET/POST/PATCH/DELETE /v1/flag-rules, use-rules-overrides (hook module)
+Cohesion: 1.0
+Nodes (2): accentColor(), cn()
 
 ### Community 111 - "Community 111"
 Cohesion: 0.67
 Nodes (0): 
 
 ### Community 112 - "Community 112"
-Cohesion: 1.0
-Nodes (2): AppAvatar(), appColor()
-
-### Community 113 - "Community 113"
-Cohesion: 1.0
-Nodes (2): accentColor(), cn()
-
-### Community 114 - "Community 114"
-Cohesion: 0.67
-Nodes (0): 
-
-### Community 115 - "Community 115"
 Cohesion: 0.67
 Nodes (1): Providers()
 
-### Community 116 - "Community 116"
+### Community 113 - "Community 113"
 Cohesion: 0.67
 Nodes (3): 01_catalog/cli.py — CLI for catalog: lint (import checks) + upsert (boot against live DB), 01_catalog/loader.py — upsert_all(): discover → parse → filter modules → resolve handlers → topsort → upsert → deprecation sweep, 01_catalog/manifest.py — Pydantic models for feature.manifest.yaml; parse_manifest + discover_manifests
 
-### Community 117 - "Community 117"
+### Community 114 - "Community 114"
 Cohesion: 0.67
 Nodes (3): notify.template_groups.schemas — TemplateGroupCreate / TemplateGroupUpdate / TemplateGroupRow, notify.templates.nodes.safelist — validate_dynamic_sql (called from variables schema validator), notify.variables.schemas — TemplateVariableCreate / TemplateVariableUpdate / ResolveRequest / TemplateVariableRow
 
-### Community 118 - "Community 118"
+### Community 115 - "Community 115"
 Cohesion: 0.67
 Nodes (3): DB table: 03_iam.25_fct_iam_passkey_challenges, DB table: 03_iam.26_fct_iam_passkey_credentials, iam.passkeys repository (challenges + credentials)
 
-### Community 119 - "Community 119"
+### Community 116 - "Community 116"
 Cohesion: 0.67
 Nodes (1): AuthLayout()
 
-### Community 120 - "Community 120"
+### Community 117 - "Community 117"
 Cohesion: 0.67
 Nodes (1): useTennetctlIdentity()
 
-### Community 121 - "Community 121"
+### Community 118 - "Community 118"
 Cohesion: 0.67
 Nodes (1): isActive()
 
-### Community 122 - "Community 122"
+### Community 119 - "Community 119"
 Cohesion: 0.67
 Nodes (0): 
 
-### Community 123 - "Community 123"
+### Community 120 - "Community 120"
 Cohesion: 0.67
 Nodes (3): Contributor Covenant v2.1, Code of Conduct Enforcement, Code of Conduct Pledge
 
-### Community 124 - "Community 124"
+### Community 121 - "Community 121"
 Cohesion: 1.0
 Nodes (2): POST /v1/auth/magic-link/consume — magic link token exchange, MagicLinkCallbackPage — consumes magic link token
 
-### Community 125 - "Community 125"
+### Community 122 - "Community 122"
 Cohesion: 1.0
 Nodes (2): SignInForm — email/password signin form, SignInPage — sign-in page
+
+### Community 123 - "Community 123"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 124 - "Community 124"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 125 - "Community 125"
+Cohesion: 1.0
+Nodes (0): 
 
 ### Community 126 - "Community 126"
 Cohesion: 1.0
@@ -1254,7 +1254,7 @@ Nodes (0):
 
 ### Community 130 - "Community 130"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): API endpoint /v1/notify/preferences, use-notify-preferences hooks (useNotifyPreferences, useUpdatePreferences)
 
 ### Community 131 - "Community 131"
 Cohesion: 1.0
@@ -1266,7 +1266,7 @@ Nodes (0):
 
 ### Community 133 - "Community 133"
 Cohesion: 1.0
-Nodes (2): API endpoint /v1/notify/preferences, use-notify-preferences hooks (useNotifyPreferences, useUpdatePreferences)
+Nodes (2): EventsTable component (audit), AuditEventRow type (event_key, category_code, outcome, actor_user_id, org_id)
 
 ### Community 134 - "Community 134"
 Cohesion: 1.0
@@ -1278,11 +1278,11 @@ Nodes (0):
 
 ### Community 136 - "Community 136"
 Cohesion: 1.0
-Nodes (2): EventsTable component (audit), AuditEventRow type (event_key, category_code, outcome, actor_user_id, org_id)
+Nodes (0): 
 
 ### Community 137 - "Community 137"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): GET/POST/DELETE /v1/api-keys, use-api-keys (hook module)
 
 ### Community 138 - "Community 138"
 Cohesion: 1.0
@@ -1294,7 +1294,7 @@ Nodes (0):
 
 ### Community 140 - "Community 140"
 Cohesion: 1.0
-Nodes (2): GET/POST/DELETE /v1/api-keys, use-api-keys (hook module)
+Nodes (0): 
 
 ### Community 141 - "Community 141"
 Cohesion: 1.0
@@ -1322,7 +1322,7 @@ Nodes (0):
 
 ### Community 147 - "Community 147"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): GET/POST/PATCH/DELETE /v1/applications, use-applications (hook module)
 
 ### Community 148 - "Community 148"
 Cohesion: 1.0
@@ -1334,31 +1334,31 @@ Nodes (0):
 
 ### Community 150 - "Community 150"
 Cohesion: 1.0
-Nodes (2): GET/POST/PATCH/DELETE /v1/applications, use-applications (hook module)
+Nodes (2): GET/POST/PATCH/DELETE /v1/workspaces, use-workspaces (hook module)
 
 ### Community 151 - "Community 151"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): POST /v1/evaluate, useEvaluate
 
 ### Community 152 - "Community 152"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): TraceWaterfall Component, Trace Waterfall (span tree flattened by parent_span_id, depth-indented, j/k keyboard nav)
 
 ### Community 153 - "Community 153"
 Cohesion: 1.0
-Nodes (2): GET/POST/PATCH/DELETE /v1/workspaces, use-workspaces (hook module)
+Nodes (2): API Endpoint /v1/monitoring/dashboards (CRUD + panels sub-resource), useDashboards Hook (dashboard + panel CRUD)
 
 ### Community 154 - "Community 154"
 Cohesion: 1.0
-Nodes (2): POST /v1/evaluate, useEvaluate
+Nodes (0): 
 
 ### Community 155 - "Community 155"
 Cohesion: 1.0
-Nodes (2): TraceWaterfall Component, Trace Waterfall (span tree flattened by parent_span_id, depth-indented, j/k keyboard nav)
+Nodes (0): 
 
 ### Community 156 - "Community 156"
 Cohesion: 1.0
-Nodes (2): API Endpoint /v1/monitoring/dashboards (CRUD + panels sub-resource), useDashboards Hook (dashboard + panel CRUD)
+Nodes (0): 
 
 ### Community 157 - "Community 157"
 Cohesion: 1.0
@@ -1366,11 +1366,11 @@ Nodes (0):
 
 ### Community 158 - "Community 158"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): iam.roles.create — effect node (catalog), iam.roles.get — control node (catalog)
 
 ### Community 159 - "Community 159"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): ApiKeyCreate schema (label, scopes, expires_at), ApiKeyCreatedResponse schema (one-time token reveal)
 
 ### Community 160 - "Community 160"
 Cohesion: 1.0
@@ -1378,11 +1378,11 @@ Nodes (0):
 
 ### Community 161 - "Community 161"
 Cohesion: 1.0
-Nodes (2): iam.roles.create — effect node (catalog), iam.roles.get — control node (catalog)
+Nodes (0): 
 
 ### Community 162 - "Community 162"
 Cohesion: 1.0
-Nodes (2): ApiKeyCreate schema (label, scopes, expires_at), ApiKeyCreatedResponse schema (one-time token reveal)
+Nodes (0): 
 
 ### Community 163 - "Community 163"
 Cohesion: 1.0
@@ -1402,31 +1402,31 @@ Nodes (0):
 
 ### Community 167 - "Community 167"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): Ingest hot-path audit bypass: increment/set_gauge/observe_histogram skip audit on success (mirrors vault secrets.get pattern), Metric cardinality enforcement: max_cardinality per metric definition, rejects excess label combinations, emits failure audit
 
 ### Community 168 - "Community 168"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): frontend AGENTS.md (Next.js breaking changes warning), frontend README (Next.js bootstrapped project)
 
 ### Community 169 - "Community 169"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (2): ADR-020: Workflow Versioning and Publish Model, Draft-and-Publish Immutable Workflow Versioning
 
 ### Community 170 - "Community 170"
 Cohesion: 1.0
-Nodes (2): Ingest hot-path audit bypass: increment/set_gauge/observe_histogram skip audit on success (mirrors vault secrets.get pattern), Metric cardinality enforcement: max_cardinality per metric definition, rejects excess label combinations, emits failure audit
+Nodes (2): Playwright MCP for E2E (not @playwright/test), Testing Commands (pytest + tsc)
 
 ### Community 171 - "Community 171"
 Cohesion: 1.0
-Nodes (2): frontend AGENTS.md (Next.js breaking changes warning), frontend README (Next.js bootstrapped project)
+Nodes (0): 
 
 ### Community 172 - "Community 172"
 Cohesion: 1.0
-Nodes (2): ADR-020: Workflow Versioning and Publish Model, Draft-and-Publish Immutable Workflow Versioning
+Nodes (0): 
 
 ### Community 173 - "Community 173"
 Cohesion: 1.0
-Nodes (2): Playwright MCP for E2E (not @playwright/test), Testing Commands (pytest + tsc)
+Nodes (0): 
 
 ### Community 174 - "Community 174"
 Cohesion: 1.0
@@ -1502,271 +1502,271 @@ Nodes (0):
 
 ### Community 192 - "Community 192"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): OrgDetailDrawer component
 
 ### Community 193 - "Community 193"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): CreateOrgDialog component
 
 ### Community 194 - "Community 194"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): useOrgs hook
 
 ### Community 195 - "Community 195"
 Cohesion: 1.0
-Nodes (1): OrgDetailDrawer component
+Nodes (0): 
 
 ### Community 196 - "Community 196"
 Cohesion: 1.0
-Nodes (1): CreateOrgDialog component
+Nodes (0): 
 
 ### Community 197 - "Community 197"
 Cohesion: 1.0
-Nodes (1): useOrgs hook
+Nodes (0): 
 
 ### Community 198 - "Community 198"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): useMemberships hooks (org + workspace CRUD)
 
 ### Community 199 - "Community 199"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): EventDetailDrawer component (audit)
 
 ### Community 200 - "Community 200"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): EventDetailDrawer component (audit)
 
 ### Community 201 - "Community 201"
 Cohesion: 1.0
-Nodes (1): useMemberships hooks (org + workspace CRUD)
+Nodes (1): SavedViewsPanel component (audit analytics)
 
 ### Community 202 - "Community 202"
 Cohesion: 1.0
-Nodes (1): EventDetailDrawer component (audit)
+Nodes (1): SavedViewsPanel component (audit)
 
 ### Community 203 - "Community 203"
 Cohesion: 1.0
-Nodes (1): EventDetailDrawer component (audit)
+Nodes (1): EventsTable component (audit)
 
 ### Community 204 - "Community 204"
 Cohesion: 1.0
-Nodes (1): SavedViewsPanel component (audit analytics)
+Nodes (1): RetentionGrid component (audit analytics)
 
 ### Community 205 - "Community 205"
 Cohesion: 1.0
-Nodes (1): SavedViewsPanel component (audit)
+Nodes (0): 
 
 ### Community 206 - "Community 206"
 Cohesion: 1.0
-Nodes (1): EventsTable component (audit)
+Nodes (1): FunnelBuilder component (audit analytics)
 
 ### Community 207 - "Community 207"
 Cohesion: 1.0
-Nodes (1): RetentionGrid component (audit analytics)
+Nodes (1): StatsPanel component (audit)
 
 ### Community 208 - "Community 208"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): StatsPanel
 
 ### Community 209 - "Community 209"
 Cohesion: 1.0
-Nodes (1): FunnelBuilder component (audit analytics)
+Nodes (0): 
 
 ### Community 210 - "Community 210"
 Cohesion: 1.0
-Nodes (1): StatsPanel component (audit)
+Nodes (1): useAuth hooks (TOTP + Passkey registration/management)
 
 ### Community 211 - "Community 211"
 Cohesion: 1.0
-Nodes (1): StatsPanel
+Nodes (1): useApiKeys / useCreateApiKey / useRevokeApiKey hooks
 
 ### Community 212 - "Community 212"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): useApplications / useApplication / useCreateApplication / useUpdateApplication / useDeleteApplication hooks
 
 ### Community 213 - "Community 213"
 Cohesion: 1.0
-Nodes (1): useAuth hooks (TOTP + Passkey registration/management)
+Nodes (1): useWorkspaces / useWorkspace / useCreateWorkspace / useUpdateWorkspace / useDeleteWorkspace hooks
 
 ### Community 214 - "Community 214"
 Cohesion: 1.0
-Nodes (1): useApiKeys / useCreateApiKey / useRevokeApiKey hooks
+Nodes (1): AlertList component
 
 ### Community 215 - "Community 215"
 Cohesion: 1.0
-Nodes (1): useApplications / useApplication / useCreateApplication / useUpdateApplication / useDeleteApplication hooks
+Nodes (1): MetricPicker component
 
 ### Community 216 - "Community 216"
 Cohesion: 1.0
-Nodes (1): useWorkspaces / useWorkspace / useCreateWorkspace / useUpdateWorkspace / useDeleteWorkspace hooks
+Nodes (1): AlertRuleEditor component
 
 ### Community 217 - "Community 217"
 Cohesion: 1.0
-Nodes (1): AlertList component
+Nodes (1): MetricsChart component
 
 ### Community 218 - "Community 218"
 Cohesion: 1.0
-Nodes (1): MetricPicker component
+Nodes (1): TraceWaterfall component
 
 ### Community 219 - "Community 219"
 Cohesion: 1.0
-Nodes (1): AlertRuleEditor component
+Nodes (1): DashboardGrid component
 
 ### Community 220 - "Community 220"
 Cohesion: 1.0
-Nodes (1): MetricsChart component
+Nodes (1): TimerangePicker component
 
 ### Community 221 - "Community 221"
 Cohesion: 1.0
-Nodes (1): TraceWaterfall component
+Nodes (1): SilenceDialog component
 
 ### Community 222 - "Community 222"
 Cohesion: 1.0
-Nodes (1): DashboardGrid component
+Nodes (1): useMetricsQuery hook
 
 ### Community 223 - "Community 223"
 Cohesion: 1.0
-Nodes (1): TimerangePicker component
+Nodes (1): useAlertEvent / useSilences / useCreateSilence / useDeleteSilence hooks
 
 ### Community 224 - "Community 224"
 Cohesion: 1.0
-Nodes (1): SilenceDialog component
+Nodes (1): useDashboards / useDashboard / useCreateDashboard / useDeleteDashboard / useCreatePanel / useUpdatePanel hooks
 
 ### Community 225 - "Community 225"
 Cohesion: 1.0
-Nodes (1): useMetricsQuery hook
+Nodes (1): useLogsQuery hook
 
 ### Community 226 - "Community 226"
 Cohesion: 1.0
-Nodes (1): useAlertEvent / useSilences / useCreateSilence / useDeleteSilence hooks
+Nodes (1): useTracesQuery / useTraceDetail hooks
 
 ### Community 227 - "Community 227"
 Cohesion: 1.0
-Nodes (1): useDashboards / useDashboard / useCreateDashboard / useDeleteDashboard / useCreatePanel / useUpdatePanel hooks
+Nodes (1): useAlertRules / useDeleteAlertRule / usePauseAlertRule / useUnpauseAlertRule hooks
 
 ### Community 228 - "Community 228"
 Cohesion: 1.0
-Nodes (1): useLogsQuery hook
+Nodes (1): stringifyValue utility (vault configs schema)
 
 ### Community 229 - "Community 229"
 Cohesion: 1.0
-Nodes (1): useTracesQuery / useTraceDetail hooks
+Nodes (1): CreateConfigDialog component
 
 ### Community 230 - "Community 230"
 Cohesion: 1.0
-Nodes (1): useAlertRules / useDeleteAlertRule / usePauseAlertRule / useUnpauseAlertRule hooks
+Nodes (1): ConfigRowActions component
 
 ### Community 231 - "Community 231"
 Cohesion: 1.0
-Nodes (1): stringifyValue utility (vault configs schema)
+Nodes (1): useConfigs hook
 
 ### Community 232 - "Community 232"
 Cohesion: 1.0
-Nodes (1): CreateConfigDialog component
+Nodes (0): 
 
 ### Community 233 - "Community 233"
 Cohesion: 1.0
-Nodes (1): ConfigRowActions component
+Nodes (1): cn.ts — clsx-based className utility
 
 ### Community 234 - "Community 234"
 Cohesion: 1.0
-Nodes (1): useConfigs hook
+Nodes (1): use-on-click-outside.ts — hook that fires handler when click occurs outside a ref element
 
 ### Community 235 - "Community 235"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Factory for system-originated calls (no user, trace fresh).
 
 ### Community 236 - "Community 236"
 Cohesion: 1.0
-Nodes (1): cn.ts — clsx-based className utility
+Nodes (1): backend.01_catalog.node.Node (base class for all platform nodes)
 
 ### Community 237 - "Community 237"
 Cohesion: 1.0
-Nodes (1): use-on-click-outside.ts — hook that fires handler when click occurs outside a ref element
+Nodes (1): notify.suppression.schemas — SuppressionAdd / SuppressionRow (ReasonCode: hard_bounce, complaint, manual, unsubscribe)
 
 ### Community 238 - "Community 238"
 Cohesion: 1.0
-Nodes (1): Factory for system-originated calls (no user, trace fresh).
+Nodes (1): notify.deliveries schemas
 
 ### Community 239 - "Community 239"
 Cohesion: 1.0
-Nodes (1): backend.01_catalog.node.Node (base class for all platform nodes)
+Nodes (1): SendTransactional node (notify.send.transactional)
 
 ### Community 240 - "Community 240"
 Cohesion: 1.0
-Nodes (1): notify.suppression.schemas — SuppressionAdd / SuppressionRow (ReasonCode: hard_bounce, complaint, manual, unsubscribe)
+Nodes (1): notify.email schemas (BounceWebhookPayload)
 
 ### Community 241 - "Community 241"
 Cohesion: 1.0
-Nodes (1): notify.deliveries schemas
+Nodes (1): notify.subscriptions schemas — SubscriptionCreate/Update/Row
 
 ### Community 242 - "Community 242"
 Cohesion: 1.0
-Nodes (1): SendTransactional node (notify.send.transactional)
+Nodes (1): iam.magic_link schemas — MagicLinkRequest/Consume/RequestResponse
 
 ### Community 243 - "Community 243"
 Cohesion: 1.0
-Nodes (1): notify.email schemas (BounceWebhookPayload)
+Nodes (1): iam.passkeys schemas (WebAuthn)
 
 ### Community 244 - "Community 244"
 Cohesion: 1.0
-Nodes (1): notify.subscriptions schemas — SubscriptionCreate/Update/Row
+Nodes (1): PasskeyRegisterBeginRequest schema
 
 ### Community 245 - "Community 245"
 Cohesion: 1.0
-Nodes (1): iam.magic_link schemas — MagicLinkRequest/Consume/RequestResponse
+Nodes (1): PasskeyAuthCompleteRequest schema
 
 ### Community 246 - "Community 246"
 Cohesion: 1.0
-Nodes (1): iam.passkeys schemas (WebAuthn)
+Nodes (1): PasskeyCredentialRow schema
 
 ### Community 247 - "Community 247"
 Cohesion: 1.0
-Nodes (1): PasskeyRegisterBeginRequest schema
+Nodes (1): iam.api_keys schemas
 
 ### Community 248 - "Community 248"
 Cohesion: 1.0
-Nodes (1): PasskeyAuthCompleteRequest schema
+Nodes (1): iam.workspaces schemas
 
 ### Community 249 - "Community 249"
 Cohesion: 1.0
-Nodes (1): PasskeyCredentialRow schema
+Nodes (1): WorkspaceRead schema
 
 ### Community 250 - "Community 250"
 Cohesion: 1.0
-Nodes (1): iam.api_keys schemas
+Nodes (1): iam.orgs schemas
 
 ### Community 251 - "Community 251"
 Cohesion: 1.0
-Nodes (1): iam.workspaces schemas
+Nodes (1): OrgRead schema
 
 ### Community 252 - "Community 252"
 Cohesion: 1.0
-Nodes (1): WorkspaceRead schema
+Nodes (1): iam.applications schemas
 
 ### Community 253 - "Community 253"
 Cohesion: 1.0
-Nodes (1): iam.orgs schemas
+Nodes (1): ApplicationCreate schema (org_id, code, label, description)
 
 ### Community 254 - "Community 254"
 Cohesion: 1.0
-Nodes (1): OrgRead schema
+Nodes (1): ApplicationRead schema (includes scope_ids)
 
 ### Community 255 - "Community 255"
 Cohesion: 1.0
-Nodes (1): iam.applications schemas
+Nodes (1): Convert DB row to response model.
 
 ### Community 256 - "Community 256"
 Cohesion: 1.0
-Nodes (1): ApplicationCreate schema (org_id, code, label, description)
+Nodes (0): 
 
 ### Community 257 - "Community 257"
 Cohesion: 1.0
-Nodes (1): ApplicationRead schema (includes scope_ids)
+Nodes (0): 
 
 ### Community 258 - "Community 258"
 Cohesion: 1.0
-Nodes (1): Convert DB row to response model.
+Nodes (0): 
 
 ### Community 259 - "Community 259"
 Cohesion: 1.0
@@ -1962,15 +1962,15 @@ Nodes (0):
 
 ### Community 307 - "Community 307"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Best-effort cross-app handshake: create a somacrm contact linked     to the new
 
 ### Community 308 - "Community 308"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Resolve a somaerp customer for this tennetctl user. Slug is derived     from the
 
 ### Community 309 - "Community 309"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Customer-facing order placement.      Creates a somaerp customer (or reuses one
 
 ### Community 310 - "Community 310"
 Cohesion: 1.0
@@ -3493,119 +3493,125 @@ Cohesion: 1.0
 Nodes (1): Coverage Report Sort Arrow Sprite
 
 ## Knowledge Gaps
-- **1487 isolated node(s):** `MagicLinkCallbackPage — consumes magic link token`, `POST /v1/auth/magic-link/consume — magic link token exchange`, `SignInPage — sign-in page`, `SignInForm — email/password signin form`, `GoogleCallbackPage — Google OAuth callback` (+1482 more)
+- **1490 isolated node(s):** `MagicLinkCallbackPage — consumes magic link token`, `POST /v1/auth/magic-link/consume — magic link token exchange`, `SignInPage — sign-in page`, `SignInForm — email/password signin form`, `GoogleCallbackPage — Google OAuth callback` (+1485 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 124`** (2 nodes): `POST /v1/auth/magic-link/consume — magic link token exchange`, `MagicLinkCallbackPage — consumes magic link token`
+- **Thin community `Community 121`** (2 nodes): `POST /v1/auth/magic-link/consume — magic link token exchange`, `MagicLinkCallbackPage — consumes magic link token`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (2 nodes): `SignInForm — email/password signin form`, `SignInPage — sign-in page`
+- **Thin community `Community 122`** (2 nodes): `SignInForm — email/password signin form`, `SignInPage — sign-in page`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (2 nodes): `SetupPage()`, `page.tsx`
+- **Thin community `Community 123`** (2 nodes): `SetupPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (2 nodes): `useCatalogNodes()`, `page.tsx`
+- **Thin community `Community 124`** (2 nodes): `useCatalogNodes()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (2 nodes): `StatusDot()`, `page.tsx`
+- **Thin community `Community 125`** (2 nodes): `StatusDot()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (2 nodes): `onToggle()`, `page.tsx`
+- **Thin community `Community 126`** (2 nodes): `onToggle()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (2 nodes): `onAddToDashboard()`, `page.tsx`
+- **Thin community `Community 127`** (2 nodes): `onAddToDashboard()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (2 nodes): `NewAlertRulePage()`, `page.tsx`
+- **Thin community `Community 128`** (2 nodes): `NewAlertRulePage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (2 nodes): `severityTone()`, `page.tsx`
+- **Thin community `Community 129`** (2 nodes): `severityTone()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (2 nodes): `API endpoint /v1/notify/preferences`, `use-notify-preferences hooks (useNotifyPreferences, useUpdatePreferences)`
+- **Thin community `Community 130`** (2 nodes): `API endpoint /v1/notify/preferences`, `use-notify-preferences hooks (useNotifyPreferences, useUpdatePreferences)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (2 nodes): `onSubmit()`, `create-role-dialog.tsx`
+- **Thin community `Community 131`** (2 nodes): `onSubmit()`, `create-role-dialog.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (2 nodes): `CategoryPill()`, `authz-pills.tsx`
+- **Thin community `Community 132`** (2 nodes): `CategoryPill()`, `authz-pills.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (2 nodes): `EventsTable component (audit)`, `AuditEventRow type (event_key, category_code, outcome, actor_user_id, org_id)`
+- **Thin community `Community 133`** (2 nodes): `EventsTable component (audit)`, `AuditEventRow type (event_key, category_code, outcome, actor_user_id, org_id)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (2 nodes): `FilterBar()`, `filter-bar.tsx`
+- **Thin community `Community 134`** (2 nodes): `FilterBar()`, `filter-bar.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (2 nodes): `handleSSO()`, `signin-form.tsx`
+- **Thin community `Community 135`** (2 nodes): `handleSSO()`, `signin-form.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (2 nodes): `fieldStyle()`, `signup-form.tsx`
+- **Thin community `Community 136`** (2 nodes): `fieldStyle()`, `signup-form.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (2 nodes): `GET/POST/DELETE /v1/api-keys`, `use-api-keys (hook module)`
+- **Thin community `Community 137`** (2 nodes): `GET/POST/DELETE /v1/api-keys`, `use-api-keys (hook module)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (2 nodes): `relativeTime()`, `flow-list.tsx`
+- **Thin community `Community 138`** (2 nodes): `relativeTime()`, `flow-list.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (2 nodes): `CanvasViewer()`, `canvas-viewer.tsx`
+- **Thin community `Community 139`** (2 nodes): `CanvasViewer()`, `canvas-viewer.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (2 nodes): `handleEscape()`, `canvas-node-inspector.tsx`
+- **Thin community `Community 140`** (2 nodes): `handleEscape()`, `canvas-node-inspector.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (2 nodes): `getPortTypesInUse()`, `canvas-trace-legend.tsx`
+- **Thin community `Community 141`** (2 nodes): `getPortTypesInUse()`, `canvas-trace-legend.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (2 nodes): `handleSelect()`, `canvas-search.tsx`
+- **Thin community `Community 142`** (2 nodes): `handleSelect()`, `canvas-search.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (2 nodes): `useCanvas()`, `use-canvas.ts`
+- **Thin community `Community 143`** (2 nodes): `useCanvas()`, `use-canvas.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (2 nodes): `useFlowRuns()`, `use-flow-runs.ts`
+- **Thin community `Community 144`** (2 nodes): `useFlowRuns()`, `use-flow-runs.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (2 nodes): `colorFor()`, `port-color.ts`
+- **Thin community `Community 145`** (2 nodes): `colorFor()`, `port-color.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (2 nodes): `toReactFlow()`, `canvas-transform.ts`
+- **Thin community `Community 146`** (2 nodes): `toReactFlow()`, `canvas-transform.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (2 nodes): `GET/POST/PATCH/DELETE /v1/applications`, `use-applications (hook module)`
+- **Thin community `Community 147`** (2 nodes): `GET/POST/PATCH/DELETE /v1/applications`, `use-applications (hook module)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (2 nodes): `useSystemHealth()`, `use-system-health.ts`
+- **Thin community `Community 148`** (2 nodes): `useSystemHealth()`, `use-system-health.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (2 nodes): `RoleAssignDialog()`, `role-assign-dialog.tsx`
+- **Thin community `Community 149`** (2 nodes): `RoleAssignDialog()`, `role-assign-dialog.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (2 nodes): `GET/POST/PATCH/DELETE /v1/workspaces`, `use-workspaces (hook module)`
+- **Thin community `Community 150`** (2 nodes): `GET/POST/PATCH/DELETE /v1/workspaces`, `use-workspaces (hook module)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (2 nodes): `POST /v1/evaluate`, `useEvaluate`
+- **Thin community `Community 151`** (2 nodes): `POST /v1/evaluate`, `useEvaluate`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (2 nodes): `TraceWaterfall Component`, `Trace Waterfall (span tree flattened by parent_span_id, depth-indented, j/k keyboard nav)`
+- **Thin community `Community 152`** (2 nodes): `TraceWaterfall Component`, `Trace Waterfall (span tree flattened by parent_span_id, depth-indented, j/k keyboard nav)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (2 nodes): `API Endpoint /v1/monitoring/dashboards (CRUD + panels sub-resource)`, `useDashboards Hook (dashboard + panel CRUD)`
+- **Thin community `Community 153`** (2 nodes): `API Endpoint /v1/monitoring/dashboards (CRUD + panels sub-resource)`, `useDashboards Hook (dashboard + panel CRUD)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (2 nodes): `ConfirmDialog()`, `confirm-dialog.tsx`
+- **Thin community `Community 154`** (2 nodes): `ConfirmDialog()`, `confirm-dialog.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (2 nodes): `cn()`, `breadcrumb.tsx`
+- **Thin community `Community 155`** (2 nodes): `cn()`, `breadcrumb.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (2 nodes): `handleCancel()`, `modal.tsx`
+- **Thin community `Community 156`** (2 nodes): `handleCancel()`, `modal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (2 nodes): `cn()`, `ui.tsx`
+- **Thin community `Community 157`** (2 nodes): `cn()`, `ui.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (2 nodes): `iam.roles.create — effect node (catalog)`, `iam.roles.get — control node (catalog)`
+- **Thin community `Community 158`** (2 nodes): `iam.roles.create — effect node (catalog)`, `iam.roles.get — control node (catalog)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (2 nodes): `ApiKeyCreate schema (label, scopes, expires_at)`, `ApiKeyCreatedResponse schema (one-time token reveal)`
+- **Thin community `Community 159`** (2 nodes): `ApiKeyCreate schema (label, scopes, expires_at)`, `ApiKeyCreatedResponse schema (one-time token reveal)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (2 nodes): `NotFound()`, `not-found.tsx`
+- **Thin community `Community 160`** (2 nodes): `NotFound()`, `not-found.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (2 nodes): `OAuthCallbackPage()`, `page.tsx`
+- **Thin community `Community 161`** (2 nodes): `OAuthCallbackPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (2 nodes): `SunMark()`, `sun-mark.tsx`
+- **Thin community `Community 162`** (2 nodes): `SunMark()`, `sun-mark.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (2 nodes): `td()`, `page.tsx`
+- **Thin community `Community 163`** (2 nodes): `td()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (2 nodes): `NewEquipmentPage()`, `page.tsx`
+- **Thin community `Community 164`** (2 nodes): `NewEquipmentPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (2 nodes): `NewKitchenPage()`, `page.tsx`
+- **Thin community `Community 165`** (2 nodes): `NewKitchenPage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (2 nodes): `NewServiceZonePage()`, `page.tsx`
+- **Thin community `Community 166`** (2 nodes): `NewServiceZonePage()`, `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (2 nodes): `Ingest hot-path audit bypass: increment/set_gauge/observe_histogram skip audit on success (mirrors vault secrets.get pattern)`, `Metric cardinality enforcement: max_cardinality per metric definition, rejects excess label combinations, emits failure audit`
+- **Thin community `Community 167`** (2 nodes): `Ingest hot-path audit bypass: increment/set_gauge/observe_histogram skip audit on success (mirrors vault secrets.get pattern)`, `Metric cardinality enforcement: max_cardinality per metric definition, rejects excess label combinations, emits failure audit`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (2 nodes): `frontend AGENTS.md (Next.js breaking changes warning)`, `frontend README (Next.js bootstrapped project)`
+- **Thin community `Community 168`** (2 nodes): `frontend AGENTS.md (Next.js breaking changes warning)`, `frontend README (Next.js bootstrapped project)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (2 nodes): `ADR-020: Workflow Versioning and Publish Model`, `Draft-and-Publish Immutable Workflow Versioning`
+- **Thin community `Community 169`** (2 nodes): `ADR-020: Workflow Versioning and Publish Model`, `Draft-and-Publish Immutable Workflow Versioning`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (2 nodes): `Playwright MCP for E2E (not @playwright/test)`, `Testing Commands (pytest + tsc)`
+- **Thin community `Community 170`** (2 nodes): `Playwright MCP for E2E (not @playwright/test)`, `Testing Commands (pytest + tsc)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `test-app-live.mjs`
+- **Thin community `Community 171`** (1 nodes): `test-app-live.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `test-signin-dashboard.mjs`
+- **Thin community `Community 172`** (1 nodes): `test-signin-dashboard.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `test-app-comprehensive.mjs`
+- **Thin community `Community 173`** (1 nodes): `test-app-comprehensive.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `test-logged-in-screens.mjs`
+- **Thin community `Community 174`** (1 nodes): `test-logged-in-screens.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `test-final-verification.mjs`
+- **Thin community `Community 175`** (1 nodes): `test-final-verification.mjs`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `api.ts`
+- **Thin community `Community 176`** (1 nodes): `api.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 177`** (1 nodes): `page.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 178`** (1 nodes): `page.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 179`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 180`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -3631,173 +3637,173 @@ Nodes (1): Coverage Report Sort Arrow Sprite
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 191`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (1 nodes): `page.tsx`
+- **Thin community `Community 192`** (1 nodes): `OrgDetailDrawer component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (1 nodes): `page.tsx`
+- **Thin community `Community 193`** (1 nodes): `CreateOrgDialog component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `page.tsx`
+- **Thin community `Community 194`** (1 nodes): `useOrgs hook`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 195`** (1 nodes): `OrgDetailDrawer component`
+- **Thin community `Community 195`** (1 nodes): `notify-settings-constants.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `CreateOrgDialog component`
+- **Thin community `Community 196`** (1 nodes): `stat-cards.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `useOrgs hook`
+- **Thin community `Community 197`** (1 nodes): `types.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `notify-settings-constants.ts`
+- **Thin community `Community 198`** (1 nodes): `useMemberships hooks (org + workspace CRUD)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `stat-cards.tsx`
+- **Thin community `Community 199`** (1 nodes): `EventDetailDrawer component (audit)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `types.ts`
+- **Thin community `Community 200`** (1 nodes): `EventDetailDrawer component (audit)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `useMemberships hooks (org + workspace CRUD)`
+- **Thin community `Community 201`** (1 nodes): `SavedViewsPanel component (audit analytics)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `EventDetailDrawer component (audit)`
+- **Thin community `Community 202`** (1 nodes): `SavedViewsPanel component (audit)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `EventDetailDrawer component (audit)`
+- **Thin community `Community 203`** (1 nodes): `EventsTable component (audit)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `SavedViewsPanel component (audit analytics)`
+- **Thin community `Community 204`** (1 nodes): `RetentionGrid component (audit analytics)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `SavedViewsPanel component (audit)`
+- **Thin community `Community 205`** (1 nodes): `authz-stat-cards.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `EventsTable component (audit)`
+- **Thin community `Community 206`** (1 nodes): `FunnelBuilder component (audit analytics)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (1 nodes): `RetentionGrid component (audit analytics)`
+- **Thin community `Community 207`** (1 nodes): `StatsPanel component (audit)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (1 nodes): `authz-stat-cards.tsx`
+- **Thin community `Community 208`** (1 nodes): `StatsPanel`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (1 nodes): `FunnelBuilder component (audit analytics)`
+- **Thin community `Community 209`** (1 nodes): `auth-shell.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (1 nodes): `StatsPanel component (audit)`
+- **Thin community `Community 210`** (1 nodes): `useAuth hooks (TOTP + Passkey registration/management)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (1 nodes): `StatsPanel`
+- **Thin community `Community 211`** (1 nodes): `useApiKeys / useCreateApiKey / useRevokeApiKey hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (1 nodes): `auth-shell.tsx`
+- **Thin community `Community 212`** (1 nodes): `useApplications / useApplication / useCreateApplication / useUpdateApplication / useDeleteApplication hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (1 nodes): `useAuth hooks (TOTP + Passkey registration/management)`
+- **Thin community `Community 213`** (1 nodes): `useWorkspaces / useWorkspace / useCreateWorkspace / useUpdateWorkspace / useDeleteWorkspace hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 214`** (1 nodes): `useApiKeys / useCreateApiKey / useRevokeApiKey hooks`
+- **Thin community `Community 214`** (1 nodes): `AlertList component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 215`** (1 nodes): `useApplications / useApplication / useCreateApplication / useUpdateApplication / useDeleteApplication hooks`
+- **Thin community `Community 215`** (1 nodes): `MetricPicker component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 216`** (1 nodes): `useWorkspaces / useWorkspace / useCreateWorkspace / useUpdateWorkspace / useDeleteWorkspace hooks`
+- **Thin community `Community 216`** (1 nodes): `AlertRuleEditor component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 217`** (1 nodes): `AlertList component`
+- **Thin community `Community 217`** (1 nodes): `MetricsChart component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 218`** (1 nodes): `MetricPicker component`
+- **Thin community `Community 218`** (1 nodes): `TraceWaterfall component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 219`** (1 nodes): `AlertRuleEditor component`
+- **Thin community `Community 219`** (1 nodes): `DashboardGrid component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 220`** (1 nodes): `MetricsChart component`
+- **Thin community `Community 220`** (1 nodes): `TimerangePicker component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 221`** (1 nodes): `TraceWaterfall component`
+- **Thin community `Community 221`** (1 nodes): `SilenceDialog component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 222`** (1 nodes): `DashboardGrid component`
+- **Thin community `Community 222`** (1 nodes): `useMetricsQuery hook`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 223`** (1 nodes): `TimerangePicker component`
+- **Thin community `Community 223`** (1 nodes): `useAlertEvent / useSilences / useCreateSilence / useDeleteSilence hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 224`** (1 nodes): `SilenceDialog component`
+- **Thin community `Community 224`** (1 nodes): `useDashboards / useDashboard / useCreateDashboard / useDeleteDashboard / useCreatePanel / useUpdatePanel hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 225`** (1 nodes): `useMetricsQuery hook`
+- **Thin community `Community 225`** (1 nodes): `useLogsQuery hook`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 226`** (1 nodes): `useAlertEvent / useSilences / useCreateSilence / useDeleteSilence hooks`
+- **Thin community `Community 226`** (1 nodes): `useTracesQuery / useTraceDetail hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 227`** (1 nodes): `useDashboards / useDashboard / useCreateDashboard / useDeleteDashboard / useCreatePanel / useUpdatePanel hooks`
+- **Thin community `Community 227`** (1 nodes): `useAlertRules / useDeleteAlertRule / usePauseAlertRule / useUnpauseAlertRule hooks`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 228`** (1 nodes): `useLogsQuery hook`
+- **Thin community `Community 228`** (1 nodes): `stringifyValue utility (vault configs schema)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 229`** (1 nodes): `useTracesQuery / useTraceDetail hooks`
+- **Thin community `Community 229`** (1 nodes): `CreateConfigDialog component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 230`** (1 nodes): `useAlertRules / useDeleteAlertRule / usePauseAlertRule / useUnpauseAlertRule hooks`
+- **Thin community `Community 230`** (1 nodes): `ConfigRowActions component`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 231`** (1 nodes): `stringifyValue utility (vault configs schema)`
+- **Thin community `Community 231`** (1 nodes): `useConfigs hook`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 232`** (1 nodes): `CreateConfigDialog component`
+- **Thin community `Community 232`** (1 nodes): `page-header.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 233`** (1 nodes): `ConfigRowActions component`
+- **Thin community `Community 233`** (1 nodes): `cn.ts — clsx-based className utility`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 234`** (1 nodes): `useConfigs hook`
+- **Thin community `Community 234`** (1 nodes): `use-on-click-outside.ts — hook that fires handler when click occurs outside a ref element`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 235`** (1 nodes): `page-header.tsx`
+- **Thin community `Community 235`** (1 nodes): `Factory for system-originated calls (no user, trace fresh).`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 236`** (1 nodes): `cn.ts — clsx-based className utility`
+- **Thin community `Community 236`** (1 nodes): `backend.01_catalog.node.Node (base class for all platform nodes)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 237`** (1 nodes): `use-on-click-outside.ts — hook that fires handler when click occurs outside a ref element`
+- **Thin community `Community 237`** (1 nodes): `notify.suppression.schemas — SuppressionAdd / SuppressionRow (ReasonCode: hard_bounce, complaint, manual, unsubscribe)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 238`** (1 nodes): `Factory for system-originated calls (no user, trace fresh).`
+- **Thin community `Community 238`** (1 nodes): `notify.deliveries schemas`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 239`** (1 nodes): `backend.01_catalog.node.Node (base class for all platform nodes)`
+- **Thin community `Community 239`** (1 nodes): `SendTransactional node (notify.send.transactional)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 240`** (1 nodes): `notify.suppression.schemas — SuppressionAdd / SuppressionRow (ReasonCode: hard_bounce, complaint, manual, unsubscribe)`
+- **Thin community `Community 240`** (1 nodes): `notify.email schemas (BounceWebhookPayload)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 241`** (1 nodes): `notify.deliveries schemas`
+- **Thin community `Community 241`** (1 nodes): `notify.subscriptions schemas — SubscriptionCreate/Update/Row`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 242`** (1 nodes): `SendTransactional node (notify.send.transactional)`
+- **Thin community `Community 242`** (1 nodes): `iam.magic_link schemas — MagicLinkRequest/Consume/RequestResponse`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 243`** (1 nodes): `notify.email schemas (BounceWebhookPayload)`
+- **Thin community `Community 243`** (1 nodes): `iam.passkeys schemas (WebAuthn)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 244`** (1 nodes): `notify.subscriptions schemas — SubscriptionCreate/Update/Row`
+- **Thin community `Community 244`** (1 nodes): `PasskeyRegisterBeginRequest schema`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 245`** (1 nodes): `iam.magic_link schemas — MagicLinkRequest/Consume/RequestResponse`
+- **Thin community `Community 245`** (1 nodes): `PasskeyAuthCompleteRequest schema`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 246`** (1 nodes): `iam.passkeys schemas (WebAuthn)`
+- **Thin community `Community 246`** (1 nodes): `PasskeyCredentialRow schema`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 247`** (1 nodes): `PasskeyRegisterBeginRequest schema`
+- **Thin community `Community 247`** (1 nodes): `iam.api_keys schemas`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 248`** (1 nodes): `PasskeyAuthCompleteRequest schema`
+- **Thin community `Community 248`** (1 nodes): `iam.workspaces schemas`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 249`** (1 nodes): `PasskeyCredentialRow schema`
+- **Thin community `Community 249`** (1 nodes): `WorkspaceRead schema`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 250`** (1 nodes): `iam.api_keys schemas`
+- **Thin community `Community 250`** (1 nodes): `iam.orgs schemas`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 251`** (1 nodes): `iam.workspaces schemas`
+- **Thin community `Community 251`** (1 nodes): `OrgRead schema`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 252`** (1 nodes): `WorkspaceRead schema`
+- **Thin community `Community 252`** (1 nodes): `iam.applications schemas`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 253`** (1 nodes): `iam.orgs schemas`
+- **Thin community `Community 253`** (1 nodes): `ApplicationCreate schema (org_id, code, label, description)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 254`** (1 nodes): `OrgRead schema`
+- **Thin community `Community 254`** (1 nodes): `ApplicationRead schema (includes scope_ids)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 255`** (1 nodes): `iam.applications schemas`
+- **Thin community `Community 255`** (1 nodes): `Convert DB row to response model.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 256`** (1 nodes): `ApplicationCreate schema (org_id, code, label, description)`
+- **Thin community `Community 256`** (1 nodes): `twitter.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 257`** (1 nodes): `ApplicationRead schema (includes scope_ids)`
+- **Thin community `Community 257`** (1 nodes): `linkedin.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 258`** (1 nodes): `Convert DB row to response model.`
+- **Thin community `Community 258`** (1 nodes): `api.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 259`** (1 nodes): `twitter.js`
+- **Thin community `Community 259`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 260`** (1 nodes): `linkedin.js`
+- **Thin community `Community 260`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 261`** (1 nodes): `api.ts`
+- **Thin community `Community 261`** (1 nodes): `schemas.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 262`** (1 nodes): `page.tsx`
+- **Thin community `Community 262`** (1 nodes): `next.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 263`** (1 nodes): `page.tsx`
+- **Thin community `Community 263`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 264`** (1 nodes): `schemas.py`
+- **Thin community `Community 264`** (1 nodes): `api.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 265`** (1 nodes): `next.config.js`
+- **Thin community `Community 265`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 266`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 266`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 267`** (1 nodes): `api.ts`
+- **Thin community `Community 267`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 268`** (1 nodes): `page.tsx`
+- **Thin community `Community 268`** (1 nodes): `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 269`** (1 nodes): `page.tsx`
+- **Thin community `Community 269`** (1 nodes): `get-started.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 270`** (1 nodes): `page.tsx`
+- **Thin community `Community 270`** (1 nodes): `provider-app-config.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 271`** (1 nodes): `layout.tsx`
+- **Thin community `Community 271`** (1 nodes): `fields.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 272`** (1 nodes): `get-started.tsx`
+- **Thin community `Community 272`** (1 nodes): `api.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 273`** (1 nodes): `provider-app-config.tsx`
+- **Thin community `Community 273`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 274`** (1 nodes): `fields.tsx`
+- **Thin community `Community 274`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 275`** (1 nodes): `api.ts`
+- **Thin community `Community 275`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 276`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -3857,15 +3863,15 @@ Nodes (1): Coverage Report Sort Arrow Sprite
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 304`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 305`** (1 nodes): `page.tsx`
+- **Thin community `Community 305`** (1 nodes): `layout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 306`** (1 nodes): `page.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 307`** (1 nodes): `page.tsx`
+- **Thin community `Community 307`** (1 nodes): `Best-effort cross-app handshake: create a somacrm contact linked     to the new`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 308`** (1 nodes): `layout.tsx`
+- **Thin community `Community 308`** (1 nodes): `Resolve a somaerp customer for this tennetctl user. Slug is derived     from the`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 309`** (1 nodes): `page.tsx`
+- **Thin community `Community 309`** (1 nodes): `Customer-facing order placement.      Creates a somaerp customer (or reuses one`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 310`** (1 nodes): `Mirror of v_contacts row.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -4631,17 +4637,17 @@ Nodes (1): Coverage Report Sort Arrow Sprite
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 21`, `Community 24`, `Community 27`, `Community 29`, `Community 33`, `Community 41`, `Community 42`, `Community 45`, `Community 51`, `Community 73`?**
-  _High betweenness centrality (0.197) - this node is a cross-community bridge._
-- **Why does `apiFetch()` connect `Community 4` to `Community 10`, `Community 6`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `get()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 18`, `Community 19`, `Community 20`, `Community 27`, `Community 33`, `Community 41`, `Community 42`?**
+- **Why does `get()` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 19`, `Community 20`, `Community 21`, `Community 23`, `Community 27`, `Community 29`, `Community 33`, `Community 41`, `Community 44`, `Community 70`?**
+  _High betweenness centrality (0.215) - this node is a cross-community bridge._
+- **Why does `get()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 19`, `Community 20`, `Community 29`, `Community 33`, `Community 41`?**
+  _High betweenness centrality (0.055) - this node is a cross-community bridge._
+- **Why does `apiFetch()` connect `Community 4` to `Community 8`, `Community 10`?**
   _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **Are the 520 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
-  _`get()` has 520 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 521 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
+  _`get()` has 521 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 262 inferred relationships involving `get()` (e.g. with `proxy()` and `OidcCallbackContent()`) actually correct?**
   _`get()` has 262 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 255 inferred relationships involving `NotFoundError` (e.g. with `disconnect_account()` and `update_post()`) actually correct?**
   _`NotFoundError` has 255 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `MagicLinkCallbackPage — consumes magic link token`, `POST /v1/auth/magic-link/consume — magic link token exchange`, `SignInPage — sign-in page` to the rest of the system?**
-  _1487 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1490 weakly-connected nodes found - possible documentation gaps or missing edges._
