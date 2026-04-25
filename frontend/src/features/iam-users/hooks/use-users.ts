@@ -26,7 +26,61 @@ const key = {
   all: ["iam", "users"] as const,
   list: (p?: ListParams) => ["iam", "users", "list", p ?? {}] as const,
   one: (id: string) => ["iam", "users", "one", id] as const,
+  roles: (userId: string) => ["iam", "users", userId, "roles"] as const,
 };
+
+export type UserRoleAssignment = {
+  assignment_id: string;
+  user_id: string;
+  role_id: string;
+  role_code: string | null;
+  role_label: string | null;
+  role_description: string | null;
+  org_id: string;
+  application_id: string | null;
+  expires_at: string | null;
+  created_at: string | null;
+};
+
+export function useUserRoles(
+  userId: string | null,
+): UseQueryResult<UserRoleAssignment[]> {
+  return useQuery({
+    queryKey: userId ? key.roles(userId) : ["iam", "users", "noop"],
+    enabled: !!userId,
+    queryFn: () => apiFetch<UserRoleAssignment[]>(`/v1/users/${userId}/roles`),
+  });
+}
+
+export function useGrantUserRole(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { role_id: string; org_id?: string | null; expires_at?: string | null }) =>
+      apiFetch<UserRoleAssignment>(`/v1/users/${userId}/roles`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: key.roles(userId) });
+    },
+  });
+}
+
+export function useRevokeUserRole(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ role_id, org_id }: { role_id: string; org_id?: string | null }) =>
+      apiFetch<void>(
+        `/v1/users/${userId}/roles/${role_id}${
+          org_id ? `?org_id=${encodeURIComponent(org_id)}` : ""
+        }`,
+        { method: "DELETE" },
+      ),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: key.roles(userId) });
+    },
+  });
+}
 
 export function useUsers(
   params?: ListParams

@@ -37,6 +37,7 @@ import {
   useOrgMemberships,
   useWorkspaceMemberships,
 } from "@/features/iam-memberships/hooks/use-memberships";
+import { RoleAssignmentPanel } from "@/features/iam-users/_components/role-assignment-panel";
 import { useOrgs } from "@/features/iam-orgs/hooks/use-orgs";
 import { useWorkspaces } from "@/features/iam-workspaces/hooks/use-workspaces";
 import { useApplications } from "@/features/iam-applications/hooks/use-applications";
@@ -632,6 +633,16 @@ export default function UserDetailPage() {
             </div>
           )}
         </section>
+
+        {/* Role assignments — actual user→role grants surfaced from
+            03_iam.42_lnk_user_roles. Lets admins grant + revoke any of
+            the 16 platform/org/app roles directly from the user view. */}
+        <RoleAssignmentPanel
+          userId={userId}
+          defaultOrgId={
+            orgMemberships[0]?.org_id ?? null
+          }
+        />
 
         {/* Applications & Roles section */}
         <section

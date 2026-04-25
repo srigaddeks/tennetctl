@@ -132,6 +132,7 @@ router.include_router(_tos_routes.router)
 router.include_router(_portal_views_routes.router)
 router.include_router(_dsar_routes.router)
 router.include_router(_mobile_otp_routes.router)
+router.include_router(_roles_routes.user_role_router)
 
 # OIDC auth routes (no session required — browser-facing)
 from fastapi import Request  # noqa: E402

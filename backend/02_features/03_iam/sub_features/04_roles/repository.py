@@ -186,6 +186,38 @@ async def revoke_role(
     return result.endswith(" 1")
 
 
+async def list_roles_for_user(conn: Any, *, user_id: str) -> list[dict]:
+    """Active role assignments for a user, joined with role label/code."""
+    rows = await conn.fetch(
+        '''
+        SELECT
+            lur.id            AS assignment_id,
+            lur.user_id,
+            lur.role_id,
+            lur.org_id,
+            lur.expires_at,
+            lur.revoked_at,
+            lur.created_at,
+            r.application_id,
+            r.is_active,
+            COALESCE(rcode.key_text, '')    AS role_code,
+            COALESCE(rlabel.key_text, '')   AS role_label,
+            COALESCE(rdesc.key_text, '')    AS role_description
+        FROM "03_iam"."42_lnk_user_roles" lur
+        JOIN "03_iam"."13_fct_roles" r ON r.id = lur.role_id AND r.deleted_at IS NULL
+        LEFT JOIN "03_iam"."21_dtl_attrs" rcode  ON rcode.entity_id = r.id  AND rcode.attr_def_id  = (SELECT id FROM "03_iam"."20_dtl_attr_defs" WHERE entity_type_id = 4 AND code = 'code'        LIMIT 1)
+        LEFT JOIN "03_iam"."21_dtl_attrs" rlabel ON rlabel.entity_id = r.id AND rlabel.attr_def_id = (SELECT id FROM "03_iam"."20_dtl_attr_defs" WHERE entity_type_id = 4 AND code = 'label'       LIMIT 1)
+        LEFT JOIN "03_iam"."21_dtl_attrs" rdesc  ON rdesc.entity_id = r.id  AND rdesc.attr_def_id  = (SELECT id FROM "03_iam"."20_dtl_attr_defs" WHERE entity_type_id = 4 AND code = 'description' LIMIT 1)
+        WHERE lur.user_id = $1
+          AND lur.revoked_at IS NULL
+          AND (lur.expires_at IS NULL OR lur.expires_at > CURRENT_TIMESTAMP)
+        ORDER BY lur.created_at DESC
+        ''',
+        user_id,
+    )
+    return [dict(r) for r in rows]
+
+
 async def expire_due(conn: Any) -> list[dict]:
     """Mark all expired, non-revoked assignments as revoked. Returns revoked rows."""
     rows = await conn.fetch(
