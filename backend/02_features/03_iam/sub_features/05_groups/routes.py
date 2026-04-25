@@ -119,3 +119,98 @@ async def delete_group_route(request: Request, group_id: str) -> Response:
             ctx = replace(ctx_base, conn=conn)
             await _service.delete_group(pool, conn, ctx, group_id=group_id)
     return Response(status_code=204)
+
+
+# ── Membership routes ────────────────────────────────────────────────────
+
+
+from pydantic import BaseModel as _BaseModel, ConfigDict as _ConfigDict  # noqa: E402
+
+_repo: Any = import_module(
+    "backend.02_features.03_iam.sub_features.05_groups.repository"
+)
+
+
+class _AddMember(_BaseModel):
+    model_config = _ConfigDict(extra="forbid")
+    user_id: str
+
+
+@router.get("/{group_id}/members", status_code=200)
+async def list_group_members_route(request: Request, group_id: str) -> dict:
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        rows = await _repo.list_members(conn, group_id=group_id)
+    items = [
+        {
+            "membership_id": r["membership_id"],
+            "user_id": r["user_id"],
+            "group_id": r["group_id"],
+            "org_id": r["org_id"],
+            "user_email": r["user_email"] or None,
+            "user_display_name": r["user_display_name"] or None,
+            "account_type_code": r["account_type_code"],
+            "created_at": r["created_at"].isoformat() if r["created_at"] else None,
+        }
+        for r in rows
+    ]
+    return _response.success(items)
+
+
+@router.post("/{group_id}/members", status_code=201)
+async def add_group_member_route(
+    request: Request, group_id: str, body: _AddMember,
+) -> dict:
+    pool = request.app.state.pool
+    actor_id = getattr(request.state, "user_id", None) or body.user_id
+    state_org = getattr(request.state, "org_id", None)
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            grp = await _repo.get_by_id(conn, group_id)
+            if grp is None:
+                raise _errors.AppError(
+                    "NOT_FOUND", f"Group {group_id!r} not found.", 404,
+                )
+            org_id = grp["org_id"] or state_org
+            if not org_id:
+                raise _errors.AppError(
+                    "BAD_REQUEST", "Group has no org and session has none either.", 400,
+                )
+            row = await _repo.add_member(
+                conn,
+                id=_core_id.uuid7(),
+                user_id=body.user_id,
+                group_id=group_id,
+                org_id=org_id,
+                created_by=actor_id,
+            )
+    return _response.success(
+        {
+            "membership_id": row["id"],
+            "user_id": row["user_id"],
+            "group_id": row["group_id"],
+            "org_id": row["org_id"],
+            "created_at": row["created_at"].isoformat() if row["created_at"] else None,
+        }
+    )
+
+
+@router.delete("/{group_id}/members/{user_id}", status_code=204)
+async def remove_group_member_route(
+    request: Request, group_id: str, user_id: str,
+) -> Response:
+    pool = request.app.state.pool
+    async with pool.acquire() as conn:
+        grp = await _repo.get_by_id(conn, group_id)
+        if grp is None:
+            raise _errors.AppError(
+                "NOT_FOUND", f"Group {group_id!r} not found.", 404,
+            )
+        ok = await _repo.remove_member(
+            conn, user_id=user_id, group_id=group_id, org_id=grp["org_id"],
+        )
+    if not ok:
+        raise _errors.AppError(
+            "NOT_FOUND", "Membership not found.", 404,
+        )
+    return Response(status_code=204)

@@ -134,3 +134,70 @@ async def soft_delete_group(conn: Any, *, id: str, updated_by: str) -> bool:
         updated_by, id,
     )
     return result.endswith(" 1")
+
+
+# ── Membership (lnk_user_groups) ─────────────────────────────────────────
+
+
+async def list_members(conn: Any, *, group_id: str) -> list[dict]:
+    """Active members of a group, joined with user account_type for context."""
+    rows = await conn.fetch(
+        '''
+        SELECT
+            lug.id            AS membership_id,
+            lug.user_id,
+            lug.group_id,
+            lug.org_id,
+            lug.created_at,
+            lug.created_by,
+            u.account_type_id,
+            t.code            AS account_type_code,
+            COALESCE(uemail.key_text, '') AS user_email,
+            COALESCE(uname.key_text, '')  AS user_display_name
+        FROM "03_iam"."43_lnk_user_groups" lug
+        JOIN "03_iam"."12_fct_users" u ON u.id = lug.user_id AND u.deleted_at IS NULL
+        JOIN "03_iam"."02_dim_account_types" t ON t.id = u.account_type_id
+        LEFT JOIN "03_iam"."21_dtl_attrs" uemail
+               ON uemail.entity_id = u.id
+              AND uemail.attr_def_id = (SELECT id FROM "03_iam"."20_dtl_attr_defs" WHERE entity_type_id = 3 AND code = 'email'        LIMIT 1)
+        LEFT JOIN "03_iam"."21_dtl_attrs" uname
+               ON uname.entity_id = u.id
+              AND uname.attr_def_id = (SELECT id FROM "03_iam"."20_dtl_attr_defs" WHERE entity_type_id = 3 AND code = 'display_name' LIMIT 1)
+        WHERE lug.group_id = $1
+        ORDER BY lug.created_at ASC
+        ''',
+        group_id,
+    )
+    return [dict(r) for r in rows]
+
+
+async def add_member(
+    conn: Any,
+    *,
+    id: str,
+    user_id: str,
+    group_id: str,
+    org_id: str,
+    created_by: str,
+) -> dict:
+    row = await conn.fetchrow(
+        'INSERT INTO "03_iam"."43_lnk_user_groups" '
+        '    (id, user_id, group_id, org_id, created_by, created_at) '
+        'VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) '
+        'ON CONFLICT (user_id, group_id, org_id) DO UPDATE '
+        '    SET created_at = "03_iam"."43_lnk_user_groups".created_at '
+        'RETURNING id, user_id, group_id, org_id, created_at',
+        id, user_id, group_id, org_id, created_by,
+    )
+    return dict(row)
+
+
+async def remove_member(
+    conn: Any, *, user_id: str, group_id: str, org_id: str,
+) -> bool:
+    result = await conn.execute(
+        'DELETE FROM "03_iam"."43_lnk_user_groups" '
+        'WHERE user_id = $1 AND group_id = $2 AND org_id = $3',
+        user_id, group_id, org_id,
+    )
+    return result.endswith(" 1")
